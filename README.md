@@ -1,5 +1,3 @@
-# SME-Prova-Serap-App
-
 # Instalação e Configuração
 
 Para iniciar o desenvolvimento da aplicação primeiro você precisa ter o Flutter instalado.
