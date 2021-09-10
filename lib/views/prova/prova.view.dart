@@ -138,7 +138,7 @@ class _ProvaViewState extends State<ProvaView> {
                       ),
                     ),
                     SizedBox(
-                      width: 5,
+                      width: 5
                     ),
                   ],
                 ),
