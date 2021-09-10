@@ -11,6 +11,7 @@ import 'package:appserap/views/login/login.web.view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -42,12 +43,6 @@ class _ProvaViewState extends State<ProvaView> {
     return '';
   }
 
-  String removeTagHtml(String texto) {
-    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
-    var textoSemHtml = texto.replaceAll(exp, '').replaceAll('\n', ' ');
-    return textoSemHtml.trim();
-  }
-
   List<Widget> containerProva() {
     List<ProvaQuestaoModel> questoes =
         _provaStore.provaCompleta!.questoes ?? [];
@@ -56,32 +51,31 @@ class _ProvaViewState extends State<ProvaView> {
 
     questoes.forEach((questao) {
       provas.add(
-        Column(
-          children: [
-            Text(
-                'Questão ${questao.ordem} de ${_provaStore.provaCompleta!.itensQuantidade}'),
-            Text(
-              removeTagHtml(questao.titulo ?? ''),
+        SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Text(
+                    'Questão ${questao.ordem} de ${_provaStore.provaCompleta!.itensQuantidade}'),
+                HtmlWidget(
+                  tratarArquivos(questao.titulo ?? ''),
+                ),
+                HtmlWidget(
+                  tratarArquivos(questao.descricao ?? ''),
+                ),
+                Container(
+                  height: 100,
+                  width: 400,
+                  color: Colors.blue[100],
+                  child: Center(
+                    child: Text('Componente múltipla escolhas'),
+                  ),
+                ),
+              ],
             ),
-            Container(
-              height: 200,
-              width: 200,
-              child: Image.memory(
-                base64Decode(imagemMock),
-              ),
-            ),
-            Text(
-              removeTagHtml(questao.descricao ?? ''),
-            ),
-            Container(
-              height: 100,
-              width: 400,
-              color: Colors.blue[100],
-              child: Center(
-                child: Text('Componente múltipla escolhas'),
-              ),
-            ),
-          ],
+          ),
         ),
       );
     });
@@ -211,5 +205,23 @@ class _ProvaViewState extends State<ProvaView> {
       ),
       persistentFooterButtons: [Text('Versão: 9999')],
     );
+  }
+
+  String tratarArquivos(String texto) {
+    RegExp exp = RegExp(r"#(\d+)#", multiLine: true, caseSensitive: true);
+    var matches = exp.allMatches(texto).toList();
+
+    for (var i = 0; i < matches.length; i++) {
+      var arquivoId = texto.substring(matches[i].start, matches[i].end);
+      var arquivo = _provaStore.provaCompleta!.arquivos!
+          .where((arq) => arq.id == int.parse(arquivoId.split("#")[1]))
+          .first;
+      var obterTipo = arquivo.caminho!.split(".");
+
+      texto = texto.replaceAll(arquivoId,
+          "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+    }
+    return texto;
+    // #123456#
   }
 }
