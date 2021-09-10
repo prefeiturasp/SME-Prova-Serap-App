@@ -56,15 +56,18 @@ class ProvaController {
   void verificaConexaoComInternet() async {
     await _downloadStore.verificaConexaoComInternet();
     _provaStore.setIconeProvaPorEstadoDeConexao(_downloadStore.possuiConexao);
-    if (!_downloadStore.possuiConexao && _downloadStore.progressoDownload > 0) {
+    if (!_downloadStore.possuiConexao && _downloadStore.progressoDownload >= 0) {
       _provaStore.setMensagemDownload(
         "Pausado em ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}% - Sem conexão com a internet",
       );
-    } else if (!_downloadStore.possuiConexao &&
-        _downloadStore.progressoDownload == 0) {
+      _provaStore.prova!.status = ProvaStatusEnum.DownloadPausado;
+    } else if (!_downloadStore.possuiConexao) {
       _provaStore.setMensagemDownload(
         "Download não iniciado - Sem conexão com a internet",
       );
+      _provaStore.prova!.status = ProvaStatusEnum.DownloadNaoIniciado;
+    } else {
+      _provaStore.prova!.status = ProvaStatusEnum.DowloadEmProgresso;
     }
   }
 
@@ -72,6 +75,8 @@ class ProvaController {
     ProvaModel prova,
     ProvaDetalheModel? detalhes,
   ) async {
+    verificaConexaoComInternet();
+
     if (detalhes == null) {
       return;
     }
@@ -123,7 +128,6 @@ class ProvaController {
     //       });
     // });
 
-    /*LUIZ
     for (int iArquivo = 0; iArquivo < totalArquivos; iArquivo++) {
       verificaConexaoComInternet();
       var arquivoIndex = detalhes.arquivosId![iArquivo];
@@ -132,10 +136,9 @@ class ProvaController {
         arquivo.base64 = await obterImagemPorUrl(arquivo.caminho);
         provaCompleta.arquivos!.add(arquivo);
         _downloadStore.posicaoAtual += 1;
-        //print("Arquivo: ${arquivo.id}");
+        print("Arquivo: ${arquivo.id}");
       }
     }
-*/
 
     // for (var iArquivo = 0; iArquivo < totalArquivos; iArquivo++) {
     //   var arquivoIndex = detalhes.arquivosId![iArquivo];

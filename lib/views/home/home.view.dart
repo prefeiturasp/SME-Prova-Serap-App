@@ -8,8 +8,8 @@ import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/splash_screen.store.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/views/home/paginas/prova_atual.page.dart';
-import 'package:appserap/views/home/paginas/provas_anteriores.page.dart';
+import 'package:appserap/views/home/paginas/prova_atual_tab.view.dart';
+import 'package:appserap/views/home/paginas/provas_anteriores_tab.page.dart';
 import 'package:appserap/views/login/login.view.dart';
 import 'package:appserap/widgets/cards/prova_card.widget.dart';
 import 'package:flutter/foundation.dart';
@@ -50,8 +50,8 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   }
 
   List<Widget> _paginas = [
-    ProvaAtualPage(),
-    ProvasAterioresPage(),
+    ProvaAtualTabPage(),
+    ProvasAterioresTabPage(),
   ];
 
   @override

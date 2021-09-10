@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
@@ -48,9 +50,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
         textoBotao: "BAIXAR PROVA",
         largura: 300,
         onPressed: () async {
-          //_provaController.verificaConexaoComInternet();
-
-          _provaStore.iconeProva = iconeProvaDownload;
+          _provaController.verificaConexaoComInternet();
           _provaStore.carregarProva(this.widget.prova);
           var provaDetalhes =
               await _provaController.obterDetalhesProva(this.widget.prova.id);
@@ -117,6 +117,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
           //   _provaStore.carregarProvaDetalhes(provaDetalhes);
           // }
           await _provaStore.carregarProvaStorage(this.widget.prova.id);
+          debugger();
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -124,6 +125,78 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
             ),
           );
         },
+      );
+    }
+
+    if (_provaStore.prova!.status == ProvaStatusEnum.DownloadNaoIniciado) {
+      return Container(
+        width: 400,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Observer(builder: (_) {
+              return LinearPercentIndicator(
+                //animation: true,
+                //animationDuration: 1000,
+                lineHeight: 7.0,
+                percent: _downloadStore.progressoDownload,
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: TemaUtil.verde01,
+              );
+            }),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+              child: Observer(builder: (_) {
+                return Text(
+                  _provaStore.mensagemDownload,
+                  style: TextStyle(
+                    color: TemaUtil.vermelhoErro,
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_provaStore.prova!.status == ProvaStatusEnum.DownloadPausado) {
+      return Container(
+        width: 400,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Observer(builder: (_) {
+              return LinearPercentIndicator(
+                //animation: true,
+                //animationDuration: 1000,
+                lineHeight: 7.0,
+                percent: _downloadStore.progressoDownload,
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: TemaUtil.verde01,
+              );
+            }),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+              child: Observer(builder: (_) {
+                return Text(
+                  _provaStore.mensagemDownload,
+                  style: TextStyle(
+                    color: TemaUtil.vermelhoErro,
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
       );
     }
 
