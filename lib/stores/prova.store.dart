@@ -39,6 +39,9 @@ abstract class _ProvaStoreBase with Store {
   @observable
   String iconeProva = "assets/images/prova.svg";
 
+  @observable
+  bool baixando = false;
+
   @action
   void setIconeProvaPorEstadoDeConexao(bool possuiConexao) {
     possuiConexao

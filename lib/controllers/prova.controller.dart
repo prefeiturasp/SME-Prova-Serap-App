@@ -77,6 +77,7 @@ class ProvaController {
     }
 
     var prefs = await SharedPreferences.getInstance();
+    _provaStore.baixando = true;
     ProvaCompletaModel provaCompleta = new ProvaCompletaModel(
       id: prova.id,
       descricao: prova.descricao,
@@ -122,6 +123,7 @@ class ProvaController {
     //       });
     // });
 
+    /*LUIZ
     for (int iArquivo = 0; iArquivo < totalArquivos; iArquivo++) {
       verificaConexaoComInternet();
       var arquivoIndex = detalhes.arquivosId![iArquivo];
@@ -133,6 +135,7 @@ class ProvaController {
         //print("Arquivo: ${arquivo.id}");
       }
     }
+*/
 
     // for (var iArquivo = 0; iArquivo < totalArquivos; iArquivo++) {
     //   var arquivoIndex = detalhes.arquivosId![iArquivo];
@@ -166,7 +169,6 @@ class ProvaController {
         provaCompleta.questoes?.add(questao!);
         _downloadStore.posicaoAtual += 1;
         print("Questão: ${questao!.id}");
-        //debugger();
       }
 
       /* await obterQuestao(questaoIndex).then(
@@ -182,6 +184,9 @@ class ProvaController {
             }
         },
       );*/
+
+/*LUIZ
+
 
       var totalAlternativas = detalhes.alternativasId!.length;
       for (var iAlternativa = 0;
@@ -207,11 +212,12 @@ class ProvaController {
 
 
       //debugger();
-
+*/
     }
 
     _downloadStore.limparDownloads();
     _provaStore.prova!.status = ProvaStatusEnum.IniciarProva;
     _provaStore.iconeProva = "assets/images/prova.svg";
+    _provaStore.baixando = false;
   }
 }

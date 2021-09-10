@@ -41,15 +41,39 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   String iconeProvaDownload = "assets/images/prova_download.svg";
   String iconeProvaDownloadErro = "assets/images/prova_erro_download.svg";
 
-  Widget acaoProva(ProvaStatusEnum status) {
-    if (status == ProvaStatusEnum.DowloadEmProgresso) {
-      if (_provaStore.detalhes != null) {
-        _provaController.downloadProva(this.widget.prova, _provaStore.detalhes);
+  Widget acaoProva() {
+    if (_provaStore.prova == null ||
+        _provaStore.prova!.status == ProvaStatusEnum.Baixar) {
+      return BotaoPadraoWidget(
+        textoBotao: "BAIXAR PROVA",
+        largura: 300,
+        onPressed: () async {
+          //_provaController.verificaConexaoComInternet();
+
+          _provaStore.iconeProva = iconeProvaDownload;
+          _provaStore.carregarProva(this.widget.prova);
+          var provaDetalhes =
+              await _provaController.obterDetalhesProva(this.widget.prova.id);
+          if (provaDetalhes != null) {
+            _provaStore.carregarProvaDetalhes(provaDetalhes);
+            //_provaController.downloadProva(this.widget.prova, provaDetalhes);
+            _provaStore.alterarStatus(ProvaStatusEnum.DowloadEmProgresso);
+            setState(() {});
+          }
+        },
+      );
+    }
+
+    if (_provaStore.prova!.status == ProvaStatusEnum.DowloadEmProgresso) {
+      if (!_provaStore.baixando) {
+        _provaController
+            .downloadProva(this.widget.prova, _provaStore.detalhes)
+            .then((value) => null);
       }
 
       _provaStore.setMensagemDownload(
-            "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%",
-          );
+        "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%",
+      );
 
       return Container(
         width: 350,
@@ -81,28 +105,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
       );
     }
 
-    if (status == ProvaStatusEnum.Baixar) {
-      return BotaoPadraoWidget(
-        textoBotao: "BAIXAR PROVA",
-        largura: 300,
-        onPressed: () async {
-          //_provaController.verificaConexaoComInternet();
-
-          _provaStore.iconeProva = iconeProvaDownload;
-          _provaStore.carregarProva(this.widget.prova);
-          var provaDetalhes =
-              await _provaController.obterDetalhesProva(this.widget.prova.id);
-          if (provaDetalhes != null) {
-            _provaStore.carregarProvaDetalhes(provaDetalhes);
-            //_provaController.downloadProva(this.widget.prova, provaDetalhes);
-            _provaStore.alterarStatus(ProvaStatusEnum.DowloadEmProgresso);
-            setState(() {});
-          }
-        },
-      );
-    }
-
-    if (status == ProvaStatusEnum.IniciarProva) {
+    if (_provaStore.prova!.status == ProvaStatusEnum.IniciarProva) {
       return BotaoPadraoWidget(
         textoBotao: "INICAR A PROVA",
         largura: 350,
@@ -278,9 +281,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
                       ),
                       Observer(
                         builder: (_) {
-                          return acaoProva(_provaStore.prova == null
-                              ? this.widget.prova.status
-                              : _provaStore.prova!.status);
+                          return acaoProva();
                         },
                       ),
                     ],
