@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -16,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ProvaController {
   final _provaRepository = GetIt.I.get<ProvaRepository>();
-  final _dowloadStore = GetIt.I.get<DownloadStore>();
+  final _downloadStore = GetIt.I.get<DownloadStore>();
   final _provaStore = GetIt.I.get<ProvaStore>();
 
   Future<List<ProvaModel>> obterProvas() async {
@@ -53,8 +54,18 @@ class ProvaController {
   }
 
   void verificaConexaoComInternet() async {
-    await _dowloadStore.verificaConexaoComInternet();
-    _provaStore.setIconeProvaPorEstadoDeConexao(_dowloadStore.possuiConexao);
+    await _downloadStore.verificaConexaoComInternet();
+    _provaStore.setIconeProvaPorEstadoDeConexao(_downloadStore.possuiConexao);
+    if (!_downloadStore.possuiConexao && _downloadStore.progressoDownload > 0) {
+      _provaStore.setMensagemDownload(
+        "Pausado em ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}% - Sem conexão com a internet",
+      );
+    } else if (!_downloadStore.possuiConexao &&
+        _downloadStore.progressoDownload == 0) {
+      _provaStore.setMensagemDownload(
+        "Download não iniciado - Sem conexão com a internet",
+      );
+    }
   }
 
   Future<void> downloadProva(
@@ -78,7 +89,7 @@ class ProvaController {
     prefs.remove("prova_${detalhes.provaId}");
     var verificaProva = prefs.getString("prova_${detalhes.provaId}");
 
-    _dowloadStore.totalItems = detalhes.arquivosId!.length +
+    _downloadStore.totalItems = detalhes.arquivosId!.length +
         detalhes.alternativasId!.length +
         detalhes.questoesId!.length;
 
@@ -118,8 +129,8 @@ class ProvaController {
       if (arquivo != null && !provaCompleta.arquivos!.contains(arquivo)) {
         arquivo.base64 = await obterImagemPorUrl(arquivo.caminho);
         provaCompleta.arquivos!.add(arquivo);
-        _dowloadStore.posicaoAtual += 1;
-        print("Arquivo: ${arquivo.id}");
+        _downloadStore.posicaoAtual += 1;
+        //print("Arquivo: ${arquivo.id}");
       }
     }
 
@@ -139,47 +150,68 @@ class ProvaController {
     //   );
     // }
 
+    List<ProvaQuestaoModel> listaQuestoesAux = [];
+
     var totalQuestoes = detalhes.questoesId!.length;
     for (var iQuestao = 0; iQuestao < totalQuestoes; iQuestao++) {
       verificaConexaoComInternet();
       var questaoIndex = detalhes.questoesId![iQuestao];
 
-      await obterQuestao(questaoIndex).then(
+      ProvaQuestaoModel? questao = await obterQuestao(questaoIndex);
+
+      //print("QUESTAO: $questao");
+      print("QUESTAO NA LISTA?: ${provaCompleta.questoes!.contains(questao)}");
+
+      if (provaCompleta.questoes!.where((q) => q.id == questao!.id).isEmpty) {
+        provaCompleta.questoes?.add(questao!);
+        _downloadStore.posicaoAtual += 1;
+        print("Questão: ${questao!.id}");
+        //debugger();
+      }
+
+      /* await obterQuestao(questaoIndex).then(
         (questao) => {
-          if (questao != null && !provaCompleta.questoes!.contains(questao))
+          if (questao != null && !listaQuestoesAux.contains(questao))
             {
               provaCompleta.questoes?.add(questao),
-              _dowloadStore.posicaoAtual += 1,
+              listaQuestoesAux.add(questao),
+              print(listaQuestoesAux),
+              debugger()
+              _downloadStore.posicaoAtual += 1,
               print("Questão: ${questao.id}")
             }
         },
-      );
+      );*/
+
+      var totalAlternativas = detalhes.alternativasId!.length;
+      for (var iAlternativa = 0;
+          iAlternativa < totalAlternativas;
+          iAlternativa++) {
+        verificaConexaoComInternet();
+        var alternativaIndex = detalhes.alternativasId![iAlternativa];
+
+        await obterAlternativa(alternativaIndex).then(
+          (alternativa) => {
+            if (alternativa != null &&
+                !provaCompleta.alternativas!.contains(alternativa))
+              {
+                provaCompleta.alternativas?.add(alternativa),
+                _downloadStore.posicaoAtual += 1,
+                //print("Alternativa: ${alternativa.id}")
+              }
+          },
+        );
+      }
+
+      prefs.setString("prova_${prova.id}", jsonEncode(provaCompleta.toJson()));
+
+
+      //debugger();
+
     }
 
-    var totalAlternativas = detalhes.alternativasId!.length;
-    for (var iAlternativa = 0;
-        iAlternativa < totalAlternativas;
-        iAlternativa++) {
-      verificaConexaoComInternet();
-      var alternativaIndex = detalhes.alternativasId![iAlternativa];
-
-      await obterAlternativa(alternativaIndex).then(
-        (alternativa) => {
-          if (alternativa != null &&
-              !provaCompleta.alternativas!.contains(alternativa))
-            {
-              provaCompleta.alternativas?.add(alternativa),
-              _dowloadStore.posicaoAtual += 1,
-              print("Alternativa: ${alternativa.id}")
-            }
-        },
-      );
-    }
-
-    prefs.setString("prova_${prova.id}", jsonEncode(provaCompleta.toJson()));
-    _dowloadStore.limparDownloads();
+    _downloadStore.limparDownloads();
     _provaStore.prova!.status = ProvaStatusEnum.IniciarProva;
-
     _provaStore.iconeProva = "assets/images/prova.svg";
   }
 }

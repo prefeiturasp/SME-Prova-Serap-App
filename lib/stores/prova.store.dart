@@ -46,6 +46,12 @@ abstract class _ProvaStoreBase with Store {
         : iconeProva = "assets/images/prova_erro_download.svg";
   }
 
+  @observable
+  String mensagemDownload = "";
+
+  @action
+  void setMensagemDownload(String mensagem) => mensagemDownload = mensagem;
+
   @action
   Future<void> carregarMensagem() async {
     var prefs = await SharedPreferences.getInstance();

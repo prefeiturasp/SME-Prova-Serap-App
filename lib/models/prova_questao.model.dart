@@ -25,4 +25,9 @@ class ProvaQuestaoModel {
     data['ordem'] = this.ordem;
     return data;
   }
+
+  @override
+  String toString() {
+    return this.toJson().toString();
+  }
 }

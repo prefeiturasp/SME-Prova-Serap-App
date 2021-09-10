@@ -47,6 +47,10 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
         _provaController.downloadProva(this.widget.prova, _provaStore.detalhes);
       }
 
+      _provaStore.setMensagemDownload(
+            "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%",
+          );
+
       return Container(
         width: 350,
         child: Column(
@@ -68,8 +72,9 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
             }),
             Padding(
               padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-              child: Text(
-                  "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%"),
+              child: Observer(builder: (_) {
+                return Text(_provaStore.mensagemDownload);
+              }),
             ),
           ],
         ),
@@ -81,9 +86,9 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
         textoBotao: "BAIXAR PROVA",
         largura: 300,
         onPressed: () async {
-          _provaController.verificaConexaoComInternet();
+          //_provaController.verificaConexaoComInternet();
 
-          //_provaStore.iconeProva = iconeProvaDownload;
+          _provaStore.iconeProva = iconeProvaDownload;
           _provaStore.carregarProva(this.widget.prova);
           var provaDetalhes =
               await _provaController.obterDetalhesProva(this.widget.prova.id);
