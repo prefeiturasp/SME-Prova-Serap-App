@@ -57,10 +57,7 @@ class ProvaController {
     _provaStore.setIconeProvaPorEstadoDeConexao(_dowloadStore.possuiConexao);
   }
 
-  Future<void> downloadProva(
-    ProvaModel prova,
-    ProvaDetalheModel? detalhes,
-  ) async {
+  Future<void> downloadProva(ProvaModel prova, ProvaDetalheModel? detalhes) async {
     if (detalhes == null) {
       return;
     }
@@ -78,9 +75,8 @@ class ProvaController {
     prefs.remove("prova_${detalhes.provaId}");
     var verificaProva = prefs.getString("prova_${detalhes.provaId}");
 
-    _dowloadStore.totalItems = detalhes.arquivosId!.length +
-        detalhes.alternativasId!.length +
-        detalhes.questoesId!.length;
+    _dowloadStore.totalItems =
+        detalhes.arquivosId!.length + detalhes.alternativasId!.length + detalhes.questoesId!.length;
 
     if (verificaProva != null) {
       provaCompleta = ProvaCompletaModel.fromJson(jsonDecode(verificaProva));
@@ -100,80 +96,46 @@ class ProvaController {
 
     var totalArquivos = detalhes.arquivosId!.length;
 
-    // detalhes.arquivosId!.forEach((arquivoIndex) async {
-    //   await obterArquivo(arquivoIndex).then((arquivo) => {
-    //         if (arquivo != null)
-    //           {
-    //             provaCompleta.arquivos?.add(arquivo),
-    //             _dowloadStore.posicaoAtual += 1,
-    //             print("Arquivo: ${arquivo.id}")
-    //           }
-    //       });
-    // });
-
     for (int iArquivo = 0; iArquivo < totalArquivos; iArquivo++) {
       verificaConexaoComInternet();
+
       var arquivoIndex = detalhes.arquivosId![iArquivo];
       var arquivo = await obterArquivo(arquivoIndex);
+
       if (arquivo != null && !provaCompleta.arquivos!.contains(arquivo)) {
         arquivo.base64 = await obterImagemPorUrl(arquivo.caminho);
         provaCompleta.arquivos!.add(arquivo);
         _dowloadStore.posicaoAtual += 1;
-        print("Arquivo: ${arquivo.id}");
+        // print("Arquivo: ${arquivo.id}");
       }
     }
-
-    // for (var iArquivo = 0; iArquivo < totalArquivos; iArquivo++) {
-    //   var arquivoIndex = detalhes.arquivosId![iArquivo];
-
-    //   await obterArquivo(arquivoIndex).then(
-    //     (arquivo) async => {
-    //       if (arquivo != null)
-    //         {
-    //           arquivo.base64 = await obterImagemPorUrl(arquivo.caminho),
-    //           provaCompleta.arquivos?.add(arquivo),
-    //           _dowloadStore.posicaoAtual += 1,
-    //           print("Arquivo: ${arquivo.id}")
-    //         }
-    //     },
-    //   );
-    // }
 
     var totalQuestoes = detalhes.questoesId!.length;
     for (var iQuestao = 0; iQuestao < totalQuestoes; iQuestao++) {
       verificaConexaoComInternet();
       var questaoIndex = detalhes.questoesId![iQuestao];
 
-      await obterQuestao(questaoIndex).then(
-        (questao) => {
-          if (questao != null && !provaCompleta.questoes!.contains(questao))
-            {
-              provaCompleta.questoes?.add(questao),
-              _dowloadStore.posicaoAtual += 1,
-              print("Questão: ${questao.id}")
-            }
-        },
-      );
+      var questao = await obterQuestao(questaoIndex);
+
+      if (questao != null && !provaCompleta.questoes!.contains(questao)) {
+        provaCompleta.questoes?.add(questao);
+        _dowloadStore.posicaoAtual += 1;
+        print("Questão: ${questao.id}");
+      }
     }
 
     var totalAlternativas = detalhes.alternativasId!.length;
-    for (var iAlternativa = 0;
-        iAlternativa < totalAlternativas;
-        iAlternativa++) {
+    for (var iAlternativa = 0; iAlternativa < totalAlternativas; iAlternativa++) {
       verificaConexaoComInternet();
       var alternativaIndex = detalhes.alternativasId![iAlternativa];
 
-      await obterAlternativa(alternativaIndex).then(
-        (alternativa) => {
-          if (alternativa != null &&
-              !provaCompleta.alternativas!.contains(alternativa))
-            {
-              provaCompleta.alternativas?.add(alternativa),
-              _dowloadStore.posicaoAtual += 1,
-              print("Alternativa: ${alternativa.id}")
-            }
-        },
-      );
+      var alternativa = await obterAlternativa(alternativaIndex);
+
+      if (alternativa != null && !provaCompleta.alternativas!.contains(alternativa)) {
+        provaCompleta.alternativas?.add(alternativa);
+        _dowloadStore.posicaoAtual += 1;
+        print("Alternativa: ${alternativa.id}");
+      }
     }
 
     prefs.setString("prova_${prova.id}", jsonEncode(provaCompleta.toJson()));

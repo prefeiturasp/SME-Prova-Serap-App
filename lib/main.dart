@@ -83,7 +83,8 @@ void main() async {
   await SentryFlutter.init(
     (options) => options
       ..dsn = AppConfigReader.getSentryDsn()
-      ..environment = AppConfigReader.getEnvironment(),
+      ..environment = AppConfigReader.getEnvironment()
+      ..diagnosticLevel = SentryLevel.warning,
     appRunner: () => runApp(MyAppMobile()),
   );
 }

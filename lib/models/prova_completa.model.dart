@@ -14,28 +14,26 @@ class ProvaCompletaModel {
   List<ProvaQuestaoModel>? questoes;
   List<ProvaArquivoModel>? arquivos;
 
-  ProvaCompletaModel(
-      {required this.id,
-      required this.descricao,
-      required this.dataFim,
-      required this.dataInicio,
-      required this.itensQuantidade,
-      required this.status});
+  ProvaCompletaModel({
+    required this.id,
+    required this.descricao,
+    required this.dataFim,
+    required this.dataInicio,
+    required this.itensQuantidade,
+    required this.status,
+  });
 
   ProvaCompletaModel.fromJson(Map<String, dynamic> json) {
     this.id = json['id'];
     this.descricao = json['descricao'];
-    this.dataFim =
-        json['dataFim'] != "" ? DateTime.parse(json['dataFim']) : null;
-    this.dataInicio =
-        json['dataInicio'] != "" ? DateTime.parse(json['dataInicio']) : null;
+    this.dataFim = json['dataFim'] != "" ? DateTime.parse(json['dataFim']) : null;
+    this.dataInicio = json['dataInicio'] != "" ? DateTime.parse(json['dataInicio']) : null;
     this.itensQuantidade = json['itensQuantidade'];
     this.alternativas = json['alternativas'].cast<ProvaAlternativaModel>();
- 
-    List<ProvaQuestaoModel> questaoAux = []; 
+
+    List<ProvaQuestaoModel> questaoAux = [];
     for (var questao in json['questoes']) {
-      ProvaQuestaoModel questaoNormal =
-          ProvaQuestaoModel(id: 0, titulo: '', descricao: '', ordem: 0);
+      ProvaQuestaoModel questaoNormal = ProvaQuestaoModel(id: 0, titulo: '', descricao: '', ordem: 0);
       questaoNormal.id = questao['id'];
       questaoNormal.titulo = questao['titulo'];
       questaoNormal.descricao = questao['descricao'];
@@ -46,8 +44,7 @@ class ProvaCompletaModel {
 
     List<ProvaArquivoModel> arquivosAux = [];
     for (var arquivo in json['arquivos']) {
-      ProvaArquivoModel arquivoNormal =
-          ProvaArquivoModel(id: 0, caminho: '', base64: '');
+      ProvaArquivoModel arquivoNormal = ProvaArquivoModel(id: 0, caminho: '', base64: '');
       arquivoNormal.id = arquivo['id'];
       arquivoNormal.caminho = arquivo['caminho'];
       arquivoNormal.base64 = arquivo['base64'];

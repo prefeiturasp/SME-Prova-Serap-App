@@ -39,6 +39,12 @@ abstract class _ProvaStoreBase with Store {
   @observable
   String iconeProva = "assets/images/prova.svg";
 
+  @observable
+  int questaoAtual = 1;
+
+  @observable
+  int? resposta = 1;
+
   @action
   void setIconeProvaPorEstadoDeConexao(bool possuiConexao) {
     possuiConexao
@@ -72,8 +78,7 @@ abstract class _ProvaStoreBase with Store {
     var prefs = await SharedPreferences.getInstance();
     var provaStorage = prefs.getString("prova_$id");
     if (provaStorage != null) {
-      this.provaCompleta =
-          ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
+      this.provaCompleta = ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
     }
   }
 

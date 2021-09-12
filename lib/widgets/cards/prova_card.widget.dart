@@ -68,8 +68,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
             }),
             Padding(
               padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-              child: Text(
-                  "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%"),
+              child: Text("Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%"),
             ),
           ],
         ),
@@ -85,8 +84,10 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
 
           //_provaStore.iconeProva = iconeProvaDownload;
           _provaStore.carregarProva(this.widget.prova);
-          var provaDetalhes =
-              await _provaController.obterDetalhesProva(this.widget.prova.id);
+          var provaDetalhes = await _provaController.obterDetalhesProva(this.widget.prova.id);
+
+          print(this.widget.prova.id);
+
           if (provaDetalhes != null) {
             _provaStore.carregarProvaDetalhes(provaDetalhes);
             //_provaController.downloadProva(this.widget.prova, provaDetalhes);
@@ -123,8 +124,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   }
 
   Widget formataDataAplicacao() {
-    if (this.widget.prova.dataFim == null ||
-        this.widget.prova.dataInicio == this.widget.prova.dataFim) {
+    if (this.widget.prova.dataFim == null || this.widget.prova.dataInicio == this.widget.prova.dataFim) {
       return AutoSizeText(
         "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
         maxLines: 2,
@@ -138,8 +138,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
           AutoSizeText(
             "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
             maxLines: 2,
-            style:
-                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           AutoSizeText(
             " à ",
@@ -149,8 +148,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
           AutoSizeText(
             "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataFim!)}",
             maxLines: 2,
-            style:
-                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ],
       );
@@ -273,9 +271,8 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
                       ),
                       Observer(
                         builder: (_) {
-                          return acaoProva(_provaStore.prova == null
-                              ? this.widget.prova.status
-                              : _provaStore.prova!.status);
+                          return acaoProva(
+                              _provaStore.prova == null ? this.widget.prova.status : _provaStore.prova!.status);
                         },
                       ),
                     ],
