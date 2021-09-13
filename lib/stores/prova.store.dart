@@ -77,9 +77,9 @@ abstract class _ProvaStoreBase with Store {
   }
 
   @action
-  carregarProvaStorage(int id) async {
+  carregarProvaCompletaStorage(int id) async {
     var prefs = await SharedPreferences.getInstance();
-    var provaStorage = prefs.getString("prova_$id");
+    var provaStorage = prefs.getString("prova_completa_$id");
     if (provaStorage != null) {
       this.provaCompleta =
           ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
