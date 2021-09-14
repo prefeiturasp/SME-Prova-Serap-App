@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:appserap/controllers/prova.controller.dart';
+import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/models/prova_detalhe.model.dart';
 import 'package:appserap/services/notification_service.dart';
 import 'package:appserap/views/splash_screen.view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -7,6 +10,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,30 +32,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   //String? mensagem = message.notification?.body;
   print('RECEBEU UMA MENSAGEM:');
   var prefs = await SharedPreferences.getInstance();
-  prefs.setString("testeMensagem", "RECEBEU UMA MENSAGEM PELO PUSH");
+  //prefs.setString("testeMensagem", "RECEBEU UMA MENSAGEM PELO PUSH");
 
-  // final _provaController = GetIt.I.get<ProvaController>();
-  // final _dowloadStore = GetIt.I.get<UsuarioStore>();
-  // final _provaStore = GetIt.I.get<ProvaStore>();
-  // final _usuarioStore = GetIt.I.get<UsuarioStore>();
+  final _provaController = GetIt.I.get<ProvaController>();
+  var provas = await _provaController.obterProvas();
 
-  // List<ProvaModel> provas = <ProvaModel>[];
-
-  // await _usuarioStore.carregarUsuario();
-  // if (_usuarioStore.token != null) {
-  //   var retorno = await _provaController.obterProvas();
-  //   if (retorno.length > 0) {
-  //     for (var i = 0; i < retorno.length; i++) {
-  //       //_provaStore.carregarProvaDetalhes(provaDetalhes);
-  //       print("PROVA ${retorno[i]}}");
-  //     }
-  //   }
-  // }
-
-  //print('Acabou de aparecer uma mensagem:  ${message.messageId}');
-
-  //debugger();
-  //prefs.setString("testeMensagem", mensagem!);
+  for (ProvaModel prova in provas) {
+    ProvaDetalheModel? detalhes =
+        await _provaController.obterDetalhesProva(prova.id);
+    _provaController.downloadProva(prova, detalhes);
+    print("BATENDO AQUI IHUUUUL");
+  }
 }
 
 void main() async {
@@ -67,10 +58,10 @@ void main() async {
   try {
     await Firebase.initializeApp();
 
-    // FirebaseMessaging.instance.subscribeToTopic('1');
+    FirebaseMessaging.instance.subscribeToTopic('1');
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (e) {
-    print('Failed to initialize');
+    print('\n\nFailed to initialize\n\n');
   }
 
   // Intl.defaultLocale = 'pt_BR';
