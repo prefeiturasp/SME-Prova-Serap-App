@@ -191,6 +191,9 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
             ),
             TextButton(
               onPressed: () async {
+                _downloadStore.limparDownloads();
+                _provaController.verificaConexaoComInternet();
+                _provaStore.carregarProva(this.widget.prova);
                 var provaDetalhes = await _provaController
                     .obterDetalhesProva(this.widget.prova.id);
                 if (provaDetalhes != null) {
