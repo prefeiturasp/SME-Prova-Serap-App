@@ -39,12 +39,21 @@ abstract class _ProvaStoreBase with Store {
   @observable
   String iconeProva = "assets/images/prova.svg";
 
+  @observable
+  bool baixando = false;
+
   @action
   void setIconeProvaPorEstadoDeConexao(bool possuiConexao) {
     possuiConexao
         ? iconeProva = "assets/images/prova_download.svg"
         : iconeProva = "assets/images/prova_erro_download.svg";
   }
+
+  @observable
+  String mensagemDownload = "";
+
+  @action
+  void setMensagemDownload(String mensagem) => mensagemDownload = mensagem;
 
   @action
   Future<void> carregarMensagem() async {
@@ -68,9 +77,9 @@ abstract class _ProvaStoreBase with Store {
   }
 
   @action
-  carregarProvaStorage(int id) async {
+  carregarProvaCompletaStorage(int id) async {
     var prefs = await SharedPreferences.getInstance();
-    var provaStorage = prefs.getString("prova_$id");
+    var provaStorage = prefs.getString("prova_completa_$id");
     if (provaStorage != null) {
       this.provaCompleta =
           ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
