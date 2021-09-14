@@ -16,7 +16,10 @@ class ProvaAtualTabPage extends StatefulWidget {
   _ProvaAtualTabPageState createState() => _ProvaAtualTabPageState();
 }
 
-class _ProvaAtualTabPageState extends State<ProvaAtualTabPage> {
+class _ProvaAtualTabPageState extends State<ProvaAtualTabPage> with AutomaticKeepAliveClientMixin<ProvaAtualTabPage> {
+  @override
+  bool get wantKeepAlive => false;
+
   final _provaController = GetIt.I.get<ProvaController>();
   List<ProvaModel> provas = <ProvaModel>[];
   final _provaStore = GetIt.I.get<ProvaStore>();
@@ -42,6 +45,8 @@ class _ProvaAtualTabPageState extends State<ProvaAtualTabPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return SingleChildScrollView(
       physics: ScrollPhysics(),
       child: Padding(

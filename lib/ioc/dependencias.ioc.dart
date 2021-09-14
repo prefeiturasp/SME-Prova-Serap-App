@@ -8,6 +8,7 @@ import 'package:appserap/repositories/splash_screen.repository.dart';
 import 'package:appserap/repositories/usuario.repository.dart';
 import 'package:appserap/services/dio.service.dart';
 import 'package:appserap/stores/download.store.dart';
+import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/splash_screen.store.dart';
@@ -27,6 +28,7 @@ class DependenciasIoC {
     getIt.registerSingleton<LoginStore>(LoginStore());
     getIt.registerSingleton<SplashScreenStore>(SplashScreenStore());
     getIt.registerSingleton<DownloadStore>(DownloadStore());
+    getIt.registerSingleton<HomeStore>(HomeStore());
   }
 
   registrarServices() {

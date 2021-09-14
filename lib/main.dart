@@ -38,8 +38,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   var provas = await _provaController.obterProvas();
 
   for (ProvaModel prova in provas) {
-    ProvaDetalheModel? detalhes =
-        await _provaController.obterDetalhesProva(prova.id);
+    ProvaDetalheModel? detalhes = await _provaController.obterDetalhesProva(prova.id);
     _provaController.downloadProva(prova, detalhes);
     print("BATENDO AQUI IHUUUUL");
   }
@@ -74,7 +73,8 @@ void main() async {
   await SentryFlutter.init(
     (options) => options
       ..dsn = AppConfigReader.getSentryDsn()
-      ..environment = AppConfigReader.getEnvironment(),
+      ..environment = AppConfigReader.getEnvironment()
+      ..diagnosticLevel = SentryLevel.warning,
     appRunner: () => runApp(MyAppMobile()),
   );
 }
