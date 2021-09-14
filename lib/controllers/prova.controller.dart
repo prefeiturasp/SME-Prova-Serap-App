@@ -127,11 +127,11 @@ class ProvaController {
       provaCompleta.arquivos = [];
     }
 
-    var totalArquivos = provaDetalhes.arquivosId!.length;
-    for (int iArquivo = 0; iArquivo < totalArquivos; iArquivo++) {
+    for(int idArquivo in provaDetalhes.arquivosId!){
       verificaConexaoComInternet();
-      var arquivoIndex = provaDetalhes.arquivosId![iArquivo];
-      var arquivo = await obterArquivo(arquivoIndex);
+
+      var arquivo = await obterArquivo(idArquivo);
+
       if (provaCompleta.arquivos!.where((q) => q.id == arquivo!.id).isEmpty && arquivo != null) {
         arquivo.base64 = await obterImagemPorUrl(arquivo.caminho);
         provaCompleta.arquivos!.add(arquivo);
