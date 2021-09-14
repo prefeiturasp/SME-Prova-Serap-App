@@ -7,11 +7,12 @@ class ProvaQuestaoModel {
   int? ordem;
   List<ProvaAlternativaModel>? alternativas;
 
-  ProvaQuestaoModel(
-      {required this.id,
-      required this.titulo,
-      required this.descricao,
-      required this.ordem});
+  ProvaQuestaoModel({
+    required this.id,
+    required this.titulo,
+    required this.descricao,
+    required this.ordem,
+  });
 
   ProvaQuestaoModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
