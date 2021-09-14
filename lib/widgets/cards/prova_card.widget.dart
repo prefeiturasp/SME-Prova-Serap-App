@@ -172,14 +172,16 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   // String iconeProvaDownloadErro = "assets/images/prova_erro_download.svg";
 
   Widget acaoProva() {
-    if (_provaStore.prova == null || _provaStore.prova!.status == ProvaStatusEnum.Baixar) {
+    if (_provaStore.prova == null ||
+        _provaStore.prova!.status == ProvaStatusEnum.Baixar) {
       return BotaoPadraoWidget(
         textoBotao: "BAIXAR PROVA",
         largura: 300,
         onPressed: () async {
           _provaController.verificaConexaoComInternet();
           _provaStore.carregarProva(this.widget.prova);
-          var provaDetalhes = await _provaController.obterDetalhesProva(this.widget.prova.id);
+          var provaDetalhes =
+              await _provaController.obterDetalhesProva(this.widget.prova.id);
           if (provaDetalhes != null) {
             _provaStore.carregarProvaDetalhes(provaDetalhes);
             //_provaController.downloadProva(this.widget.prova, provaDetalhes);
@@ -192,7 +194,9 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
 
     if (_provaStore.prova!.status == ProvaStatusEnum.DowloadEmProgresso) {
       if (!_provaStore.baixando) {
-        _provaController.downloadProva(this.widget.prova, _provaStore.detalhes).then((value) => null);
+        _provaController
+            .downloadProva(this.widget.prova, _provaStore.detalhes)
+            .then((value) => null);
       }
 
       _provaStore.setMensagemDownload(
@@ -314,7 +318,11 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
             ),
             TextButton(
               onPressed: () async {
-                var provaDetalhes = await _provaController.obterDetalhesProva(this.widget.prova.id);
+                _downloadStore.limparDownloads();
+                _provaController.verificaConexaoComInternet();
+                _provaStore.carregarProva(this.widget.prova);
+                var provaDetalhes = await _provaController
+                    .obterDetalhesProva(this.widget.prova.id);
                 if (provaDetalhes != null) {
                   _provaStore.carregarProvaDetalhes(provaDetalhes);
                   //_provaController.downloadProva(this.widget.prova, provaDetalhes);
@@ -333,7 +341,8 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   }
 
   Widget formataDataAplicacao() {
-    if (this.widget.prova.dataFim == null || this.widget.prova.dataInicio == this.widget.prova.dataFim) {
+    if (this.widget.prova.dataFim == null ||
+        this.widget.prova.dataInicio == this.widget.prova.dataFim) {
       return AutoSizeText(
         "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
         maxLines: 2,
@@ -347,7 +356,8 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
           AutoSizeText(
             "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
             maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style:
+                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           AutoSizeText(
             " à ",
@@ -357,7 +367,8 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
           AutoSizeText(
             "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataFim!)}",
             maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style:
+                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ],
       );
