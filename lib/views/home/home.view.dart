@@ -101,7 +101,7 @@ class _HomeViewState extends BaseState<HomeView, HomeStore> with TickerProviderS
           alignment: Alignment.centerLeft,
           child: TabBar(
             controller: tabController,
-            labelStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            labelStyle: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
             indicatorSize: TabBarIndicatorSize.label,
             labelColor: TemaUtil.preto,
             unselectedLabelColor: TemaUtil.pretoSemFoco,
