@@ -197,17 +197,22 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
     return await showDialog<T>(
       context: context,
       builder: (_) {
+        var background = Colors.transparent;
+
         return AlertDialog(
-          backgroundColor: Colors.transparent,
+          insetPadding: EdgeInsets.zero,
+          backgroundColor: Colors.black.withOpacity(0.5),
           content: Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: Stack(
               children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Container(
+                Padding(
+                  padding: const EdgeInsets.only(top: 50),
+                  child: Align(
+                    alignment: Alignment.center,
                     child: PhotoView(
+                      backgroundDecoration: BoxDecoration(color: background),
                       imageProvider: MemoryImage(image),
                     ),
                   ),
@@ -218,9 +223,19 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: Text(
-                      'Fechar',
-                      style: TextStyle(fontSize: 18, color: TemaUtil.laranja01, fontWeight: FontWeight.bold),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(Icons.close, color: TemaUtil.laranja02),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          'Fechar',
+                          style: TextStyle(fontSize: 18, color: TemaUtil.laranja02, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -285,6 +300,10 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
   }
 
   String tratarArquivos(String texto) {
+    texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
+      return '<center>${match.group(0)}</center>';
+    });
+
     RegExp exp = RegExp(r"#(\d+)#", multiLine: true, caseSensitive: true);
     var matches = exp.allMatches(texto).toList();
 
