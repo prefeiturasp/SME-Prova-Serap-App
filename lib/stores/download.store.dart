@@ -69,6 +69,8 @@ abstract class _DownloadStoreBase with Store {
         resultadoDaVerificacao == ConnectivityResult.mobile ||
         resultadoDaVerificacao == ConnectivityResult.ethernet) {
       this.setPossuiConexao(true);
+    } else {
+      this.setPossuiConexao(false);
     }
   }
 

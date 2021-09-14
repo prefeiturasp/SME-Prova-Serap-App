@@ -1,6 +1,7 @@
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/widgets/cards/prova_card.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:appserap/models/prova.model.dart';
@@ -8,14 +9,14 @@ import 'package:appserap/controllers/prova.controller.dart';
 import 'package:get_it/get_it.dart';
 import 'package:appserap/stores/prova.store.dart';
 
-class ProvaAtualPage extends StatefulWidget {
-  const ProvaAtualPage({Key? key}) : super(key: key);
+class ProvaAtualTabPage extends StatefulWidget {
+  const ProvaAtualTabPage({Key? key}) : super(key: key);
 
   @override
-  _ProvaAtualPageState createState() => _ProvaAtualPageState();
+  _ProvaAtualTabPageState createState() => _ProvaAtualTabPageState();
 }
 
-class _ProvaAtualPageState extends State<ProvaAtualPage> {
+class _ProvaAtualTabPageState extends State<ProvaAtualTabPage> {
   final _provaController = GetIt.I.get<ProvaController>();
   List<ProvaModel> provas = <ProvaModel>[];
   final _provaStore = GetIt.I.get<ProvaStore>();
@@ -55,18 +56,32 @@ class _ProvaAtualPageState extends State<ProvaAtualPage> {
             SizedBox(
               height: 20,
             ),
-            Container(
-              height: 400,
-              child: ListView.builder(
-                itemCount: provas.length,
-                itemBuilder: (_, index) {
-                  var prova = provas[index];
-                  return ProvaCardWidget(
-                    prova: prova,
-                  );
-                },
-              ),
-            ),
+            provas.length > 0
+                ? Container(
+                    height: 400,
+                    child: ListView.builder(
+                      itemCount: provas.length,
+                      itemBuilder: (_, index) {
+                        var prova = provas[index];
+                        return ProvaCardWidget(
+                          prova: prova,
+                        );
+                      },
+                    ),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height - 400,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset('assets/images/sem_prova.svg'),
+                        ],
+                      ),
+                    ),
+                  ),
           ],
         ),
       ),

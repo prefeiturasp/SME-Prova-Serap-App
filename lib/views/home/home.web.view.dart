@@ -5,8 +5,8 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/splash_screen.store.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/views/home/paginas/prova_atual.page.dart';
-import 'package:appserap/views/home/paginas/provas_anteriores.page.dart';
+import 'package:appserap/views/home/paginas/prova_atual_tab.view.dart';
+import 'package:appserap/views/home/paginas/provas_anteriores_tab.page.dart';
 import 'package:appserap/views/login/login.web.view.dart';
 import 'package:appserap/widgets/cards/prova_card.widget.dart';
 import 'package:flutter/foundation.dart';
@@ -43,8 +43,8 @@ class _HomeWebViewState extends State<HomeWebView> with WidgetsBindingObserver {
   }
 
   List<Widget> _paginas = [
-    ProvaAtualPage(),
-    ProvasAterioresPage(),
+    ProvaAtualTabPage(),
+    ProvasAterioresTabPage(),
   ];
 
   @override
@@ -144,7 +144,7 @@ class _HomeWebViewState extends State<HomeWebView> with WidgetsBindingObserver {
           ),
         ],
       ),
-      body:Column(
+      body: Column(
         children: [
           Container(
             child: Row(
@@ -223,8 +223,8 @@ class _HomeWebViewState extends State<HomeWebView> with WidgetsBindingObserver {
         Center(
           child: Observer(builder: (_) {
             return Text(
-                "Sistema homologado para os navegadores Google Chrome e Firefox. ${_splashStore.versaoApp}",
-              );
+              "Sistema homologado para os navegadores Google Chrome e Firefox. ${_splashStore.versaoApp}",
+            );
           }),
         )
       ],
