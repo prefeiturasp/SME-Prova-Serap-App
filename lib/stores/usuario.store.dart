@@ -28,8 +28,7 @@ abstract class _UsuarioStoreBase with Store {
   }
 
   @action
-  atualizarDados(
-      String nome, String codigoEOL, String token, String ano) async {
+  atualizarDados(String nome, String codigoEOL, String token, String ano) async {
     this.nome = nome;
     this.token = token;
     this.codigoEOL = codigoEOL;

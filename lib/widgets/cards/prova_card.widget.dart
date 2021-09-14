@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
@@ -35,128 +37,6 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
     initializeDateFormatting();
     Intl.defaultLocale = 'pt_BR';
     super.initState();
-  }
-
-  String iconeProva = "assets/images/prova.svg";
-  String iconeProvaDownload = "assets/images/prova_download.svg";
-  String iconeProvaDownloadErro = "assets/images/prova_erro_download.svg";
-
-  Widget acaoProva(ProvaStatusEnum status) {
-    if (status == ProvaStatusEnum.DowloadEmProgresso) {
-      if (_provaStore.detalhes != null) {
-        _provaController.downloadProva(this.widget.prova, _provaStore.detalhes);
-      }
-
-      return Container(
-        width: 350,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 10,
-            ),
-            Observer(builder: (_) {
-              return LinearPercentIndicator(
-                //animation: true,
-                //animationDuration: 1000,
-                lineHeight: 7.0,
-                percent: _downloadStore.progressoDownload,
-                linearStrokeCap: LinearStrokeCap.roundAll,
-                progressColor: TemaUtil.verde01,
-              );
-            }),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-              child: Text(
-                  "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%"),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (status == ProvaStatusEnum.Baixar) {
-      return BotaoPadraoWidget(
-        textoBotao: "BAIXAR PROVA",
-        largura: 300,
-        onPressed: () async {
-          _provaController.verificaConexaoComInternet();
-
-          //_provaStore.iconeProva = iconeProvaDownload;
-          _provaStore.carregarProva(this.widget.prova);
-          var provaDetalhes =
-              await _provaController.obterDetalhesProva(this.widget.prova.id);
-          if (provaDetalhes != null) {
-            _provaStore.carregarProvaDetalhes(provaDetalhes);
-            //_provaController.downloadProva(this.widget.prova, provaDetalhes);
-            _provaStore.alterarStatus(ProvaStatusEnum.DowloadEmProgresso);
-            setState(() {});
-          }
-        },
-      );
-    }
-
-    if (status == ProvaStatusEnum.IniciarProva) {
-      return BotaoPadraoWidget(
-        textoBotao: "INICAR A PROVA",
-        largura: 350,
-        onPressed: () async {
-          // _provaStore.carregarProva(this.widget.prova);
-          // var provaDetalhes =
-          //     await _provaController.obterDetalhesProva(this.widget.prova.id);
-          // if (provaDetalhes != null) {
-          //   _provaStore.carregarProvaDetalhes(provaDetalhes);
-          // }
-          await _provaStore.carregarProvaStorage(this.widget.prova.id);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProvaView(),
-            ),
-          );
-        },
-      );
-    }
-
-    return SizedBox();
-  }
-
-  Widget formataDataAplicacao() {
-    if (this.widget.prova.dataFim == null ||
-        this.widget.prova.dataInicio == this.widget.prova.dataFim) {
-      return AutoSizeText(
-        "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
-        maxLines: 2,
-        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-      );
-    }
-
-    if (this.widget.prova.dataInicio != this.widget.prova.dataFim) {
-      return Row(
-        children: [
-          AutoSizeText(
-            "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
-            maxLines: 2,
-            style:
-                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          AutoSizeText(
-            " à ",
-            maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16),
-          ),
-          AutoSizeText(
-            "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataFim!)}",
-            maxLines: 2,
-            style:
-                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ],
-      );
-    }
-
-    return SizedBox();
   }
 
   @override
@@ -273,9 +153,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
                       ),
                       Observer(
                         builder: (_) {
-                          return acaoProva(_provaStore.prova == null
-                              ? this.widget.prova.status
-                              : _provaStore.prova!.status);
+                          return acaoProva();
                         },
                       ),
                     ],
@@ -287,5 +165,204 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
         ),
       ),
     );
+  }
+
+  // String iconeProva = "assets/images/prova.svg";
+  // String iconeProvaDownload = "assets/images/prova_download.svg";
+  // String iconeProvaDownloadErro = "assets/images/prova_erro_download.svg";
+
+  Widget acaoProva() {
+    if (_provaStore.prova == null || _provaStore.prova!.status == ProvaStatusEnum.Baixar) {
+      return BotaoPadraoWidget(
+        textoBotao: "BAIXAR PROVA",
+        largura: 300,
+        onPressed: () async {
+          _provaController.verificaConexaoComInternet();
+          _provaStore.carregarProva(this.widget.prova);
+          var provaDetalhes = await _provaController.obterDetalhesProva(this.widget.prova.id);
+          if (provaDetalhes != null) {
+            _provaStore.carregarProvaDetalhes(provaDetalhes);
+            //_provaController.downloadProva(this.widget.prova, provaDetalhes);
+            _provaStore.alterarStatus(ProvaStatusEnum.DowloadEmProgresso);
+            setState(() {});
+          }
+        },
+      );
+    }
+
+    if (_provaStore.prova!.status == ProvaStatusEnum.DowloadEmProgresso) {
+      if (!_provaStore.baixando) {
+        _provaController.downloadProva(this.widget.prova, _provaStore.detalhes).then((value) => null);
+      }
+
+      _provaStore.setMensagemDownload(
+        "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%",
+      );
+
+      return Container(
+        width: 350,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Observer(builder: (_) {
+              return LinearPercentIndicator(
+                //animation: true,
+                //animationDuration: 1000,
+                lineHeight: 7.0,
+                percent: _downloadStore.progressoDownload,
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: TemaUtil.verde01,
+              );
+            }),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+              child: Observer(builder: (_) {
+                return Text(_provaStore.mensagemDownload);
+              }),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_provaStore.prova!.status == ProvaStatusEnum.IniciarProva) {
+      return BotaoPadraoWidget(
+        textoBotao: "INICAR A PROVA",
+        largura: 350,
+        onPressed: () async {
+          await _provaStore.carregarProvaCompletaStorage(this.widget.prova.id);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProvaView(),
+            ),
+          );
+        },
+      );
+    }
+
+    if (_provaStore.prova!.status == ProvaStatusEnum.DownloadNaoIniciado) {
+      return Container(
+        width: 400,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Observer(builder: (_) {
+              return LinearPercentIndicator(
+                //animation: true,
+                //animationDuration: 1000,
+                lineHeight: 7.0,
+                percent: _downloadStore.progressoDownload,
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: TemaUtil.verde01,
+              );
+            }),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+              child: Observer(builder: (_) {
+                return Text(
+                  _provaStore.mensagemDownload,
+                  style: TextStyle(
+                    color: TemaUtil.vermelhoErro,
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_provaStore.prova!.status == ProvaStatusEnum.DownloadPausado) {
+      return Container(
+        width: 400,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Observer(builder: (_) {
+              return LinearPercentIndicator(
+                //animation: true,
+                //animationDuration: 1000,
+                lineHeight: 7.0,
+                percent: _downloadStore.progressoDownload,
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: TemaUtil.verde01,
+              );
+            }),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+              child: Observer(builder: (_) {
+                return Text(
+                  _provaStore.mensagemDownload,
+                  style: TextStyle(
+                    color: TemaUtil.vermelhoErro,
+                  ),
+                );
+              }),
+            ),
+            TextButton(
+              onPressed: () async {
+                var provaDetalhes = await _provaController.obterDetalhesProva(this.widget.prova.id);
+                if (provaDetalhes != null) {
+                  _provaStore.carregarProvaDetalhes(provaDetalhes);
+                  //_provaController.downloadProva(this.widget.prova, provaDetalhes);
+                  _provaStore.alterarStatus(ProvaStatusEnum.DowloadEmProgresso);
+                  setState(() {});
+                }
+              },
+              child: Text("Tentar novamente"),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SizedBox();
+  }
+
+  Widget formataDataAplicacao() {
+    if (this.widget.prova.dataFim == null || this.widget.prova.dataInicio == this.widget.prova.dataFim) {
+      return AutoSizeText(
+        "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
+        maxLines: 2,
+        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+      );
+    }
+
+    if (this.widget.prova.dataInicio != this.widget.prova.dataFim) {
+      return Row(
+        children: [
+          AutoSizeText(
+            "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
+            maxLines: 2,
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          AutoSizeText(
+            " à ",
+            maxLines: 2,
+            style: GoogleFonts.poppins(fontSize: 16),
+          ),
+          AutoSizeText(
+            "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataFim!)}",
+            maxLines: 2,
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ],
+      );
+    }
+
+    return SizedBox();
   }
 }

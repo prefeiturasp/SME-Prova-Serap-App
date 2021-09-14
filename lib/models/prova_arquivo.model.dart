@@ -3,8 +3,11 @@ class ProvaArquivoModel {
   String? caminho;
   String base64 = "";
 
-  ProvaArquivoModel(
-      {required this.id, required this.caminho, required this.base64});
+  ProvaArquivoModel({
+    required this.id,
+    required this.caminho,
+    required this.base64,
+  });
 
   ProvaArquivoModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

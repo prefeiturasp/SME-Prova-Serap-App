@@ -9,14 +9,14 @@ import 'package:appserap/controllers/prova.controller.dart';
 import 'package:get_it/get_it.dart';
 import 'package:appserap/stores/prova.store.dart';
 
-class ProvasAterioresPage extends StatefulWidget {
-  const ProvasAterioresPage({Key? key}) : super(key: key);
+class ProvasAterioresTabPage extends StatefulWidget {
+  const ProvasAterioresTabPage({Key? key}) : super(key: key);
 
   @override
-  _ProvasAterioresPageState createState() => _ProvasAterioresPageState();
+  _ProvasAterioresTabPageState createState() => _ProvasAterioresTabPageState();
 }
 
-class _ProvasAterioresPageState extends State<ProvasAterioresPage> {
+class _ProvasAterioresTabPageState extends State<ProvasAterioresTabPage> {
   final _provaController = GetIt.I.get<ProvaController>();
   List<ProvaModel> provas = <ProvaModel>[];
   final _provaStore = GetIt.I.get<ProvaStore>();
@@ -47,11 +47,13 @@ class _ProvasAterioresPageState extends State<ProvasAterioresPage> {
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Container(
-          height: MediaQuery.of(context).size.height - 200,
+          height: MediaQuery.of(context).size.height - 300,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [SvgPicture.asset('assets/images/sem_prova.svg')],
+            children: [
+              SvgPicture.asset('assets/images/sem_prova.svg'),
+            ],
           ),
         ),
       ),

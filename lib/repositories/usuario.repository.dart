@@ -11,9 +11,10 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 
 class UsuarioRepository {
   final _api = GetIt.I.get<ApiService>();
-  final _loginStore = GetIt.I.get<LoginStore>();
 
   Future<TokenModel> autenticar(AutenticarViewModel viewModel) async {
+    final _loginStore = GetIt.I.get<LoginStore>();
+
     try {
       final response = await _api.dio.post(
         '/v1/autenticacao',
@@ -57,8 +58,7 @@ class UsuarioRepository {
 
   Future<String> revalidarToken(String? token) async {
     try {
-      final response = await _api.dio
-          .post('/v1/autenticacao/revalidar', data: {'token': token});
+      final response = await _api.dio.post('/v1/autenticacao/revalidar', data: {'token': token});
 
       if (response.statusCode == 200) {
         return response.data['token'];

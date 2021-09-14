@@ -209,9 +209,11 @@ class _LoginViewState extends State<LoginView> {
                             } else {
                               limparCampoSenha();
                             }
-                            setState(() {
-                              viewModel.carregando = false;
-                            });
+                            setState(
+                              () {
+                                viewModel.carregando = false;
+                              },
+                            );
                           },
                           child: Padding(
                             padding: EdgeInsets.fromLTRB(20, 10, 20, 20),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -16,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ProvaController {
   final _provaRepository = GetIt.I.get<ProvaRepository>();
-  final _dowloadStore = GetIt.I.get<DownloadStore>();
+  final _downloadStore = GetIt.I.get<DownloadStore>();
   final _provaStore = GetIt.I.get<ProvaStore>();
 
   Future<List<ProvaModel>> obterProvas() async {
@@ -53,19 +54,42 @@ class ProvaController {
   }
 
   void verificaConexaoComInternet() async {
-    await _dowloadStore.verificaConexaoComInternet();
-    _provaStore.setIconeProvaPorEstadoDeConexao(_dowloadStore.possuiConexao);
+    await _downloadStore.verificaConexaoComInternet();
+    _provaStore.setIconeProvaPorEstadoDeConexao(_downloadStore.possuiConexao);
+    if (!_downloadStore.possuiConexao && _downloadStore.progressoDownload >= 0) {
+      _provaStore.setMensagemDownload(
+        "Pausado em ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}% - Sem conexão com a internet",
+      );
+      _provaStore.prova!.status = ProvaStatusEnum.DownloadPausado;
+    } else if (!_downloadStore.possuiConexao) {
+      _provaStore.setMensagemDownload(
+        "Download não iniciado - Sem conexão com a internet",
+      );
+      _provaStore.prova!.status = ProvaStatusEnum.DownloadNaoIniciado;
+    } else {
+      _provaStore.prova!.status = ProvaStatusEnum.DowloadEmProgresso;
+    }
+  }
+
+  void atualizaProvaStorage(
+      SharedPreferences prefs, ProvaCompletaModel provaCompleta, ProvaDetalheModel provaDetalhe) async {
+    prefs.setString("prova_completa_${provaCompleta.id}", jsonEncode(provaCompleta.toJson()));
+
+    prefs.setString("prova_download_${provaCompleta.id}", jsonEncode(provaDetalhe.toJson()));
   }
 
   Future<void> downloadProva(
     ProvaModel prova,
-    ProvaDetalheModel? detalhes,
+    ProvaDetalheModel? provaDetalhes,
   ) async {
-    if (detalhes == null) {
+    verificaConexaoComInternet();
+
+    if (provaDetalhes == null) {
       return;
     }
 
     var prefs = await SharedPreferences.getInstance();
+    _provaStore.baixando = true;
     ProvaCompletaModel provaCompleta = new ProvaCompletaModel(
       id: prova.id,
       descricao: prova.descricao,
@@ -75,16 +99,21 @@ class ProvaController {
       status: prova.status,
     );
 
-    prefs.remove("prova_${detalhes.provaId}");
-    var verificaProva = prefs.getString("prova_${detalhes.provaId}");
+    var verificaProvaCompleta = prefs.getString("prova_completa_${provaDetalhes.provaId}");
+    var verificaProvaDownload = prefs.getString("prova_download_${provaDetalhes.provaId}");
 
-    _dowloadStore.totalItems = detalhes.arquivosId!.length +
-        detalhes.alternativasId!.length +
-        detalhes.questoesId!.length;
+    _downloadStore.totalItems =
+        provaDetalhes.arquivosId!.length + provaDetalhes.alternativasId!.length + provaDetalhes.questoesId!.length;
 
-    if (verificaProva != null) {
-      provaCompleta = ProvaCompletaModel.fromJson(jsonDecode(verificaProva));
+    _downloadStore.posicaoAtual = 0;
+
+    if (verificaProvaCompleta != null && verificaProvaDownload == null) {
+      return;
     }
+
+    // if (verificaProvaCompleta != null) {
+    //   provaCompleta = ProvaCompletaModel.fromJson(jsonDecode(verificaProvaCompleta));
+    // }
 
     if (provaCompleta.alternativas == null) {
       provaCompleta.alternativas = [];
@@ -98,88 +127,57 @@ class ProvaController {
       provaCompleta.arquivos = [];
     }
 
-    var totalArquivos = detalhes.arquivosId!.length;
-
-    // detalhes.arquivosId!.forEach((arquivoIndex) async {
-    //   await obterArquivo(arquivoIndex).then((arquivo) => {
-    //         if (arquivo != null)
-    //           {
-    //             provaCompleta.arquivos?.add(arquivo),
-    //             _dowloadStore.posicaoAtual += 1,
-    //             print("Arquivo: ${arquivo.id}")
-    //           }
-    //       });
-    // });
-
-    for (int iArquivo = 0; iArquivo < totalArquivos; iArquivo++) {
+    for(int idArquivo in provaDetalhes.arquivosId!){
       verificaConexaoComInternet();
-      var arquivoIndex = detalhes.arquivosId![iArquivo];
-      var arquivo = await obterArquivo(arquivoIndex);
-      if (arquivo != null && !provaCompleta.arquivos!.contains(arquivo)) {
+
+      var arquivo = await obterArquivo(idArquivo);
+
+      if (provaCompleta.arquivos!.where((q) => q.id == arquivo!.id).isEmpty && arquivo != null) {
         arquivo.base64 = await obterImagemPorUrl(arquivo.caminho);
         provaCompleta.arquivos!.add(arquivo);
-        _dowloadStore.posicaoAtual += 1;
+        _downloadStore.posicaoAtual += 1;
         print("Arquivo: ${arquivo.id}");
+        atualizaProvaStorage(prefs, provaCompleta, provaDetalhes);
       }
     }
 
-    // for (var iArquivo = 0; iArquivo < totalArquivos; iArquivo++) {
-    //   var arquivoIndex = detalhes.arquivosId![iArquivo];
-
-    //   await obterArquivo(arquivoIndex).then(
-    //     (arquivo) async => {
-    //       if (arquivo != null)
-    //         {
-    //           arquivo.base64 = await obterImagemPorUrl(arquivo.caminho),
-    //           provaCompleta.arquivos?.add(arquivo),
-    //           _dowloadStore.posicaoAtual += 1,
-    //           print("Arquivo: ${arquivo.id}")
-    //         }
-    //     },
-    //   );
-    // }
-
-    var totalQuestoes = detalhes.questoesId!.length;
-    for (var iQuestao = 0; iQuestao < totalQuestoes; iQuestao++) {
+    for (int idQuestao in provaDetalhes.questoesId!) {
       verificaConexaoComInternet();
-      var questaoIndex = detalhes.questoesId![iQuestao];
 
-      await obterQuestao(questaoIndex).then(
-        (questao) => {
-          if (questao != null && !provaCompleta.questoes!.contains(questao))
-            {
-              provaCompleta.questoes?.add(questao),
-              _dowloadStore.posicaoAtual += 1,
-              print("Questão: ${questao.id}")
-            }
-        },
-      );
+      ProvaQuestaoModel? questao = await obterQuestao(idQuestao);
+
+      if (provaCompleta.questoes!.where((q) => q.id == questao!.id).isEmpty && questao != null) {
+        provaCompleta.questoes?.add(questao);
+        _downloadStore.posicaoAtual += 1;
+        print("Questão: ${questao.id}");
+        atualizaProvaStorage(prefs, provaCompleta, provaDetalhes);
+      }
     }
 
-    var totalAlternativas = detalhes.alternativasId!.length;
-    for (var iAlternativa = 0;
-        iAlternativa < totalAlternativas;
-        iAlternativa++) {
+    for (int idAlternativa in provaDetalhes.alternativasId!) {
       verificaConexaoComInternet();
-      var alternativaIndex = detalhes.alternativasId![iAlternativa];
 
-      await obterAlternativa(alternativaIndex).then(
-        (alternativa) => {
-          if (alternativa != null &&
-              !provaCompleta.alternativas!.contains(alternativa))
-            {
-              provaCompleta.alternativas?.add(alternativa),
-              _dowloadStore.posicaoAtual += 1,
-              print("Alternativa: ${alternativa.id}")
-            }
-        },
-      );
+      ProvaAlternativaModel? alternativa = await obterAlternativa(idAlternativa);
+
+      if (provaCompleta.alternativas!.where((q) => q.id == alternativa!.id).isEmpty && alternativa != null) {
+        provaCompleta.alternativas?.add(alternativa);
+        _downloadStore.posicaoAtual += 1;
+        print("Alternativa: ${alternativa.id}");
+        atualizaProvaStorage(prefs, provaCompleta, provaDetalhes);
+      }
     }
 
-    prefs.setString("prova_${prova.id}", jsonEncode(provaCompleta.toJson()));
-    _dowloadStore.limparDownloads();
+    for (ProvaQuestaoModel questao in provaCompleta.questoes!) {
+      var alternativas = provaCompleta.alternativas!.where((alt) => alt.questaoId == questao.id).toList();
+
+      questao.alternativas = alternativas;
+      print("${questao.descricao}");
+    }
+
+    atualizaProvaStorage(prefs, provaCompleta, provaDetalhes);
+    _downloadStore.limparDownloads();
     _provaStore.prova!.status = ProvaStatusEnum.IniciarProva;
-
     _provaStore.iconeProva = "assets/images/prova.svg";
+    _provaStore.baixando = false;
   }
 }
