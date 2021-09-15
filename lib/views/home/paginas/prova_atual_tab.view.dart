@@ -1,8 +1,6 @@
-import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/widgets/cards/prova_card.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/controllers/prova.controller.dart';
@@ -16,7 +14,8 @@ class ProvaAtualTabPage extends StatefulWidget {
   _ProvaAtualTabPageState createState() => _ProvaAtualTabPageState();
 }
 
-class _ProvaAtualTabPageState extends State<ProvaAtualTabPage> with AutomaticKeepAliveClientMixin<ProvaAtualTabPage> {
+class _ProvaAtualTabPageState extends State<ProvaAtualTabPage>
+    with AutomaticKeepAliveClientMixin<ProvaAtualTabPage> {
   @override
   bool get wantKeepAlive => false;
 

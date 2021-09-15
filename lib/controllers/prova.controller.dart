@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -56,7 +55,8 @@ class ProvaController {
   void verificaConexaoComInternet() async {
     await _downloadStore.verificaConexaoComInternet();
     _provaStore.setIconeProvaPorEstadoDeConexao(_downloadStore.possuiConexao);
-    if (!_downloadStore.possuiConexao && _downloadStore.progressoDownload >= 0) {
+    if (!_downloadStore.possuiConexao &&
+        _downloadStore.progressoDownload >= 0) {
       _provaStore.setMensagemDownload(
         "Pausado em ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}% - Sem conexão com a internet",
       );
@@ -71,20 +71,21 @@ class ProvaController {
     }
   }
 
-  void atualizaProvaStorage(
-      SharedPreferences prefs, ProvaCompletaModel provaCompleta, ProvaDetalheModel provaDetalhe) async {
-    prefs.setString("prova_completa_${provaCompleta.id}", jsonEncode(provaCompleta.toJson()));
+  void atualizaProvaStorage(SharedPreferences prefs,
+      ProvaCompletaModel provaCompleta, bool provaDownload) async {
+    prefs.setString("prova_completa_${provaCompleta.id}",
+        jsonEncode(provaCompleta.toJson()));
 
-    prefs.setString("prova_download_${provaCompleta.id}", jsonEncode(provaDetalhe.toJson()));
+    prefs.setBool("prova_download_${provaCompleta.id}", provaDownload);
   }
 
   Future<void> downloadProva(
     ProvaModel prova,
-    ProvaDetalheModel? provaDetalhes,
+    ProvaDetalheModel? provaDetalhe,
   ) async {
     verificaConexaoComInternet();
 
-    if (provaDetalhes == null) {
+    if (provaDetalhe == null) {
       return;
     }
 
@@ -98,16 +99,19 @@ class ProvaController {
       itensQuantidade: prova.itensQuantidade,
       status: prova.status,
     );
+    //await prefs.remove("prova_download_${provaDetalhe.provaId}");
+    var verificaProvaCompleta =
+        prefs.getString("prova_completa_${provaDetalhe.provaId}");
+    var verificaProvaDownload =
+        prefs.getBool("prova_download_${provaDetalhe.provaId}");
 
-    var verificaProvaCompleta = prefs.getString("prova_completa_${provaDetalhes.provaId}");
-    var verificaProvaDownload = prefs.getString("prova_download_${provaDetalhes.provaId}");
-
-    _downloadStore.totalItems =
-        provaDetalhes.arquivosId!.length + provaDetalhes.alternativasId!.length + provaDetalhes.questoesId!.length;
+    _downloadStore.totalItems = provaDetalhe.arquivosId!.length +
+        provaDetalhe.alternativasId!.length +
+        provaDetalhe.questoesId!.length;
 
     _downloadStore.posicaoAtual = 0;
 
-    if (verificaProvaCompleta != null && verificaProvaDownload == null) {
+    if (verificaProvaCompleta != null && verificaProvaDownload == true) {
       return;
     }
 
@@ -127,54 +131,62 @@ class ProvaController {
       provaCompleta.arquivos = [];
     }
 
-    for(int idArquivo in provaDetalhes.arquivosId!){
+    for (int idArquivo in provaDetalhe.arquivosId!) {
       verificaConexaoComInternet();
 
       var arquivo = await obterArquivo(idArquivo);
 
-      if (provaCompleta.arquivos!.where((q) => q.id == arquivo!.id).isEmpty && arquivo != null) {
+      if (provaCompleta.arquivos!.where((q) => q.id == arquivo!.id).isEmpty &&
+          arquivo != null) {
         arquivo.base64 = await obterImagemPorUrl(arquivo.caminho);
         provaCompleta.arquivos!.add(arquivo);
         _downloadStore.posicaoAtual += 1;
         print("Arquivo: ${arquivo.id}");
-        atualizaProvaStorage(prefs, provaCompleta, provaDetalhes);
+        atualizaProvaStorage(prefs, provaCompleta, false);
       }
     }
 
-    for (int idQuestao in provaDetalhes.questoesId!) {
+    for (int idQuestao in provaDetalhe.questoesId!) {
       verificaConexaoComInternet();
 
       ProvaQuestaoModel? questao = await obterQuestao(idQuestao);
 
-      if (provaCompleta.questoes!.where((q) => q.id == questao!.id).isEmpty && questao != null) {
+      if (provaCompleta.questoes!.where((q) => q.id == questao!.id).isEmpty &&
+          questao != null) {
         provaCompleta.questoes?.add(questao);
         _downloadStore.posicaoAtual += 1;
         print("Questão: ${questao.id}");
-        atualizaProvaStorage(prefs, provaCompleta, provaDetalhes);
+        atualizaProvaStorage(prefs, provaCompleta, false);
       }
     }
 
-    for (int idAlternativa in provaDetalhes.alternativasId!) {
+    for (int idAlternativa in provaDetalhe.alternativasId!) {
       verificaConexaoComInternet();
 
-      ProvaAlternativaModel? alternativa = await obterAlternativa(idAlternativa);
+      ProvaAlternativaModel? alternativa =
+          await obterAlternativa(idAlternativa);
 
-      if (provaCompleta.alternativas!.where((q) => q.id == alternativa!.id).isEmpty && alternativa != null) {
+      if (provaCompleta.alternativas!
+              .where((q) => q.id == alternativa!.id)
+              .isEmpty &&
+          alternativa != null) {
         provaCompleta.alternativas?.add(alternativa);
         _downloadStore.posicaoAtual += 1;
         print("Alternativa: ${alternativa.id}");
-        atualizaProvaStorage(prefs, provaCompleta, provaDetalhes);
+        atualizaProvaStorage(prefs, provaCompleta, false);
       }
     }
 
     for (ProvaQuestaoModel questao in provaCompleta.questoes!) {
-      var alternativas = provaCompleta.alternativas!.where((alt) => alt.questaoId == questao.id).toList();
+      var alternativas = provaCompleta.alternativas!
+          .where((alt) => alt.questaoId == questao.id)
+          .toList();
 
       questao.alternativas = alternativas;
       print("${questao.descricao}");
     }
 
-    atualizaProvaStorage(prefs, provaCompleta, provaDetalhes);
+    atualizaProvaStorage(prefs, provaCompleta, true);
     _downloadStore.limparDownloads();
     _provaStore.prova!.status = ProvaStatusEnum.IniciarProva;
     _provaStore.iconeProva = "assets/images/prova.svg";

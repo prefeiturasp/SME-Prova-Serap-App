@@ -1,14 +1,10 @@
-import 'dart:developer';
 import 'package:appserap/controllers/prova.controller.dart';
-import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/splash_screen.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/views/home/paginas/prova_atual_tab.view.dart';
 import 'package:appserap/views/home/paginas/provas_anteriores_tab.page.dart';
 import 'package:appserap/views/login/login.web.view.dart';
-import 'package:appserap/widgets/cards/prova_card.widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';

@@ -37,6 +37,9 @@ abstract class _ProvaStoreBase with Store {
   List<ProvaAlternativaModel> alternativas = [];
 
   @observable
+  ProvaStatusEnum status = ProvaStatusEnum.Baixar;
+
+  @observable
   String iconeProva = "assets/images/prova.svg";
 
   @observable
@@ -87,8 +90,17 @@ abstract class _ProvaStoreBase with Store {
     var prefs = await SharedPreferences.getInstance();
     var provaStorage = prefs.getString("prova_completa_$id");
     if (provaStorage != null) {
-      this.provaCompleta = ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
+      this.provaCompleta =
+          ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
+      if (verificaSeProvaCompleta()) {
+        this.prova!.status = ProvaStatusEnum.IniciarProva;
+        this.status = ProvaStatusEnum.IniciarProva;
+      }
     }
+  }
+
+  bool verificaSeProvaCompleta() {
+    return true;
   }
 
   @action
@@ -99,6 +111,7 @@ abstract class _ProvaStoreBase with Store {
   @action
   alterarStatus(ProvaStatusEnum status) {
     this.prova!.status = status;
+    this.status = status;
   }
 
   @action

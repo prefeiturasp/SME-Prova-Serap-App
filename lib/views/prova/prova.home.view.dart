@@ -1,19 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/views/login/login.view.dart';
 import 'package:appserap/views/login/login.web.view.dart';
-import 'package:appserap/widgets/inputs/botao_padrao.widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProvaView extends StatefulWidget {
   const ProvaView({Key? key}) : super(key: key);
@@ -25,7 +22,6 @@ class ProvaView extends StatefulWidget {
 class _ProvaViewState extends State<ProvaView> {
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
   final _provaStore = GetIt.I.get<ProvaStore>();
-  final _provaController = GetIt.I.get<ProvaController>();
   Uint8List bytes = new Uint8List(0);
 
   @override
@@ -70,7 +66,8 @@ class _ProvaViewState extends State<ProvaView> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => kIsWeb ? LoginWebView() : LoginView(),
+                      builder: (context) =>
+                          kIsWeb ? LoginWebView() : LoginView(),
                     ),
                   );
                 },

@@ -1,11 +1,8 @@
-import 'package:appserap/controllers/autenticacao.controller.dart';
-import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/splash_screen.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/views/fluxo_inicial.view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lottie/lottie.dart';
 
@@ -20,7 +17,6 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
   final _splashStore = GetIt.I.get<SplashScreenStore>();
   final _provaStore = GetIt.I.get<ProvaStore>();
-  final _autenticacaoController = GetIt.I.get<AutenticacaoController>();
 
   @override
   void initState() {

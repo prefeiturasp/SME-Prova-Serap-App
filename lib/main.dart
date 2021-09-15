@@ -13,7 +13,6 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ioc/dependencias.ioc.dart';
 import 'utils/app_config.util.dart';
@@ -29,16 +28,14 @@ Future initializeAppConfig() async {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  //String? mensagem = message.notification?.body;
   print('RECEBEU UMA MENSAGEM:');
-  var prefs = await SharedPreferences.getInstance();
-  //prefs.setString("testeMensagem", "RECEBEU UMA MENSAGEM PELO PUSH");
 
   final _provaController = GetIt.I.get<ProvaController>();
   var provas = await _provaController.obterProvas();
 
   for (ProvaModel prova in provas) {
-    ProvaDetalheModel? detalhes = await _provaController.obterDetalhesProva(prova.id);
+    ProvaDetalheModel? detalhes =
+        await _provaController.obterDetalhesProva(prova.id);
     _provaController.downloadProva(prova, detalhes);
     print("BATENDO AQUI IHUUUUL");
   }
