@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:appserap/controllers/splash_screen.controller.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';

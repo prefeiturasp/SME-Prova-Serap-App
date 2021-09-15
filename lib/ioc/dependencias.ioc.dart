@@ -1,5 +1,4 @@
 import 'package:appserap/controllers/autenticacao.controller.dart';
-import 'package:appserap/controllers/login.controller.dart';
 import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/controllers/splash_screen.controller.dart';
 import 'package:appserap/repositories/login.repository.dart';
@@ -45,7 +44,6 @@ class DependenciasIoC {
   registrarControllers() {
     getIt.registerSingleton<AutenticacaoController>(AutenticacaoController());
     getIt.registerSingleton<ProvaController>(ProvaController());
-    getIt.registerSingleton<LoginController>(LoginController());
     getIt.registerSingleton<SplashScreenController>(SplashScreenController());
   }
 }

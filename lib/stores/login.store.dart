@@ -1,10 +1,5 @@
-import 'dart:developer';
-
-import 'package:appserap/controllers/login.controller.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login.store.g.dart';
 
@@ -25,6 +20,4 @@ abstract class _LoginStoreBase with Store {
 
   @action
   setMensagemErroSenha(String mensagem) => this.mensagemErroSenha = mensagem;
-
-  
 }

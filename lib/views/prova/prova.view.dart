@@ -8,8 +8,8 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/views/login/login.view.dart';
 import 'package:appserap/views/login/login.web.view.dart';
-import 'package:appserap/widgets/base_state.dart';
-import 'package:appserap/widgets/base_statefull.dart';
+import 'package:appserap/widgets/bases/base_state.widget.dart';
+import 'package:appserap/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/widgets/inputs/botao_padrao.widget.dart';
 import 'package:appserap/widgets/inputs/botao_secundario.widget.dart';
 import 'package:flutter/foundation.dart';
@@ -20,16 +20,15 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:photo_view/photo_view.dart';
 
-class ProvaView extends BaseStateful {
+class ProvaView extends BaseStatefulWidget {
   const ProvaView() : super(title: "Prova");
 
   @override
   _ProvaViewState createState() => _ProvaViewState();
 }
 
-class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
+class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
-  final _provaStore = GetIt.I.get<ProvaStore>();
 
   final PageController listaQuestoesController = PageController(initialPage: 0);
 
@@ -49,7 +48,7 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Text(
-              "${_provaStore.prova!.descricao}",
+              "${store.prova!.descricao}",
               style: TextStyle(fontSize: 12),
             ),
           ],
@@ -63,14 +62,17 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
                 await _usuarioStore.limparUsuario();
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => kIsWeb ? LoginWebView() : LoginView()),
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          kIsWeb ? LoginWebView() : LoginView()),
                 );
               },
               child: Row(
                 children: [
                   Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
                   SizedBox(width: 5),
-                  Text("Sair", style: GoogleFonts.poppins(color: TemaUtil.laranja02)),
+                  Text("Sair",
+                      style: GoogleFonts.poppins(color: TemaUtil.laranja02)),
                   SizedBox(width: 5),
                 ],
               ),
@@ -83,7 +85,7 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
 
   @override
   Widget builder(BuildContext context) {
-    var questoes = _provaStore.provaCompleta!.questoes ?? [];
+    var questoes = store.provaCompleta!.questoes ?? [];
 
     return PageView.builder(
       physics: NeverScrollableScrollPhysics(),
@@ -111,10 +113,11 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
                   children: [
                     Text(
                       'Questão ${index + 1} ',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      'de ${_provaStore.provaCompleta!.questoes!.length}',
+                      'de ${store.provaCompleta!.questoes!.length}',
                       style: TextStyle(fontSize: 20, color: Colors.grey),
                     )
                   ],
@@ -122,9 +125,11 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
                 SizedBox(height: 8),
                 HtmlWidget(
                   tratarArquivos(questao.titulo ?? ''),
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  textStyle:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
-                    Uint8List image = base64.decode(imageMetadata.sources.first.url.split(',').last);
+                    Uint8List image = base64.decode(
+                        imageMetadata.sources.first.url.split(',').last);
 
                     _showImage(context, image);
                   },
@@ -132,7 +137,8 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
                 SizedBox(height: 8),
                 HtmlWidget(
                   tratarArquivos(questao.descricao ?? ''),
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  textStyle:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
                     print(imageMetadata.sources.first.url);
                   },
@@ -165,10 +171,13 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
               ),
               Observer(
                 builder: (context) {
-                  if (store.questaoAtual < _provaStore.provaCompleta!.questoes!.length) {
+                  if (store.questaoAtual <
+                      store.provaCompleta!.questoes!.length) {
                     return BotaoPadraoWidget(
                       textoBotao: 'Proxima questão',
-                      onPressed: () {
+                      onPressed: () async {
+                        await store.adicionarResposta(
+                            questao.id!, store.resposta!);
                         listaQuestoesController.nextPage(
                           duration: Duration(milliseconds: 300),
                           curve: Curves.easeIn,
@@ -233,7 +242,10 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
                         ),
                         Text(
                           'Fechar',
-                          style: TextStyle(fontSize: 18, color: TemaUtil.laranja02, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: TemaUtil.laranja02,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -248,13 +260,17 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
   }
 
   _buildAlternativas(int? questaoId) {
-    List<ProvaAlternativaModel> alternativasQuestoes =
-        store.provaCompleta!.alternativas!.where((element) => element.questaoId == questaoId).toList();
+    List<ProvaAlternativaModel> alternativasQuestoes = store
+        .provaCompleta!.alternativas!
+        .where((element) => element.questaoId == questaoId)
+        .toList();
 
     alternativasQuestoes.sort((a, b) => a.ordem!.compareTo(b.ordem!));
 
     return Column(
-      children: alternativasQuestoes.map((e) => _buildAlternativa(e.ordem, e.numeracao, e.descricao)).toList(),
+      children: alternativasQuestoes
+          .map((e) => _buildAlternativa(e.id, e.numeracao, e.descricao))
+          .toList(),
     );
   }
 
@@ -309,11 +325,13 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
 
     for (var i = 0; i < matches.length; i++) {
       var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo =
-          _provaStore.provaCompleta!.arquivos!.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
+      var arquivo = store.provaCompleta!.arquivos!
+          .where((arq) => arq.id == int.parse(arquivoId.split("#")[1]))
+          .first;
       var obterTipo = arquivo.caminho!.split(".");
 
-      texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto.replaceAll(arquivoId,
+          "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
     return texto;
     // #123456#
