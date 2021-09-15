@@ -5,12 +5,13 @@ class ProvaDetalheModel {
   List<int>? alternativasId;
   int? tamanhoTotalArquivos;
 
-  ProvaDetalheModel(
-      {required this.provaId,
-      required this.questoesId,
-      required this.arquivosId,
-      required this.alternativasId,
-      required this.tamanhoTotalArquivos});
+  ProvaDetalheModel({
+    required this.provaId,
+    required this.questoesId,
+    required this.arquivosId,
+    required this.alternativasId,
+    required this.tamanhoTotalArquivos,
+  });
 
   ProvaDetalheModel.fromJson(Map<String, dynamic> json) {
     provaId = json['provaId'];

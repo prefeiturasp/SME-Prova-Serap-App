@@ -39,6 +39,134 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
     super.initState();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: TemaUtil.branco,
+        border: Border.all(color: TemaUtil.cinza),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Observer(builder: (_) {
+                  return Container(
+                    width: 100,
+                    child: SvgPicture.asset(_provaStore.iconeProva),
+                  );
+                }),
+                Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 350,
+                        child: AutoSizeText(
+                          this.widget.prova.descricao,
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: TemaUtil.laranja02.withOpacity(0.1),
+                            ),
+                            padding: EdgeInsets.all(2),
+                            child: Icon(
+                              Icons.format_list_numbered,
+                              color: TemaUtil.laranja02,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            "Quantidade de itens:",
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Text(
+                            " ${this.widget.prova.itensQuantidade}",
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: TemaUtil.verde02.withOpacity(0.1),
+                            ),
+                            padding: EdgeInsets.all(2),
+                            child: Icon(
+                              Icons.insert_invitation,
+                              color: TemaUtil.verde02,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Data de aplicação:",
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 350,
+                                child: formataDataAplicacao(),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Observer(
+                        builder: (_) {
+                          return acaoProva();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // String iconeProva = "assets/images/prova.svg";
   // String iconeProvaDownload = "assets/images/prova_download.svg";
   // String iconeProvaDownloadErro = "assets/images/prova_erro_download.svg";
@@ -111,7 +239,6 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
         largura: 350,
         onPressed: () async {
           await _provaStore.carregarProvaCompletaStorage(this.widget.prova.id);
-          debugger();
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -248,133 +375,5 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
     }
 
     return SizedBox();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: TemaUtil.branco,
-        border: Border.all(color: TemaUtil.cinza),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Observer(builder: (_) {
-                  return Container(
-                    width: 100,
-                    child: SvgPicture.asset(_provaStore.iconeProva),
-                  );
-                }),
-                Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: 350,
-                        child: AutoSizeText(
-                          this.widget.prova.descricao,
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 2,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: TemaUtil.laranja02.withOpacity(0.1),
-                            ),
-                            padding: EdgeInsets.all(2),
-                            child: Icon(
-                              Icons.format_list_numbered,
-                              color: TemaUtil.laranja02,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            "Quantidade de itens:",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            " ${this.widget.prova.itensQuantidade}",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: TemaUtil.verde02.withOpacity(0.1),
-                            ),
-                            padding: EdgeInsets.all(2),
-                            child: Icon(
-                              Icons.insert_invitation,
-                              color: TemaUtil.verde02,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Data de aplicação:",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 350,
-                                child: formataDataAplicacao(),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Observer(
-                        builder: (_) {
-                          return acaoProva();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
