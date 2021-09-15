@@ -266,10 +266,10 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
           htmlToolbarOptions: HtmlToolbarOptions(
             toolbarPosition: ToolbarPosition.belowEditor,
             defaultToolbarButtons: [
-              FontSettingButtons(
-                fontName: false,
-                fontSizeUnit: false,
-              ),
+              // FontSettingButtons(
+              //   fontName: false,
+              //   fontSizeUnit: false,
+              // ),
               FontButtons(
                 subscript: false,
                 superscript: false,
