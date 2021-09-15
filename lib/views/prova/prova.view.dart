@@ -18,6 +18,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ProvaView extends BaseStateful {
@@ -33,8 +34,16 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
 
   final PageController listaQuestoesController = PageController(initialPage: 0);
 
+  HtmlEditorController controller = HtmlEditorController();
+
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.setFullScreen();
+  }
 
   @override
   PreferredSizeWidget buildAppBar() {
@@ -138,7 +147,7 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
                   },
                 ),
                 SizedBox(height: 16),
-                _buildAlternativas(questao.id),
+                _buildResposta(questao),
               ],
             ),
           ),
@@ -232,14 +241,72 @@ class _ProvaViewState extends BaseState<ProvaView, ProvaStore> {
     );
   }
 
-  _buildAlternativas(int? questaoId) {
+  Widget _buildResposta(ProvaQuestaoModel questao) {
+    switch (questao.tipo) {
+      case EnumTipoQuestao.multiplaEscolha:
+        return _buildAlternativas(questao);
+      case EnumTipoQuestao.descritiva:
+        return _buildDescritiva(questao);
+
+      default:
+        return SizedBox.shrink();
+    }
+  }
+
+  _buildDescritiva(ProvaQuestaoModel questao) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: HtmlEditor(
+          controller: controller,
+          htmlToolbarOptions: HtmlToolbarOptions(
+            toolbarPosition: ToolbarPosition.belowEditor,
+            defaultToolbarButtons: [
+              // FontSettingButtons(
+              //   fontName: false,
+              //   fontSizeUnit: false,
+              // ),
+              FontButtons(
+                subscript: false,
+                superscript: false,
+                strikethrough: false,
+              ),
+              ParagraphButtons(
+                lineHeight: false,
+                caseConverter: false,
+                decreaseIndent: false,
+                increaseIndent: false,
+                textDirection: false,
+                alignRight: false,
+              ),
+              ListButtons(
+                listStyles: false,
+              ),
+            ],
+          ),
+          htmlEditorOptions: HtmlEditorOptions(
+            hint: "Digite sua resposta aqui...",
+          ),
+          otherOptions: OtherOptions(
+            height: 328,
+          ),
+        ),
+      ),
+    );
+  }
+
+  _buildAlternativas(ProvaQuestaoModel questao) {
     List<ProvaAlternativaModel> alternativasQuestoes =
-        store.provaCompleta!.alternativas!.where((element) => element.questaoId == questaoId).toList();
+        store.provaCompleta!.alternativas!.where((element) => element.questaoId == questao.id).toList();
 
     alternativasQuestoes.sort((a, b) => a.ordem!.compareTo(b.ordem!));
 
     return Column(
-      children: alternativasQuestoes.map((e) => _buildAlternativa(e.ordem, e.numeracao, e.descricao)).toList(),
+      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, e.descricao)).toList(),
     );
   }
 
