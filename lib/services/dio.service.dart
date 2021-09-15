@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:appserap/services/notification_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -15,13 +18,15 @@ class ApiService {
     dio = new Dio();
     tokenDio = new Dio();
 
-    // Descomentar para rodar localhost!
-    // (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-    //     (HttpClient client) {
-    //   client.badCertificateCallback =
-    //       (X509Certificate cert, String host, int port) => true;
-    //   return client;
-    // };
+    if (AppConfigReader.getApiHost().isNotEmpty &&
+        AppConfigReader.getApiHost().contains("10.0.2.2")) {
+      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+          (HttpClient client) {
+        client.badCertificateCallback =
+            (X509Certificate cert, String host, int port) => true;
+        return client;
+      };
+    }
 
     dio.interceptors.clear();
     tokenDio.interceptors.clear();

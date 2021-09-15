@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova_alternativa.model.dart';
 import 'package:appserap/models/prova_arquivo.model.dart';
@@ -27,16 +25,22 @@ class ProvaCompletaModel {
   ProvaCompletaModel.fromJson(Map<String, dynamic> json) {
     this.id = json['id'];
     this.descricao = json['descricao'];
-    this.dataFim = json['dataFim'] != "" ? DateTime.parse(json['dataFim']) : null;
-    this.dataInicio = json['dataInicio'] != "" ? DateTime.parse(json['dataInicio']) : null;
+    this.dataFim =
+        json['dataFim'] != "" ? DateTime.parse(json['dataFim']) : null;
+    this.dataInicio =
+        json['dataInicio'] != "" ? DateTime.parse(json['dataInicio']) : null;
     this.itensQuantidade = json['itensQuantidade'];
-    this.alternativas =
-        List<ProvaAlternativaModel>.from(json['alternativas']?.map((x) => ProvaAlternativaModel.fromJson(x)));
+    this.alternativas = List<ProvaAlternativaModel>.from(
+        json['alternativas']?.map((x) => ProvaAlternativaModel.fromJson(x)));
 
     List<ProvaQuestaoModel> questaoAux = [];
     for (var questao in json['questoes']) {
-      ProvaQuestaoModel questaoNormal =
-          ProvaQuestaoModel(id: 0, titulo: '', descricao: '', ordem: 0, tipo: EnumTipoQuestao.multiplaEscolha);
+      ProvaQuestaoModel questaoNormal = ProvaQuestaoModel(
+          id: 0,
+          titulo: '',
+          descricao: '',
+          ordem: 0,
+          tipo: EnumTipoQuestao.multiplaEscolha);
       questaoNormal.id = questao['id'];
       questaoNormal.titulo = questao['titulo'];
       questaoNormal.descricao = questao['descricao'];
@@ -47,7 +51,8 @@ class ProvaCompletaModel {
 
     List<ProvaArquivoModel> arquivosAux = [];
     for (var arquivo in json['arquivos']) {
-      ProvaArquivoModel arquivoNormal = ProvaArquivoModel(id: 0, caminho: '', base64: '');
+      ProvaArquivoModel arquivoNormal =
+          ProvaArquivoModel(id: 0, caminho: '', base64: '');
       arquivoNormal.id = arquivo['id'];
       arquivoNormal.caminho = arquivo['caminho'];
       arquivoNormal.base64 = arquivo['base64'];

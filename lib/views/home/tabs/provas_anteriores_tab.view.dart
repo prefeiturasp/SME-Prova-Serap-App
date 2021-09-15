@@ -1,22 +1,18 @@
-import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/widgets/cards/prova_card.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/controllers/prova.controller.dart';
 import 'package:get_it/get_it.dart';
 import 'package:appserap/stores/prova.store.dart';
 
-class ProvasAterioresTabPage extends StatefulWidget {
-  const ProvasAterioresTabPage({Key? key}) : super(key: key);
+class ProvasAterioresTabView extends StatefulWidget {
+  const ProvasAterioresTabView({Key? key}) : super(key: key);
 
   @override
-  _ProvasAterioresTabPageState createState() => _ProvasAterioresTabPageState();
+  _ProvasAterioresTabViewState createState() => _ProvasAterioresTabViewState();
 }
 
-class _ProvasAterioresTabPageState extends State<ProvasAterioresTabPage> {
+class _ProvasAterioresTabViewState extends State<ProvasAterioresTabView> {
   final _provaController = GetIt.I.get<ProvaController>();
   List<ProvaModel> provas = <ProvaModel>[];
   final _provaStore = GetIt.I.get<ProvaStore>();
