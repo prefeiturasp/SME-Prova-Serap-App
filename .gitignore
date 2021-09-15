@@ -1,5 +1,6 @@
 config/app_config.json
 google-services.json
+.vscode/launch.json
 
 # Miscellaneous
 *.g.dart

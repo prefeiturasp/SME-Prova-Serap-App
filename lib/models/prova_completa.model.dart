@@ -35,8 +35,12 @@ class ProvaCompletaModel {
 
     List<ProvaQuestaoModel> questaoAux = [];
     for (var questao in json['questoes']) {
-      ProvaQuestaoModel questaoNormal =
-          ProvaQuestaoModel(id: 0, titulo: '', descricao: '', ordem: 0);
+      ProvaQuestaoModel questaoNormal = ProvaQuestaoModel(
+          id: 0,
+          titulo: '',
+          descricao: '',
+          ordem: 0,
+          tipo: EnumTipoQuestao.multiplaEscolha);
       questaoNormal.id = questao['id'];
       questaoNormal.titulo = questao['titulo'];
       questaoNormal.descricao = questao['descricao'];
