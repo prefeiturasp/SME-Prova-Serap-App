@@ -14,8 +14,7 @@ class ProvaAtualTabView extends StatefulWidget {
   _ProvaAtualTabViewState createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState extends State<ProvaAtualTabView>
-    with AutomaticKeepAliveClientMixin<ProvaAtualTabView> {
+class _ProvaAtualTabViewState extends State<ProvaAtualTabView> with AutomaticKeepAliveClientMixin<ProvaAtualTabView> {
   @override
   bool get wantKeepAlive => false;
 
@@ -32,11 +31,8 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView>
   }
 
   obterProvas() async {
-    //var prefs = await SharedPreferences.getInstance();
     var retorno = await _provaController.obterProvas();
-    // for (var prova in retorno) {
-    //   prefs.setString("prova_${prova.id}", jsonEncode(prova));
-    // }
+
     setState(() {
       provas = retorno;
     });
