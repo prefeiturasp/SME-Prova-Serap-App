@@ -52,7 +52,7 @@ class ProvaCompletaModel {
     List<ProvaArquivoModel> arquivosAux = [];
     for (var arquivo in json['arquivos']) {
       ProvaArquivoModel arquivoNormal =
-          ProvaArquivoModel(id: 0, caminho: '', base64: '');
+          ProvaArquivoModel(id: 0, caminho: '', base64: '', tamanho: 0);
       arquivoNormal.id = arquivo['id'];
       arquivoNormal.caminho = arquivo['caminho'];
       arquivoNormal.base64 = arquivo['base64'];

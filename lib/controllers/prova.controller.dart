@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:appserap/dtos/arquivo_metadata.dto.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_alternativa.model.dart';
@@ -26,6 +27,10 @@ class ProvaController {
 
   Future<Uint8List> obterImagemPorId(String id) async {
     return _provaRepository.obterImagemPorId(id);
+  }
+
+  Future<ArquivoMetadataDTO> obterImagemPorUrlV2(String? url) async {
+    return _provaRepository.obterImagemPorUrlV2(url);
   }
 
   Future<String> obterImagemPorUrl(String? url) async {
@@ -115,6 +120,8 @@ class ProvaController {
       return;
     }
 
+    _downloadStore.atualizaHoraInicial();
+
     // if (verificaProvaCompleta != null) {
     //   provaCompleta = ProvaCompletaModel.fromJson(jsonDecode(verificaProvaCompleta));
     // }
@@ -138,7 +145,8 @@ class ProvaController {
 
       if (provaCompleta.arquivos!.where((q) => q.id == arquivo!.id).isEmpty &&
           arquivo != null) {
-        arquivo.base64 = await obterImagemPorUrl(arquivo.caminho);
+        var arquivoMetadata = await obterImagemPorUrlV2(arquivo.caminho);
+        arquivo.base64 = arquivoMetadata.base64;
         provaCompleta.arquivos!.add(arquivo);
         _downloadStore.posicaoAtual += 1;
         print("Arquivo: ${arquivo.id}");

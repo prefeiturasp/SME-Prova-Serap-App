@@ -2,17 +2,20 @@ class ProvaArquivoModel {
   int? id;
   String? caminho;
   String base64 = "";
+  int tamanho = 0;
 
   ProvaArquivoModel({
     required this.id,
     required this.caminho,
     required this.base64,
+    required this.tamanho,
   });
 
   ProvaArquivoModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     caminho = json['caminho'];
     base64 = json['base64'] != null ? json['base64'] : "";
+    tamanho = json['tamanho'] != null ? json['tamanho'] : 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -20,6 +23,7 @@ class ProvaArquivoModel {
     data['id'] = this.id;
     data['caminho'] = this.caminho;
     data['base64'] = this.base64;
+    data['tamanho'] = this.tamanho;
     return data;
   }
 }

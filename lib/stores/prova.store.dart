@@ -99,7 +99,10 @@ abstract class _ProvaStoreBase with Store {
   String mensagemDownload = "";
 
   @action
-  void setMensagemDownload(String mensagem) => mensagemDownload = mensagem;
+  void setMensagemDownload(String mensagem) {
+    print(mensagem);
+    mensagemDownload = mensagem;
+  }
 
   @action
   Future<void> carregarMensagem() async {
@@ -173,6 +176,7 @@ abstract class _ProvaStoreBase with Store {
     this.arquivos = [];
     this.questoes = [];
     this.alternativas = [];
+    this.status = ProvaStatusEnum.Baixar;
     // await prefs.clear();
   }
 }
