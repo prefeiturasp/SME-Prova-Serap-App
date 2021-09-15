@@ -22,8 +22,8 @@ class DependenciasIoC {
   }
 
   registrarStores() {
-    getIt.registerSingleton<UsuarioStore>(UsuarioStore());
     getIt.registerSingleton<ProvaStore>(ProvaStore());
+    getIt.registerSingleton<UsuarioStore>(UsuarioStore());
     getIt.registerSingleton<LoginStore>(LoginStore());
     getIt.registerSingleton<SplashScreenStore>(SplashScreenStore());
     getIt.registerSingleton<DownloadStore>(DownloadStore());

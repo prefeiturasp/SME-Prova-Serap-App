@@ -18,15 +18,43 @@ abstract class _DownloadStoreBase with Store {
   @observable
   num totalItems = 0;
 
+  @observable
+  num tamanhoTotalArquivos = 0;
+
+  @observable
+  num tamanhoAtualArquivos = 0;
+
+  @observable
+  DateTime inicio = DateTime.now();
+
+  @computed
+  int get tempoGasto => inicio.difference(DateTime.now()).inSeconds;
+
+  @computed
+  double get tempoPrevisto =>
+      (((totalItems - posicaoAtual) / (posicaoAtual / tempoGasto)) * -1);
+
   @action
   atualizarProgresso(int atual) {
     posicaoAtual += atual;
   }
 
   @action
+  atualizarProgressoArquivos(int atual) {
+    tamanhoAtualArquivos += atual;
+  }
+
+  @action
+  void atualizaHoraInicial() {
+    this.inicio = DateTime.now();
+  }
+
+  @action
   Future<void> limparDownloads() async {
     this.posicaoAtual = 0;
     this.totalItems = 0;
+    this.tamanhoAtualArquivos = 0;
+    this.tamanhoTotalArquivos = 0;
     // await prefs.clear();
   }
 

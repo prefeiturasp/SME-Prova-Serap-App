@@ -41,7 +41,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
   @override
   void initState() {
     super.initState();
-    controller.setFullScreen();
+    // controller.setFullScreen();
   }
 
   @override

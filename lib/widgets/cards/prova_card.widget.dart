@@ -180,8 +180,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
         largura: 300,
         onPressed: () async {
           _provaController.verificaConexaoComInternet();
-          var provaDetalhes =
-              await _provaController.obterDetalhesProva(this.widget.prova.id);
+          var provaDetalhes = await _provaController.obterDetalhesProva(this.widget.prova.id);
           if (provaDetalhes != null) {
             _provaStore.carregarProvaDetalhes(provaDetalhes);
             //_provaController.downloadProva(this.widget.prova, provaDetalhes);
@@ -194,13 +193,15 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
 
     if (_provaStore.status == ProvaStatusEnum.DowloadEmProgresso) {
       if (!_provaStore.baixando) {
-        _provaController
-            .downloadProva(this.widget.prova, _provaStore.detalhes)
-            .then((value) => null);
+        _provaController.downloadProva(this.widget.prova, _provaStore.detalhes).then((value) => null);
       }
 
+      var tempoRestante = _downloadStore.tempoPrevisto > 0
+          ? " - Aproximadamente ${_downloadStore.tempoPrevisto.round()} segundos restantes"
+          : "";
+
       _provaStore.setMensagemDownload(
-        "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%",
+        "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}% ${tempoRestante}",
       );
 
       return Container(
@@ -321,8 +322,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
                 _downloadStore.limparDownloads();
                 _provaController.verificaConexaoComInternet();
                 _provaStore.carregarProva(this.widget.prova);
-                var provaDetalhes = await _provaController
-                    .obterDetalhesProva(this.widget.prova.id);
+                var provaDetalhes = await _provaController.obterDetalhesProva(this.widget.prova.id);
                 if (provaDetalhes != null) {
                   _provaStore.carregarProvaDetalhes(provaDetalhes);
                   //_provaController.downloadProva(this.widget.prova, provaDetalhes);
@@ -341,8 +341,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   }
 
   Widget formataDataAplicacao() {
-    if (this.widget.prova.dataFim == null ||
-        this.widget.prova.dataInicio == this.widget.prova.dataFim) {
+    if (this.widget.prova.dataFim == null || this.widget.prova.dataInicio == this.widget.prova.dataFim) {
       return AutoSizeText(
         "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
         maxLines: 2,
@@ -356,8 +355,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
           AutoSizeText(
             "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataInicio!)}",
             maxLines: 2,
-            style:
-                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           AutoSizeText(
             " à ",
@@ -367,8 +365,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
           AutoSizeText(
             "${DateFormat("E - dd/MM/yyyy").format(this.widget.prova.dataFim!)}",
             maxLines: 2,
-            style:
-                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ],
       );

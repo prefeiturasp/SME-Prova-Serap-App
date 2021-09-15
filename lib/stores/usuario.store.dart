@@ -1,3 +1,5 @@
+import 'package:appserap/stores/prova.store.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -6,6 +8,8 @@ part 'usuario.store.g.dart';
 class UsuarioStore = _UsuarioStoreBase with _$UsuarioStore;
 
 abstract class _UsuarioStoreBase with Store {
+  final _provaStore = GetIt.I.get<ProvaStore>();
+
   @observable
   String? token;
 
@@ -28,7 +32,8 @@ abstract class _UsuarioStoreBase with Store {
   }
 
   @action
-  atualizarDados(String nome, String codigoEOL, String token, String ano) async {
+  atualizarDados(
+      String nome, String codigoEOL, String token, String ano) async {
     this.nome = nome;
     this.token = token;
     this.codigoEOL = codigoEOL;
@@ -44,6 +49,7 @@ abstract class _UsuarioStoreBase with Store {
   @action
   Future<void> limparUsuario() async {
     var prefs = await SharedPreferences.getInstance();
+    await _provaStore.limparProvas();
     await prefs.clear();
   }
 

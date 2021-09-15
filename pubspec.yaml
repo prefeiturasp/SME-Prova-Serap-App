@@ -62,6 +62,9 @@ dev_dependencies:
     sdk: flutter
   mobx_codegen: ^2.0.2
 
+dependency_overrides:
+  flutter_colorpicker: ^0.5.0
+
 scripts:
   clean: flutter clean flutter pub get
   mobx: flutter pub run build_runner build
