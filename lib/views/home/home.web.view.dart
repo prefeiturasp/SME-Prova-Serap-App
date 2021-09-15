@@ -2,8 +2,8 @@ import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/splash_screen.store.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/views/home/paginas/prova_atual_tab.view.dart';
-import 'package:appserap/views/home/paginas/provas_anteriores_tab.page.dart';
+import 'package:appserap/views/home/tabs/prova_atual_tab.view.dart';
+import 'package:appserap/views/home/tabs/provas_anteriores_tab.view.dart';
 import 'package:appserap/views/login/login.web.view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +39,8 @@ class _HomeWebViewState extends State<HomeWebView> with WidgetsBindingObserver {
   }
 
   List<Widget> _paginas = [
-    ProvaAtualTabPage(),
-    ProvasAterioresTabPage(),
+    ProvaAtualTabView(),
+    ProvasAterioresTabView(),
   ];
 
   @override

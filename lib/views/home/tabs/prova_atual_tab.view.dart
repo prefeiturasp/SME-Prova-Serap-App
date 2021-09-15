@@ -7,15 +7,15 @@ import 'package:appserap/controllers/prova.controller.dart';
 import 'package:get_it/get_it.dart';
 import 'package:appserap/stores/prova.store.dart';
 
-class ProvaAtualTabPage extends StatefulWidget {
-  const ProvaAtualTabPage({Key? key}) : super(key: key);
+class ProvaAtualTabView extends StatefulWidget {
+  const ProvaAtualTabView({Key? key}) : super(key: key);
 
   @override
-  _ProvaAtualTabPageState createState() => _ProvaAtualTabPageState();
+  _ProvaAtualTabViewState createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabPageState extends State<ProvaAtualTabPage>
-    with AutomaticKeepAliveClientMixin<ProvaAtualTabPage> {
+class _ProvaAtualTabViewState extends State<ProvaAtualTabView>
+    with AutomaticKeepAliveClientMixin<ProvaAtualTabView> {
   @override
   bool get wantKeepAlive => false;
 
@@ -62,7 +62,7 @@ class _ProvaAtualTabPageState extends State<ProvaAtualTabPage>
             ),
             provas.length > 0
                 ? Container(
-                    height: 400,
+                    height: 800,
                     child: ListView.builder(
                       itemCount: provas.length,
                       itemBuilder: (_, index) {

@@ -2,10 +2,10 @@ import 'package:appserap/widgets/appbar.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import 'base_statefull.dart';
+import 'base_statefull.widget.dart';
 
-abstract class BaseState<TWidget extends BaseStateful, TBind extends Object>
-    extends State<TWidget> {
+abstract class BaseStateWidget<TWidget extends BaseStatefulWidget,
+    TBind extends Object> extends State<TWidget> {
   var store = GetIt.I.get<TBind>();
 
   bool showBottomNaviationBar = true;

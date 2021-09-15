@@ -47,6 +47,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: TemaUtil.branco,

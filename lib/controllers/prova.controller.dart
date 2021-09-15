@@ -189,6 +189,7 @@ class ProvaController {
     atualizaProvaStorage(prefs, provaCompleta, true);
     _downloadStore.limparDownloads();
     _provaStore.prova!.status = ProvaStatusEnum.IniciarProva;
+    _provaStore.status = ProvaStatusEnum.IniciarProva;
     _provaStore.iconeProva = "assets/images/prova.svg";
     _provaStore.baixando = false;
   }

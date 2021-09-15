@@ -7,6 +7,7 @@ import 'package:appserap/models/prova_arquivo.model.dart';
 import 'package:appserap/models/prova_completa.model.dart';
 import 'package:appserap/models/prova_detalhe.model.dart';
 import 'package:appserap/models/prova_questao.model.dart';
+import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -50,6 +51,42 @@ abstract class _ProvaStoreBase with Store {
 
   @observable
   int? resposta = 1;
+
+  @action
+  Future<void> adicionarResposta(int questaoId, int alternativaId) async {
+    var prefs = await SharedPreferences.getInstance();
+    List<ProvaRespostaModel> respostas = [];
+
+    var provaRespostasJson = prefs.getString("prova_respostas_${prova!.id}");
+
+    if (provaRespostasJson != null) {
+      respostas = (jsonDecode(provaRespostasJson) as List)
+          .map((x) => ProvaRespostaModel.fromJson(x))
+          .toList();
+    }
+
+    if (respostas.length > 0) {
+      respostas.removeWhere((resposta) => resposta.questaoId == questaoId);
+    }
+
+    respostas.add(
+      new ProvaRespostaModel(
+          provaId: prova!.id,
+          questaoId: questaoId,
+          alternativaId: alternativaId,
+          resposta: "",
+          sincronizada: false),
+    );
+
+    prefs.setString(
+      "prova_respostas_${prova!.id}",
+      jsonEncode(respostas),
+    );
+
+    // print("Prova ${prova!.id}");
+    // print("Questão $questaoId");
+    // print("Alternativa $alternativaId");
+  }
 
   @action
   void setIconeProvaPorEstadoDeConexao(bool possuiConexao) {
