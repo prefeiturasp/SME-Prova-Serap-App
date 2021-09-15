@@ -1,12 +1,14 @@
 import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/stores/conexao.store.dart';
 import 'package:appserap/stores/download.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/views/prova/prova.view.dart';
 import 'package:appserap/widgets/inputs/botao_padrao.widget.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,6 +29,7 @@ class ProvaCardWidget extends StatefulWidget {
 
 class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   final _provaStore = GetIt.I.get<ProvaStore>();
+  final _conexaoStore = GetIt.I.get<ConexaoStore>();
   final _downloadStore = GetIt.I.get<DownloadStore>();
   final _provaController = GetIt.I.get<ProvaController>();
 
@@ -174,12 +177,20 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   }
 
   Widget acaoProva() {
-    if (_provaStore.status == ProvaStatusEnum.Baixar) {
+    // if (_conexaoStore.status == ConnectivityResult.none) {
+    //   return Container(
+    //     child: Text(
+    //       "Download não iniciado - Sem conexão com a internet",
+    //       style: TextStyle(color: TemaUtil.vermelhoErro),
+    //     ),
+    //   );
+    // }
+
+    if (_provaStore.status == ProvaStatusEnum.Baixar && _conexaoStore.status != ConnectivityResult.none) {
       return BotaoPadraoWidget(
         textoBotao: "BAIXAR PROVA",
         largura: 300,
         onPressed: () async {
-          _provaController.verificaConexaoComInternet();
           var provaDetalhes = await _provaController.obterDetalhesProva(this.widget.prova.id);
           if (provaDetalhes != null) {
             _provaStore.carregarProvaDetalhes(provaDetalhes);
@@ -191,7 +202,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
       );
     }
 
-    if (_provaStore.status == ProvaStatusEnum.DowloadEmProgresso) {
+    if (_provaStore.status == ProvaStatusEnum.DowloadEmProgresso && _conexaoStore.status != ConnectivityResult.none) {
       if (!_provaStore.baixando) {
         _provaController.downloadProva(this.widget.prova, _provaStore.detalhes).then((value) => null);
       }
@@ -286,7 +297,12 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
       );
     }
 
-    if (_provaStore.status == ProvaStatusEnum.DownloadPausado) {
+    if (_conexaoStore.status == ConnectivityResult.none && _downloadStore.progressoDownload > 0) {
+      _provaStore.baixando = false;
+      _provaStore.setMensagemDownload(
+        "Download pausado ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%",
+      );
+
       return Container(
         width: 400,
         child: Column(
@@ -298,13 +314,12 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
             ),
             Observer(builder: (_) {
               return LinearPercentIndicator(
-                //animation: true,
-                //animationDuration: 1000,
-                lineHeight: 7.0,
-                percent: _downloadStore.progressoDownload,
-                linearStrokeCap: LinearStrokeCap.roundAll,
-                progressColor: TemaUtil.verde01,
-              );
+                  //animation: true,
+                  //animationDuration: 1000,
+                  lineHeight: 7.0,
+                  percent: _downloadStore.progressoDownload,
+                  linearStrokeCap: LinearStrokeCap.roundAll,
+                  progressColor: TemaUtil.vermelhoErro);
             }),
             Padding(
               padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
@@ -320,7 +335,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
             TextButton(
               onPressed: () async {
                 _downloadStore.limparDownloads();
-                _provaController.verificaConexaoComInternet();
+                //_provaController.verificaConexaoComInternet();
                 _provaStore.carregarProva(this.widget.prova);
                 var provaDetalhes = await _provaController.obterDetalhesProva(this.widget.prova.id);
                 if (provaDetalhes != null) {

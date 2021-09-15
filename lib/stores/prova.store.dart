@@ -1,13 +1,8 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/models/prova_alternativa.model.dart';
-import 'package:appserap/models/prova_arquivo.model.dart';
-import 'package:appserap/models/prova_completa.model.dart';
-import 'package:appserap/models/prova_detalhe.model.dart';
-import 'package:appserap/models/prova_questao.model.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/index.dart';
+
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,9 +55,7 @@ abstract class _ProvaStoreBase with Store {
     var provaRespostasJson = prefs.getString("prova_respostas_${prova!.id}");
 
     if (provaRespostasJson != null) {
-      respostas = (jsonDecode(provaRespostasJson) as List)
-          .map((x) => ProvaRespostaModel.fromJson(x))
-          .toList();
+      respostas = (jsonDecode(provaRespostasJson) as List).map((x) => ProvaRespostaModel.fromJson(x)).toList();
     }
 
     if (respostas.length > 0) {
@@ -71,11 +64,7 @@ abstract class _ProvaStoreBase with Store {
 
     respostas.add(
       new ProvaRespostaModel(
-          provaId: prova!.id,
-          questaoId: questaoId,
-          alternativaId: alternativaId,
-          resposta: "",
-          sincronizada: false),
+          provaId: prova!.id, questaoId: questaoId, alternativaId: alternativaId, resposta: "", sincronizada: false),
     );
 
     prefs.setString(
@@ -130,8 +119,7 @@ abstract class _ProvaStoreBase with Store {
     var prefs = await SharedPreferences.getInstance();
     var provaStorage = prefs.getString("prova_completa_$id");
     if (provaStorage != null) {
-      this.provaCompleta =
-          ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
+      this.provaCompleta = ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
       if (verificaSeProvaCompleta()) {
         this.prova!.status = ProvaStatusEnum.IniciarProva;
         this.status = ProvaStatusEnum.IniciarProva;
@@ -177,6 +165,7 @@ abstract class _ProvaStoreBase with Store {
     this.questoes = [];
     this.alternativas = [];
     this.status = ProvaStatusEnum.Baixar;
+    this.iconeProva = "assets/images/prova.svg";
     // await prefs.clear();
   }
 }

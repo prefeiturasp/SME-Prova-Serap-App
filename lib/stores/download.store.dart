@@ -1,6 +1,4 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:internet_speed_test/callbacks_enum.dart';
-import 'package:internet_speed_test/internet_speed_test.dart';
 import 'package:mobx/mobx.dart';
 
 part 'download.store.g.dart';
@@ -9,8 +7,7 @@ class DownloadStore = _DownloadStoreBase with _$DownloadStore;
 
 abstract class _DownloadStoreBase with Store {
   @computed
-  double get progressoDownload =>
-      posicaoAtual / totalItems > 1 ? 1 : posicaoAtual / totalItems;
+  double get progressoDownload => posicaoAtual / totalItems > 1 ? 1 : posicaoAtual / totalItems;
 
   @observable
   int posicaoAtual = 0;
@@ -31,8 +28,7 @@ abstract class _DownloadStoreBase with Store {
   int get tempoGasto => inicio.difference(DateTime.now()).inSeconds;
 
   @computed
-  double get tempoPrevisto =>
-      (((totalItems - posicaoAtual) / (posicaoAtual / tempoGasto)) * -1);
+  double get tempoPrevisto => (((totalItems - posicaoAtual) / (posicaoAtual / tempoGasto)) * -1);
 
   @action
   atualizarProgresso(int atual) {
@@ -67,14 +63,12 @@ abstract class _DownloadStoreBase with Store {
   @observable
   double velocidadeTransferencia = 0;
   @action
-  void setVelocidadeTransferencia(double velocidade) =>
-      this.velocidadeTransferencia = velocidade;
+  void setVelocidadeTransferencia(double velocidade) => this.velocidadeTransferencia = velocidade;
 
   @observable
   double porcentagemDownload = 0;
   @action
-  void setPorcentagemDownload(double porcentagem) =>
-      this.porcentagemDownload = porcentagem;
+  void setPorcentagemDownload(double porcentagem) => this.porcentagemDownload = porcentagem;
 
   final divisor = 8;
 
@@ -84,52 +78,21 @@ abstract class _DownloadStoreBase with Store {
   void setTempoRestante(Duration tempo) => this.tempoRestante = tempo;
 
   @observable
-  bool possuiConexao = true;
-  @action
-  void setPossuiConexao(bool possuiConexao) =>
-      this.possuiConexao = possuiConexao;
+  bool possuiConexao = false;
 
-  @action
-  Future<void> verificaConexaoComInternet() async {
-    var resultadoDaVerificacao = await (Connectivity().checkConnectivity());
+  // @action
+  // void setPossuiConexao(bool possuiConexao) => this.possuiConexao = possuiConexao;
 
-    if (resultadoDaVerificacao == ConnectivityResult.wifi ||
-        resultadoDaVerificacao == ConnectivityResult.mobile ||
-        resultadoDaVerificacao == ConnectivityResult.ethernet) {
-      this.setPossuiConexao(true);
-    } else {
-      this.setPossuiConexao(false);
-    }
-  }
+  // @action
+  // Future<void> verificaConexaoComInternet() async {
+  //   var resultadoDaVerificacao = await (Connectivity().checkConnectivity());
 
-  @action
-  void estadoDoDownloadSimulado() {
-    if (this.possuiConexao) {
-      final internetSpeedTest = InternetSpeedTest();
-
-      internetSpeedTest.startDownloadTesting(
-        onDone: (double transferRate, SpeedUnit unit) {
-          this.setPorcentagemDownload(100);
-          this.setVelocidadeTransferencia(0);
-          this.setTempoRestante(Duration(seconds: 0));
-        },
-        onProgress:
-            (double porcentagem, double taxaTransferencia, SpeedUnit unit) {
-          this.setPorcentagemDownload(porcentagem);
-          this.setVelocidadeTransferencia(taxaTransferencia);
-          int tempoRestante = (this.tamanhoDoArquivo /
-                  (this.velocidadeTransferencia / this.divisor))
-              .floor();
-          Duration tempo = Duration(seconds: tempoRestante);
-          this.setTempoRestante(tempo);
-        },
-        onError: (String errorMessage, String speedTestError) {
-          this.setPorcentagemDownload(0);
-          this.setVelocidadeTransferencia(0);
-          this.setTempoRestante(Duration(seconds: 0));
-        },
-        fileSize: this.tamanhoDoArquivo.toInt(),
-      );
-    }
-  }
+  //   if (resultadoDaVerificacao == ConnectivityResult.wifi ||
+  //       resultadoDaVerificacao == ConnectivityResult.mobile ||
+  //       resultadoDaVerificacao == ConnectivityResult.ethernet) {
+  //     this.setPossuiConexao(true);
+  //   } else {
+  //     this.setPossuiConexao(false);
+  //   }
+  // }
 }

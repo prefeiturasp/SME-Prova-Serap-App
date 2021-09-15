@@ -1,3 +1,4 @@
+import 'package:appserap/stores/conexao.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/views/home/tabs/prova_atual_tab.view.dart';
@@ -19,20 +20,27 @@ class HomeView extends BaseStatefulWidget {
   _HomeViewState createState() => _HomeViewState();
 }
 
-class _HomeViewState extends BaseStateWidget<HomeView, HomeStore>
-    with TickerProviderStateMixin {
+class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerProviderStateMixin {
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
+  final _conexaoStore = GetIt.I.get<ConexaoStore>();
 
   late TabController tabController;
 
   @override
   void initState() {
+    _conexaoStore.setupReactions();
     tabController = TabController(
       initialIndex: 0,
       length: 2,
       vsync: this,
     );
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _conexaoStore.dispose();
+    super.dispose();
   }
 
   @override
@@ -48,8 +56,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore>
             builder: (_) {
               return Text(
                 "${_usuarioStore.nome} (${_usuarioStore.codigoEOL})",
-                style: GoogleFonts.poppins(
-                    fontSize: 16, fontWeight: FontWeight.bold),
+                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
               );
             },
           )
