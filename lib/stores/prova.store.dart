@@ -1,7 +1,11 @@
 import 'dart:convert';
 
+import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/index.dart';
+import 'package:appserap/stores/main.store.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:get_it/get_it.dart';
 
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +15,21 @@ part 'prova.store.g.dart';
 class ProvaStore = _ProvaStoreBase with _$ProvaStore;
 
 abstract class _ProvaStoreBase with Store {
+  final _mainStore = GetIt.I.get<MainStore>();
+
+  @observable
+  ObservableStream<ConnectivityResult> connectivityStream = ObservableStream(Connectivity().onConnectivityChanged);
+
+  ReactionDisposer? _disposer;
+
+  void setupReactions() {
+    _disposer = reaction((_) => connectivityStream.value, onChangeProvaDownload);
+  }
+
+  void dispose() {
+    _disposer!();
+  }
+
   @observable
   String mensagem = "";
 
@@ -46,6 +65,17 @@ abstract class _ProvaStoreBase with Store {
 
   @observable
   int? resposta = 1;
+
+  @action
+  Future onChangeProvaDownload(ConnectivityResult? resultado) async {
+    if (resultado != ConnectivityResult.none) {
+      //if (this.status == ProvaStatusEnum.DownloadPausado) {
+      this.baixando = false;
+      this.status = ProvaStatusEnum.DowloadEmProgresso;
+      //}
+      //await _provaController.downloadProva(prova!, detalhes);
+    }
+  }
 
   @action
   Future<void> adicionarResposta(int questaoId, int alternativaId) async {

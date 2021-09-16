@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:appserap/models/token.model.dart';
 import 'package:appserap/models/usuario.model.dart';
-import 'package:appserap/services/dio.service.dart';
+import 'package:appserap/utils/api.util.dart';
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/view-models/autenticar.viewmodel.dart';
 import 'package:dio/dio.dart';
@@ -10,7 +10,7 @@ import 'package:get_it/get_it.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 class UsuarioRepository {
-  final _api = GetIt.I.get<ApiService>();
+  final _api = GetIt.I.get<ApiUtil>();
 
   Future<TokenModel> autenticar(AutenticarViewModel viewModel) async {
     final _loginStore = GetIt.I.get<LoginStore>();

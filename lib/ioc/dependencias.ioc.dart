@@ -1,16 +1,15 @@
 import 'package:appserap/controllers/autenticacao.controller.dart';
 import 'package:appserap/controllers/prova.controller.dart';
-import 'package:appserap/controllers/splash_screen.controller.dart';
-import 'package:appserap/repositories/login.repository.dart';
-import 'package:appserap/repositories/prova.repository.dart';
-import 'package:appserap/repositories/splash_screen.repository.dart';
+import 'package:appserap/services/principal.service.dart';
+import 'package:appserap/services/prova.repository.dart';
 import 'package:appserap/repositories/usuario.repository.dart';
-import 'package:appserap/services/dio.service.dart';
+import 'package:appserap/utils/api.util.dart';
 import 'package:appserap/stores/download.store.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/main.store.dart';
+import 'package:appserap/stores/provas.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:get_it/get_it.dart';
 
@@ -21,29 +20,34 @@ class DependenciasIoC {
     getIt = GetIt.instance;
   }
 
-  registrarStores() {
-    getIt.registerSingleton<ProvaStore>(ProvaStore());
+  registrarBaseStores() {
     getIt.registerSingleton<UsuarioStore>(UsuarioStore());
-    getIt.registerSingleton<LoginStore>(LoginStore());
+  }
+
+  registrarStores() {
     getIt.registerSingleton<MainStore>(MainStore());
+    getIt.registerSingleton<ProvaStore>(ProvaStore());
+    getIt.registerSingleton<ProvasStore>(ProvasStore());
+    getIt.registerSingleton<LoginStore>(LoginStore());
     getIt.registerSingleton<DownloadStore>(DownloadStore());
     getIt.registerSingleton<HomeStore>(HomeStore());
   }
 
+  registrarUtils() {
+    getIt.registerLazySingleton<ApiUtil>(() => ApiUtil());
+  }
+
   registrarServices() {
-    getIt.registerLazySingleton<ApiService>(() => ApiService());
+    getIt.registerSingleton<PrincipalService>(PrincipalService());
   }
 
   registrarRepositories() {
     getIt.registerSingleton<UsuarioRepository>(UsuarioRepository());
     getIt.registerSingleton<ProvaRepository>(ProvaRepository());
-    getIt.registerSingleton<LoginRepository>(LoginRepository());
-    getIt.registerSingleton<SplashScreenRepository>(SplashScreenRepository());
   }
 
   registrarControllers() {
     getIt.registerSingleton<AutenticacaoController>(AutenticacaoController());
     getIt.registerSingleton<ProvaController>(ProvaController());
-    getIt.registerSingleton<SplashScreenController>(SplashScreenController());
   }
 }

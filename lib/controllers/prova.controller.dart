@@ -9,7 +9,7 @@ import 'package:appserap/models/prova_arquivo.model.dart';
 import 'package:appserap/models/prova_completa.model.dart';
 import 'package:appserap/models/prova_detalhe.model.dart';
 import 'package:appserap/models/prova_questao.model.dart';
-import 'package:appserap/repositories/prova.repository.dart';
+import 'package:appserap/services/prova.repository.dart';
 import 'package:appserap/stores/download.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:get_it/get_it.dart';

@@ -1,8 +1,10 @@
 import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/stores/provas.store.dart';
 import 'package:appserap/widgets/cards/prova_card.widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 
@@ -20,21 +22,27 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> with AutomaticKee
   final _provaController = GetIt.I.get<ProvaController>();
   List<ProvaModel> provas = <ProvaModel>[];
   final _provaStore = GetIt.I.get<ProvaStore>();
+  final _provasStore = GetIt.I.get<ProvasStore>();
 
   @override
   void initState() {
     super.initState();
 
     _provaStore.limparProvas();
+    _provaStore.setupReactions();
     obterProvas();
   }
 
-  obterProvas() async {
-    var retorno = await _provaController.obterProvas();
+  @override
+  void dispose() {
+    _provaStore.dispose();
+    super.dispose();
+  }
 
-    setState(() {
-      provas = retorno;
-    });
+  obterProvas() async {
+    await _provaController.obterProvas().then(
+          (value) => _provasStore.provas = value,
+        );
   }
 
   @override
@@ -45,18 +53,20 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> with AutomaticKee
       padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
       child: Column(
         children: [
-          provas.length > 0
+          _provasStore.provas.length > 0
               ? Expanded(
                   child: Container(
-                    child: ListView.builder(
-                      itemCount: provas.length,
-                      itemBuilder: (_, index) {
-                        var prova = provas[index];
-                        return ProvaCardWidget(
-                          prova: prova,
-                        );
-                      },
-                    ),
+                    child: Observer(builder: (_) {
+                      return ListView.builder(
+                        itemCount: _provasStore.provas.length,
+                        itemBuilder: (_, index) {
+                          var prova = _provasStore.provas[index];
+                          return ProvaCardWidget(
+                            prova: prova,
+                          );
+                        },
+                      );
+                    }),
                   ),
                 )
               : Padding(

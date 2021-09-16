@@ -7,7 +7,7 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
-class ApiService {
+class ApiUtil {
   late Dio dio;
 
   //  dio instance to request token
@@ -15,7 +15,7 @@ class ApiService {
 
   final usuarioStore = GetIt.I.get<UsuarioStore>();
 
-  ApiService() {
+  ApiUtil() {
     dio = new Dio();
     tokenDio = new Dio();
 
@@ -47,6 +47,9 @@ class ApiService {
         },
         onError: (DioError e, handler) async {
           switch (e.response?.statusCode) {
+            case 101:
+              print('erro de acesso');
+              break;
             case 401:
             case 403:
               print('401 e 403 - Realizar refresh token');

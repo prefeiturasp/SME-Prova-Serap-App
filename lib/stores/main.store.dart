@@ -1,4 +1,4 @@
-import 'package:appserap/controllers/splash_screen.controller.dart';
+import 'package:appserap/services/principal.service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -9,6 +9,8 @@ part 'main.store.g.dart';
 class MainStore = _MainStoreBase with _$MainStore;
 
 abstract class _MainStoreBase with Store {
+  final _principalService = GetIt.I.get<PrincipalService>();
+
   @observable
   ObservableStream<ConnectivityResult> connectivityStream = ObservableStream(Connectivity().onConnectivityChanged);
 
@@ -18,7 +20,11 @@ abstract class _MainStoreBase with Store {
   ReactionDisposer? _disposer;
 
   void setupReactions() {
-    _disposer = reaction((_) => connectivityStream.value, validarConexao);
+    _disposer = reaction((_) => connectivityStream.value, onChangeConexao);
+  }
+
+  void dispose() {
+    _disposer!();
   }
 
   @observable
@@ -27,21 +33,17 @@ abstract class _MainStoreBase with Store {
   @computed
   String get versao => "$versaoApp ${status == ConnectivityResult.none ? ' - Sem conexão' : ''}";
 
-  void dispose() {
-    _disposer!();
-  }
-
   @action
-  Future validarConexao(ConnectivityResult? resultado) async {
+  Future onChangeConexao(ConnectivityResult? resultado) async {
     status = resultado!;
   }
 
   @action
   Future<void> obterVersaoDoApp() async {
-    var splashController = GetIt.I.get<SplashScreenController>();
-    splashController.obterVersaoDoApp();
+    var versaoAtual = await _principalService.obterVersaoDoApp();
 
     var prefs = await SharedPreferences.getInstance();
-    versaoApp = prefs.getString('versaoApp');
+    versaoApp = versaoAtual;
+    // prefs.getString('versaoApp');
   }
 }

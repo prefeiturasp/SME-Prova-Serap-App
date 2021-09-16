@@ -1,5 +1,5 @@
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/repositories/prova.repository.dart';
+import 'package:appserap/services/prova.repository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
@@ -28,15 +28,10 @@ abstract class _HomeStoreBase with Store {
   }
 
   @action
-  Future downloadProva(int idProfa) async {
-
-
-  }
+  Future downloadProva(int idProfa) async {}
 }
 
-enum EnumDownloadStatus {
-  NAO_INICIADO, BAIXANDO, PAUSADO, CONCLUIDO, ERRO
-}
+enum EnumDownloadStatus { NAO_INICIADO, BAIXANDO, PAUSADO, CONCLUIDO, ERRO }
 
 class DownloadStatus<T> {
   T? data;
