@@ -71,6 +71,7 @@ void main() async {
     (options) => options
       ..dsn = AppConfigReader.getSentryDsn()
       ..environment = AppConfigReader.getEnvironment()
+      ..debug = true
       ..diagnosticLevel = SentryLevel.warning,
     appRunner: () => runApp(MyAppMobile()),
   );

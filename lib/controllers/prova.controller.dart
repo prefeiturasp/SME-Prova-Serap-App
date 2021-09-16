@@ -178,7 +178,6 @@ class ProvaController {
       var alternativas = provaCompleta.alternativas!.where((alt) => alt.questaoId == questao.id).toList();
 
       questao.alternativas = alternativas;
-      print("${questao.descricao}");
     }
 
     atualizaProvaStorage(prefs, provaCompleta, true);

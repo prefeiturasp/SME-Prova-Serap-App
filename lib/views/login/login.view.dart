@@ -1,9 +1,9 @@
 import 'package:appserap/controllers/autenticacao.controller.dart';
 import 'package:appserap/stores/login.store.dart';
-import 'package:appserap/view-models/autenticar.viewmodel.dart';
-import 'package:appserap/views/home/home.view.dart';
 import 'package:appserap/stores/splash_screen.store.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/view-models/autenticar.viewmodel.dart';
+import 'package:appserap/views/home/home.view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -70,8 +70,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 Text(
                   "Bem-vindo",
-                  style: GoogleFonts.poppins(
-                      fontSize: 24, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 Center(
                   child: Padding(
@@ -85,21 +84,14 @@ class _LoginViewState extends State<LoginView> {
                       child: Padding(
                         padding: EdgeInsets.only(left: 15, right: 15, top: 5),
                         child: TextFormField(
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           focusNode: codigoEOLFocus,
                           decoration: InputDecoration(
-                            errorText:
-                                _loginStore.mensagemErroEOL.toString() != ''
-                                    ? _loginStore.mensagemErroEOL.toString()
-                                    : null,
+                            errorText: _loginStore.mensagemErroEOL.toString() != '' ? _loginStore.mensagemErroEOL.toString() : null,
                             prefixText: "RA-",
                             labelText: 'Digite o código EOL',
                             labelStyle: TextStyle(
-                              color: codigoEOLFocus.hasFocus
-                                  ? TemaUtil.laranja01
-                                  : TemaUtil.preto,
+                              color: codigoEOLFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                             ),
                           ),
                           validator: (value) {
@@ -132,14 +124,10 @@ class _LoginViewState extends State<LoginView> {
                         builder: (_) => TextFormField(
                           controller: _loginStore.senhaController,
                           focusNode: senhaFocus,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           decoration: InputDecoration(
                             suffixIcon: IconButton(
-                              icon: _esconderSenha
-                                  ? Icon(Icons.visibility)
-                                  : Icon(Icons.visibility_off),
+                              icon: _esconderSenha ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
                               color: TemaUtil.pretoSemFoco,
                               onPressed: () {
                                 setState(() {
@@ -148,10 +136,7 @@ class _LoginViewState extends State<LoginView> {
                               },
                             ),
                             labelText: 'Digite a senha',
-                            errorText:
-                                _loginStore.mensagemErroSenha.toString() != ''
-                                    ? _loginStore.mensagemErroSenha.toString()
-                                    : null,
+                            errorText: _loginStore.mensagemErroSenha.toString() != '' ? _loginStore.mensagemErroSenha.toString() : null,
                           ),
                           obscureText: _esconderSenha,
                           validator: (value) {
@@ -183,60 +168,59 @@ class _LoginViewState extends State<LoginView> {
                       )
                     : Observer(
                         builder: (_) => TextButton(
-                          onPressed: () async {
-                            _loginStore.setMensagemErroEOL('');
-                            _loginStore.setMensagemErroSenha('');
-                            senhaFocus.unfocus();
-                            codigoEOLFocus.unfocus();
+                            onPressed: () async {
+                              _loginStore.setMensagemErroEOL('');
+                              _loginStore.setMensagemErroSenha('');
+                              senhaFocus.unfocus();
+                              codigoEOLFocus.unfocus();
 
-                            if (_formKey.currentState!.validate()) {
-                              _formKey.currentState!.save();
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
 
-                              final retorno = await _autenticacaoController
-                                  .autenticar(viewModel);
+                                final retorno = await _autenticacaoController.autenticar(viewModel);
 
-                              if (retorno) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomeView(),
-                                  ),
-                                );
+                                if (retorno) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeView(),
+                                    ),
+                                  );
+                                } else {
+                                  limparCampoSenha();
+                                }
                               } else {
                                 limparCampoSenha();
                               }
-                            } else {
-                              limparCampoSenha();
-                            }
-                            setState(
-                              () {
-                                viewModel.carregando = false;
-                              },
-                            );
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                            child: Container(
-                              width: screenSize.width * .8,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: TemaUtil.laranja01,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "ENTRAR",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: TemaUtil.branco,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                              setState(
+                                () {
+                                  viewModel.carregando = false;
+                                },
+                              );
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                              child: Container(
+                                width: screenSize.width * .8,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: TemaUtil.laranja01,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "ENTRAR",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: TemaUtil.branco,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
                       ),
               ],
             ),

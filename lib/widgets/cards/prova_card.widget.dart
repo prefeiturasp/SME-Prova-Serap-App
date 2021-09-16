@@ -17,6 +17,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProvaCardWidget extends StatefulWidget {
   final ProvaModel prova;
@@ -67,12 +68,29 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Observer(builder: (_) {
-                  return Container(
-                    width: 100,
-                    child: SvgPicture.asset(_provaStore.iconeProva),
-                  );
-                }),
+                Column(
+                  children: [
+                    Observer(builder: (_) {
+                      return Container(
+                        width: 100,
+                        child: SvgPicture.asset(_provaStore.iconeProva),
+                      );
+                    }),
+                    IconButton(
+                      onPressed: () async {
+                        var prefs = await SharedPreferences.getInstance();
+                        prefs.remove("prova_completa_${this.widget.prova.id}");
+                        prefs.remove("prova_download_${this.widget.prova.id}");
+                        // sp.remove(key);
+                        GetIt.I.get<DownloadStore>().limparDownloads();
+                        GetIt.I.get<ProvaStore>().status = ProvaStatusEnum.Baixar;
+
+                      },
+                      icon:  Icon(Icons.clear, color: TemaUtil.laranja02),
+
+                    ),
+                  ],
+                ),
                 Container(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -212,7 +230,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
           : "";
 
       _provaStore.setMensagemDownload(
-        "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}% ${tempoRestante}",
+        "Download em progresso ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}% $tempoRestante",
       );
 
       return Container(

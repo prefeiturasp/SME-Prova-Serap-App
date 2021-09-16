@@ -12,16 +12,15 @@ abstract class _ConexaoStoreBase with Store {
   ReactionDisposer? _disposer;
 
   void setupReactions() {
-    _disposer = reaction((_) => connectivityStream.value, (result) => validarConexao(result));
+    _disposer = reaction((_) => connectivityStream.value, validarConexao);
   }
 
   @observable
   ConnectivityResult status = ConnectivityResult.none;
 
   @action
-  // ignore: avoid_void_async
-  Future validarConexao(Object? resultado) async {
-    status = resultado as ConnectivityResult;
+  Future validarConexao(ConnectivityResult? resultado) async {
+    status = resultado!;
   }
 
   void dispose() {

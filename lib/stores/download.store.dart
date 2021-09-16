@@ -49,7 +49,6 @@ abstract class _DownloadStoreBase with Store {
     this.totalItems = 0;
     this.tamanhoAtualArquivos = 0;
     this.tamanhoTotalArquivos = 0;
-    // await prefs.clear();
   }
 
   @action
