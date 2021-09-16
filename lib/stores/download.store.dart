@@ -22,10 +22,11 @@ abstract class _DownloadStoreBase with Store {
   DateTime inicio = DateTime.now();
 
   @computed
-  int get tempoGasto => inicio.difference(DateTime.now()).inSeconds;
+  int get tempoGasto => inicio.difference(DateTime.now()).inSeconds * -1;
 
   @computed
-  double get tempoPrevisto => (((totalItems - posicaoAtual) / (posicaoAtual / tempoGasto)) * -1);
+  double get tempoPrevisto =>
+      (((totalItems - posicaoAtual) / (posicaoAtual / (inicio.difference(DateTime.now()).inSeconds))) * -1);
 
   @computed
   double get progressoDownload => posicaoAtual / totalItems > 1 ? 1 : posicaoAtual / totalItems;

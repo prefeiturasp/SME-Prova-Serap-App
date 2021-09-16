@@ -1,6 +1,6 @@
 import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/stores/splash_screen.store.dart';
+import 'package:appserap/stores/main.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/views/home/tabs/prova_atual_tab.view.dart';
 import 'package:appserap/views/home/tabs/provas_anteriores_tab.view.dart';
@@ -22,7 +22,7 @@ class HomeWebView extends StatefulWidget {
 
 class _HomeWebViewState extends State<HomeWebView> with WidgetsBindingObserver {
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
-  final _splashStore = GetIt.I.get<SplashScreenStore>();
+  final _mainStore = GetIt.I.get<MainStore>();
   final _provaController = GetIt.I.get<ProvaController>();
   UsuarioStorageViewModel storage = new UsuarioStorageViewModel();
   List<ProvaModel> provas = <ProvaModel>[];
@@ -95,8 +95,7 @@ class _HomeWebViewState extends State<HomeWebView> with WidgetsBindingObserver {
               builder: (_) {
                 return Text(
                   "${_usuarioStore.nome} (${_usuarioStore.codigoEOL})",
-                  style: GoogleFonts.poppins(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
                 );
               },
             )
@@ -161,9 +160,7 @@ class _HomeWebViewState extends State<HomeWebView> with WidgetsBindingObserver {
                           style: GoogleFonts.poppins(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: tabAtual == 0
-                                  ? TemaUtil.preto
-                                  : TemaUtil.pretoSemFoco),
+                              color: tabAtual == 0 ? TemaUtil.preto : TemaUtil.pretoSemFoco),
                         ),
                         Visibility(
                           visible: tabAtual == 0,
@@ -193,9 +190,7 @@ class _HomeWebViewState extends State<HomeWebView> with WidgetsBindingObserver {
                           style: GoogleFonts.poppins(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: tabAtual == 1
-                                  ? TemaUtil.preto
-                                  : TemaUtil.pretoSemFoco),
+                              color: tabAtual == 1 ? TemaUtil.preto : TemaUtil.pretoSemFoco),
                         ),
                         Visibility(
                           visible: tabAtual == 1,
@@ -219,7 +214,7 @@ class _HomeWebViewState extends State<HomeWebView> with WidgetsBindingObserver {
         Center(
           child: Observer(builder: (_) {
             return Text(
-              "Sistema homologado para os navegadores Google Chrome e Firefox. ${_splashStore.versaoApp}",
+              "Sistema homologado para os navegadores Google Chrome e Firefox. ${_mainStore.versaoApp}",
             );
           }),
         )

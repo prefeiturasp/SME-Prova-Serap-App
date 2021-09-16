@@ -189,7 +189,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
                   return BotaoPadraoWidget(
                     textoBotao: 'Finalizar prova',
                     onPressed: () {
-                      print('Finalizar prova');
+                      store.questaoAtual = 0;
+                      Navigator.of(context).pop();
                     },
                   );
                 },

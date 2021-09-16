@@ -6,12 +6,11 @@ import 'package:appserap/repositories/prova.repository.dart';
 import 'package:appserap/repositories/splash_screen.repository.dart';
 import 'package:appserap/repositories/usuario.repository.dart';
 import 'package:appserap/services/dio.service.dart';
-import 'package:appserap/stores/conexao.store.dart';
 import 'package:appserap/stores/download.store.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/stores/splash_screen.store.dart';
+import 'package:appserap/stores/main.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:get_it/get_it.dart';
 
@@ -24,10 +23,9 @@ class DependenciasIoC {
 
   registrarStores() {
     getIt.registerSingleton<ProvaStore>(ProvaStore());
-    getIt.registerSingleton<ConexaoStore>(ConexaoStore());
     getIt.registerSingleton<UsuarioStore>(UsuarioStore());
     getIt.registerSingleton<LoginStore>(LoginStore());
-    getIt.registerSingleton<SplashScreenStore>(SplashScreenStore());
+    getIt.registerSingleton<MainStore>(MainStore());
     getIt.registerSingleton<DownloadStore>(DownloadStore());
     getIt.registerSingleton<HomeStore>(HomeStore());
   }

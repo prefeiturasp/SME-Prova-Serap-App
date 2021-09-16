@@ -1,8 +1,8 @@
 import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/stores/conexao.store.dart';
 import 'package:appserap/stores/download.store.dart';
+import 'package:appserap/stores/main.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/views/prova/prova.view.dart';
@@ -30,7 +30,7 @@ class ProvaCardWidget extends StatefulWidget {
 
 class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   final _provaStore = GetIt.I.get<ProvaStore>();
-  final _conexaoStore = GetIt.I.get<ConexaoStore>();
+  final _mainStore = GetIt.I.get<MainStore>();
   final _downloadStore = GetIt.I.get<DownloadStore>();
   final _provaController = GetIt.I.get<ProvaController>();
 
@@ -70,12 +70,12 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
               children: [
                 Column(
                   children: [
-                    Observer(builder: (_) {
-                      return Container(
-                        width: 100,
-                        child: SvgPicture.asset(_provaStore.iconeProva),
-                      );
-                    }),
+                    Container(
+                      width: 100,
+                      child: Observer(builder: (_) {
+                        return SvgPicture.asset(_provaStore.iconeProva);
+                      }),
+                    ),
                     IconButton(
                       onPressed: () async {
                         var prefs = await SharedPreferences.getInstance();
@@ -84,10 +84,8 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
                         // sp.remove(key);
                         GetIt.I.get<DownloadStore>().limparDownloads();
                         GetIt.I.get<ProvaStore>().status = ProvaStatusEnum.Baixar;
-
                       },
-                      icon:  Icon(Icons.clear, color: TemaUtil.laranja02),
-
+                      icon: Icon(Icons.clear, color: TemaUtil.laranja02),
                     ),
                   ],
                 ),
@@ -195,16 +193,45 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
   }
 
   Widget acaoProva() {
-    // if (_conexaoStore.status == ConnectivityResult.none) {
-    //   return Container(
-    //     child: Text(
-    //       "Download não iniciado - Sem conexão com a internet",
-    //       style: TextStyle(color: TemaUtil.vermelhoErro),
-    //     ),
-    //   );
-    // }
+    if (_mainStore.status == ConnectivityResult.none && _provaStore.status == ProvaStatusEnum.Baixar) {
+      _provaStore.atualizaIconeProva("assets/images/prova_erro_download.svg");
 
-    if (_provaStore.status == ProvaStatusEnum.Baixar && _conexaoStore.status != ConnectivityResult.none) {
+      return Container(
+        width: 350,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Observer(builder: (_) {
+              return LinearPercentIndicator(
+                //animation: true,
+                //animationDuration: 1000,
+                lineHeight: 7.0,
+                percent: 0,
+                linearStrokeCap: LinearStrokeCap.roundAll,
+                progressColor: TemaUtil.vermelhoErro,
+              );
+            }),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+              child: Observer(builder: (_) {
+                return Text(
+                  "Download não iniciado - Sem conexão com a internet",
+                  style: TextStyle(color: TemaUtil.vermelhoErro),
+                );
+              }),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_provaStore.status == ProvaStatusEnum.Baixar && _mainStore.status != ConnectivityResult.none) {
+      _provaStore.atualizaIconeProva("assets/images/prova.svg");
+
       return BotaoPadraoWidget(
         textoBotao: "BAIXAR PROVA",
         largura: 300,
@@ -214,16 +241,17 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
             _provaStore.carregarProvaDetalhes(provaDetalhes);
             //_provaController.downloadProva(this.widget.prova, provaDetalhes);
             _provaStore.alterarStatus(ProvaStatusEnum.DowloadEmProgresso);
-            setState(() {});
           }
         },
       );
     }
 
-    if (_provaStore.status == ProvaStatusEnum.DowloadEmProgresso && _conexaoStore.status != ConnectivityResult.none) {
+    if (_provaStore.status == ProvaStatusEnum.DowloadEmProgresso && _mainStore.status != ConnectivityResult.none) {
       if (!_provaStore.baixando) {
         _provaController.downloadProva(this.widget.prova, _provaStore.detalhes).then((value) => null);
       }
+
+      print(_downloadStore.tempoPrevisto);
 
       var tempoRestante = _downloadStore.tempoPrevisto > 0
           ? " - Aproximadamente ${_downloadStore.tempoPrevisto.round()} segundos restantes"
@@ -315,7 +343,7 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
       );
     }
 
-    if (_conexaoStore.status == ConnectivityResult.none && _downloadStore.progressoDownload > 0) {
+    if (_mainStore.status == ConnectivityResult.none && _downloadStore.progressoDownload > 0) {
       _provaStore.baixando = false;
       _provaStore.setMensagemDownload(
         "Download pausado ${(_downloadStore.progressoDownload * 100).toStringAsFixed(2)}%",
@@ -360,7 +388,6 @@ class _ProvaCardWidgetState extends State<ProvaCardWidget> {
                   _provaStore.carregarProvaDetalhes(provaDetalhes);
                   //_provaController.downloadProva(this.widget.prova, provaDetalhes);
                   _provaStore.alterarStatus(ProvaStatusEnum.DowloadEmProgresso);
-                  setState(() {});
                 }
               },
               child: Text("Tentar novamente"),

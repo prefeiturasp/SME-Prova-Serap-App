@@ -1,6 +1,6 @@
 import 'package:appserap/controllers/autenticacao.controller.dart';
 import 'package:appserap/stores/login.store.dart';
-import 'package:appserap/stores/splash_screen.store.dart';
+import 'package:appserap/stores/main.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/view-models/autenticar.viewmodel.dart';
 import 'package:appserap/views/home/home.view.dart';
@@ -26,7 +26,7 @@ class _LoginViewState extends State<LoginView> {
   final _autenticacaoController = GetIt.I.get<AutenticacaoController>();
   var viewModel = new AutenticarViewModel();
   final _loginStore = GetIt.I.get<LoginStore>();
-  final _splashStore = GetIt.I.get<SplashScreenStore>();
+  final _mainStore = GetIt.I.get<MainStore>();
 
   bool _esconderSenha = true;
 
@@ -87,7 +87,9 @@ class _LoginViewState extends State<LoginView> {
                           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           focusNode: codigoEOLFocus,
                           decoration: InputDecoration(
-                            errorText: _loginStore.mensagemErroEOL.toString() != '' ? _loginStore.mensagemErroEOL.toString() : null,
+                            errorText: _loginStore.mensagemErroEOL.toString() != ''
+                                ? _loginStore.mensagemErroEOL.toString()
+                                : null,
                             prefixText: "RA-",
                             labelText: 'Digite o código EOL',
                             labelStyle: TextStyle(
@@ -136,7 +138,9 @@ class _LoginViewState extends State<LoginView> {
                               },
                             ),
                             labelText: 'Digite a senha',
-                            errorText: _loginStore.mensagemErroSenha.toString() != '' ? _loginStore.mensagemErroSenha.toString() : null,
+                            errorText: _loginStore.mensagemErroSenha.toString() != ''
+                                ? _loginStore.mensagemErroSenha.toString()
+                                : null,
                           ),
                           obscureText: _esconderSenha,
                           validator: (value) {
@@ -168,59 +172,59 @@ class _LoginViewState extends State<LoginView> {
                       )
                     : Observer(
                         builder: (_) => TextButton(
-                            onPressed: () async {
-                              _loginStore.setMensagemErroEOL('');
-                              _loginStore.setMensagemErroSenha('');
-                              senhaFocus.unfocus();
-                              codigoEOLFocus.unfocus();
+                          onPressed: () async {
+                            _loginStore.setMensagemErroEOL('');
+                            _loginStore.setMensagemErroSenha('');
+                            senhaFocus.unfocus();
+                            codigoEOLFocus.unfocus();
 
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
 
-                                final retorno = await _autenticacaoController.autenticar(viewModel);
+                              final retorno = await _autenticacaoController.autenticar(viewModel);
 
-                                if (retorno) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomeView(),
-                                    ),
-                                  );
-                                } else {
-                                  limparCampoSenha();
-                                }
+                              if (retorno) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeView(),
+                                  ),
+                                );
                               } else {
                                 limparCampoSenha();
                               }
-                              setState(
-                                () {
-                                  viewModel.carregando = false;
-                                },
-                              );
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                              child: Container(
-                                width: screenSize.width * .8,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: TemaUtil.laranja01,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "ENTRAR",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: TemaUtil.branco,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
+                            } else {
+                              limparCampoSenha();
+                            }
+                            setState(
+                              () {
+                                viewModel.carregando = false;
+                              },
+                            );
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                            child: Container(
+                              width: screenSize.width * .8,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: TemaUtil.laranja01,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "ENTRAR",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: TemaUtil.branco,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
                                 ),
                               ),
                             ),
                           ),
+                        ),
                       ),
               ],
             ),
@@ -231,7 +235,7 @@ class _LoginViewState extends State<LoginView> {
         Center(
           child: Observer(
             builder: (_) => Text(
-              "${_splashStore.versaoApp}",
+              "${_mainStore.versaoApp}",
             ),
           ),
         )

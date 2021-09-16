@@ -110,6 +110,7 @@ class ProvaController {
         provaDetalhe.arquivosId!.length + provaDetalhe.alternativasId!.length + provaDetalhe.questoesId!.length;
 
     _downloadStore.posicaoAtual = 0;
+    _provaStore.iconeProva = "assets/images/prova_download.svg";
 
     if (verificaProvaCompleta != null && verificaProvaDownload == true) {
       return;

@@ -78,6 +78,11 @@ abstract class _ProvaStoreBase with Store {
   }
 
   @action
+  void atualizaIconeProva(String icone) {
+    iconeProva = icone;
+  }
+
+  @action
   void setIconeProvaPorEstadoDeConexao(bool possuiConexao) {
     possuiConexao
         ? iconeProva = "assets/images/prova_download.svg"
