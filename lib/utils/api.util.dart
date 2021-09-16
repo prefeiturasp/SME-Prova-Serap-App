@@ -7,23 +7,21 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
-class ApiService {
+class ApiUtil {
   late Dio dio;
+
   //  dio instance to request token
   late Dio tokenDio;
 
   final usuarioStore = GetIt.I.get<UsuarioStore>();
 
-  ApiService() {
+  ApiUtil() {
     dio = new Dio();
     tokenDio = new Dio();
 
-    if (AppConfigReader.getApiHost().isNotEmpty &&
-        AppConfigReader.getApiHost().contains("10.0.2.2")) {
-      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-          (HttpClient client) {
-        client.badCertificateCallback =
-            (X509Certificate cert, String host, int port) => true;
+    if (AppConfigReader.getApiHost().isNotEmpty && AppConfigReader.getApiHost().contains("10.0.2.2")) {
+      (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (HttpClient client) {
+        client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
         return client;
       };
     }
@@ -49,6 +47,9 @@ class ApiService {
         },
         onError: (DioError e, handler) async {
           switch (e.response?.statusCode) {
+            case 101:
+              print('erro de acesso');
+              break;
             case 401:
             case 403:
               print('401 e 403 - Realizar refresh token');
@@ -68,8 +69,7 @@ class ApiService {
               if (e.response?.data != '') {
                 print(e.response?.data?['mensagens'][0]);
               } else {
-                String msgErroInterno =
-                    'Ocorreu um erro interno, por favor contate o suporte';
+                String msgErroInterno = 'Ocorreu um erro interno, por favor contate o suporte';
                 print(msgErroInterno);
                 NotificationService.showSnackbarError(msgErroInterno);
               }
@@ -88,8 +88,7 @@ class ApiService {
       dio.interceptors.errorLock.lock();
 
       final refreshToken = usuarioStore.token;
-      final response = await tokenDio
-          .post('/v1/autenticacao/revalidar', data: {'token': refreshToken});
+      final response = await tokenDio.post('/v1/autenticacao/revalidar', data: {'token': refreshToken});
 
       dio.unlock();
       dio.interceptors.responseLock.unlock();

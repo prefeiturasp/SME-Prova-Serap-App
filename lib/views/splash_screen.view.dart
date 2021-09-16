@@ -1,5 +1,5 @@
 import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/stores/splash_screen.store.dart';
+import 'package:appserap/stores/main.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/views/fluxo_inicial.view.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +15,13 @@ class SplashScreenView extends StatefulWidget {
 
 class _SplashScreenViewState extends State<SplashScreenView> {
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
-  final _splashStore = GetIt.I.get<SplashScreenStore>();
+  final _mainStore = GetIt.I.get<MainStore>();
   final _provaStore = GetIt.I.get<ProvaStore>();
 
   @override
   void initState() {
     carregarUsuario();
-    _splashStore.obterVersaoDoApp();
+    _mainStore.obterVersaoDoApp();
     super.initState();
   }
 

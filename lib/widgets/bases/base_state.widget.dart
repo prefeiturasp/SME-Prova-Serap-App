@@ -1,12 +1,28 @@
+import 'package:appserap/stores/main.store.dart';
+import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/widgets/appbar.widget.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
 import 'base_statefull.widget.dart';
 
-abstract class BaseStateWidget<TWidget extends BaseStatefulWidget,
-    TBind extends Object> extends State<TWidget> {
+abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget> {
   var store = GetIt.I.get<TBind>();
+  var _mainStore = GetIt.I.get<MainStore>();
+
+  @override
+  void initState() {
+    super.initState();
+    _mainStore.setupReactions();
+  }
+
+  @override
+  void dispose() {
+    _mainStore.dispose();
+    super.dispose();
+  }
 
   bool showBottomNaviationBar = true;
 
@@ -28,7 +44,8 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       backgroundColor: backgroundColor,
       appBar: showAppBar ? buildAppBar() : null,
-      bottomNavigationBar: buildBottomNaviationBar(),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+      persistentFooterButtons: _buildPersistentFooterButtons(),
       floatingActionButton: buildFloatingActionButton(),
       body: Column(
         children: [
@@ -64,8 +81,31 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget,
     return null;
   }
 
-  Widget? buildBottomNaviationBar() {
+  Widget? _buildBottomNavigationBar() {
     return null;
+  }
+
+  List<Widget>? _buildPersistentFooterButtons() {
+    return [
+      Center(
+        child: Observer(
+          builder: (_) {
+            var cor = TemaUtil.preto;
+
+            if (_mainStore.status == ConnectivityResult.none) {
+              cor = TemaUtil.vermelhoErro;
+            }
+
+            return Text(
+              "${_mainStore.versao}",
+              style: TextStyle(
+                color: cor,
+              ),
+            );
+          },
+        ),
+      )
+    ];
   }
 
   Widget builder(BuildContext context);

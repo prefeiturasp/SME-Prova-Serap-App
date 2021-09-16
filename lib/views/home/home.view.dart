@@ -19,8 +19,7 @@ class HomeView extends BaseStatefulWidget {
   _HomeViewState createState() => _HomeViewState();
 }
 
-class _HomeViewState extends BaseStateWidget<HomeView, HomeStore>
-    with TickerProviderStateMixin {
+class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerProviderStateMixin {
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
   late TabController tabController;
@@ -36,6 +35,11 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   PreferredSizeWidget buildAppBar() {
     return AppBar(
       backgroundColor: TemaUtil.appBar,
@@ -48,8 +52,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore>
             builder: (_) {
               return Text(
                 "${_usuarioStore.nome} (${_usuarioStore.codigoEOL})",
-                style: GoogleFonts.poppins(
-                    fontSize: 16, fontWeight: FontWeight.bold),
+                style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
               );
             },
           )

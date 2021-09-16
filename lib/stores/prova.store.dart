@@ -1,13 +1,12 @@
 import 'dart:convert';
 
+import 'package:appserap/controllers/prova.controller.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/models/prova_alternativa.model.dart';
-import 'package:appserap/models/prova_arquivo.model.dart';
-import 'package:appserap/models/prova_completa.model.dart';
-import 'package:appserap/models/prova_detalhe.model.dart';
-import 'package:appserap/models/prova_questao.model.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/index.dart';
+import 'package:appserap/stores/main.store.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:get_it/get_it.dart';
+
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +15,21 @@ part 'prova.store.g.dart';
 class ProvaStore = _ProvaStoreBase with _$ProvaStore;
 
 abstract class _ProvaStoreBase with Store {
+  final _mainStore = GetIt.I.get<MainStore>();
+
+  @observable
+  ObservableStream<ConnectivityResult> connectivityStream = ObservableStream(Connectivity().onConnectivityChanged);
+
+  ReactionDisposer? _disposer;
+
+  void setupReactions() {
+    _disposer = reaction((_) => connectivityStream.value, onChangeProvaDownload);
+  }
+
+  void dispose() {
+    _disposer!();
+  }
+
   @observable
   String mensagem = "";
 
@@ -53,6 +67,17 @@ abstract class _ProvaStoreBase with Store {
   int? resposta = 1;
 
   @action
+  Future onChangeProvaDownload(ConnectivityResult? resultado) async {
+    if (resultado != ConnectivityResult.none) {
+      //if (this.status == ProvaStatusEnum.DownloadPausado) {
+      this.baixando = false;
+      this.status = ProvaStatusEnum.DowloadEmProgresso;
+      //}
+      //await _provaController.downloadProva(prova!, detalhes);
+    }
+  }
+
+  @action
   Future<void> adicionarResposta(int questaoId, int alternativaId) async {
     var prefs = await SharedPreferences.getInstance();
     List<ProvaRespostaModel> respostas = [];
@@ -60,9 +85,7 @@ abstract class _ProvaStoreBase with Store {
     var provaRespostasJson = prefs.getString("prova_respostas_${prova!.id}");
 
     if (provaRespostasJson != null) {
-      respostas = (jsonDecode(provaRespostasJson) as List)
-          .map((x) => ProvaRespostaModel.fromJson(x))
-          .toList();
+      respostas = (jsonDecode(provaRespostasJson) as List).map((x) => ProvaRespostaModel.fromJson(x)).toList();
     }
 
     if (respostas.length > 0) {
@@ -71,11 +94,7 @@ abstract class _ProvaStoreBase with Store {
 
     respostas.add(
       new ProvaRespostaModel(
-          provaId: prova!.id,
-          questaoId: questaoId,
-          alternativaId: alternativaId,
-          resposta: "",
-          sincronizada: false),
+          provaId: prova!.id, questaoId: questaoId, alternativaId: alternativaId, resposta: "", sincronizada: false),
     );
 
     prefs.setString(
@@ -89,6 +108,11 @@ abstract class _ProvaStoreBase with Store {
   }
 
   @action
+  void atualizaIconeProva(String icone) {
+    iconeProva = icone;
+  }
+
+  @action
   void setIconeProvaPorEstadoDeConexao(bool possuiConexao) {
     possuiConexao
         ? iconeProva = "assets/images/prova_download.svg"
@@ -99,7 +123,10 @@ abstract class _ProvaStoreBase with Store {
   String mensagemDownload = "";
 
   @action
-  void setMensagemDownload(String mensagem) => mensagemDownload = mensagem;
+  void setMensagemDownload(String mensagem) {
+    print(mensagem);
+    mensagemDownload = mensagem;
+  }
 
   @action
   Future<void> carregarMensagem() async {
@@ -127,8 +154,7 @@ abstract class _ProvaStoreBase with Store {
     var prefs = await SharedPreferences.getInstance();
     var provaStorage = prefs.getString("prova_completa_$id");
     if (provaStorage != null) {
-      this.provaCompleta =
-          ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
+      this.provaCompleta = ProvaCompletaModel.fromJson(jsonDecode(provaStorage));
       if (verificaSeProvaCompleta()) {
         this.prova!.status = ProvaStatusEnum.IniciarProva;
         this.status = ProvaStatusEnum.IniciarProva;
@@ -173,6 +199,8 @@ abstract class _ProvaStoreBase with Store {
     this.arquivos = [];
     this.questoes = [];
     this.alternativas = [];
+    this.status = ProvaStatusEnum.Baixar;
+    this.iconeProva = "assets/images/prova.svg";
     // await prefs.clear();
   }
 }

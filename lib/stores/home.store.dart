@@ -1,19 +1,20 @@
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/repositories/prova.repository.dart';
+import 'package:appserap/services/prova.repository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+
 part 'home.store.g.dart';
 
 class HomeStore = _HomeStoreBase with _$HomeStore;
 
 abstract class _HomeStoreBase with Store {
+  static ObservableFuture<List<ProvaModel>> emptyResponse = ObservableFuture.value([]);
+
   @observable
   ObservableFuture<List<ProvaModel>> fetchReposFuture = emptyResponse;
 
   @computed
   bool get hasResults => fetchReposFuture != emptyResponse && fetchReposFuture.status == FutureStatus.fulfilled;
-
-  static ObservableFuture<List<ProvaModel>> emptyResponse = ObservableFuture.value([]);
 
   List<ProvaModel> provas = [];
 
@@ -25,4 +26,16 @@ abstract class _HomeStoreBase with Store {
 
     return provas = await future;
   }
+
+  @action
+  Future downloadProva(int idProfa) async {}
+}
+
+enum EnumDownloadStatus { NAO_INICIADO, BAIXANDO, PAUSADO, CONCLUIDO, ERRO }
+
+class DownloadStatus<T> {
+  T? data;
+  EnumDownloadStatus status = EnumDownloadStatus.NAO_INICIADO;
+  int? tamanho;
+  DateTime? dataHoraInicio;
 }

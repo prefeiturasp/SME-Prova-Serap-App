@@ -1,7 +1,7 @@
-import 'package:get_it/get_it.dart';
 import 'package:appserap/repositories/usuario.repository.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/view-models/autenticar.viewmodel.dart';
+import 'package:get_it/get_it.dart';
 
 class AutenticacaoController {
   final _usuarioRepository = GetIt.I.get<UsuarioRepository>();
@@ -14,8 +14,7 @@ class AutenticacaoController {
       _usuarioStore.token = token.token;
       var meusDados = await _usuarioRepository.obterDados();
       if (meusDados.nome != "") {
-        _usuarioStore.atualizarDados(
-            meusDados.nome, viewModel.codigoEOL, token.token, meusDados.ano);
+        _usuarioStore.atualizarDados(meusDados.nome, viewModel.codigoEOL, token.token, meusDados.ano);
       }
       viewModel.carregando = false;
       return true;

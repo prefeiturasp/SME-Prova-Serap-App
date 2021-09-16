@@ -1,9 +1,9 @@
 import 'package:appserap/controllers/autenticacao.controller.dart';
 import 'package:appserap/stores/login.store.dart';
+import 'package:appserap/stores/main.store.dart';
+import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/view-models/autenticar.viewmodel.dart';
 import 'package:appserap/views/home/home.view.dart';
-import 'package:appserap/stores/splash_screen.store.dart';
-import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,7 +26,7 @@ class _LoginViewState extends State<LoginView> {
   final _autenticacaoController = GetIt.I.get<AutenticacaoController>();
   var viewModel = new AutenticarViewModel();
   final _loginStore = GetIt.I.get<LoginStore>();
-  final _splashStore = GetIt.I.get<SplashScreenStore>();
+  final _mainStore = GetIt.I.get<MainStore>();
 
   bool _esconderSenha = true;
 
@@ -70,8 +70,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
                 Text(
                   "Bem-vindo",
-                  style: GoogleFonts.poppins(
-                      fontSize: 24, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 Center(
                   child: Padding(
@@ -85,21 +84,16 @@ class _LoginViewState extends State<LoginView> {
                       child: Padding(
                         padding: EdgeInsets.only(left: 15, right: 15, top: 5),
                         child: TextFormField(
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           focusNode: codigoEOLFocus,
                           decoration: InputDecoration(
-                            errorText:
-                                _loginStore.mensagemErroEOL.toString() != ''
-                                    ? _loginStore.mensagemErroEOL.toString()
-                                    : null,
+                            errorText: _loginStore.mensagemErroEOL.toString() != ''
+                                ? _loginStore.mensagemErroEOL.toString()
+                                : null,
                             prefixText: "RA-",
                             labelText: 'Digite o código EOL',
                             labelStyle: TextStyle(
-                              color: codigoEOLFocus.hasFocus
-                                  ? TemaUtil.laranja01
-                                  : TemaUtil.preto,
+                              color: codigoEOLFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                             ),
                           ),
                           validator: (value) {
@@ -132,14 +126,10 @@ class _LoginViewState extends State<LoginView> {
                         builder: (_) => TextFormField(
                           controller: _loginStore.senhaController,
                           focusNode: senhaFocus,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           decoration: InputDecoration(
                             suffixIcon: IconButton(
-                              icon: _esconderSenha
-                                  ? Icon(Icons.visibility)
-                                  : Icon(Icons.visibility_off),
+                              icon: _esconderSenha ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
                               color: TemaUtil.pretoSemFoco,
                               onPressed: () {
                                 setState(() {
@@ -148,10 +138,9 @@ class _LoginViewState extends State<LoginView> {
                               },
                             ),
                             labelText: 'Digite a senha',
-                            errorText:
-                                _loginStore.mensagemErroSenha.toString() != ''
-                                    ? _loginStore.mensagemErroSenha.toString()
-                                    : null,
+                            errorText: _loginStore.mensagemErroSenha.toString() != ''
+                                ? _loginStore.mensagemErroSenha.toString()
+                                : null,
                           ),
                           obscureText: _esconderSenha,
                           validator: (value) {
@@ -192,8 +181,7 @@ class _LoginViewState extends State<LoginView> {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
 
-                              final retorno = await _autenticacaoController
-                                  .autenticar(viewModel);
+                              final retorno = await _autenticacaoController.autenticar(viewModel);
 
                               if (retorno) {
                                 Navigator.pushReplacement(
@@ -247,7 +235,7 @@ class _LoginViewState extends State<LoginView> {
         Center(
           child: Observer(
             builder: (_) => Text(
-              "${_splashStore.versaoApp}",
+              "${_mainStore.versaoApp}",
             ),
           ),
         )

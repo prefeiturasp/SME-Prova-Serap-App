@@ -34,8 +34,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   var provas = await _provaController.obterProvas();
 
   for (ProvaModel prova in provas) {
-    ProvaDetalheModel? detalhes =
-        await _provaController.obterDetalhesProva(prova.id);
+    ProvaDetalheModel? detalhes = await _provaController.obterDetalhesProva(prova.id);
     _provaController.downloadProva(prova, detalhes);
     print("BATENDO AQUI IHUUUUL");
   }
@@ -46,8 +45,10 @@ void main() async {
   await initializeAppConfig();
 
   final ioc = new DependenciasIoC();
-  ioc.registrarStores();
+  ioc.registrarBaseStores();
+  ioc.registrarUtils();
   ioc.registrarServices();
+  ioc.registrarStores();
   ioc.registrarRepositories();
   ioc.registrarControllers();
 
@@ -71,6 +72,7 @@ void main() async {
     (options) => options
       ..dsn = AppConfigReader.getSentryDsn()
       ..environment = AppConfigReader.getEnvironment()
+      ..debug = true
       ..diagnosticLevel = SentryLevel.warning,
     appRunner: () => runApp(MyAppMobile()),
   );

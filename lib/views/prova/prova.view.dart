@@ -41,7 +41,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
   @override
   void initState() {
     super.initState();
-    controller.setFullScreen();
   }
 
   @override
@@ -71,17 +70,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
                 await _usuarioStore.limparUsuario();
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          kIsWeb ? LoginWebView() : LoginView()),
+                  MaterialPageRoute(builder: (context) => kIsWeb ? LoginWebView() : LoginView()),
                 );
               },
               child: Row(
                 children: [
                   Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
                   SizedBox(width: 5),
-                  Text("Sair",
-                      style: GoogleFonts.poppins(color: TemaUtil.laranja02)),
+                  Text("Sair", style: GoogleFonts.poppins(color: TemaUtil.laranja02)),
                   SizedBox(width: 5),
                 ],
               ),
@@ -122,8 +118,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
                   children: [
                     Text(
                       'Questão ${index + 1} ',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
                       'de ${store.provaCompleta!.questoes!.length}',
@@ -134,11 +129,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
                 SizedBox(height: 8),
                 HtmlWidget(
                   tratarArquivos(questao.titulo ?? ''),
-                  textStyle:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
-                    Uint8List image = base64.decode(
-                        imageMetadata.sources.first.url.split(',').last);
+                    Uint8List image = base64.decode(imageMetadata.sources.first.url.split(',').last);
 
                     _showImage(context, image);
                   },
@@ -146,8 +139,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
                 SizedBox(height: 8),
                 HtmlWidget(
                   tratarArquivos(questao.descricao ?? ''),
-                  textStyle:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
                     print(imageMetadata.sources.first.url);
                   },
@@ -180,13 +172,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
               ),
               Observer(
                 builder: (context) {
-                  if (store.questaoAtual <
-                      store.provaCompleta!.questoes!.length) {
+                  if (store.questaoAtual < store.provaCompleta!.questoes!.length) {
                     return BotaoPadraoWidget(
                       textoBotao: 'Proxima questão',
                       onPressed: () async {
-                        await store.adicionarResposta(
-                            questao.id!, store.resposta!);
+                        await store.adicionarResposta(questao.id!, store.resposta!);
                         listaQuestoesController.nextPage(
                           duration: Duration(milliseconds: 300),
                           curve: Curves.easeIn,
@@ -199,7 +189,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
                   return BotaoPadraoWidget(
                     textoBotao: 'Finalizar prova',
                     onPressed: () {
-                      print('Finalizar prova');
+                      store.questaoAtual = 0;
+                      Navigator.of(context).pop();
                     },
                   );
                 },
@@ -251,10 +242,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
                         ),
                         Text(
                           'Fechar',
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: TemaUtil.laranja02,
-                              fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 18, color: TemaUtil.laranja02, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -327,17 +315,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
   }
 
   _buildAlternativas(ProvaQuestaoModel questao) {
-    List<ProvaAlternativaModel> alternativasQuestoes = store
-        .provaCompleta!.alternativas!
-        .where((element) => element.questaoId == questao.id)
-        .toList();
+    List<ProvaAlternativaModel> alternativasQuestoes =
+        store.provaCompleta!.alternativas!.where((element) => element.questaoId == questao.id).toList();
 
     alternativasQuestoes.sort((a, b) => a.ordem!.compareTo(b.ordem!));
 
     return Column(
-      children: alternativasQuestoes
-          .map((e) => _buildAlternativa(e.id, e.numeracao, e.descricao))
-          .toList(),
+      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, e.descricao)).toList(),
     );
   }
 
@@ -392,13 +376,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaStore> {
 
     for (var i = 0; i < matches.length; i++) {
       var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo = store.provaCompleta!.arquivos!
-          .where((arq) => arq.id == int.parse(arquivoId.split("#")[1]))
-          .first;
+      var arquivo = store.provaCompleta!.arquivos!.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
       var obterTipo = arquivo.caminho!.split(".");
 
-      texto = texto.replaceAll(arquivoId,
-          "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
     return texto;
     // #123456#
