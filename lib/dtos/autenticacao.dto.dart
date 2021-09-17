@@ -1,7 +1,6 @@
-class AutenticarViewModel {
+class AutenticacaoDTO {
   String codigoEOL = "";
   String senha = "";
-  bool carregando = false;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
