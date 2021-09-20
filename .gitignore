@@ -4,6 +4,7 @@ google-services.json
 
 # Miscellaneous
 *.g.dart
+*.chopper.dart
 *.class
 *.log
 *.pyc

@@ -45,9 +45,7 @@ jobs:
       # Upload generated apk to the artifacts.
       - uses: actions/upload-artifact@v1
         with:
-          tag: ${{ env.APP_VERSION }}
           name: ${{ env.APP_VERSION }}
-          token: ${{ secrets.GITHUB_TOKEN }}
           path: build/app/outputs/flutter-apk/app-release.apk
 
    
