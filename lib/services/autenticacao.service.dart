@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:appserap/dtos/autenticacao.dto.dart';
-import 'package:appserap/models/token.model.dart';
+import 'package:appserap/dtos/rest/error.dto.dart';
+import 'package:appserap/dtos/rest/respose.dto.dart';
 import 'package:appserap/utils/api.util.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -10,7 +11,9 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 class AutenticacaoService {
   final _api = GetIt.I.get<ApiUtil>();
 
-  Future<TokenModel> autenticar(AutenticacaoDTO dto) async {
+  Future<ResponseDTO> autenticar(AutenticacaoDTO dto) async {
+    ResponseDTO responseDTO = new ResponseDTO(success: false, content: "", errors: []);
+
     try {
       final response = await _api.dio.post(
         '/v1/autenticacao',
@@ -18,23 +21,21 @@ class AutenticacaoService {
       );
 
       if (response.statusCode == 200) {
-        var tokenModel = TokenModel.fromJson(response.data);
-        return tokenModel;
+        responseDTO.success = true;
+        responseDTO.content = response.data;
       }
-
-      return new TokenModel(token: "", dataHoraExpiracao: "");
     } on DioError catch (e, stackTrace) {
       switch (e.response?.statusCode) {
         case 411:
-          _loginStore.setMensagemErroEOL(e.response?.data?['mensagens'][0]);
+          responseDTO.errors.add(new ErrorDTO(code: 411, message: e.response?.data?['mensagens'][0]));
           break;
         case 412:
-          _loginStore.setMensagemErroSenha(e.response?.data['mensagens'][0]);
+          responseDTO.errors.add(new ErrorDTO(code: 412, message: e.response?.data?['mensagens'][0]));
           break;
       }
 
       Sentry.captureException(e, stackTrace: stackTrace);
-      return new TokenModel(token: "", dataHoraExpiracao: "");
     }
+    return responseDTO;
   }
 }

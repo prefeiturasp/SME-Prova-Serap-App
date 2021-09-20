@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:dio/adapter.dart';
@@ -13,7 +13,7 @@ class ApiUtil {
   //  dio instance to request token
   late Dio tokenDio;
 
-  final principalStore = GetIt.I.get<PrincipalStore>();
+  final usuarioStore = GetIt.I.get<UsuarioStore>();
 
   ApiUtil() {
     dio = new Dio();
@@ -39,8 +39,8 @@ class ApiUtil {
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          if (principalStore.usuario.token != "") {
-            var headerToken = 'Bearer ${principalStore.usuario.token}';
+          if (usuarioStore.token != "") {
+            var headerToken = 'Bearer ${usuarioStore.token}';
             options.headers['Authorization'] = headerToken;
           }
           return handler.next(options);
@@ -87,7 +87,7 @@ class ApiUtil {
       dio.interceptors.responseLock.lock();
       dio.interceptors.errorLock.lock();
 
-      final refreshToken = principalStore.usuario.token;
+      final refreshToken = usuarioStore.token;
       final response = await tokenDio.post('/v1/autenticacao/revalidar', data: {'token': refreshToken});
 
       dio.unlock();
@@ -95,7 +95,7 @@ class ApiUtil {
       dio.interceptors.errorLock.unlock();
 
       if (response.statusCode == 200) {
-        principalStore.usuario.token = response.data['token'];
+        usuarioStore.token = response.data['token'];
       }
       return true;
     } catch (e) {
@@ -104,7 +104,7 @@ class ApiUtil {
       dio.interceptors.errorLock.unlock();
 
       // TODO - Ainda não esta 100%!
-      await principalStore.sair();
+      //await principalStore.sair();
       return false;
     }
   }
