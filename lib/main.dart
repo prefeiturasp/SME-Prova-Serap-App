@@ -56,14 +56,15 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
 
-  await SentryFlutter.init(
-    (options) => options
-      ..dsn = AppConfigReader.getSentryDsn()
-      ..environment = AppConfigReader.getEnvironment()
-      ..debug = true
-      ..diagnosticLevel = SentryLevel.warning,
-    appRunner: () => runApp(MyAppMobile()),
-  );
+  // await SentryFlutter.init(
+  //   (options) => options
+  //     ..dsn = AppConfigReader.getSentryDsn()
+  //     ..environment = AppConfigReader.getEnvironment()
+  //     ..debug = true
+  //     ..diagnosticLevel = SentryLevel.warning,
+  //   appRunner: () => runApp(MyAppMobile()),
+  // );
+  runApp(MyAppMobile());
 }
 
 class MyAppMobile extends StatelessWidget {

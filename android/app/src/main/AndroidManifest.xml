@@ -2,7 +2,7 @@
     package="br.gov.sp.prefeitura.sme.appserap">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="appserap"
+        android:label="SERAp Estudantes"
         android:icon="@mipmap/ic_launcher"
         android:name="androidx.multidex.MultiDexApplication"
         >
