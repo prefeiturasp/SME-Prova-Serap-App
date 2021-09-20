@@ -10,6 +10,9 @@ abstract class _UsuarioStoreBase with Store {
   String? token;
 
   @observable
+  String? tokenDataHoraExpiracao;
+
+  @observable
   String? nome;
 
   @observable
@@ -17,6 +20,13 @@ abstract class _UsuarioStoreBase with Store {
 
   @observable
   String? ano;
+
+  void dispose() {
+    this.nome = null;
+    this.token = null;
+    this.codigoEOL = null;
+    this.ano = null;
+  }
 
   @action
   Future<void> carregarUsuario() async {
@@ -39,22 +49,5 @@ abstract class _UsuarioStoreBase with Store {
     await prefs.setString('serapUsuarioToken', token);
     await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
     await prefs.setString('serapUsuarioAno', ano);
-  }
-
-  @action
-  Future<void> limparUsuario() async {
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-  }
-
-  @observable
-  String? mensagem = "";
-
-  @action
-  Future<void> obterMensagem() async {
-    var prefs = await SharedPreferences.getInstance();
-    print(prefs.getString("testeMensagem").runtimeType);
-    this.mensagem = prefs.getString("testeMensagem");
-    print(mensagem);
   }
 }

@@ -15,7 +15,7 @@ abstract class AppConfigReader {
 
   static String getSentryDsn() {
     return _config["sentryDsn"] as String;
-  } 
+  }
 
   static String getApiHost() {
     return _config["apiHost"] as String;

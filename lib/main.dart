@@ -1,20 +1,18 @@
 import 'dart:async';
 
-import 'package:appserap/controllers/prova.controller.dart';
-import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/models/prova_detalhe.model.dart';
-import 'package:appserap/services/notification_service.dart';
-import 'package:appserap/views/splash_screen.view.dart';
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/utils/notificacao.util.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
-import 'ioc/dependencias.ioc.dart';
+import 'dependencias.ioc.dart';
 import 'utils/app_config.util.dart';
 
 Future initializeAppConfig() async {
@@ -29,27 +27,18 @@ Future initializeAppConfig() async {
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('RECEBEU UMA MENSAGEM:');
-
-  final _provaController = GetIt.I.get<ProvaController>();
-  var provas = await _provaController.obterProvas();
-
-  for (ProvaModel prova in provas) {
-    ProvaDetalheModel? detalhes =
-        await _provaController.obterDetalhesProva(prova.id);
-    _provaController.downloadProva(prova, detalhes);
-    print("BATENDO AQUI IHUUUUL");
-  }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  initializeDateFormatting();
+  Intl.defaultLocale = 'pt_BR';
+
   await initializeAppConfig();
 
   final ioc = new DependenciasIoC();
-  ioc.registrarStores();
-  ioc.registrarServices();
-  ioc.registrarRepositories();
-  ioc.registrarControllers();
+  ioc.registrar();
 
   try {
     await Firebase.initializeApp();
@@ -57,7 +46,7 @@ void main() async {
     FirebaseMessaging.instance.subscribeToTopic('1');
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (e) {
-    print('\n\nFailed to initialize\n\n');
+    print('\n\nFalha ao inicializar\n\n');
   }
 
   // Intl.defaultLocale = 'pt_BR';
@@ -71,6 +60,7 @@ void main() async {
     (options) => options
       ..dsn = AppConfigReader.getSentryDsn()
       ..environment = AppConfigReader.getEnvironment()
+      ..debug = true
       ..diagnosticLevel = SentryLevel.warning,
     appRunner: () => runApp(MyAppMobile()),
   );
@@ -86,7 +76,7 @@ class MyAppMobile extends StatelessWidget {
       ),
       locale: Locale('pt', 'BR'),
       home: SplashScreenView(),
-      scaffoldMessengerKey: NotificationService.messengerKey,
+      scaffoldMessengerKey: NotificacaoUtil.messengerKey,
     );
   }
 }
