@@ -332,7 +332,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
 
     for (var i = 0; i < matches.length; i++) {
       var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo = store.arquivos!.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
+      var arquivo = store.arquivos.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
       var obterTipo = arquivo.caminho!.split(".");
 
       texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
