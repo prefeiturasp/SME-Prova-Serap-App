@@ -1,0 +1,1 @@
+enum EnumTipoQuestao { multiplaEscolha, descritiva }

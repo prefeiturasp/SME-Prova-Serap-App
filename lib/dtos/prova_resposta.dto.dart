@@ -1,21 +1,19 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'prova_resposta.dto.g.dart';
+
+@JsonSerializable()
 class ProvaRespostaDTO {
-  int questaoId = 0;
-  int resposta = 0;
+  int questaoId;
+  int? respostaAlternativa;
+  String? respostaDescritiva;
 
   ProvaRespostaDTO({
     required this.questaoId,
-    required this.resposta,
+    this.respostaAlternativa,
+    this.respostaDescritiva,
   });
 
-  ProvaRespostaDTO.fromJson(Map<String, dynamic> json) {
-    questaoId = json['questaoId'];
-    resposta = json['resposta'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['questaoId'] = this.questaoId;
-    data['resposta'] = this.resposta;
-    return data;
-  }
+  static const fromJson = _$ProvaRespostaDTOFromJson;
+  Map<String, dynamic> toJson() => _$ProvaRespostaDTOToJson(this);
 }

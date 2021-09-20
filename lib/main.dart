@@ -1,6 +1,6 @@
-import 'dart:async';
-
+import 'package:appserap/dependencias.ioc.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -10,12 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:logging/logging.dart';
 
-import 'dependencias.ioc.dart';
-import 'utils/app_config.util.dart';
-
-Future initializeAppConfig() async {
+Future setupAppConfig() async {
   try {
     await AppConfigReader.initialize();
   } catch (error) {
@@ -29,16 +26,35 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('RECEBEU UMA MENSAGEM:');
 }
 
-void main() async {
+void setupLogging() {
+  Logger.root.level = Level.INFO;
+  Logger.root.onRecord.listen((rec) {
+    print('(${rec.loggerName}) ${rec.level.name}: ${rec.time}: ${rec.message}');
+  });
+}
+
+void registerFonts() {
+  //Registrar fontes
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
+}
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  initializeDateFormatting();
-  Intl.defaultLocale = 'pt_BR';
+  registerFonts();
 
-  await initializeAppConfig();
+  setupLogging();
 
   final ioc = new DependenciasIoC();
   ioc.registrar();
+
+  await setupAppConfig();
+
+  initializeDateFormatting();
+  Intl.defaultLocale = 'pt_BR';
 
   try {
     await Firebase.initializeApp();
@@ -49,21 +65,15 @@ void main() async {
     print('\n\nFalha ao inicializar\n\n');
   }
 
-  // Intl.defaultLocale = 'pt_BR';
-
-  LicenseRegistry.addLicense(() async* {
-    final license = await rootBundle.loadString('google_fonts/OFL.txt');
-    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
-  });
-
-  await SentryFlutter.init(
-    (options) => options
-      ..dsn = AppConfigReader.getSentryDsn()
-      ..environment = AppConfigReader.getEnvironment()
-      ..debug = true
-      ..diagnosticLevel = SentryLevel.warning,
-    appRunner: () => runApp(MyApp()),
-  );
+  // await SentryFlutter.init(
+  //   (options) => options
+  //     ..dsn = AppConfigReader.getSentryDsn()
+  //     ..environment = AppConfigReader.getEnvironment()
+  //     ..debug = true
+  //     ..diagnosticLevel = SentryLevel.warning,
+  //   appRunner: () => runApp(MyApp()),
+  // );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

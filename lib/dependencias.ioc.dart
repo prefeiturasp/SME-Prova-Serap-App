@@ -1,16 +1,11 @@
-import 'package:appserap/services/autenticacao.service.dart';
-import 'package:appserap/services/prova.service.dart';
-import 'package:appserap/services/usuario.service.dart';
-import 'package:appserap/services/versao.service.dart';
-import 'package:appserap/stores/autenticacao.store.dart';
-import 'package:appserap/stores/autenticacao_erro.store.dart';
+import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/home.store.dart';
+import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/prova_atual.store.dart';
-import 'package:appserap/stores/provas.store.dart';
+import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
-import 'package:appserap/utils/api.util.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DependenciasIoC {
   late GetIt getIt;
@@ -20,20 +15,20 @@ class DependenciasIoC {
   }
 
   registrar() {
-    getIt.registerSingleton<UsuarioStore>(UsuarioStore());
+    GetIt.I.registerSingletonAsync<SharedPreferences>(() => SharedPreferences.getInstance());
 
-    getIt.registerSingleton<ApiUtil>(ApiUtil());
-    getIt.registerSingleton<VersaoService>(VersaoService());
+    GetIt.I.registerSingleton<ApiService>(ApiService.build(
+      ConnectionOptions(
+        baseUrl: 'https://dev-serap-estudante.sme.prefeitura.sp.gov.br/api/v1',
+        // token:
+        //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSQSI6IjU3MjA4MjgiLCJBTk8iOiI0IiwibmJmIjoxNjMxOTA2OTI1LCJleHAiOjE2MzE5MTQxMjUsImlzcyI6IlNlcmFwIiwiYXVkIjoiUHJlZmVpdHVyYSBkZSBTYW8gUGF1bG8ifQ.QujyjI0bJv2R6i2vpdFd--IDwdymTzjFVsxp-7QKTpY',
+      ),
+    ));
 
-    getIt.registerSingleton<UsuarioService>(UsuarioService());
-    getIt.registerSingleton<AutenticacaoService>(AutenticacaoService());
-    getIt.registerSingleton<PrincipalStore>(PrincipalStore());
-    getIt.registerSingleton<AutenticacaoErroStore>(AutenticacaoErroStore());
-    getIt.registerSingleton<AutenticacaoStore>(AutenticacaoStore());
-
-    getIt.registerSingleton<ProvaService>(ProvaService());
-    getIt.registerSingleton<ProvasStore>(ProvasStore());
-    getIt.registerSingleton<ProvaAtualStore>(ProvaAtualStore());
-    getIt.registerSingleton<HomeStore>(HomeStore());
+    GetIt.I.registerSingleton<UsuarioStore>(UsuarioStore());
+    GetIt.I.registerSingleton<PrincipalStore>(PrincipalStore());
+    GetIt.I.registerSingleton<LoginStore>(LoginStore());
+    GetIt.I.registerSingleton<HomeStore>(HomeStore());
+    GetIt.I.registerSingleton<ProvaViewStore>(ProvaViewStore());
   }
 }
