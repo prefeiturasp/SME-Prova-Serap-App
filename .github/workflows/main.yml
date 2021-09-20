@@ -34,8 +34,7 @@ jobs:
         env:
           FIREBASE_SECRET: ${{ secrets.FIREBASE_SECRET }}
           APP_CONFIG: ${{ secrets.APP_CONFIG }}
-      - run: echo $FIREBASE_SECRET > android/app/google-services.json
-      - run: echo $APP_CONFIG > config/app_config.json
+        run: echo $FIREBASE_SECRET > android/app/google-services.json && echo $APP_CONFIG > config/app_config.json
       - run: flutter pub get   
       - run: flutter pub run build_runner build --delete-conflicting-outputs
       - run: flutter build apk --target-platform=android-arm --split-per-abi
