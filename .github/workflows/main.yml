@@ -37,13 +37,13 @@ jobs:
         run: echo $FIREBASE_SECRET > android/app/google-services.json && mkdir -p config && echo $APP_CONFIG > config/app_config.json
       - run: flutter pub get   
       - run: flutter pub run build_runner build --delete-conflicting-outputs
-      - run: flutter build apk --target-platform=android-arm --split-per-abi
+      - run: flutter build apk
       # - run: flutter build web
 
       # Upload generated apk to the artifacts.
       - uses: actions/upload-artifact@v1
         with:
           name: release-apk
-          path: build/app/outputs/apk/release/app-armeabi-v7a-release.apk
+          path: build/app/outputs/apk/release/apk-release.apk
 
    

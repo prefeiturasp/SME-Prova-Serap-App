@@ -2,6 +2,7 @@ import 'package:appserap/dtos/autenticacao.dto.dart';
 import 'package:appserap/stores/autenticacao.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -179,9 +180,20 @@ class _LoginViewState extends State<LoginView> {
       persistentFooterButtons: [
         Center(
           child: Observer(
-            builder: (_) => Text(
-              "${_principalStore.versaoApp}",
-            ),
+            builder: (_) {
+              var cor = TemaUtil.preto;
+
+              if (_principalStore.status == ConnectivityResult.none) {
+                cor = TemaUtil.vermelhoErro;
+              }
+
+              return Text(
+                "${_principalStore.versao}",
+                style: TextStyle(
+                  color: cor,
+                ),
+              );
+            },
           ),
         )
       ],
