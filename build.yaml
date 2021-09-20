@@ -1,0 +1,16 @@
+targets:
+    $default:
+        builders:
+            mobx_codegen|mobx_generator:
+                enabled: true
+                generate_for:
+                    - lib/**/*.store.dart 
+            chopper_generator:
+                enabled: true
+                generate_for:
+                    - lib/**/*.service.dart 
+            json_serializable:
+                enabled: true
+                generate_for:
+                    - lib/**/*.dto.dart 
+                    - lib/**/*.model.dart 

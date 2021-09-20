@@ -1,3 +1,5 @@
+[![CI](https://github.com/prefeiturasp/SME-Prova-Serap-App/actions/workflows/main.yml/badge.svg)](https://github.com/prefeiturasp/SME-Prova-Serap-App/actions/workflows/main.yml)
+
 # Instalação e Configuração
 
 Para iniciar o desenvolvimento da aplicação primeiro você precisa ter o Flutter instalado.

@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:appserap/dtos/prova_alternativa.dto.dart';
-import 'package:appserap/dtos/prova_questao.dto.dart';
-import 'package:appserap/stores/prova_atual.store.dart';
-import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/models/alternativa.model.dart';
+import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -18,14 +20,14 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
 class ProvaView extends BaseStatefulWidget {
-  const ProvaView({required this.provaId}) : super(title: "Prova");
-  final int provaId;
+  const ProvaView({required this.provaStore}) : super(title: "Prova");
+  final ProvaStore provaStore;
 
   @override
   _ProvaViewState createState() => _ProvaViewState();
 }
 
-class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
+class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
   final PageController listaQuestoesController = PageController(initialPage: 0);
 
   HtmlEditorController controller = HtmlEditorController();
@@ -36,7 +38,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
   @override
   void initState() {
     super.initState();
-    store.carregarProva(this.widget.provaId);
   }
 
   @override
@@ -46,7 +47,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
 
   @override
   Widget builder(BuildContext context) {
-    var questoes = store.questoes;
+    var questoes = widget.provaStore.prova.questoes;
 
     return PageView.builder(
       physics: NeverScrollableScrollPhysics(),
@@ -61,7 +62,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
     );
   }
 
-  Widget _buildQuestoes(ProvaQuestaoDTO questao, int index) {
+  Widget _buildQuestoes(Questao questao, int index) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -77,14 +78,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      'de ${store.questoes.length}',
+                      'de ${widget.provaStore.prova.questoes.length}',
                       style: TextStyle(fontSize: 20, color: Colors.grey),
                     )
                   ],
                 ),
                 SizedBox(height: 8),
                 HtmlWidget(
-                  tratarArquivos(questao.titulo ?? ''),
+                  tratarArquivos(questao.titulo, questao.arquivos),
                   textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
                     Uint8List image = base64.decode(imageMetadata.sources.first.url.split(',').last);
@@ -94,7 +95,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
                 ),
                 SizedBox(height: 8),
                 HtmlWidget(
-                  tratarArquivos(questao.descricao ?? ''),
+                  tratarArquivos(questao.descricao, questao.arquivos),
                   textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
                     print(imageMetadata.sources.first.url);
@@ -128,11 +129,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
               ),
               Observer(
                 builder: (context) {
-                  if (store.questaoAtual < store.questoes.length) {
+                  if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
                     return BotaoDefaultWidget(
                       textoBotao: 'Proxima questão',
                       onPressed: () async {
-                        await store.adicionarResposta(questao.id!, store.resposta!);
+                        await store.adicionarResposta(questao.id, store.resposta!);
                         listaQuestoesController.nextPage(
                           duration: Duration(milliseconds: 300),
                           curve: Curves.easeIn,
@@ -167,7 +168,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
         return AlertDialog(
           insetPadding: EdgeInsets.zero,
           backgroundColor: Colors.black.withOpacity(0.5),
-          content: Container(
+          content: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: Stack(
@@ -212,7 +213,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
     );
   }
 
-  Widget _buildResposta(ProvaQuestaoDTO questao) {
+  Widget _buildResposta(Questao questao) {
     switch (questao.tipo) {
       case EnumTipoQuestao.multiplaEscolha:
         return _buildAlternativas(questao);
@@ -224,7 +225,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
     }
   }
 
-  _buildDescritiva(ProvaQuestaoDTO questao) {
+  _buildDescritiva(Questao questao) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -270,11 +271,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
     );
   }
 
-  _buildAlternativas(ProvaQuestaoDTO questao) {
-    List<ProvaAlternativaDTO> alternativasQuestoes =
-        store.alternativas.where((element) => element.questaoId == questao.id).toList();
+  _buildAlternativas(Questao questao) {
+    List<Alternativa> alternativasQuestoes = questao.alternativas;
 
-    alternativasQuestoes.sort((a, b) => a.ordem!.compareTo(b.ordem!));
+    alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
 
     return Column(
       children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, e.descricao)).toList(),
@@ -322,7 +322,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
     );
   }
 
-  String tratarArquivos(String texto) {
+  String tratarArquivos(String texto, List<Arquivo> arquivos) {
     texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
       return '<center>${match.group(0)}</center>';
     });
@@ -332,8 +332,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaAtualStore> {
 
     for (var i = 0; i < matches.length; i++) {
       var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo = store.arquivos.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
-      var obterTipo = arquivo.caminho!.split(".");
+      var arquivo = arquivos.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
+      var obterTipo = arquivo.caminho.split(".");
 
       texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }

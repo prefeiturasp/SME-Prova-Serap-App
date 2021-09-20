@@ -1,16 +1,17 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'autenticacao.dto.g.dart';
+
+@JsonSerializable()
 class AutenticacaoDTO {
-  String codigoEOL = "";
-  String senha = "";
+  String login;
+  String senha;
 
-  AutenticacaoDTO({
-    required this.codigoEOL,
-    required this.senha,
-  });
+  AutenticacaoDTO(
+    this.login,
+    this.senha,
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['login'] = this.codigoEOL;
-    data['senha'] = this.senha;
-    return data;
-  }
+  static const fromJson = _$AutenticacaoDTOFromJson;
+  Map<String, dynamic> toJson() => _$AutenticacaoDTOToJson(this);
 }
