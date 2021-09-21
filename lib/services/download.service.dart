@@ -126,7 +126,7 @@ class DownloadService with Loggable {
     Prova prova = await getProva();
     downloadAtual = downloads.length - getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length;
 
-    if (prova.status == EnumDownloadStatus.CONCLUIDO) {
+    if (prova.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
@@ -139,18 +139,18 @@ class DownloadService with Loggable {
     for (var i = 0; i < downloads.length; i++) {
       var download = downloads[i];
 
-      if (download.status != EnumDownloadStatus.CONCLUIDO) {
+      if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
         startTimer();
         try {
           prova = await getProva();
-          prova.status = EnumDownloadStatus.BAIXANDO;
+          prova.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-          onChangeStatusCallback(prova.status, getPorcentagem());
+          onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
           onTempoPrevistoChangeCallback(getTempoPrevisto());
 
           switch (download.tipo) {
             case EnumDownloadTipo.QUESTAO:
-              download.status = EnumDownloadStatus.BAIXANDO;
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Questao? questao = prova.questoes.firstWhereOrNull((element) => element.id == download.id);
 
@@ -173,7 +173,7 @@ class DownloadService with Loggable {
 
               break;
             case EnumDownloadTipo.ALTERNATIVA:
-              download.status = EnumDownloadStatus.BAIXANDO;
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Response<AlternativaResponseDTO> response =
                   await apiService.alternativa.getAlternativa(idAlternativa: download.id);
@@ -192,7 +192,7 @@ class DownloadService with Loggable {
                     questaoId: alternativa.questaoId,
                   ));
 
-                  download.status = EnumDownloadStatus.CONCLUIDO;
+                  download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
                 } else {
                   warning('Alternativa ${download.id} nao vinculado a nenhuma questão!');
                 }
@@ -200,7 +200,7 @@ class DownloadService with Loggable {
 
               break;
             case EnumDownloadTipo.ARQUIVO:
-              download.status = EnumDownloadStatus.BAIXANDO;
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Questao? questao = prova.questoes.firstWhereOrNull((element) =>
                   element.titulo.contains(download.id.toString()) ||
@@ -232,18 +232,18 @@ class DownloadService with Loggable {
               break;
           }
 
-          download.status = EnumDownloadStatus.CONCLUIDO;
+          download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
 
           downloadAtual = i;
-          prova.progressoDownload = getPorcentagem();
+          prova.downloadProgresso = getPorcentagem();
 
           await saveProva(prova);
           await saveDownloads();
         } catch (e, stak) {
           severe('ERRO: ', e, stak);
-          download.status = EnumDownloadStatus.ERRO;
-          prova.status = EnumDownloadStatus.ERRO;
-          onChangeStatusCallback(prova.status, getPorcentagem());
+          download.downloadStatus = EnumDownloadStatus.ERRO;
+          prova.downloadStatus = EnumDownloadStatus.ERRO;
+          onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
           onTempoPrevistoChangeCallback(getTempoPrevisto());
         }
       }
@@ -251,9 +251,9 @@ class DownloadService with Loggable {
 
     // Baixou todos os dados
     if (getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length == downloads.length) {
-      prova.status = EnumDownloadStatus.CONCLUIDO;
+      prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
 
-      onChangeStatusCallback(prova.status, getPorcentagem());
+      onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
       onTempoPrevistoChangeCallback(getTempoPrevisto());
 
       await saveProva(prova);
@@ -267,7 +267,7 @@ class DownloadService with Loggable {
   }
 
   double getPorcentagem() {
-    int baixado = downloads.where((element) => element.status == EnumDownloadStatus.CONCLUIDO).length;
+    int baixado = downloads.where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO).length;
 
     return baixado / downloads.length;
   }
@@ -303,7 +303,7 @@ class DownloadService with Loggable {
   }
 
   List<DownloadProva> getDownlodsByStatus(EnumDownloadStatus status) {
-    return downloads.where((element) => element.status == status).toList();
+    return downloads.where((element) => element.downloadStatus == status).toList();
   }
 
   Future<Prova> getProva() async {
@@ -327,12 +327,12 @@ class DownloadService with Loggable {
 
   Future<void> pause() async {
     for (var download in downloads) {
-      if (download.status != EnumDownloadStatus.CONCLUIDO) {
-        download.status = EnumDownloadStatus.PAUSADO;
+      if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+        download.downloadStatus = EnumDownloadStatus.PAUSADO;
       }
     }
     var prova = await getProva();
-    prova.status = EnumDownloadStatus.PAUSADO;
+    prova.downloadStatus = EnumDownloadStatus.PAUSADO;
 
     await saveProva(prova);
     await saveDownloads();

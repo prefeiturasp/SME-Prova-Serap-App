@@ -9,13 +9,13 @@ part 'download_prova.model.g.dart';
 class DownloadProva {
   int id;
   EnumDownloadTipo tipo;
-  EnumDownloadStatus status;
+  EnumDownloadStatus downloadStatus;
   DateTime dataHoraInicio;
 
   DownloadProva({
     required this.id,
     required this.tipo,
-    this.status = EnumDownloadStatus.NAO_INICIADO,
+    this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
     required this.dataHoraInicio,
   });
 
@@ -24,6 +24,6 @@ class DownloadProva {
 
   @override
   String toString() {
-    return 'DownloadProva(id: $id, tipo: $tipo, status: $status, dataHoraInicio: $dataHoraInicio)';
+    return 'DownloadProva(id: $id, tipo: $tipo, downloadStatus: $downloadStatus, dataHoraInicio: $dataHoraInicio)';
   }
 }
