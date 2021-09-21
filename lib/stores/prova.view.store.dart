@@ -1,4 +1,5 @@
 import 'package:appserap/dtos/prova_resposta.dto.dart';
+import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:mobx/mobx.dart';
 
 part 'prova.view.store.g.dart';
@@ -13,10 +14,32 @@ abstract class _ProvaViewStoreBase with Store {
   int? resposta = 1;
 
   @observable
-  List<ProvaRespostaDTO> respostas = [];
+  ObservableList<ProvaResposta> respostas = ObservableList<ProvaResposta>();
+
+  ReactionDisposer? _disposer;
+
+  setup() {
+    _disposer = reaction((_) => respostas.length, onChangeRespostas);
+  }
+
+  void dispose() {
+    _disposer!();
+  }
+
+  @action
+  onChangeRespostas(int tamanho) {
+    print(tamanho);
+  }
 
   @action
   adicionarResposta(int questaoId, int resposta) {
-    respostas.add(ProvaRespostaDTO(questaoId: questaoId, respostaAlternativa: resposta));
+    respostas.add(
+      ProvaResposta(
+        questaoId: questaoId,
+        alternativaId: resposta,
+        sincronizado: false,
+        dataHoraResposta: DateTime.now(),
+      ),
+    );
   }
 }

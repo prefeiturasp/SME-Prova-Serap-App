@@ -5,13 +5,17 @@ part 'prova_resposta.dto.g.dart';
 @JsonSerializable()
 class ProvaRespostaDTO {
   int questaoId;
-  int? respostaAlternativa;
-  String? respostaDescritiva;
+  int? alternativaId;
+  String? resposta;
+  bool sincronizado = false;
+  int dataHoraRespostaTicks = 0;
 
   ProvaRespostaDTO({
     required this.questaoId,
-    this.respostaAlternativa,
-    this.respostaDescritiva,
+    this.alternativaId,
+    this.resposta,
+    required this.sincronizado,
+    required this.dataHoraRespostaTicks,
   });
 
   static const fromJson = _$ProvaRespostaDTOFromJson;

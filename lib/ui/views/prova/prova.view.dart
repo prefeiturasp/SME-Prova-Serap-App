@@ -37,7 +37,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
   @override
   void initState() {
+    store.setup();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    store.dispose();
+    super.dispose();
   }
 
   @override

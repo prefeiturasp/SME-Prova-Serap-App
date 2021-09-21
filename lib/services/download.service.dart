@@ -8,6 +8,7 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -20,6 +21,7 @@ import 'package:appserap/services/api.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:collection/collection.dart';
+import 'package:asuka/asuka.dart' as asuka;
 
 class Loggable<T> {
   var log = Logger(T.toString());
@@ -41,55 +43,59 @@ class DownloadService with Loggable {
   Future<void> configure() async {
     ApiService apiService = GetIt.I.get();
 
-    Response<ProvaDetalhesResponseDTO> response = await apiService.prova.getResumoProva(idProva: idProva);
+    try {
+      Response<ProvaDetalhesResponseDTO> response = await apiService.prova.getResumoProva(idProva: idProva);
 
-    if (!response.isSuccessful) {
-      return;
-    }
-
-    var provaDetalhes = response.body!;
-
-    await loadDownloads();
-
-    for (var idQuestao in provaDetalhes.questoesId) {
-      if (!containsId(idQuestao)) {
-        downloads.add(
-          DownloadProva(
-            tipo: EnumDownloadTipo.QUESTAO,
-            id: idQuestao,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
+      if (!response.isSuccessful) {
+        return;
       }
-    }
 
-    for (var idArquivo in provaDetalhes.arquivosId) {
-      if (!containsId(idArquivo)) {
-        downloads.add(
-          DownloadProva(
-            tipo: EnumDownloadTipo.ARQUIVO,
-            id: idArquivo,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
+      var provaDetalhes = response.body!;
+
+      await loadDownloads();
+
+      for (var idQuestao in provaDetalhes.questoesId) {
+        if (!containsId(idQuestao)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.QUESTAO,
+              id: idQuestao,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
       }
-    }
 
-    for (var idAlternativa in provaDetalhes.alternativasId) {
-      if (!containsId(idAlternativa)) {
-        downloads.add(
-          DownloadProva(
-            tipo: EnumDownloadTipo.ALTERNATIVA,
-            id: idAlternativa,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
+      for (var idArquivo in provaDetalhes.arquivosId) {
+        if (!containsId(idArquivo)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.ARQUIVO,
+              id: idArquivo,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
       }
-    }
 
-    info('Total de Downloads ${downloads.length}');
-    // TODO salvar download
-    await saveDownloads();
+      for (var idAlternativa in provaDetalhes.alternativasId) {
+        if (!containsId(idAlternativa)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.ALTERNATIVA,
+              id: idAlternativa,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+      info('Total de Downloads ${downloads.length}');
+      // TODO salvar download
+      await saveDownloads();
+    } catch (e) {
+      AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
+    }
   }
 
   Future<void> startDownload(Function(EnumDownloadStatus, double, double) onChangeStatus) async {
