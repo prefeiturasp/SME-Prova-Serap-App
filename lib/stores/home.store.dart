@@ -93,12 +93,12 @@ abstract class _HomeStoreBase with Store, Loggable {
       provaStore.downloadStatus = prova.downloadStatus;
       provaStore.progressoDownload = prova.downloadProgresso;
       provaStore.status = prova.status;
-
-      if (provaStore.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
-        provaStore.iniciarDownload();
-      }
     } else {
       await salvaProvaCache(provaStore.prova);
+    }
+
+    if (provaStore.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+      provaStore.iniciarDownload();
     }
   }
 
