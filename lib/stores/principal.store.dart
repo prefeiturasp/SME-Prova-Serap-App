@@ -27,7 +27,7 @@ abstract class _PrincipalStoreBase with Store {
   }
 
   @observable
-  ConnectivityResult status = ConnectivityResult.none;
+  ConnectivityResult status = ConnectivityResult.wifi;
 
   @observable
   String versaoApp = "Versão 0";

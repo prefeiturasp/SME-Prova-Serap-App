@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:appserap/dtos/error.response.dto.dart';
-import 'package:appserap/services/download.service.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:chopper/chopper.dart';
 
 class JsonErrorConverter with Loggable implements ErrorConverter {

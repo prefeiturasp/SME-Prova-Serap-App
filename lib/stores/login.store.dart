@@ -1,6 +1,6 @@
 import 'package:appserap/dtos/error.response.dto.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
-import 'package:appserap/services/download.service.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
