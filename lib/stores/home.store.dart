@@ -59,8 +59,8 @@ abstract class _HomeStoreBase with Store, Loggable {
           prova: provaBanco,
         ));
       }
-    } catch (e) {
-      severe(e);
+    } catch (e, stacktrace) {
+      severe(e, stacktrace);
     }
 
     if (provasStore.isNotEmpty) {

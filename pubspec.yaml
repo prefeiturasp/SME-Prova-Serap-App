@@ -36,6 +36,7 @@ dependencies:
   intl: ^0.17.0
   google_fonts: ^2.1.0
   flutter_native_splash: ^1.2.3
+  asuka: ^2.0.0-nullsafety.3
 
   # Firebase
   firebase_messaging: ^10.0.6
