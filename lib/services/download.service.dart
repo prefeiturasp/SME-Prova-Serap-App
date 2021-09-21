@@ -9,6 +9,7 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -21,6 +22,7 @@ import 'package:appserap/services/api.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:collection/collection.dart';
+import 'package:asuka/asuka.dart' as asuka;
 
 class Loggable<T> {
   var log = Logger(T.toString());
@@ -100,6 +102,7 @@ class DownloadService with Loggable {
       // TODO salvar download
       await saveDownloads();
     } catch (e) {
+      AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
       return;
     }
   }

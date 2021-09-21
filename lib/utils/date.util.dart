@@ -80,3 +80,13 @@ DateTime? getDateTime(int? time, {bool isInMillisecond = true, bool isInNum = fa
 
   return dateTime;
 }
+
+int getTicks(DateTime data) {
+  const _epochTicks = 621355968000000000;
+  return data.microsecondsSinceEpoch * 10 + _epochTicks;
+}
+
+
+// extension TicksOnDateTime on DateTime {
+//   int get ticks => ;
+// }
