@@ -89,14 +89,14 @@ abstract class _ProvaStoreBase with Store {
   @action
   Future onChangeConexao(ConnectivityResult? resultado) async {
     if (resultado != ConnectivityResult.none) {
-      if (downloadStatus != EnumDownloadStatus.CONCLUIDO && downloadStatus != EnumDownloadStatus.NAO_INICIADO) {
-        iniciarDownload();
+      if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
+        return;
       }
+
+      iniciarDownload();
     } else {
-      if (downloadStatus != EnumDownloadStatus.NAO_INICIADO) {
-        downloadStatus = EnumDownloadStatus.PAUSADO;
-        downloadService.pause();
-      }
+      downloadStatus = EnumDownloadStatus.PAUSADO;
+      downloadService.pause();
     }
   }
 
