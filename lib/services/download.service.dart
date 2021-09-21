@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -30,11 +31,18 @@ class Loggable<T> {
   var severe = Logger(T.toString()).severe;
 }
 
+typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
+
 class DownloadService with Loggable {
   int idProva;
   List<DownloadProva> downloads = [];
   late DateTime inicio;
   late int downloadAtual;
+
+  late StatusChangeCallback onChangeStatusCallback;
+  late void Function(double tempoPrevisto) onTempoPrevistoChangeCallback;
+
+  Timer? timer;
 
   DownloadService({
     required this.idProva,
@@ -95,10 +103,29 @@ class DownloadService with Loggable {
       await saveDownloads();
     } catch (e) {
       AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
+      return;
     }
   }
 
-  Future<void> startDownload(Function(EnumDownloadStatus, double, double) onChangeStatus) async {
+  onStatusChange(StatusChangeCallback onChangeStatusCallback) {
+    this.onChangeStatusCallback = onChangeStatusCallback;
+  }
+
+  onTempoPrevistoChange(void Function(double tempoPrevisto) onTempoPrevistoChangeCallback) {
+    this.onTempoPrevistoChangeCallback = onTempoPrevistoChangeCallback;
+  }
+
+  startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      onTempoPrevistoChangeCallback(getTempoPrevisto());
+    });
+  }
+
+  cancelTimer() {
+    timer?.cancel();
+  }
+
+  Future<void> startDownload() async {
     Prova prova = await getProva();
     downloadAtual = downloads.length - getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length;
 
@@ -116,11 +143,13 @@ class DownloadService with Loggable {
       var download = downloads[i];
 
       if (download.status != EnumDownloadStatus.CONCLUIDO) {
+        startTimer();
         try {
           prova = await getProva();
           prova.status = EnumDownloadStatus.BAIXANDO;
 
-          onChangeStatus(prova.status, getTempoPrevisto(), getPorcentagem());
+          onChangeStatusCallback(prova.status, getPorcentagem());
+          onTempoPrevistoChangeCallback(getTempoPrevisto());
 
           switch (download.tipo) {
             case EnumDownloadTipo.QUESTAO:
@@ -213,7 +242,8 @@ class DownloadService with Loggable {
           severe('ERRO: ', e, stak);
           download.status = EnumDownloadStatus.ERRO;
           prova.status = EnumDownloadStatus.ERRO;
-          onChangeStatus(prova.status, getTempoPrevisto(), getPorcentagem());
+          onChangeStatusCallback(prova.status, getPorcentagem());
+          onTempoPrevistoChangeCallback(getTempoPrevisto());
         }
       }
     }
@@ -221,13 +251,18 @@ class DownloadService with Loggable {
     // Baixou todos os dados
     if (getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length == downloads.length) {
       prova.status = EnumDownloadStatus.CONCLUIDO;
-      onChangeStatus(prova.status, getTempoPrevisto(), getPorcentagem());
+
+      onChangeStatusCallback(prova.status, getPorcentagem());
+      onTempoPrevistoChangeCallback(getTempoPrevisto());
+
       await saveProva(prova);
       await deleteDownload();
 
       print('Download Concluido');
       print('Tempo total ${DateTime.now().difference(inicio).inSeconds}');
     }
+
+    cancelTimer();
   }
 
   double getPorcentagem() {

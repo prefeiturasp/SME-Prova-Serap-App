@@ -1,18 +1,21 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/services/download.service.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:collection/collection.dart';
 
 part 'home.store.g.dart';
 
 class HomeStore = _HomeStoreBase with _$HomeStore;
 
-abstract class _HomeStoreBase with Store {
+abstract class _HomeStoreBase with Store, Loggable {
   @observable
   ObservableList<ProvaStore> provas = ObservableList<ProvaStore>();
 
@@ -22,52 +25,70 @@ abstract class _HomeStoreBase with Store {
   @action
   carregarProvas() async {
     carregando = true;
+    List<ProvaStore> provasStore = [];
     try {
       var response = await GetIt.I.get<ApiService>().prova.getProvas();
 
-      List<ProvaStore> provasStore = [];
-
       if (response.isSuccessful) {
-        provasStore = response.body!
-            .map((e) => ProvaStore(
-                  id: e.id,
-                  prova: Prova(
-                    id: e.id,
-                    itensQuantidade: e.itensQuantidade,
-                    dataInicio: e.dataInicio,
-                    dataFim: e.dataFim,
-                    descricao: e.descricao,
-                    questoes: [],
-                  ),
-                  status: EnumDownloadStatus.NAO_INICIADO,
-                ))
-            .toList()
-            .asObservable();
-      }
+        var provasResponse = response.body!;
 
-      if (provasStore.isNotEmpty) {
-        for (var prova in provasStore) {
-          prova.setupReactions();
-          await carregaProva(prova);
+        for (var provaResponse in provasResponse) {
+          var provaStore = ProvaStore(
+            id: provaResponse.id,
+            prova: Prova(
+              id: provaResponse.id,
+              itensQuantidade: provaResponse.itensQuantidade,
+              dataInicio: provaResponse.dataInicio,
+              dataFim: provaResponse.dataFim,
+              descricao: provaResponse.descricao,
+              questoes: [],
+            ),
+          );
+          provaStore.status = EnumDownloadStatus.NAO_INICIADO;
+
+          provasStore.add(provaStore);
         }
       }
+    } on SocketException {
+      List<int> ids = listProvasCache();
 
-      provas = ObservableList.of(provasStore);
+      for (var id in ids) {
+        var provaBanco = carregaProvaCache(id)!;
+        provasStore.add(ProvaStore(
+          id: id,
+          prova: provaBanco,
+        ));
+      }
     } catch (e) {
-      print(e);
-    } finally {
-      carregando = false;
+      severe(e);
     }
+
+    if (provasStore.isNotEmpty) {
+      for (var provaStore in provasStore) {
+        provaStore.setupReactions();
+        await carregaProva(provaStore.id, provaStore);
+      }
+    }
+    provas = ObservableList.of(provasStore);
+
+    carregando = false;
   }
 
-  Future<void> carregaProva(ProvaStore provaStore) async {
+  List<int> listProvasCache() {
     SharedPreferences _pref = GetIt.I.get();
 
-    String? provaJson = _pref.getString('prova_${provaStore.id}');
+    var ids = _pref.getKeys().toList().where((element) => element.startsWith('prova_'));
 
-    if (provaJson != null) {
-      var prova = Prova.fromJson(jsonDecode(provaJson));
+    if (ids.isNotEmpty) {
+      return ids.map((e) => e.replaceAll('prova_', '')).map((e) => int.parse(e)).toList();
+    }
+    return [];
+  }
 
+  Future<void> carregaProva(int idProva, ProvaStore provaStore) async {
+    var prova = carregaProvaCache(idProva);
+
+    if (prova != null) {
       provaStore.prova = prova;
       provaStore.status = prova.status;
       provaStore.progressoDownload = prova.progressoDownload;
@@ -76,8 +97,23 @@ abstract class _HomeStoreBase with Store {
         provaStore.iniciarDownload();
       }
     } else {
-      await _pref.setString('prova_${provaStore.prova.id}', jsonEncode(provaStore.prova.toJson()));
+      await salvaProvaCache(provaStore.prova);
     }
+  }
+
+  Prova? carregaProvaCache(int idProva) {
+    var _pref = GetIt.I.get<SharedPreferences>();
+
+    String? provaJson = _pref.getString('prova_$idProva');
+
+    if (provaJson != null) {
+      return Prova.fromJson(jsonDecode(provaJson));
+    }
+  }
+
+  salvaProvaCache(Prova prova) async {
+    var _pref = GetIt.I.get<SharedPreferences>();
+    await _pref.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 
   @action
