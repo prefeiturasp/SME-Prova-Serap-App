@@ -75,8 +75,6 @@ abstract class _ProvaStoreBase with Store {
   @action
   Future onChangeConexao(ConnectivityResult? resultado) async {
     if (resultado != ConnectivityResult.none) {
-      // TODO resumir download
-
       if (status != EnumDownloadStatus.CONCLUIDO) {
         iniciarDownload();
       }

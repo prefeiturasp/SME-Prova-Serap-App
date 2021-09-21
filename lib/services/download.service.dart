@@ -9,7 +9,6 @@ import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:chopper/src/response.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 
@@ -109,8 +108,6 @@ class DownloadService with Loggable {
 
     for (var i = 0; i < downloads.length; i++) {
       var download = downloads[i];
-
-      var statusConexao = await Connectivity().checkConnectivity();
 
       if (download.status != EnumDownloadStatus.CONCLUIDO) {
         try {
