@@ -21,8 +21,6 @@ class DependenciasIoC {
     GetIt.I.registerSingleton<ApiService>(ApiService.build(
       ConnectionOptions(
         baseUrl: AppConfigReader.getApiHost(),
-        // token:
-        //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSQSI6IjU3MjA4MjgiLCJBTk8iOiI0IiwibmJmIjoxNjMxOTA2OTI1LCJleHAiOjE2MzE5MTQxMjUsImlzcyI6IlNlcmFwIiwiYXVkIjoiUHJlZmVpdHVyYSBkZSBTYW8gUGF1bG8ifQ.QujyjI0bJv2R6i2vpdFd--IDwdymTzjFVsxp-7QKTpY',
       ),
     ));
 

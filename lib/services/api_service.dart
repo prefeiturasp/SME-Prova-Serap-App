@@ -6,7 +6,8 @@ import 'package:appserap/interceptors/autenticacao.interceptor.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/services/rest/versao.service.dart';
 import 'package:chopper/chopper.dart';
-import 'package:http/io_client.dart' as http;
+import 'package:http/io_client.dart' as httpio;
+import 'package:http/http.dart' as http;
 
 class ConnectionOptions {
   final String baseUrl;
@@ -24,14 +25,12 @@ class ApiService {
   factory ApiService.build(ConnectionOptions options) {
     final client = ApiService._internal(ChopperClient(
       client: options.baseUrl.contains("10.0.2.2")
-          ? http.IOClient(
+          ? httpio.IOClient(
               HttpClient()
                 ..connectionTimeout = const Duration(seconds: 5)
                 ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true),
             )
-          : http.IOClient(
-              HttpClient()..connectionTimeout = const Duration(seconds: 5),
-            ),
+          : http.Client(),
       baseUrl: options.baseUrl,
       converter: jsonConverter,
       errorConverter: JsonErrorConverter(),
