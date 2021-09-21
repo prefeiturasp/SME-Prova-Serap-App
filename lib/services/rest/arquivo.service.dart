@@ -3,7 +3,7 @@ import 'package:chopper/chopper.dart';
 
 part 'arquivo.service.chopper.dart';
 
-@ChopperApi(baseUrl: "/arquivos")
+@ChopperApi(baseUrl: "/v1/arquivos")
 abstract class ArquivoService extends ChopperService {
   static ArquivoService create([ChopperClient? client]) => _$ArquivoService(client);
 

@@ -2,7 +2,7 @@ import 'package:chopper/chopper.dart';
 
 part 'versao.service.chopper.dart';
 
-@ChopperApi(baseUrl: "/versoes")
+@ChopperApi(baseUrl: "/v1/versoes")
 abstract class VersaoService extends ChopperService {
   static VersaoService create([ChopperClient? client]) => _$VersaoService(client);
 

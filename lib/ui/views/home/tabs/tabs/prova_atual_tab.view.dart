@@ -15,7 +15,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class ProvaAtualTabView extends StatefulWidget {
@@ -238,7 +237,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
   }
 
   Widget _buildSemConexao() {
-    return Container(
+    return SizedBox(
       width: 350,
       height: 40,
       child: Column(
@@ -314,7 +313,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
     var tempoRestante =
         prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes" : "";
 
-    return Container(
+    return SizedBox(
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

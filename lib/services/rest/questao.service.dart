@@ -3,7 +3,7 @@ import 'package:chopper/chopper.dart';
 
 part 'questao.service.chopper.dart';
 
-@ChopperApi(baseUrl: "/questoes")
+@ChopperApi(baseUrl: "/v1/questoes")
 abstract class QuestaoService extends ChopperService {
   static QuestaoService create([ChopperClient? client]) => _$QuestaoService(client);
 

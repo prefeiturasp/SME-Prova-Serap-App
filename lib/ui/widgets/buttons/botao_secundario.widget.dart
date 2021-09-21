@@ -21,7 +21,7 @@ class BotaoSecundarioWidget extends StatelessWidget {
         ),
         child: Center(
           child: Text(
-            this.textoBotao,
+            textoBotao,
             textAlign: TextAlign.center,
             style: TextStyle(color: TemaUtil.pretoSemFoco, fontWeight: FontWeight.bold, fontSize: 16),
           ),

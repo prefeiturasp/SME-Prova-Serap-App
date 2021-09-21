@@ -1,13 +1,9 @@
-import 'dart:async';
-
 import 'package:appserap/converters/error_converter.dart';
 import 'package:appserap/converters/json_conveter.dart';
 import 'package:appserap/interceptors/autenticacao.interceptor.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/services/rest/versao.service.dart';
 import 'package:chopper/chopper.dart';
-import 'package:get_it/get_it.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ConnectionOptions {
   final String baseUrl;
@@ -15,22 +11,6 @@ class ConnectionOptions {
   ConnectionOptions({
     required this.baseUrl,
   });
-}
-
-class CustomAuthInterceptor implements RequestInterceptor {
-  CustomAuthInterceptor();
-
-  @override
-  FutureOr<Request> onRequest(Request request) {
-    SharedPreferences pref = GetIt.I.get();
-    String? token = pref.getString('token');
-
-    if (token != null) {
-      return applyHeaders(request, {'Authorization': 'Bearer $token'});
-    }
-
-    return request;
-  }
 }
 
 class ApiService {
