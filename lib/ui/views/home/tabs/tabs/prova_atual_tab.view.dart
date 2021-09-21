@@ -74,63 +74,6 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
     );
   }
 
-  Widget _formataDataAplicacao(Prova prova) {
-    if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
-      return AutoSizeText(
-        formatEddMMyyyy(prova.dataInicio),
-        maxLines: 2,
-        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-      );
-    }
-
-    if (prova.dataInicio != prova.dataFim) {
-      return Row(
-        children: [
-          AutoSizeText(
-            formatEddMMyyyy(prova.dataInicio),
-            maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          AutoSizeText(
-            " à ",
-            maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16),
-          ),
-          AutoSizeText(
-            formatEddMMyyyy(prova.dataFim!),
-            maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ],
-      );
-    }
-
-    return SizedBox();
-  }
-
-  _buildBotao(ProvaStore provaStore) {
-    if (_principalStore.status == ConnectivityResult.none && provaStore.status != EnumDownloadStatus.CONCLUIDO) {
-      return _buildSemConexao();
-    }
-
-    // Baixar prova
-    if (provaStore.status == EnumDownloadStatus.NAO_INICIADO && _principalStore.status != ConnectivityResult.none) {
-      return _buildBaixarProva(provaStore);
-    }
-
-    // Baixando prova
-    if (provaStore.status == EnumDownloadStatus.BAIXANDO && _principalStore.status != ConnectivityResult.none) {
-      return _buildDownloadProgresso(provaStore);
-    }
-
-    // Prova baixada -- iniciar
-    if (provaStore.status == EnumDownloadStatus.CONCLUIDO) {
-      return _buildIniciarProva(provaStore);
-    }
-
-    return SizedBox.shrink();
-  }
-
   _buildProva(ProvaStore provaStore) {
     return Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -240,7 +183,70 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
     );
   }
 
-  Widget _buildSemConexao() {
+  Widget _formataDataAplicacao(Prova prova) {
+    if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
+      return AutoSizeText(
+        formatEddMMyyyy(prova.dataInicio),
+        maxLines: 2,
+        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+      );
+    }
+
+    if (prova.dataInicio != prova.dataFim) {
+      return Row(
+        children: [
+          AutoSizeText(
+            formatEddMMyyyy(prova.dataInicio),
+            maxLines: 2,
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          AutoSizeText(
+            " à ",
+            maxLines: 2,
+            style: GoogleFonts.poppins(fontSize: 16),
+          ),
+          AutoSizeText(
+            formatEddMMyyyy(prova.dataFim!),
+            maxLines: 2,
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ],
+      );
+    }
+
+    return SizedBox();
+  }
+
+  _buildBotao(ProvaStore provaStore) {
+    if (_principalStore.status == ConnectivityResult.none &&
+        (provaStore.status != EnumDownloadStatus.CONCLUIDO && provaStore.status == EnumDownloadStatus.NAO_INICIADO)) {
+      return _buildSemConexao(provaStore);
+    }
+
+    if (_principalStore.status == ConnectivityResult.none &&
+        (provaStore.status != EnumDownloadStatus.CONCLUIDO && provaStore.status == EnumDownloadStatus.PAUSADO)) {
+      return _buildPausado(provaStore);
+    }
+
+    // Baixar prova
+    if (provaStore.status == EnumDownloadStatus.NAO_INICIADO && _principalStore.status != ConnectivityResult.none) {
+      return _buildBaixarProva(provaStore);
+    }
+
+    // Baixando prova
+    if (provaStore.status == EnumDownloadStatus.BAIXANDO && _principalStore.status != ConnectivityResult.none) {
+      return _buildDownloadProgresso(provaStore);
+    }
+
+    // Prova baixada -- iniciar
+    if (provaStore.status == EnumDownloadStatus.CONCLUIDO) {
+      return _buildIniciarProva(provaStore);
+    }
+
+    return SizedBox.shrink();
+  }
+
+  Widget _buildSemConexao(ProvaStore provaStore) {
     return SizedBox(
       width: 350,
       height: 40,
@@ -254,17 +260,69 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
           Expanded(
             child: LinearPercentIndicator(
               lineHeight: 4.0,
-              percent: 0.01,
+              percent: provaStore.progressoDownload,
               linearStrokeCap: LinearStrokeCap.roundAll,
               progressColor: TemaUtil.vermelhoErro,
             ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: TextoDefaultWidget(
-              "Download pausado - Sem conexão com a internet",
-              color: TemaUtil.vermelhoErro,
-              fontSize: 12,
+            child: Row(
+              children: [
+                TextoDefaultWidget(
+                  "Download não iniciado",
+                  color: TemaUtil.vermelhoErro,
+                  fontSize: 12,
+                  bold: true,
+                ),
+                TextoDefaultWidget(
+                  " - Sem conexão com a internet",
+                  color: TemaUtil.vermelhoErro,
+                  fontSize: 12,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPausado(ProvaStore provaStore) {
+    return SizedBox(
+      width: 350,
+      height: 40,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: LinearPercentIndicator(
+              lineHeight: 4.0,
+              percent: provaStore.progressoDownload,
+              linearStrokeCap: LinearStrokeCap.roundAll,
+              progressColor: TemaUtil.vermelhoErro,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+            child: Row(
+              children: [
+                TextoDefaultWidget(
+                  "Pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
+                  color: TemaUtil.vermelhoErro,
+                  fontSize: 12,
+                  bold: true,
+                ),
+                TextoDefaultWidget(
+                  " - Sem conexão com a internet",
+                  color: TemaUtil.vermelhoErro,
+                  fontSize: 12,
+                ),
+              ],
             ),
           ),
         ],

@@ -43,6 +43,8 @@ abstract class _ProvaStoreBase with Store {
 
   @action
   iniciarDownload() async {
+    status = EnumDownloadStatus.BAIXANDO;
+
     await downloadService.configure();
 
     print('** Total Downloads ${downloadService.downloads.length}');
@@ -79,12 +81,14 @@ abstract class _ProvaStoreBase with Store {
   @action
   Future onChangeConexao(ConnectivityResult? resultado) async {
     if (resultado != ConnectivityResult.none) {
-      if (status != EnumDownloadStatus.CONCLUIDO) {
+      if (status != EnumDownloadStatus.CONCLUIDO && status != EnumDownloadStatus.NAO_INICIADO) {
         iniciarDownload();
       }
     } else {
-      status = EnumDownloadStatus.PAUSADO;
-      downloadService.pause();
+      if (status != EnumDownloadStatus.NAO_INICIADO) {
+        status = EnumDownloadStatus.PAUSADO;
+        downloadService.pause();
+      }
     }
   }
 

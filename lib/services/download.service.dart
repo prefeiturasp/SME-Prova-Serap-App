@@ -152,19 +152,23 @@ class DownloadService with Loggable {
             case EnumDownloadTipo.QUESTAO:
               download.status = EnumDownloadStatus.BAIXANDO;
 
-              Response<QuestaoResponseDTO> response = await apiService.questao.getQuestao(idQuestao: download.id);
+              Questao? questao = prova.questoes.firstWhereOrNull((element) => element.id == download.id);
 
-              if (response.isSuccessful) {
-                QuestaoResponseDTO questao = response.body!;
+              if (questao == null) {
+                Response<QuestaoResponseDTO> response = await apiService.questao.getQuestao(idQuestao: download.id);
 
-                prova.questoes.add(Questao(
-                  id: questao.id,
-                  titulo: questao.titulo,
-                  descricao: questao.descricao,
-                  ordem: questao.ordem,
-                  alternativas: [],
-                  arquivos: [],
-                ));
+                if (response.isSuccessful) {
+                  QuestaoResponseDTO questao = response.body!;
+
+                  prova.questoes.add(Questao(
+                    id: questao.id,
+                    titulo: questao.titulo,
+                    descricao: questao.descricao,
+                    ordem: questao.ordem,
+                    alternativas: [],
+                    arquivos: [],
+                  ));
+                }
               }
 
               break;
@@ -323,7 +327,9 @@ class DownloadService with Loggable {
 
   Future<void> pause() async {
     for (var download in downloads) {
-      download.status = EnumDownloadStatus.PAUSADO;
+      if (download.status != EnumDownloadStatus.CONCLUIDO) {
+        download.status = EnumDownloadStatus.PAUSADO;
+      }
     }
     var prova = await getProva();
     prova.status = EnumDownloadStatus.PAUSADO;
