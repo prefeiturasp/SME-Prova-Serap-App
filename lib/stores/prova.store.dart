@@ -23,7 +23,7 @@ abstract class _ProvaStoreBase with Store {
   Prova prova;
 
   @observable
-  EnumDownloadStatus status;
+  EnumDownloadStatus status = EnumDownloadStatus.NAO_INICIADO;
 
   @observable
   double tempoPrevisto = 0;
@@ -37,7 +37,6 @@ abstract class _ProvaStoreBase with Store {
   _ProvaStoreBase({
     required this.id,
     required this.prova,
-    required this.status,
   }) {
     downloadService = DownloadService(idProva: id);
   }
@@ -50,11 +49,16 @@ abstract class _ProvaStoreBase with Store {
     print('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
     print('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
 
-    await downloadService.startDownload((status, tempoPrevisto, progressoDownload) {
+    downloadService.onStatusChange((status, progressoDownload) {
       this.status = status;
-      this.tempoPrevisto = tempoPrevisto;
       this.progressoDownload = progressoDownload;
     });
+
+    downloadService.onTempoPrevistoChange((tempoPrevisto) {
+      this.tempoPrevisto = tempoPrevisto;
+    });
+
+    await downloadService.startDownload();
 
     prova = await downloadService.getProva();
   }
@@ -78,10 +82,8 @@ abstract class _ProvaStoreBase with Store {
       if (status != EnumDownloadStatus.CONCLUIDO) {
         iniciarDownload();
       }
-    }
-    {
-      status == EnumDownloadStatus.PAUSADO;
-      // onStatusChange(status);
+    } else {
+      status = EnumDownloadStatus.PAUSADO;
       downloadService.pause();
     }
   }
@@ -96,8 +98,8 @@ abstract class _ProvaStoreBase with Store {
       case EnumDownloadStatus.BAIXANDO:
         icone = "assets/images/prova_download.svg";
         break;
-      case EnumDownloadStatus.PAUSADO:
       case EnumDownloadStatus.ERRO:
+      case EnumDownloadStatus.PAUSADO:
         icone = "assets/images/prova_erro_download.svg";
         break;
     }
