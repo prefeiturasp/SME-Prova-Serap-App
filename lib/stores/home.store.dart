@@ -44,7 +44,7 @@ abstract class _HomeStoreBase with Store, Loggable {
               questoes: [],
             ),
           );
-          provaStore.status = EnumDownloadStatus.NAO_INICIADO;
+          provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
           provasStore.add(provaStore);
         }
@@ -90,10 +90,11 @@ abstract class _HomeStoreBase with Store, Loggable {
 
     if (prova != null) {
       provaStore.prova = prova;
+      provaStore.downloadStatus = prova.downloadStatus;
+      provaStore.progressoDownload = prova.downloadProgresso;
       provaStore.status = prova.status;
-      provaStore.progressoDownload = prova.progressoDownload;
 
-      if (provaStore.status != EnumDownloadStatus.CONCLUIDO) {
+      if (provaStore.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
         provaStore.iniciarDownload();
       }
     } else {

@@ -1,9 +1,14 @@
+import 'dart:convert';
+
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/download.service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'prova.store.g.dart';
 
@@ -23,7 +28,10 @@ abstract class _ProvaStoreBase with Store {
   Prova prova;
 
   @observable
-  EnumDownloadStatus status = EnumDownloadStatus.NAO_INICIADO;
+  EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+
+  @observable
+  EnumProvaStatus status = EnumProvaStatus.NAO_INICIADA;
 
   @observable
   double tempoPrevisto = 0;
@@ -43,7 +51,7 @@ abstract class _ProvaStoreBase with Store {
 
   @action
   iniciarDownload() async {
-    status = EnumDownloadStatus.BAIXANDO;
+    downloadStatus = EnumDownloadStatus.BAIXANDO;
 
     await downloadService.configure();
 
@@ -51,8 +59,8 @@ abstract class _ProvaStoreBase with Store {
     print('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
     print('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
 
-    downloadService.onStatusChange((status, progressoDownload) {
-      this.status = status;
+    downloadService.onStatusChange((downloadStatus, progressoDownload) {
+      this.downloadStatus = downloadStatus;
       this.progressoDownload = progressoDownload;
     });
 
@@ -67,7 +75,7 @@ abstract class _ProvaStoreBase with Store {
 
   setupReactions() {
     _reactions = [
-      reaction((_) => status, onStatusChange),
+      reaction((_) => downloadStatus, onStatusChange),
       reaction((_) => conexaoStream.value, onChangeConexao),
     ];
   }
@@ -81,12 +89,12 @@ abstract class _ProvaStoreBase with Store {
   @action
   Future onChangeConexao(ConnectivityResult? resultado) async {
     if (resultado != ConnectivityResult.none) {
-      if (status != EnumDownloadStatus.CONCLUIDO && status != EnumDownloadStatus.NAO_INICIADO) {
+      if (downloadStatus != EnumDownloadStatus.CONCLUIDO && downloadStatus != EnumDownloadStatus.NAO_INICIADO) {
         iniciarDownload();
       }
     } else {
-      if (status != EnumDownloadStatus.NAO_INICIADO) {
-        status = EnumDownloadStatus.PAUSADO;
+      if (downloadStatus != EnumDownloadStatus.NAO_INICIADO) {
+        downloadStatus = EnumDownloadStatus.PAUSADO;
         downloadService.pause();
       }
     }
@@ -107,5 +115,18 @@ abstract class _ProvaStoreBase with Store {
         icone = "assets/images/prova_erro_download.svg";
         break;
     }
+  }
+
+  @action
+  iniciarProva() {
+    prova.status = EnumProvaStatus.INICIADA;
+    status = EnumProvaStatus.INICIADA;
+    saveProva();
+  }
+
+  saveProva() async {
+    SharedPreferences pref = GetIt.I.get();
+
+    await pref.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 }

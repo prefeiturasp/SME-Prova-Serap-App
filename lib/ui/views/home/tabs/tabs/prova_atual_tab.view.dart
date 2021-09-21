@@ -1,4 +1,5 @@
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';
@@ -218,28 +219,27 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
   }
 
   _buildBotao(ProvaStore provaStore) {
-    if (_principalStore.status == ConnectivityResult.none &&
-        (provaStore.status != EnumDownloadStatus.CONCLUIDO && provaStore.status == EnumDownloadStatus.NAO_INICIADO)) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
     }
 
-    if (_principalStore.status == ConnectivityResult.none &&
-        (provaStore.status != EnumDownloadStatus.CONCLUIDO && provaStore.status == EnumDownloadStatus.PAUSADO)) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
       return _buildPausado(provaStore);
     }
 
     // Baixar prova
-    if (provaStore.status == EnumDownloadStatus.NAO_INICIADO && _principalStore.status != ConnectivityResult.none) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
+        _principalStore.status != ConnectivityResult.none) {
       return _buildBaixarProva(provaStore);
     }
 
     // Baixando prova
-    if (provaStore.status == EnumDownloadStatus.BAIXANDO && _principalStore.status != ConnectivityResult.none) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO && _principalStore.temConexao) {
       return _buildDownloadProgresso(provaStore);
     }
 
     // Prova baixada -- iniciar
-    if (provaStore.status == EnumDownloadStatus.CONCLUIDO) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return _buildIniciarProva(provaStore);
     }
 
@@ -348,17 +348,31 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
   }
 
   Widget _buildIniciarProva(ProvaStore provaStore) {
+    String texto = '';
+
+    switch (provaStore.prova.status) {
+      case EnumProvaStatus.INICIADA:
+        texto = "CONTINUAR PROVA";
+        break;
+      default:
+        texto = "INICIAR PROVA";
+    }
+
     return BotaoDefaultWidget(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextoDefaultWidget("INICAR A PROVA ", color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          TextoDefaultWidget('$texto ', color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
       largura: 256,
       onPressed: () async {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
+          provaStore.iniciarProva();
+        }
+
         Navigator.push(
           context,
           MaterialPageRoute(
