@@ -63,7 +63,7 @@ Future<void> main() async {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (e) {
     // ignore: avoid_print
-    print('\n\nFalha ao inicializar\n\n');
+    print('\n\nFalha ao inicializar Firebase\n\n');
   }
 
   // await SentryFlutter.init(
