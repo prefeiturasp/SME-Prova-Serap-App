@@ -40,31 +40,35 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
         builder: (_) {
           var provas = store.provas;
 
-          return store.carregando
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : provas.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: provas.length,
-                      itemBuilder: (_, index) {
-                        var prova = provas[index];
-                        return Observer(builder: (_) => _buildProva(prova));
-                      },
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height - 400,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset('assets/images/sem_prova.svg'),
-                          ],
-                        ),
-                      ),
-                    );
+          if (store.carregando) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (provas.isEmpty) {
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height - 400,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset('assets/images/sem_prova.svg'),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: provas.length,
+            itemBuilder: (_, index) {
+              var prova = provas[index];
+              return _buildProva(prova);
+            },
+          );
         },
       ),
     );
