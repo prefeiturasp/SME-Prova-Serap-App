@@ -43,6 +43,7 @@ class ApiService {
         AlternativaService.create(),
         ArquivoService.create(),
         VersaoService.create(),
+        QuestaoRespostaService.create(),
       ],
       interceptors: [
         CustomAuthInterceptor(),
@@ -60,4 +61,5 @@ class ApiService {
   AlternativaService get alternativa => chopper.getService<AlternativaService>();
   ArquivoService get arquivo => chopper.getService<ArquivoService>();
   VersaoService get versao => chopper.getService<VersaoService>();
+  QuestaoRespostaService get questaoResposta => chopper.getService<QuestaoRespostaService>();
 }

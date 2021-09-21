@@ -1,23 +1,23 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'prova_resposta.dto.g.dart';
+part 'questao_resposta.dto.g.dart';
 
 @JsonSerializable()
-class ProvaRespostaDTO {
+class QuestaoRespostaDTO {
   int questaoId;
   int? alternativaId;
   String? resposta;
-  bool sincronizado = false;
+  bool? sincronizado = false;
   int dataHoraRespostaTicks = 0;
 
-  ProvaRespostaDTO({
+  QuestaoRespostaDTO({
     required this.questaoId,
     this.alternativaId,
     this.resposta,
-    required this.sincronizado,
+    this.sincronizado,
     required this.dataHoraRespostaTicks,
   });
 
-  static const fromJson = _$ProvaRespostaDTOFromJson;
-  Map<String, dynamic> toJson() => _$ProvaRespostaDTOToJson(this);
+  static const fromJson = _$QuestaoRespostaDTOFromJson;
+  Map<String, dynamic> toJson() => _$QuestaoRespostaDTOToJson(this);
 }
