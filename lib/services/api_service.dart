@@ -25,8 +25,13 @@ class ApiService {
     final client = ApiService._internal(ChopperClient(
       client: options.baseUrl.contains("10.0.2.2")
           ? http.IOClient(
-              HttpClient()..badCertificateCallback = ((X509Certificate cert, String host, int port) => true))
-          : http.IOClient(),
+              HttpClient()
+                ..connectionTimeout = const Duration(seconds: 5)
+                ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true),
+            )
+          : http.IOClient(
+              HttpClient()..connectionTimeout = const Duration(seconds: 5),
+            ),
       baseUrl: options.baseUrl,
       converter: jsonConverter,
       errorConverter: JsonErrorConverter(),
