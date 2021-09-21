@@ -43,6 +43,7 @@ void registerFonts() {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await setupAppConfig();
 
   registerFonts();
 
@@ -50,8 +51,6 @@ Future<void> main() async {
 
   final ioc = DependenciasIoC();
   ioc.registrar();
-
-  await setupAppConfig();
 
   initializeDateFormatting();
   Intl.defaultLocale = 'pt_BR';

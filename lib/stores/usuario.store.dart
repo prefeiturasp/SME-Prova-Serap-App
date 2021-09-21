@@ -21,6 +21,7 @@ abstract class _UsuarioStoreBase with Store {
   @observable
   String? ano;
 
+  @action
   void dispose() {
     nome = null;
     token = null;

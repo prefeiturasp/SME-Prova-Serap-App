@@ -42,7 +42,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
   @override
   PreferredSizeWidget buildAppBar() {
-    return AppBarWidget();
+    return AppBarWidget(
+      popView: true,
+    );
   }
 
   @override

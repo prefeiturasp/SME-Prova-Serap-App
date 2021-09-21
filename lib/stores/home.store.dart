@@ -23,37 +23,42 @@ abstract class _HomeStoreBase with Store {
   @action
   carregarProvas() async {
     carregando = true;
-    var response = await GetIt.I.get<ApiService>().prova.getProvas();
+    try {
+      var response = await GetIt.I.get<ApiService>().prova.getProvas();
 
-    List<ProvaStore> provasStore = [];
+      List<ProvaStore> provasStore = [];
 
-    if (response.isSuccessful) {
-      provasStore = response.body!
-          .map((e) => ProvaStore(
-                id: e.id,
-                prova: Prova(
+      if (response.isSuccessful) {
+        provasStore = response.body!
+            .map((e) => ProvaStore(
                   id: e.id,
-                  itensQuantidade: e.itensQuantidade,
-                  dataInicio: e.dataInicio,
-                  dataFim: e.dataFim,
-                  descricao: e.descricao,
-                  questoes: [],
-                ),
-                status: EnumDownloadStatus.NAO_INICIADO,
-              ))
-          .toList()
-          .asObservable();
-    }
-
-    if (provasStore.isNotEmpty) {
-      for (var prova in provasStore) {
-        prova.setupReactions();
-        await carregaProva(prova);
+                  prova: Prova(
+                    id: e.id,
+                    itensQuantidade: e.itensQuantidade,
+                    dataInicio: e.dataInicio,
+                    dataFim: e.dataFim,
+                    descricao: e.descricao,
+                    questoes: [],
+                  ),
+                  status: EnumDownloadStatus.NAO_INICIADO,
+                ))
+            .toList()
+            .asObservable();
       }
-    }
 
-    provas = ObservableList.of(provasStore);
-    carregando = false;
+      if (provasStore.isNotEmpty) {
+        for (var prova in provasStore) {
+          prova.setupReactions();
+          await carregaProva(prova);
+        }
+      }
+
+      provas = ObservableList.of(provasStore);
+    } catch (e) {
+      print(e);
+    } finally {
+      carregando = false;
+    }
   }
 
   Future<void> carregaProva(ProvaStore provaStore) async {
