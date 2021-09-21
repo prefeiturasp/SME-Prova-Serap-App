@@ -99,10 +99,8 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
             }
 
             return Text(
-              "${_principalStore.versao}",
-              style: TextStyle(
-                color: cor,
-              ),
+              _principalStore.versao,
+              style: TextStyle(color: cor),
             );
           },
         ),

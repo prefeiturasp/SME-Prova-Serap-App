@@ -27,12 +27,12 @@ String formatDatedMMMMyyyy(DateTime? dateTime) {
   return DateFormat("d 'de' MMMM 'de ' yyyy", 'pt_BR').format(dateTime);
 }
 
-String formatDateddMM(DateTime dateTime) {
+String formatDateddMM(DateTime? dateTime) {
   if (dateTime == null) return "-";
   return DateFormat("dd/MM", 'pt_BR').format(dateTime);
 }
 
-String formatEddMMyyyy(DateTime dateTime) {
+String formatEddMMyyyy(DateTime? dateTime) {
   if (dateTime == null) return "-";
   return DateFormat("E - dd/MM/yyyy", 'pt_BR').format(dateTime);
 }

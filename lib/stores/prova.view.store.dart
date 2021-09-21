@@ -1,6 +1,5 @@
 import 'package:appserap/dtos/prova_resposta.dto.dart';
 import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'prova.view.store.g.dart';
 

@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:path/path.dart';
-
-void validateNotNull(Object value, String name) {
+void validateNotNull(Object? value, String name) {
   if (value == null) {
     throw Exception(name + " não pode ser nulo.");
   }

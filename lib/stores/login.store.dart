@@ -1,4 +1,3 @@
-import 'package:appserap/dtos/autenticacao.dto.dart';
 import 'package:appserap/dtos/error.response.dto.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -12,7 +11,6 @@ class LoginStore = _LoginStoreBase with _$LoginStore;
 
 abstract class _LoginStoreBase with Store {
   final _autenticacaoService = GetIt.I.get<ApiService>().auth;
-  // final _usuarioService = GetIt.I.get<UsuarioService>();
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
   final autenticacaoErroStore = AutenticacaoErroStore();
