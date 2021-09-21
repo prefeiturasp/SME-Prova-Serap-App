@@ -48,7 +48,7 @@ Future<void> main() async {
 
   setupLogging();
 
-  final ioc = new DependenciasIoC();
+  final ioc = DependenciasIoC();
   ioc.registrar();
 
   await setupAppConfig();
@@ -62,6 +62,7 @@ Future<void> main() async {
     FirebaseMessaging.instance.subscribeToTopic('1');
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (e) {
+    // ignore: avoid_print
     print('\n\nFalha ao inicializar\n\n');
   }
 

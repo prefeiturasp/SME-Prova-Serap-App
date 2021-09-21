@@ -47,7 +47,11 @@ class JsonSerializableConverter extends JsonConverter {
   @override
   Response<ResultType> convertResponse<ResultType, Item>(Response response) {
     final jsonRes = super.convertResponse(response);
-    return jsonRes.copyWith<ResultType>(body: _decode<Item>(jsonRes.body));
+    if (jsonRes.body != "") {
+      return jsonRes.copyWith<ResultType>(body: _decode<Item>(jsonRes.body));
+    }
+
+    return response.copyWith<ResultType>(body: null);
   }
 }
 

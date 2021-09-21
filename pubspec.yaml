@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -24,7 +24,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
@@ -33,11 +32,11 @@ dependencies:
   flutter_widget_from_html_core: ^0.7.0
   percent_indicator: ^3.0.1
   connectivity_plus: ^1.1.0
-  sentry_flutter: ^6.0.0
   auto_size_text: ^3.0.0-nullsafety.0
   intl: ^0.17.0
   google_fonts: ^2.1.0
-  
+  flutter_native_splash: ^1.2.3
+
   # Firebase
   firebase_messaging: ^10.0.6
   firebase_core: ^1.6.0
@@ -51,7 +50,7 @@ dependencies:
   get_it: ^7.2.0
 
   # Banco de dados local
-  shared_preferences: ^2.0.7 
+  shared_preferences: ^2.0.7
 
   # Logger
   logger: ^1.1.0
@@ -67,7 +66,7 @@ dependencies:
 
   # Editor de texto
   html_editor_enhanced: ^2.3.0
-  
+
 dependency_overrides:
   flutter_colorpicker: ^0.6.0
 
@@ -96,13 +95,14 @@ scripts:
   mobx-c: flutter pub run build_runner clean
   release: flutter build apk --release
 
-
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/logo-serap.png
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-  
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
