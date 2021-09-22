@@ -59,3 +59,19 @@ class ServiceAuthenticator extends Authenticator {
     return null;
   }
 }
+
+class CustomAuthInterceptor implements RequestInterceptor {
+  CustomAuthInterceptor();
+
+  @override
+  FutureOr<Request> onRequest(Request request) {
+    SharedPreferences pref = GetIt.I.get();
+    String? token = pref.getString('token');
+
+    if (token != null) {
+      return applyHeaders(request, {'Authorization': 'Bearer $token'});
+    }
+
+    return request;
+  }
+}

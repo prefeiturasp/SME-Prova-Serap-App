@@ -1,39 +1,39 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
+
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:asuka/snackbars/asuka_snack_bar.dart';
+import 'package:chopper/src/response.dart';
+import 'package:collection/collection.dart';
+import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
+import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/questao.model.dart';
-import 'package:chopper/src/response.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
-
-import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
-import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/models/download_prova.model.dart';
 import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
-import 'package:logging/logging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:collection/collection.dart';
 
-class Loggable<T> {
-  var log = Logger(T.toString());
-  var info = Logger(T.toString()).info;
-  var warning = Logger(T.toString()).warning;
-  var severe = Logger(T.toString()).severe;
-}
+typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
 
 class DownloadService with Loggable {
   int idProva;
   List<DownloadProva> downloads = [];
   late DateTime inicio;
   late int downloadAtual;
+
+  late StatusChangeCallback onChangeStatusCallback;
+  late void Function(double tempoPrevisto) onTempoPrevistoChangeCallback;
+
+  Timer? timer;
 
   DownloadService({
     required this.idProva,
@@ -42,62 +42,85 @@ class DownloadService with Loggable {
   Future<void> configure() async {
     ApiService apiService = GetIt.I.get();
 
-    Response<ProvaDetalhesResponseDTO> response = await apiService.prova.getResumoProva(idProva: idProva);
+    try {
+      Response<ProvaDetalhesResponseDTO> response = await apiService.prova.getResumoProva(idProva: idProva);
 
-    if (!response.isSuccessful) {
+      if (!response.isSuccessful) {
+        return;
+      }
+
+      var provaDetalhes = response.body!;
+
+      await loadDownloads();
+
+      for (var idQuestao in provaDetalhes.questoesId) {
+        if (!containsId(idQuestao)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.QUESTAO,
+              id: idQuestao,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+      for (var idArquivo in provaDetalhes.arquivosId) {
+        if (!containsId(idArquivo)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.ARQUIVO,
+              id: idArquivo,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+      for (var idAlternativa in provaDetalhes.alternativasId) {
+        if (!containsId(idAlternativa)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.ALTERNATIVA,
+              id: idAlternativa,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+      info('Total de Downloads ${downloads.length}');
+      // TODO salvar download
+      await saveDownloads();
+    } catch (e) {
+      AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
       return;
     }
-
-    var provaDetalhes = response.body!;
-
-    await loadDownloads();
-
-    for (var idQuestao in provaDetalhes.questoesId) {
-      if (!containsId(idQuestao)) {
-        downloads.add(
-          DownloadProva(
-            tipo: EnumDownloadTipo.QUESTAO,
-            id: idQuestao,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
-      }
-    }
-
-    for (var idArquivo in provaDetalhes.arquivosId) {
-      if (!containsId(idArquivo)) {
-        downloads.add(
-          DownloadProva(
-            tipo: EnumDownloadTipo.ARQUIVO,
-            id: idArquivo,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
-      }
-    }
-
-    for (var idAlternativa in provaDetalhes.alternativasId) {
-      if (!containsId(idAlternativa)) {
-        downloads.add(
-          DownloadProva(
-            tipo: EnumDownloadTipo.ALTERNATIVA,
-            id: idAlternativa,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
-      }
-    }
-
-    info('Total de Downloads ${downloads.length}');
-    // TODO salvar download
-    await saveDownloads();
   }
 
-  Future<void> startDownload(Function(EnumDownloadStatus, double, double) onChangeStatus) async {
+  onStatusChange(StatusChangeCallback onChangeStatusCallback) {
+    this.onChangeStatusCallback = onChangeStatusCallback;
+  }
+
+  onTempoPrevistoChange(void Function(double tempoPrevisto) onTempoPrevistoChangeCallback) {
+    this.onTempoPrevistoChangeCallback = onTempoPrevistoChangeCallback;
+  }
+
+  startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      onTempoPrevistoChangeCallback(getTempoPrevisto());
+    });
+  }
+
+  cancelTimer() {
+    timer?.cancel();
+  }
+
+  Future<void> startDownload() async {
     Prova prova = await getProva();
     downloadAtual = downloads.length - getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length;
 
-    if (prova.status == EnumDownloadStatus.CONCLUIDO) {
+    if (prova.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
@@ -110,37 +133,41 @@ class DownloadService with Loggable {
     for (var i = 0; i < downloads.length; i++) {
       var download = downloads[i];
 
-      var statusConexao = await Connectivity().checkConnectivity();
-
-      if (download.status != EnumDownloadStatus.CONCLUIDO) {
+      if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+        startTimer();
         try {
           prova = await getProva();
-          prova.status = EnumDownloadStatus.BAIXANDO;
+          prova.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-          onChangeStatus(prova.status, getTempoPrevisto(), getPorcentagem());
+          onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
+          onTempoPrevistoChangeCallback(getTempoPrevisto());
 
           switch (download.tipo) {
             case EnumDownloadTipo.QUESTAO:
-              download.status = EnumDownloadStatus.BAIXANDO;
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-              Response<QuestaoResponseDTO> response = await apiService.questao.getQuestao(idQuestao: download.id);
+              Questao? questao = prova.questoes.firstWhereOrNull((element) => element.id == download.id);
 
-              if (response.isSuccessful) {
-                QuestaoResponseDTO questao = response.body!;
+              if (questao == null) {
+                Response<QuestaoResponseDTO> response = await apiService.questao.getQuestao(idQuestao: download.id);
 
-                prova.questoes.add(Questao(
-                  id: questao.id,
-                  titulo: questao.titulo,
-                  descricao: questao.descricao,
-                  ordem: questao.ordem,
-                  alternativas: [],
-                  arquivos: [],
-                ));
+                if (response.isSuccessful) {
+                  QuestaoResponseDTO questao = response.body!;
+
+                  prova.questoes.add(Questao(
+                    id: questao.id,
+                    titulo: questao.titulo,
+                    descricao: questao.descricao,
+                    ordem: questao.ordem,
+                    alternativas: [],
+                    arquivos: [],
+                  ));
+                }
               }
 
               break;
             case EnumDownloadTipo.ALTERNATIVA:
-              download.status = EnumDownloadStatus.BAIXANDO;
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Response<AlternativaResponseDTO> response =
                   await apiService.alternativa.getAlternativa(idAlternativa: download.id);
@@ -159,7 +186,7 @@ class DownloadService with Loggable {
                     questaoId: alternativa.questaoId,
                   ));
 
-                  download.status = EnumDownloadStatus.CONCLUIDO;
+                  download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
                 } else {
                   warning('Alternativa ${download.id} nao vinculado a nenhuma questão!');
                 }
@@ -167,7 +194,7 @@ class DownloadService with Loggable {
 
               break;
             case EnumDownloadTipo.ARQUIVO:
-              download.status = EnumDownloadStatus.BAIXANDO;
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Questao? questao = prova.questoes.firstWhereOrNull((element) =>
                   element.titulo.contains(download.id.toString()) ||
@@ -179,8 +206,11 @@ class DownloadService with Loggable {
                 if (response.isSuccessful) {
                   ArquivoResponseDTO arquivo = response.body!;
 
-                  ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
-                  String base64 = base64Encode(imageData.buffer.asUint8List());
+                  http.Response arquivoResponse =
+                      await http.get(Uri.parse(arquivo.caminho.replaceFirst('http://', 'https://')));
+
+                  // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
+                  String base64 = base64Encode(arquivoResponse.bodyBytes);
 
                   questao.arquivos.add(Arquivo(
                     id: arquivo.id,
@@ -199,36 +229,42 @@ class DownloadService with Loggable {
               break;
           }
 
-          download.status = EnumDownloadStatus.CONCLUIDO;
+          download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
 
           downloadAtual = i;
-          prova.progressoDownload = getPorcentagem();
+          prova.downloadProgresso = getPorcentagem();
 
           await saveProva(prova);
           await saveDownloads();
         } catch (e, stak) {
-          severe('ERRO: ', e, stak);
-          download.status = EnumDownloadStatus.ERRO;
-          prova.status = EnumDownloadStatus.ERRO;
-          onChangeStatus(prova.status, getTempoPrevisto(), getPorcentagem());
+          severe('ERRO: $e', stak);
+          download.downloadStatus = EnumDownloadStatus.ERRO;
+          prova.downloadStatus = EnumDownloadStatus.ERRO;
+          onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
+          onTempoPrevistoChangeCallback(getTempoPrevisto());
         }
       }
     }
 
     // Baixou todos os dados
     if (getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length == downloads.length) {
-      prova.status = EnumDownloadStatus.CONCLUIDO;
-      onChangeStatus(prova.status, getTempoPrevisto(), getPorcentagem());
+      prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+
+      onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
+      onTempoPrevistoChangeCallback(getTempoPrevisto());
+
       await saveProva(prova);
       await deleteDownload();
 
       print('Download Concluido');
       print('Tempo total ${DateTime.now().difference(inicio).inSeconds}');
     }
+
+    cancelTimer();
   }
 
   double getPorcentagem() {
-    int baixado = downloads.where((element) => element.status == EnumDownloadStatus.CONCLUIDO).length;
+    int baixado = downloads.where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO).length;
 
     return baixado / downloads.length;
   }
@@ -243,8 +279,6 @@ class DownloadService with Loggable {
     var downloadJson = jsonEncode(downloads);
 
     await pref.setString('download_$idProva', downloadJson);
-
-    warning('Salvando downloads');
   }
 
   loadDownloads() async {
@@ -264,7 +298,7 @@ class DownloadService with Loggable {
   }
 
   List<DownloadProva> getDownlodsByStatus(EnumDownloadStatus status) {
-    return downloads.where((element) => element.status == status).toList();
+    return downloads.where((element) => element.downloadStatus == status).toList();
   }
 
   Future<Prova> getProva() async {
@@ -288,10 +322,12 @@ class DownloadService with Loggable {
 
   Future<void> pause() async {
     for (var download in downloads) {
-      download.status = EnumDownloadStatus.PAUSADO;
+      if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+        download.downloadStatus = EnumDownloadStatus.PAUSADO;
+      }
     }
     var prova = await getProva();
-    prova.status = EnumDownloadStatus.PAUSADO;
+    prova.downloadStatus = EnumDownloadStatus.PAUSADO;
 
     await saveProva(prova);
     await saveDownloads();

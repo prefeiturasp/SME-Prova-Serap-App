@@ -11,6 +11,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
+import 'package:asuka/asuka.dart' as asuka;
 
 Future setupAppConfig() async {
   try {
@@ -43,15 +44,14 @@ void registerFonts() {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await setupAppConfig();
 
   registerFonts();
 
   setupLogging();
 
-  final ioc = new DependenciasIoC();
+  final ioc = DependenciasIoC();
   ioc.registrar();
-
-  await setupAppConfig();
 
   initializeDateFormatting();
   Intl.defaultLocale = 'pt_BR';
@@ -62,7 +62,8 @@ Future<void> main() async {
     FirebaseMessaging.instance.subscribeToTopic('1');
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (e) {
-    print('\n\nFalha ao inicializar\n\n');
+    // ignore: avoid_print
+    print('\n\nFalha ao inicializar Firebase\n\n');
   }
 
   // await SentryFlutter.init(
@@ -80,6 +81,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: asuka.builder,
+      navigatorObservers: [asuka.asukaHeroController],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),

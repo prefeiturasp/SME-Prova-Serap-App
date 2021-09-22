@@ -3,7 +3,7 @@ import 'package:chopper/chopper.dart';
 
 part 'alternativa.service.chopper.dart';
 
-@ChopperApi(baseUrl: "/alternativas")
+@ChopperApi(baseUrl: "/v1/alternativas")
 abstract class AlternativaService extends ChopperService {
   static AlternativaService create([ChopperClient? client]) => _$AlternativaService(client);
 

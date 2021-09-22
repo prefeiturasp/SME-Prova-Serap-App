@@ -7,7 +7,9 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
-  AppBarWidget({Key? key}) : super(key: key);
+  final bool popView;
+
+  AppBarWidget({required this.popView});
 
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
@@ -46,10 +48,9 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () async {
                 await _principalStore.sair();
 
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => kIsWeb ? LoginWebView() : LoginView()),
-                // );
+                if (popView) {
+                  Navigator.pop(context);
+                }
               },
               child: Row(
                 children: [

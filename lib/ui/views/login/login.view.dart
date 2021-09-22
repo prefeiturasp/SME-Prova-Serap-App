@@ -1,14 +1,11 @@
 import 'package:appserap/stores/login.store.dart';
-import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends BaseStatefulWidget {
@@ -19,8 +16,6 @@ class LoginView extends BaseStatefulWidget {
 }
 
 class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
-  final _principalStore = GetIt.I.get<PrincipalStore>();
-
   FocusNode _codigoEOLFocus = FocusNode();
   FocusNode _senhaFocus = FocusNode();
 

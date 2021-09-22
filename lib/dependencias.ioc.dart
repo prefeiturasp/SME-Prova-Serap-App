@@ -4,6 +4,7 @@ import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,9 +20,7 @@ class DependenciasIoC {
 
     GetIt.I.registerSingleton<ApiService>(ApiService.build(
       ConnectionOptions(
-        baseUrl: 'https://dev-serap-estudante.sme.prefeitura.sp.gov.br/api/v1',
-        // token:
-        //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSQSI6IjU3MjA4MjgiLCJBTk8iOiI0IiwibmJmIjoxNjMxOTA2OTI1LCJleHAiOjE2MzE5MTQxMjUsImlzcyI6IlNlcmFwIiwiYXVkIjoiUHJlZmVpdHVyYSBkZSBTYW8gUGF1bG8ifQ.QujyjI0bJv2R6i2vpdFd--IDwdymTzjFVsxp-7QKTpY',
+        baseUrl: AppConfigReader.getApiHost(),
       ),
     ));
 

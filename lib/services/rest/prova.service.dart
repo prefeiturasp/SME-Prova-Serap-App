@@ -4,7 +4,7 @@ import 'package:chopper/chopper.dart';
 
 part 'prova.service.chopper.dart';
 
-@ChopperApi(baseUrl: "/provas")
+@ChopperApi(baseUrl: "/v1/provas")
 abstract class ProvaService extends ChopperService {
   static ProvaService create([ChopperClient? client]) => _$ProvaService(client);
 

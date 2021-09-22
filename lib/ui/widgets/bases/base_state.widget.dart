@@ -66,7 +66,9 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   }
 
   PreferredSizeWidget buildAppBar() {
-    return AppBarWidget();
+    return AppBarWidget(
+      popView: false,
+    );
   }
 
   Widget? buildLeading() {
@@ -97,10 +99,8 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
             }
 
             return Text(
-              "${_principalStore.versao}",
-              style: TextStyle(
-                color: cor,
-              ),
+              _principalStore.versao,
+              style: TextStyle(color: cor),
             );
           },
         ),

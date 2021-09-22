@@ -27,10 +27,13 @@ abstract class _PrincipalStoreBase with Store {
   }
 
   @observable
-  ConnectivityResult status = ConnectivityResult.none;
+  ConnectivityResult status = ConnectivityResult.wifi;
 
   @observable
   String versaoApp = "Versão 0";
+
+  @computed
+  bool get temConexao => status != ConnectivityResult.none;
 
   @computed
   String get versao => "$versaoApp ${status == ConnectivityResult.none ? ' - Sem conexão' : ''}";

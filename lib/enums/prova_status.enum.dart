@@ -1,0 +1,1 @@
+enum EnumProvaStatus { NAO_INICIADA, INICIADA, FINALIZADA }

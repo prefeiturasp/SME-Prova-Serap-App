@@ -1,3 +1,4 @@
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
@@ -15,8 +16,10 @@ class Prova {
 
   List<Questao> questoes;
 
-  EnumDownloadStatus status;
-  double progressoDownload;
+  EnumDownloadStatus downloadStatus;
+  double downloadProgresso;
+
+  EnumProvaStatus status;
 
   Prova({
     required this.id,
@@ -25,8 +28,9 @@ class Prova {
     required this.dataInicio,
     this.dataFim,
     required this.questoes,
-    this.status = EnumDownloadStatus.NAO_INICIADO,
-    this.progressoDownload = 0,
+    this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
+    this.downloadProgresso = 0,
+    this.status = EnumProvaStatus.NAO_INICIADA,
   });
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
@@ -34,6 +38,6 @@ class Prova {
 
   @override
   String toString() {
-    return 'Prova(id: $id, status: $status, progressoDownload: $progressoDownload, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, questoes: $questoes)';
+    return 'Prova(id: $id, downloadStatus: $downloadStatus, downloadProgresso: $downloadProgresso, status: $status, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, questoes: $questoes)';
   }
 }

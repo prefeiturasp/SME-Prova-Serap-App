@@ -1,4 +1,5 @@
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';
@@ -15,7 +16,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 class ProvaAtualTabView extends StatefulWidget {
@@ -41,91 +41,38 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
         builder: (_) {
           var provas = store.provas;
 
-          return store.carregando
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : provas.isNotEmpty
-                  ? ListView.builder(
-                      itemCount: provas.length,
-                      itemBuilder: (_, index) {
-                        var prova = provas[index];
-                        return Observer(builder: (_) => _buildProva(prova));
-                      },
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height - 400,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset('assets/images/sem_prova.svg'),
-                          ],
-                        ),
-                      ),
-                    );
+          if (store.carregando) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (provas.isEmpty) {
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height - 400,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset('assets/images/sem_prova.svg'),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return ListView.builder(
+            itemCount: provas.length,
+            itemBuilder: (_, index) {
+              var prova = provas[index];
+              return _buildProva(prova);
+            },
+          );
         },
       ),
     );
-  }
-
-  Widget _formataDataAplicacao(Prova prova) {
-    if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
-      return AutoSizeText(
-        formatEddMMyyyy(prova.dataInicio),
-        maxLines: 2,
-        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-      );
-    }
-
-    if (prova.dataInicio != prova.dataFim) {
-      return Row(
-        children: [
-          AutoSizeText(
-            formatEddMMyyyy(prova.dataInicio),
-            maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          AutoSizeText(
-            " à ",
-            maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16),
-          ),
-          AutoSizeText(
-            formatEddMMyyyy(prova.dataFim!),
-            maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ],
-      );
-    }
-
-    return SizedBox();
-  }
-
-  _buildBotao(ProvaStore provaStore) {
-    if (_principalStore.status == ConnectivityResult.none && provaStore.status != EnumDownloadStatus.CONCLUIDO) {
-      return _buildSemConexao();
-    }
-
-    // Baixar prova
-    if (provaStore.status == EnumDownloadStatus.NAO_INICIADO && _principalStore.status != ConnectivityResult.none) {
-      return _buildBaixarProva(provaStore);
-    }
-
-    // Baixando prova
-    if (provaStore.status == EnumDownloadStatus.BAIXANDO && _principalStore.status != ConnectivityResult.none) {
-      return _buildDownloadProgresso(provaStore);
-    }
-
-    // Prova baixada -- iniciar
-    if (provaStore.status == EnumDownloadStatus.CONCLUIDO) {
-      return _buildIniciarProva(provaStore);
-    }
-
-    return SizedBox.shrink();
   }
 
   _buildProva(ProvaStore provaStore) {
@@ -237,8 +184,70 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
     );
   }
 
-  Widget _buildSemConexao() {
-    return Container(
+  Widget _formataDataAplicacao(Prova prova) {
+    if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
+      return AutoSizeText(
+        formatEddMMyyyy(prova.dataInicio),
+        maxLines: 2,
+        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+      );
+    }
+
+    if (prova.dataInicio != prova.dataFim) {
+      return Row(
+        children: [
+          AutoSizeText(
+            formatEddMMyyyy(prova.dataInicio),
+            maxLines: 2,
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          AutoSizeText(
+            " à ",
+            maxLines: 2,
+            style: GoogleFonts.poppins(fontSize: 16),
+          ),
+          AutoSizeText(
+            formatEddMMyyyy(prova.dataFim!),
+            maxLines: 2,
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ],
+      );
+    }
+
+    return SizedBox();
+  }
+
+  _buildBotao(ProvaStore provaStore) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
+      return _buildSemConexao(provaStore);
+    }
+
+    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
+      return _buildPausado(provaStore);
+    }
+
+    // Baixar prova
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
+        _principalStore.status != ConnectivityResult.none) {
+      return _buildBaixarProva(provaStore);
+    }
+
+    // Baixando prova
+    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO && _principalStore.temConexao) {
+      return _buildDownloadProgresso(provaStore);
+    }
+
+    // Prova baixada -- iniciar
+    if (provaStore.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
+      return _buildIniciarProva(provaStore);
+    }
+
+    return SizedBox.shrink();
+  }
+
+  Widget _buildSemConexao(ProvaStore provaStore) {
+    return SizedBox(
       width: 350,
       height: 40,
       child: Column(
@@ -251,17 +260,69 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
           Expanded(
             child: LinearPercentIndicator(
               lineHeight: 4.0,
-              percent: 0.01,
+              percent: provaStore.progressoDownload,
               linearStrokeCap: LinearStrokeCap.roundAll,
               progressColor: TemaUtil.vermelhoErro,
             ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: TextoDefaultWidget(
-              "Download pausado - Sem conexão com a internet",
-              color: TemaUtil.vermelhoErro,
-              fontSize: 12,
+            child: Row(
+              children: [
+                TextoDefaultWidget(
+                  "Download não iniciado",
+                  color: TemaUtil.vermelhoErro,
+                  fontSize: 12,
+                  bold: true,
+                ),
+                TextoDefaultWidget(
+                  " - Sem conexão com a internet",
+                  color: TemaUtil.vermelhoErro,
+                  fontSize: 12,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPausado(ProvaStore provaStore) {
+    return SizedBox(
+      width: 350,
+      height: 40,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: LinearPercentIndicator(
+              lineHeight: 4.0,
+              percent: provaStore.progressoDownload,
+              linearStrokeCap: LinearStrokeCap.roundAll,
+              progressColor: TemaUtil.vermelhoErro,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+            child: Row(
+              children: [
+                TextoDefaultWidget(
+                  "Pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
+                  color: TemaUtil.vermelhoErro,
+                  fontSize: 12,
+                  bold: true,
+                ),
+                TextoDefaultWidget(
+                  " - Sem conexão com a internet",
+                  color: TemaUtil.vermelhoErro,
+                  fontSize: 12,
+                ),
+              ],
             ),
           ),
         ],
@@ -287,17 +348,31 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
   }
 
   Widget _buildIniciarProva(ProvaStore provaStore) {
+    String texto = '';
+
+    switch (provaStore.prova.status) {
+      case EnumProvaStatus.INICIADA:
+        texto = "CONTINUAR PROVA";
+        break;
+      default:
+        texto = "INICIAR PROVA";
+    }
+
     return BotaoDefaultWidget(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextoDefaultWidget("INICAR A PROVA ", color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          TextoDefaultWidget('$texto ', color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
       largura: 256,
       onPressed: () async {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
+          provaStore.iniciarProva();
+        }
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -314,7 +389,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
     var tempoRestante =
         prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes" : "";
 
-    return Container(
+    return SizedBox(
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
