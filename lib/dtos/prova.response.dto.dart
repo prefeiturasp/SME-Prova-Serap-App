@@ -14,8 +14,7 @@ class ProvaResponseDTO {
   DateTime dataInicio;
   DateTime dataFim;
 
-  @JsonKey(defaultValue: EnumProvaStatus.NAO_INICIADA)
-  EnumProvaStatus? status;
+  EnumProvaStatus status;
 
   ProvaResponseDTO({
     required this.id,
@@ -23,7 +22,7 @@ class ProvaResponseDTO {
     required this.itensQuantidade,
     required this.dataInicio,
     required this.dataFim,
-    this.status,
+    required this.status,
   });
 
   static const fromJson = _$ProvaResponseDTOFromJson;

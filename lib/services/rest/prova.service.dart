@@ -25,6 +25,6 @@ abstract class ProvaService extends ChopperService {
   @Post(path: '{idProva}/status-aluno')
   Future<Response<bool>> setStatusProva({
     @Path() required int idProva,
-    @Field() required EnumProvaStatus status,
+    @Field() required int status,
   });
 }
