@@ -48,6 +48,8 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
         severe(e);
       }
     }
+
+    respostas.removeWhere((element) => element.sincronizado);
   }
 
   @action
