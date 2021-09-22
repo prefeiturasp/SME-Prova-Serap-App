@@ -6,10 +6,12 @@ part 'autenticacao_dados.response.dto.g.dart';
 class AutenticacaoDadosResponseDTO {
   String nome;
   String ano;
+  String tipoTurno;
 
   AutenticacaoDadosResponseDTO(
     this.nome,
     this.ano,
+    this.tipoTurno,
   );
 
   static const fromJson = _$AutenticacaoDadosResponseDTOFromJson;
