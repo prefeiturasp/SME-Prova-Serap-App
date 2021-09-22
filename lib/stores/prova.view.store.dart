@@ -1,5 +1,6 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:get_it/get_it.dart';
@@ -13,6 +14,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   final _service = GetIt.I.get<ApiService>().questaoResposta;
 
   @observable
+  List<Questao> questoes = [];
+
+  @observable
   int questaoAtual = 1;
 
   @observable
@@ -23,8 +27,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
 
   ReactionDisposer? _disposer;
 
-  setup() {
+  setup() async {
     _disposer = reaction((_) => respostas.length, onChangeRespostas);
+    await obterRespostasServidor();
   }
 
   void dispose() {
@@ -32,10 +37,22 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   }
 
   @action
+  obterRespostasServidor() async {
+    for (var questao in questoes) {
+      try {
+        var _respostaSalva = await _service.getRespostaPorQuestaoId(questaoId: questao.id);
+        print(_respostaSalva);
+      } catch (e) {
+        severe(e);
+      }
+    }
+  }
+
+  @action
   onChangeRespostas(int tamanho) async {
     for (var resposta in respostas.where((element) => !element.sincronizado).toList()) {
       try {
-        await _service.enviar(
+        await _service.postResposta(
           questaoId: resposta.questaoId,
           alternativaId: resposta.alternativaId,
           resposta: resposta.resposta,
