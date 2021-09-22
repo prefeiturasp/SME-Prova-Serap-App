@@ -8,7 +8,7 @@ abstract class QuestaoRespostaService extends ChopperService {
   static QuestaoRespostaService create([ChopperClient? client]) => _$QuestaoRespostaService(client);
 
   @Post()
-  Future<Response<QuestaoRespostaDTO>> enviar({
+  Future<Response<bool>> enviar({
     @Field() required int questaoId,
     @Field() int? alternativaId,
     @Field() String? resposta,

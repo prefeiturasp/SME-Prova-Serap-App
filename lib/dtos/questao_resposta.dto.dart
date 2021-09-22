@@ -7,14 +7,12 @@ class QuestaoRespostaDTO {
   int questaoId;
   int? alternativaId;
   String? resposta;
-  bool? sincronizado = false;
   int dataHoraRespostaTicks = 0;
 
   QuestaoRespostaDTO({
     required this.questaoId,
     this.alternativaId,
     this.resposta,
-    this.sincronizado,
     required this.dataHoraRespostaTicks,
   });
 

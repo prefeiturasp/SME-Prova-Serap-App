@@ -100,7 +100,13 @@ abstract class _LoginStoreBase with Store, Loggable {
         if (responseMeusDados.isSuccessful) {
           var usuarioDados = responseMeusDados.body!;
           if (usuarioDados.nome != "") {
-            _usuarioStore.atualizarDados(usuarioDados.nome, codigoEOL, body.token, usuarioDados.ano);
+            _usuarioStore.atualizarDados(
+              usuarioDados.nome,
+              codigoEOL,
+              body.token,
+              usuarioDados.ano,
+              usuarioDados.tipoTurno,
+            );
           }
         }
       } else {
