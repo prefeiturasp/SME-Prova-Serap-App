@@ -2,6 +2,7 @@ import 'package:appserap/dtos/error.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -120,6 +121,7 @@ abstract class _LoginStoreBase with Store, Loggable {
         }
       }
     } catch (e, stack) {
+      AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
       severe(e, stack);
     }
     carregando = false;
