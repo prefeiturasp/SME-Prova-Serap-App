@@ -1,4 +1,4 @@
-import 'package:appserap/dtos/questao_resposta.dto.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/utils/date.util.dart';
@@ -9,7 +9,7 @@ part 'prova.view.store.g.dart';
 
 class ProvaViewStore = _ProvaViewStoreBase with _$ProvaViewStore;
 
-abstract class _ProvaViewStoreBase with Store {
+abstract class _ProvaViewStoreBase with Store, Loggable {
   final _service = GetIt.I.get<ApiService>().questaoResposta;
 
   @observable
@@ -44,7 +44,7 @@ abstract class _ProvaViewStoreBase with Store {
 
         resposta.sincronizado = true;
       } catch (e) {
-        print(e);
+        severe(e);
       }
     }
   }
