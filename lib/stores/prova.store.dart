@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/services/api.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -14,7 +16,7 @@ part 'prova.store.g.dart';
 
 class ProvaStore = _ProvaStoreBase with _$ProvaStore;
 
-abstract class _ProvaStoreBase with Store {
+abstract class _ProvaStoreBase with Store, Loggable {
   List<ReactionDisposer> _reactions = [];
 
   @observable
@@ -55,9 +57,9 @@ abstract class _ProvaStoreBase with Store {
 
     await downloadService.configure();
 
-    print('** Total Downloads ${downloadService.downloads.length}');
-    print('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
-    print('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
+    fine('** Total Downloads ${downloadService.downloads.length}');
+    fine('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
+    fine('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
 
     downloadService.onStatusChange((downloadStatus, progressoDownload) {
       this.downloadStatus = downloadStatus;
@@ -88,11 +90,11 @@ abstract class _ProvaStoreBase with Store {
 
   @action
   Future onChangeConexao(ConnectivityResult? resultado) async {
-    if (resultado != ConnectivityResult.none) {
-      if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
-        return;
-      }
+    if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
+      return;
+    }
 
+    if (resultado != ConnectivityResult.none) {
       iniciarDownload();
     } else {
       downloadStatus = EnumDownloadStatus.PAUSADO;
@@ -118,10 +120,13 @@ abstract class _ProvaStoreBase with Store {
   }
 
   @action
-  iniciarProva() {
+  iniciarProva() async {
     prova.status = EnumProvaStatus.INICIADA;
     status = EnumProvaStatus.INICIADA;
-    saveProva();
+
+    await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA);
+
+    await saveProva();
   }
 
   saveProva() async {

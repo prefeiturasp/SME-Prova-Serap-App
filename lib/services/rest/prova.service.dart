@@ -1,5 +1,6 @@
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:chopper/chopper.dart';
 
 part 'prova.service.chopper.dart';
@@ -12,5 +13,18 @@ abstract class ProvaService extends ChopperService {
   Future<Response<List<ProvaResponseDTO>>> getProvas();
 
   @Get(path: '{idProva}/detalhes-resumido')
-  Future<Response<ProvaDetalhesResponseDTO>> getResumoProva({@Path() required int idProva});
+  Future<Response<ProvaDetalhesResponseDTO>> getResumoProva({
+    @Path() required int idProva,
+  });
+
+  @Get(path: '{idProva}/status-aluno')
+  Future<Response<int>> getStatusProva({
+    @Path() required int idProva,
+  });
+
+  @Post(path: '{idProva}/status-aluno')
+  Future<Response<bool>> setStatusProva({
+    @Path() required int idProva,
+    @Field() required EnumProvaStatus status,
+  });
 }
