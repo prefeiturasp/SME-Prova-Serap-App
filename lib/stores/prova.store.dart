@@ -124,7 +124,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
     prova.status = EnumProvaStatus.INICIADA;
     status = EnumProvaStatus.INICIADA;
 
-    await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA);
+    await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
 
     await saveProva();
   }
