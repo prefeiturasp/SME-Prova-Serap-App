@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:io';
 
 import 'package:appserap/converters/error_converter.dart';
 import 'package:appserap/converters/json_conveter.dart';
@@ -6,8 +6,8 @@ import 'package:appserap/interceptors/autenticacao.interceptor.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/services/rest/versao.service.dart';
 import 'package:chopper/chopper.dart';
-import 'package:get_it/get_it.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/io_client.dart' as httpio;
+import 'package:http/http.dart' as http;
 
 class ConnectionOptions {
   final String baseUrl;
@@ -17,22 +17,6 @@ class ConnectionOptions {
   });
 }
 
-class CustomAuthInterceptor implements RequestInterceptor {
-  CustomAuthInterceptor();
-
-  @override
-  FutureOr<Request> onRequest(Request request) {
-    SharedPreferences pref = GetIt.I.get();
-    String? token = pref.getString('token');
-
-    if (token != null) {
-      return applyHeaders(request, {'Authorization': 'Bearer $token'});
-    }
-
-    return request;
-  }
-}
-
 class ApiService {
   final ChopperClient chopper;
 
@@ -40,6 +24,13 @@ class ApiService {
 
   factory ApiService.build(ConnectionOptions options) {
     final client = ApiService._internal(ChopperClient(
+      client: options.baseUrl.contains("10.0.2.2")
+          ? httpio.IOClient(
+              HttpClient()
+                ..connectionTimeout = const Duration(seconds: 5)
+                ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true),
+            )
+          : http.Client(),
       baseUrl: options.baseUrl,
       converter: jsonConverter,
       errorConverter: JsonErrorConverter(),
@@ -51,6 +42,7 @@ class ApiService {
         AlternativaService.create(),
         ArquivoService.create(),
         VersaoService.create(),
+        QuestaoRespostaService.create(),
       ],
       interceptors: [
         CustomAuthInterceptor(),
@@ -68,4 +60,5 @@ class ApiService {
   AlternativaService get alternativa => chopper.getService<AlternativaService>();
   ArquivoService get arquivo => chopper.getService<ArquivoService>();
   VersaoService get versao => chopper.getService<VersaoService>();
+  QuestaoRespostaService get questaoResposta => chopper.getService<QuestaoRespostaService>();
 }

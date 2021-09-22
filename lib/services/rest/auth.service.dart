@@ -5,7 +5,7 @@ import 'package:chopper/chopper.dart';
 
 part 'auth.service.chopper.dart';
 
-@ChopperApi(baseUrl: "/autenticacao")
+@ChopperApi(baseUrl: "/v1/autenticacao")
 abstract class AutenticacaoService extends ChopperService {
   static AutenticacaoService create([ChopperClient? client]) => _$AutenticacaoService(client);
 

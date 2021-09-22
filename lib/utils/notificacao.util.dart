@@ -2,7 +2,7 @@ import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 
 class NotificacaoUtil {
-  static GlobalKey<ScaffoldMessengerState> messengerKey = new GlobalKey<ScaffoldMessengerState>();
+  static GlobalKey<ScaffoldMessengerState> messengerKey = GlobalKey<ScaffoldMessengerState>();
 
   static showSnackbar(SnackBar snackBar) {
     messengerKey.currentState!.showSnackBar(snackBar);

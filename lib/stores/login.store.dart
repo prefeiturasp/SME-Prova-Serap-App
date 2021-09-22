@@ -1,5 +1,5 @@
-import 'package:appserap/dtos/autenticacao.dto.dart';
 import 'package:appserap/dtos/error.response.dto.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:get_it/get_it.dart';
@@ -10,9 +10,8 @@ part 'login.store.g.dart';
 
 class LoginStore = _LoginStoreBase with _$LoginStore;
 
-abstract class _LoginStoreBase with Store {
+abstract class _LoginStoreBase with Store, Loggable {
   final _autenticacaoService = GetIt.I.get<ApiService>().auth;
-  // final _usuarioService = GetIt.I.get<UsuarioService>();
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
   final autenticacaoErroStore = AutenticacaoErroStore();
@@ -81,37 +80,47 @@ abstract class _LoginStoreBase with Store {
   @action
   Future<void> autenticar() async {
     carregando = true;
-    var responseLogin = await _autenticacaoService.login(
-      login: codigoEOL,
-      senha: senha,
-    );
+    try {
+      var responseLogin = await _autenticacaoService.login(
+        login: codigoEOL,
+        senha: senha,
+      );
 
-    if (responseLogin.isSuccessful) {
-      var body = responseLogin.body!;
+      if (responseLogin.isSuccessful) {
+        var body = responseLogin.body!;
 
-      _usuarioStore.token = body.token;
-      _usuarioStore.tokenDataHoraExpiracao = body.dataHoraExpiracao;
+        _usuarioStore.token = body.token;
+        _usuarioStore.tokenDataHoraExpiracao = body.dataHoraExpiracao;
 
-      SharedPreferences pref = GetIt.I.get();
-      await pref.setString('token', body.token);
+        SharedPreferences pref = GetIt.I.get();
+        await pref.setString('token', body.token);
 
-      var responseMeusDados = await _autenticacaoService.meusDados();
+        var responseMeusDados = await _autenticacaoService.meusDados();
 
-      if (responseMeusDados.isSuccessful) {
-        var usuarioDados = responseMeusDados.body!;
-        if (usuarioDados.nome != "") {
-          _usuarioStore.atualizarDados(usuarioDados.nome, codigoEOL, body.token, usuarioDados.ano);
+        if (responseMeusDados.isSuccessful) {
+          var usuarioDados = responseMeusDados.body!;
+          if (usuarioDados.nome != "") {
+            _usuarioStore.atualizarDados(
+              usuarioDados.nome,
+              codigoEOL,
+              body.token,
+              usuarioDados.ano,
+              usuarioDados.tipoTurno,
+            );
+          }
+        }
+      } else {
+        switch (responseLogin.statusCode) {
+          case 411:
+            autenticacaoErroStore.codigoEOL = (responseLogin.error! as ErrorResponseDTO).mensagens.first;
+            break;
+          case 412:
+            autenticacaoErroStore.senha = (responseLogin.error! as ErrorResponseDTO).mensagens.first;
+            break;
         }
       }
-    } else {
-      switch (responseLogin.statusCode) {
-        case 411:
-          autenticacaoErroStore.codigoEOL = (responseLogin.error! as ErrorResponseDTO).mensagens.first;
-          break;
-        case 412:
-          autenticacaoErroStore.senha = (responseLogin.error! as ErrorResponseDTO).mensagens.first;
-          break;
-      }
+    } catch (e, stack) {
+      severe(e, stack);
     }
     carregando = false;
   }

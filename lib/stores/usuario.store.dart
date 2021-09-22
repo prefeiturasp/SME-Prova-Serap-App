@@ -21,6 +21,10 @@ abstract class _UsuarioStoreBase with Store {
   @observable
   String? ano;
 
+  @observable
+  String? tipoTurno;
+
+  @action
   void dispose() {
     nome = null;
     token = null;
@@ -35,19 +39,22 @@ abstract class _UsuarioStoreBase with Store {
     token = prefs.getString("serapUsuarioToken");
     codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
     ano = prefs.getString("serapUsuarioAno");
+    tipoTurno = prefs.getString("serapUsuarioTipoTurno");
   }
 
   @action
-  atualizarDados(String nome, String codigoEOL, String token, String ano) async {
+  atualizarDados(String nome, String codigoEOL, String token, String ano, String tipoTurno) async {
     this.nome = nome;
     this.token = token;
     this.codigoEOL = codigoEOL;
     this.ano = ano;
+    this.tipoTurno = tipoTurno;
 
     var prefs = await SharedPreferences.getInstance();
     await prefs.setString('serapUsuarioNome', nome);
     await prefs.setString('serapUsuarioToken', token);
     await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
     await prefs.setString('serapUsuarioAno', ano);
+    await prefs.setString('serapUsuarioTipoTurno', tipoTurno);
   }
 }

@@ -1,7 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -13,7 +14,7 @@ part 'home.store.g.dart';
 
 class HomeStore = _HomeStoreBase with _$HomeStore;
 
-abstract class _HomeStoreBase with Store {
+abstract class _HomeStoreBase with Store, Loggable {
   @observable
   ObservableList<ProvaStore> provas = ObservableList<ProvaStore>();
 
@@ -23,57 +24,96 @@ abstract class _HomeStoreBase with Store {
   @action
   carregarProvas() async {
     carregando = true;
-    var response = await GetIt.I.get<ApiService>().prova.getProvas();
-
     List<ProvaStore> provasStore = [];
+    try {
+      var response = await GetIt.I.get<ApiService>().prova.getProvas();
 
-    if (response.isSuccessful) {
-      provasStore = response.body!
-          .map((e) => ProvaStore(
-                id: e.id,
-                prova: Prova(
-                  id: e.id,
-                  itensQuantidade: e.itensQuantidade,
-                  dataInicio: e.dataInicio,
-                  dataFim: e.dataFim,
-                  descricao: e.descricao,
-                  questoes: [],
-                ),
-                status: EnumDownloadStatus.NAO_INICIADO,
-              ))
-          .toList()
-          .asObservable();
+      if (response.isSuccessful) {
+        var provasResponse = response.body!;
+
+        for (var provaResponse in provasResponse) {
+          var provaStore = ProvaStore(
+            id: provaResponse.id,
+            prova: Prova(
+              id: provaResponse.id,
+              itensQuantidade: provaResponse.itensQuantidade,
+              dataInicio: provaResponse.dataInicio,
+              dataFim: provaResponse.dataFim,
+              descricao: provaResponse.descricao,
+              questoes: [],
+            ),
+          );
+          provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+
+          provasStore.add(provaStore);
+        }
+      }
+    } on SocketException {
+      List<int> ids = listProvasCache();
+
+      for (var id in ids) {
+        var provaBanco = carregaProvaCache(id)!;
+        provasStore.add(ProvaStore(
+          id: id,
+          prova: provaBanco,
+        ));
+      }
+    } catch (e, stacktrace) {
+      severe(e, stacktrace);
     }
 
     if (provasStore.isNotEmpty) {
-      for (var prova in provasStore) {
-        prova.setupReactions();
-        await carregaProva(prova);
+      for (var provaStore in provasStore) {
+        provaStore.setupReactions();
+        await carregaProva(provaStore.id, provaStore);
       }
     }
-
     provas = ObservableList.of(provasStore);
+
     carregando = false;
   }
 
-  Future<void> carregaProva(ProvaStore provaStore) async {
+  List<int> listProvasCache() {
     SharedPreferences _pref = GetIt.I.get();
 
-    String? provaJson = _pref.getString('prova_${provaStore.id}');
+    var ids = _pref.getKeys().toList().where((element) => element.startsWith('prova_'));
+
+    if (ids.isNotEmpty) {
+      return ids.map((e) => e.replaceAll('prova_', '')).map((e) => int.parse(e)).toList();
+    }
+    return [];
+  }
+
+  Future<void> carregaProva(int idProva, ProvaStore provaStore) async {
+    var prova = carregaProvaCache(idProva);
+
+    if (prova != null) {
+      provaStore.prova = prova;
+      provaStore.downloadStatus = prova.downloadStatus;
+      provaStore.progressoDownload = prova.downloadProgresso;
+      provaStore.status = prova.status;
+    } else {
+      await salvaProvaCache(provaStore.prova);
+    }
+
+    if (provaStore.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+      provaStore.iniciarDownload();
+    }
+  }
+
+  Prova? carregaProvaCache(int idProva) {
+    var _pref = GetIt.I.get<SharedPreferences>();
+
+    String? provaJson = _pref.getString('prova_$idProva');
 
     if (provaJson != null) {
-      var prova = Prova.fromJson(jsonDecode(provaJson));
-
-      provaStore.prova = prova;
-      provaStore.status = prova.status;
-      provaStore.progressoDownload = prova.progressoDownload;
-
-      if (provaStore.status != EnumDownloadStatus.CONCLUIDO) {
-        provaStore.iniciarDownload();
-      }
-    } else {
-      await _pref.setString('prova_${provaStore.prova.id}', jsonEncode(provaStore.prova.toJson()));
+      return Prova.fromJson(jsonDecode(provaJson));
     }
+  }
+
+  salvaProvaCache(Prova prova) async {
+    var _pref = GetIt.I.get<SharedPreferences>();
+    await _pref.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 
   @action

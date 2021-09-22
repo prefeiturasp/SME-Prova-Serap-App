@@ -37,12 +37,21 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
   @override
   void initState() {
+    store.setup();
     super.initState();
   }
 
   @override
+  void dispose() {
+    store.dispose();
+    super.dispose();
+  }
+
+  @override
   PreferredSizeWidget buildAppBar() {
-    return AppBarWidget();
+    return AppBarWidget(
+      popView: true,
+    );
   }
 
   @override
@@ -88,9 +97,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   tratarArquivos(questao.titulo, questao.arquivos),
                   textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
-                    Uint8List image = base64.decode(imageMetadata.sources.first.url.split(',').last);
+                    Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
 
-                    _showImage(context, image);
+                    _exibirImagem(context, imagem);
                   },
                 ),
                 SizedBox(height: 8),
@@ -145,7 +154,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
                   return BotaoDefaultWidget(
                     textoBotao: 'Finalizar prova',
-                    onPressed: () {
+                    onPressed: () async {
+                      await store.adicionarResposta(questao.id, store.resposta!);
                       store.questaoAtual = 0;
                       Navigator.of(context).pop();
                     },
@@ -159,7 +169,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
     );
   }
 
-  Future<T?> _showImage<T>(BuildContext context, Uint8List image) async {
+  Future<T?> _exibirImagem<T>(BuildContext context, Uint8List image) async {
     return await showDialog<T>(
       context: context,
       builder: (_) {
@@ -187,7 +197,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   alignment: Alignment.topRight,
                   child: TextButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,

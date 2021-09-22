@@ -27,12 +27,12 @@ String formatDatedMMMMyyyy(DateTime? dateTime) {
   return DateFormat("d 'de' MMMM 'de ' yyyy", 'pt_BR').format(dateTime);
 }
 
-String formatDateddMM(DateTime dateTime) {
+String formatDateddMM(DateTime? dateTime) {
   if (dateTime == null) return "-";
   return DateFormat("dd/MM", 'pt_BR').format(dateTime);
 }
 
-String formatEddMMyyyy(DateTime dateTime) {
+String formatEddMMyyyy(DateTime? dateTime) {
   if (dateTime == null) return "-";
   return DateFormat("E - dd/MM/yyyy", 'pt_BR').format(dateTime);
 }
@@ -80,3 +80,13 @@ DateTime? getDateTime(int? time, {bool isInMillisecond = true, bool isInNum = fa
 
   return dateTime;
 }
+
+int getTicks(DateTime data) {
+  const _epochTicks = 621355968000000000;
+  return data.microsecondsSinceEpoch * 10 + _epochTicks;
+}
+
+
+// extension TicksOnDateTime on DateTime {
+//   int get ticks => ;
+// }

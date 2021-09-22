@@ -1,9 +1,14 @@
+import 'dart:convert';
+
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/download.service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'prova.store.g.dart';
 
@@ -23,7 +28,10 @@ abstract class _ProvaStoreBase with Store {
   Prova prova;
 
   @observable
-  EnumDownloadStatus status;
+  EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+
+  @observable
+  EnumProvaStatus status = EnumProvaStatus.NAO_INICIADA;
 
   @observable
   double tempoPrevisto = 0;
@@ -37,31 +45,37 @@ abstract class _ProvaStoreBase with Store {
   _ProvaStoreBase({
     required this.id,
     required this.prova,
-    required this.status,
   }) {
     downloadService = DownloadService(idProva: id);
   }
 
   @action
   iniciarDownload() async {
+    downloadStatus = EnumDownloadStatus.BAIXANDO;
+
     await downloadService.configure();
 
     print('** Total Downloads ${downloadService.downloads.length}');
     print('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
     print('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
 
-    await downloadService.startDownload((status, tempoPrevisto, progressoDownload) {
-      this.status = status;
-      this.tempoPrevisto = tempoPrevisto;
+    downloadService.onStatusChange((downloadStatus, progressoDownload) {
+      this.downloadStatus = downloadStatus;
       this.progressoDownload = progressoDownload;
     });
+
+    downloadService.onTempoPrevistoChange((tempoPrevisto) {
+      this.tempoPrevisto = tempoPrevisto;
+    });
+
+    await downloadService.startDownload();
 
     prova = await downloadService.getProva();
   }
 
   setupReactions() {
     _reactions = [
-      reaction((_) => status, onStatusChange),
+      reaction((_) => downloadStatus, onStatusChange),
       reaction((_) => conexaoStream.value, onChangeConexao),
     ];
   }
@@ -75,15 +89,13 @@ abstract class _ProvaStoreBase with Store {
   @action
   Future onChangeConexao(ConnectivityResult? resultado) async {
     if (resultado != ConnectivityResult.none) {
-      // TODO resumir download
-
-      if (status != EnumDownloadStatus.CONCLUIDO) {
-        iniciarDownload();
+      if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
+        return;
       }
-    }
-    {
-      status == EnumDownloadStatus.PAUSADO;
-      // onStatusChange(status);
+
+      iniciarDownload();
+    } else {
+      downloadStatus = EnumDownloadStatus.PAUSADO;
       downloadService.pause();
     }
   }
@@ -98,10 +110,23 @@ abstract class _ProvaStoreBase with Store {
       case EnumDownloadStatus.BAIXANDO:
         icone = "assets/images/prova_download.svg";
         break;
-      case EnumDownloadStatus.PAUSADO:
       case EnumDownloadStatus.ERRO:
+      case EnumDownloadStatus.PAUSADO:
         icone = "assets/images/prova_erro_download.svg";
         break;
     }
+  }
+
+  @action
+  iniciarProva() {
+    prova.status = EnumProvaStatus.INICIADA;
+    status = EnumProvaStatus.INICIADA;
+    saveProva();
+  }
+
+  saveProva() async {
+    SharedPreferences pref = GetIt.I.get();
+
+    await pref.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 }
