@@ -1,35 +1,26 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
+
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:asuka/snackbars/asuka_snack_bar.dart';
+import 'package:chopper/src/response.dart';
+import 'package:collection/collection.dart';
+import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
+import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/questao.model.dart';
-import 'package:asuka/snackbars/asuka_snack_bar.dart';
-import 'package:chopper/src/response.dart';
-import 'package:flutter/services.dart';
-import 'package:get_it/get_it.dart';
-
-import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
-import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/models/download_prova.model.dart';
 import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
-import 'package:logging/logging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:collection/collection.dart';
-import 'package:asuka/asuka.dart' as asuka;
-
-class Loggable<T> {
-  var log = Logger(T.toString());
-  var info = Logger(T.toString()).info;
-  var warning = Logger(T.toString()).warning;
-  var severe = Logger(T.toString()).severe;
-}
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
 
@@ -215,8 +206,11 @@ class DownloadService with Loggable {
                 if (response.isSuccessful) {
                   ArquivoResponseDTO arquivo = response.body!;
 
-                  ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
-                  String base64 = base64Encode(imageData.buffer.asUint8List());
+                  http.Response arquivoResponse =
+                      await http.get(Uri.parse(arquivo.caminho.replaceFirst('http://', 'https://')));
+
+                  // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
+                  String base64 = base64Encode(arquivoResponse.bodyBytes);
 
                   questao.arquivos.add(Arquivo(
                     id: arquivo.id,
@@ -243,7 +237,7 @@ class DownloadService with Loggable {
           await saveProva(prova);
           await saveDownloads();
         } catch (e, stak) {
-          severe('ERRO: ', e, stak);
+          severe('ERRO: $e', stak);
           download.downloadStatus = EnumDownloadStatus.ERRO;
           prova.downloadStatus = EnumDownloadStatus.ERRO;
           onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
@@ -285,8 +279,6 @@ class DownloadService with Loggable {
     var downloadJson = jsonEncode(downloads);
 
     await pref.setString('download_$idProva', downloadJson);
-
-    warning('Salvando downloads');
   }
 
   loadDownloads() async {
