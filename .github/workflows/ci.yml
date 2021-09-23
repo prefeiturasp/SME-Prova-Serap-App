@@ -19,8 +19,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Ajustando configuração
+        env: # Ou como uma variável de ambiente
+          APP_CONFIG: ${{ secrets.APP_CONFIG }}
         run: |
-          mkdir -p config && echo ${{ secrets.APP_CONFIG }} > config/app_config.json
+          mkdir -p config && echo $APP_CONFIG > config/app_config.json
 
   build:
     runs-on: serap
