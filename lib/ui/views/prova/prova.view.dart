@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:appserap/models/prova_resposta.model.dart';
-import 'package:collection/collection.dart';
 
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
@@ -16,8 +15,9 @@ import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -96,25 +96,48 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   ],
                 ),
                 SizedBox(height: 8),
-                HtmlWidget(
-                  tratarArquivos(questao.titulo, questao.arquivos),
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  onTapImage: (ImageMetadata imageMetadata) {
-                    Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
+                Html(
+                  data: tratarArquivos(questao.titulo, questao.arquivos),
+                  style: {
+                    '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
+                  },
+                  onImageTap: (url, _, attributes, element) {
+                    Uint8List imagem = base64.decode(url!.split(',').last);
 
                     _exibirImagem(context, imagem);
                   },
                 ),
+
+                // HtmlWidget(
+                //   tratarArquivos(questao.titulo, questao.arquivos),
+                //   textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                //   onTapImage: (ImageMetadata imageMetadata) {
+                //     Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
+
+                //     _exibirImagem(context, imagem);
+                //   },
+                // ),
                 SizedBox(height: 8),
-                HtmlWidget(
-                  tratarArquivos(questao.descricao, questao.arquivos),
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  onTapImage: (ImageMetadata imageMetadata) {
-                    Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
+                Html(
+                  data: tratarArquivos(questao.descricao, questao.arquivos),
+                  style: {
+                    '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
+                  },
+                  onImageTap: (url, _, attributes, element) {
+                    Uint8List imagem = base64.decode(url!.split(',').last);
 
                     _exibirImagem(context, imagem);
                   },
                 ),
+                // HtmlWidget(
+                //   tratarArquivos(questao.descricao, questao.arquivos),
+                //   textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                //   onTapImage: (ImageMetadata imageMetadata) {
+                //     Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
+
+                //     _exibirImagem(context, imagem);
+                //   },
+                // ),
                 SizedBox(height: 16),
                 Observer(builder: (_) {
                   return _buildResposta(questao);
@@ -310,10 +333,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
   Widget _buildAlternativa(int idAlternativa, String numeracao, int questaoId, String descricao) {
     ProvaResposta? resposta = store.obterResposta(questaoId);
 
-    print("${idAlternativa} ${resposta}");
-
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(8),
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -327,16 +348,29 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
       child: RadioListTile<int>(
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
-        onChanged: (value) => store.definirResposta(questaoId, value!),
+        onChanged: (value) {
+          store.definirResposta(questaoId, value);
+        },
+        toggleable: true,
         title: Row(children: [
           Text(
             "$numeracao ",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          HtmlWidget(
-            descricao,
-            textStyle: TextStyle(fontSize: 16),
+          Expanded(
+            child: Html(
+              data: descricao,
+              style: {
+                '*': Style.fromTextStyle(
+                  GoogleFonts.poppins(fontSize: 16),
+                )
+              },
+            ),
           ),
+          // HtmlWidget(
+          //   descricao,
+          //   textStyle: TextStyle(fontSize: 16),
+          // ),
         ]),
       ),
     );
