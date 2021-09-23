@@ -1,6 +1,7 @@
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/utils/icone.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,7 +52,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
               SizedBox(
                 height: 150,
               ),
-              SvgPicture.asset("assets/images/logo-serap.svg"),
+              SvgPicture.asset(IconeUtil.logoSerap),
               SizedBox(
                 height: 10,
               ),

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:appserap/utils/icone.util.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
@@ -40,7 +42,7 @@ abstract class _ProvaStoreBase with Store {
   double progressoDownload = 0;
 
   @observable
-  String icone = "assets/images/prova.svg";
+  String icone = IconeUtil.iconeProva;
 
   _ProvaStoreBase({
     required this.id,
@@ -105,14 +107,14 @@ abstract class _ProvaStoreBase with Store {
     switch (statusDownload) {
       case EnumDownloadStatus.NAO_INICIADO:
       case EnumDownloadStatus.CONCLUIDO:
-        icone = "assets/images/prova.svg";
+        icone = IconeUtil.iconeProva;
         break;
       case EnumDownloadStatus.BAIXANDO:
-        icone = "assets/images/prova_download.svg";
+        icone = IconeUtil.iconeProvaDownload;
         break;
       case EnumDownloadStatus.ERRO:
       case EnumDownloadStatus.PAUSADO:
-        icone = "assets/images/prova_erro_download.svg";
+        icone = IconeUtil.iconeProvaErroDownload;
         break;
     }
   }
