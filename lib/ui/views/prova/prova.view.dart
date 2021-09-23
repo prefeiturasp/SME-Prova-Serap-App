@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:collection/collection.dart';
 
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -115,7 +116,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   },
                 ),
                 SizedBox(height: 16),
-                _buildResposta(questao),
+                Observer(builder: (_) {
+                  return _buildResposta(questao);
+                }),
               ],
             ),
           ),
@@ -146,8 +149,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                     return BotaoDefaultWidget(
                       textoBotao: 'Proxima questão',
                       onPressed: () async {
-                        if (store.resposta != null) {
-                          await store.adicionarResposta(questao.id, store.resposta!);
+                        if (store.respostas[questao.id] != null) {
+                          await store.sincronizarResposta();
                         }
 
                         listaQuestoesController.nextPage(
@@ -162,7 +165,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   return BotaoDefaultWidget(
                     textoBotao: 'Finalizar prova',
                     onPressed: () async {
-                      await store.adicionarResposta(questao.id, store.resposta!);
+                      await store.sincronizarResposta();
                       store.questaoAtual = 0;
                       Navigator.of(context).pop();
                     },
@@ -243,6 +246,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
   }
 
   _buildDescritiva(Questao questao) {
+    String? respostaRemota = store.respostasSalvas[questao.id]?.resposta;
+    String? respostaLocal = store.respostas[questao.id]?.resposta;
+
+    String? resposta = respostaRemota ?? respostaLocal;
+
+    controller.setText(resposta ?? "");
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -291,47 +301,45 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
     List<Alternativa> alternativasQuestoes = questao.alternativas;
 
     alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
-    //var resposta = store.respostasSalvas.firstWhereOrNull((element) => element.questaoId == questao.id);
 
     return Column(
       children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, questao.id, e.descricao)).toList(),
     );
   }
 
-  Widget _buildAlternativa(int id, String? numeracao, int? questaoId, String? descricao) {
-    //store.resposta = resposta;
+  Widget _buildAlternativa(int idAlternativa, String numeracao, int questaoId, String descricao) {
+    ProvaResposta? resposta = store.obterResposta(questaoId);
 
-    return Observer(builder: (_) {
-      return Container(
-          padding: EdgeInsets.all(16),
-          margin: EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: Colors.black.withOpacity(0.34),
-            ),
-            borderRadius: BorderRadius.all(
-              Radius.circular(12),
-            ),
+    print("${idAlternativa} ${resposta}");
+
+    return Container(
+      padding: EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: Colors.black.withOpacity(0.34),
+        ),
+        borderRadius: BorderRadius.all(
+          Radius.circular(12),
+        ),
+      ),
+      child: RadioListTile<int>(
+        value: idAlternativa,
+        groupValue: resposta?.alternativaId,
+        onChanged: (value) => store.definirResposta(questaoId, value!),
+        title: Row(children: [
+          Text(
+            "$numeracao ",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          child: RadioListTile<int>(
-            value: id,
-            groupValue: store.resposta != null
-                ? store.resposta
-                : store.respostasSalvas.firstWhereOrNull((element) => element.questaoId == questaoId)?.alternativaId,
-            onChanged: (value) => store.resposta = value,
-            title: Row(children: [
-              Text(
-                "$numeracao ",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              HtmlWidget(
-                descricao!,
-                textStyle: TextStyle(fontSize: 16),
-              ),
-            ]),
-          ));
-    });
+          HtmlWidget(
+            descricao,
+            textStyle: TextStyle(fontSize: 16),
+          ),
+        ]),
+      ),
+    );
   }
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {

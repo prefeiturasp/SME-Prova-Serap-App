@@ -206,8 +206,11 @@ class DownloadService with Loggable {
                 if (response.isSuccessful) {
                   ArquivoResponseDTO arquivo = response.body!;
 
-                  http.Response arquivoResponse =
-                      await http.get(Uri.parse(arquivo.caminho.replaceFirst('http://', 'https://')));
+                  http.Response arquivoResponse = await http.get(
+                    Uri.parse(
+                      arquivo.caminho.replaceFirst('http://', 'https://'),
+                    ),
+                  );
 
                   // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
                   String base64 = base64Encode(arquivoResponse.bodyBytes);

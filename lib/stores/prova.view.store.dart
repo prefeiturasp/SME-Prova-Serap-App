@@ -20,25 +20,18 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   int questaoAtual = 1;
 
   @observable
-  int? resposta = 1;
+  ObservableMap<int, ProvaResposta> respostas = <int, ProvaResposta>{}.asObservable();
 
   @observable
-  ObservableList<ProvaResposta> respostas = ObservableList<ProvaResposta>();
-
-  @observable
-  ObservableList<ProvaResposta> respostasSalvas = ObservableList<ProvaResposta>();
-
-  ReactionDisposer? _disposer;
+  ObservableMap<int, ProvaResposta> respostasSalvas = <int, ProvaResposta>{}.asObservable();
 
   setup() async {
-    _disposer = reaction((_) => respostas.length, onChangeRespostas);
     await obterRespostasServidor();
     questaoAtual = 1;
   }
 
   void dispose() {
-    _disposer!();
-    respostasSalvas = ObservableList<ProvaResposta>();
+    respostasSalvas = <int, ProvaResposta>{}.asObservable();
   }
 
   @action
@@ -49,16 +42,56 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
         if (respostaBanco.isSuccessful) {
           var body = respostaBanco.body!;
 
-          respostasSalvas.add(
-            ProvaResposta(
-              questaoId: questao.id,
-              sincronizado: true,
-              alternativaId: body.alternativaId,
-              resposta: body.resposta,
-            ),
+          respostasSalvas[questao.id] = ProvaResposta(
+            questaoId: questao.id,
+            sincronizado: true,
+            alternativaId: body.alternativaId,
+            resposta: body.resposta,
+            dataHoraResposta: body.dataHoraResposta.toLocal(),
           );
 
-          print("Resposta Banco ${body.alternativaId} | ${body.resposta}");
+          fine("Resposta Banco Questao ${questao.id} - ${body.alternativaId} | ${body.resposta}");
+        }
+      } catch (e) {
+        severe(e);
+      }
+    }
+  }
+
+  ProvaResposta? obterResposta(int questaoId) {
+    var respostaRemota = respostasSalvas[questaoId];
+    var respostaLocal = respostas[questaoId];
+
+    if (respostaRemota != null && respostaLocal != null) {
+      if (respostaRemota.dataHoraResposta!.isBefore(respostaLocal.dataHoraResposta!)) {
+        return respostaLocal;
+      } else {
+        return respostaRemota;
+      }
+    }
+
+    return respostaRemota ?? respostaLocal;
+  }
+
+  @action
+  sincronizarResposta() async {
+    for (MapEntry<int, ProvaResposta> item
+        in respostas.entries.where((element) => element.value.sincronizado == false)) {
+      int idQuestao = item.key;
+      ProvaResposta resposta = item.value;
+
+      try {
+        var response = await _service.postResposta(
+          questaoId: idQuestao,
+          alternativaId: resposta.alternativaId,
+          resposta: resposta.resposta,
+          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+        );
+
+        if (response.isSuccessful) {
+          fine("Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
+
+          resposta.sincronizado = true;
         }
       } catch (e) {
         severe(e);
@@ -67,36 +100,12 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   }
 
   @action
-  onChangeRespostas(int tamanho) async {
-    for (var resposta in respostas.where((element) => !element.sincronizado).toList()) {
-      try {
-        await _service.postResposta(
-          questaoId: resposta.questaoId,
-          alternativaId: resposta.alternativaId,
-          resposta: resposta.resposta,
-          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
-        );
-        fine("Resposta Salva ${resposta.questaoId} | ${resposta.alternativaId}");
-
-        respostas[respostas.indexOf(resposta)].sincronizado = true;
-      } catch (e) {
-        severe(e);
-      }
-    }
-
-    respostas.removeWhere((element) => element.sincronizado);
-  }
-
-  @action
-  adicionarResposta(int questaoId, int resposta) {
-    respostas.add(
-      ProvaResposta(
-        questaoId: questaoId,
-        alternativaId: resposta,
-        sincronizado: false,
-        dataHoraResposta: DateTime.now(),
-      ),
+  definirResposta(int questaoId, int resposta) {
+    respostas[questaoId] = ProvaResposta(
+      questaoId: questaoId,
+      alternativaId: resposta,
+      sincronizado: false,
+      dataHoraResposta: DateTime.now(),
     );
-    this.resposta = null;
   }
 }

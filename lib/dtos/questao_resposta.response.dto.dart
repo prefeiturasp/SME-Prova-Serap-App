@@ -6,15 +6,18 @@ part 'questao_resposta.response.dto.g.dart';
 class QuestaoRespostaResponseDTO {
   int? alternativaId;
   String? resposta;
+  DateTime dataHoraResposta;
 
   QuestaoRespostaResponseDTO({
     this.alternativaId,
     this.resposta,
+    required this.dataHoraResposta,
   });
 
   static const fromJson = _$QuestaoRespostaResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$QuestaoRespostaResponseDTOToJson(this);
 
   @override
-  String toString() => 'QuestaoRespostaResponseDTO(alternativaId: $alternativaId, resposta: $resposta)';
+  String toString() =>
+      'QuestaoRespostaResponseDTO(alternativaId: $alternativaId, resposta: $resposta, dataHoraResposta: $dataHoraResposta)';
 }

@@ -23,6 +23,6 @@ class ProvaResposta {
 
   @override
   String toString() {
-    return 'ProvaResposta(questaoId: $questaoId, alternativaId: $alternativaId, resposta: $resposta, sincronizado: $sincronizado, dataHoraResposta: $dataHoraResposta)';
+    return 'ProvaResposta(questaoId: $questaoId, alternativaId: $alternativaId, resposta: $resposta, sincronizado: $sincronizado)';
   }
 }
