@@ -26,8 +26,6 @@ dependencies:
 
   # Core
   cupertino_icons: ^1.0.2
-  flutter_widget_from_html_core: ^0.7.0
-  flutter_html: ^2.1.2
   percent_indicator: ^3.0.1
   connectivity_plus: ^1.1.0
   auto_size_text: ^3.0.0-nullsafety.0
@@ -35,6 +33,9 @@ dependencies:
   google_fonts: ^2.1.0
   flutter_native_splash: ^1.2.3
   asuka: ^2.0.0-nullsafety.3
+
+  # Render html
+  flutter_html: ^2.1.2
 
   # Firebase
   firebase_messaging: ^10.0.6

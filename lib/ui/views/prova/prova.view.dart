@@ -107,16 +107,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                     _exibirImagem(context, imagem);
                   },
                 ),
-
-                // HtmlWidget(
-                //   tratarArquivos(questao.titulo, questao.arquivos),
-                //   textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                //   onTapImage: (ImageMetadata imageMetadata) {
-                //     Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
-
-                //     _exibirImagem(context, imagem);
-                //   },
-                // ),
                 SizedBox(height: 8),
                 Html(
                   data: tratarArquivos(questao.descricao, questao.arquivos),
@@ -129,15 +119,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                     _exibirImagem(context, imagem);
                   },
                 ),
-                // HtmlWidget(
-                //   tratarArquivos(questao.descricao, questao.arquivos),
-                //   textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                //   onTapImage: (ImageMetadata imageMetadata) {
-                //     Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
-
-                //     _exibirImagem(context, imagem);
-                //   },
-                // ),
                 SizedBox(height: 16),
                 Observer(builder: (_) {
                   return _buildResposta(questao);
@@ -367,10 +348,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
               },
             ),
           ),
-          // HtmlWidget(
-          //   descricao,
-          //   textStyle: TextStyle(fontSize: 16),
-          // ),
         ]),
       ),
     );
@@ -378,7 +355,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {
     texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-      return '<center>${match.group(0)}</center>';
+      return '<div style="text-align: center">${match.group(0)}</div>';
     });
 
     RegExp exp = RegExp(r"#(\d+)#", multiLine: true, caseSensitive: true);
