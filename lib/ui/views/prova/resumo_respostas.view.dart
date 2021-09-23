@@ -34,6 +34,7 @@ class _ResumoRespostasViewState
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', '');
+    
     return textoNovo;
   }
 
