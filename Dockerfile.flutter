@@ -10,7 +10,7 @@ RUN flutter build web
 
 FROM nginx:1.20.1-alpine
 
-COPY default.conf /etc/nginx/conf.d/
+COPY configuracoes/default.conf /etc/nginx/conf.d/
 COPY --from=build /usr/src/app/config /usr/share/nginx/html/config
 COPY --from=build /usr/src/app/build/web /usr/share/nginx/html
 
