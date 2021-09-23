@@ -28,7 +28,6 @@ jobs:
     runs-on: serap
     needs: [flutter_config]
     steps:
-      - uses: actions/checkout@v2
       - name: Login to registry
         uses: docker/login-action@v1
         with:
