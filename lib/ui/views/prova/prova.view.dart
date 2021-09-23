@@ -74,6 +74,134 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
     );
   }
 
+  Widget _botoesProva(Questao questao) {
+    if (store.revisandoProva) {
+      return Padding(
+        padding: const EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: 20,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Observer(
+              builder: (context) {
+                return BotaoDefaultWidget(
+                  textoBotao: 'Proximo item da revisão',
+                  onPressed: () async {
+                    //! IMPLEMENTAR
+                  },
+                );
+              },
+            ),
+            Observer(
+              builder: (context) {
+                return BotaoDefaultWidget(
+                  textoBotao: 'Confirmar e voltar para o resumo',
+                  onPressed: () async {
+                    //! IMPLEMENTAR
+                    try {
+                      String posicaoDaQuestao = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResumoRespostasView(
+                            provaStore: widget.provaStore,
+                          ),
+                        ),
+                      );
+
+                      if (!int.parse(posicaoDaQuestao).isNaN) {
+                        store.revisandoProva = true;
+                        listaQuestoesController.jumpToPage(
+                          int.parse(posicaoDaQuestao),
+                        );
+                      }
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Observer(
+            builder: (context) {
+              if (store.questaoAtual == 1) {
+                return SizedBox.shrink();
+              }
+
+              return BotaoSecundarioWidget(
+                textoBotao: 'Questão anterior',
+                onPressed: () {
+                  listaQuestoesController.previousPage(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeIn,
+                  );
+                },
+              );
+            },
+          ),
+          Observer(
+            builder: (context) {
+              if (store.questaoAtual <
+                  widget.provaStore.prova.questoes.length) {
+                return BotaoDefaultWidget(
+                  textoBotao: 'Proxima questão',
+                  onPressed: () async {
+                    print(store.resposta);
+                    await store.adicionarResposta(questao.id, store.resposta!);
+                    listaQuestoesController.nextPage(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeIn,
+                    );
+                    store.questaoAtual++;
+                  },
+                );
+              }
+
+              return BotaoDefaultWidget(
+                textoBotao: 'Finalizar prova',
+                onPressed: () async {
+                  await store.adicionarResposta(questao.id, store.resposta!);
+                  store.questaoAtual = 0;
+                  //Navigator.of(context).pop();
+                  try {
+                    String posicaoDaQuestao = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResumoRespostasView(
+                          provaStore: widget.provaStore,
+                        ),
+                      ),
+                    );
+
+                    if (!int.parse(posicaoDaQuestao).isNaN) {
+                      store.revisandoProva = true;
+                      listaQuestoesController.jumpToPage(
+                        int.parse(posicaoDaQuestao),
+                      );
+                    }
+                  } catch (e) {
+                    print(e);
+                  }
+                },
+              );
+            },
+          ),
+        ],
+      );
+    }
+  }
+
   Widget _buildQuestoes(Questao questao, int index) {
     return SingleChildScrollView(
       child: Column(
@@ -125,67 +253,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
               ],
             ),
           ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Observer(
-                builder: (context) {
-                  if (store.questaoAtual == 1) {
-                    return SizedBox.shrink();
-                  }
-
-                  return BotaoSecundarioWidget(
-                    textoBotao: 'Questão anterior',
-                    onPressed: () {
-                      listaQuestoesController.previousPage(
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeIn,
-                      );
-                    },
-                  );
-                },
-              ),
-              Observer(
-                builder: (context) {
-                  if (store.questaoAtual <
-                      widget.provaStore.prova.questoes.length) {
-                    return BotaoDefaultWidget(
-                      textoBotao: 'Proxima questão',
-                      onPressed: () async {
-                        print(store.resposta);
-                        await store.adicionarResposta(
-                            questao.id, store.resposta!);
-                        listaQuestoesController.nextPage(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeIn,
-                        );
-                        store.questaoAtual++;
-                      },
-                    );
-                  }
-
-                  return BotaoDefaultWidget(
-                    textoBotao: 'Finalizar prova',
-                    onPressed: () async {
-                      await store.adicionarResposta(
-                          questao.id, store.resposta!);
-                      store.questaoAtual = 0;
-                      //Navigator.of(context).pop();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ResumoRespostasView(
-                            provaStore: widget.provaStore,
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
-          )
+          //! FBTN
+          _botoesProva(questao),
         ],
       ),
     );

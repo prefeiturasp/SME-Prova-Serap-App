@@ -22,6 +22,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   int quantidadeDeQuestoesSemRespostas = 0;
 
   @observable
+  bool revisandoProva = false;
+
+  @observable
   ObservableList<ProvaResposta> respostas = ObservableList<ProvaResposta>();
 
   ReactionDisposer? _disposer;

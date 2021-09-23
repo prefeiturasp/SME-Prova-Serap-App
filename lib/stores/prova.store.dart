@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/utils/icone.util.dart';
+import 'package:appserap/utils/assets.util.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -20,7 +20,8 @@ abstract class _ProvaStoreBase with Store {
   List<ReactionDisposer> _reactions = [];
 
   @observable
-  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityResult> conexaoStream =
+      ObservableStream(Connectivity().onConnectivityChanged);
 
   late DownloadService downloadService;
 
@@ -42,7 +43,7 @@ abstract class _ProvaStoreBase with Store {
   double progressoDownload = 0;
 
   @observable
-  String icone = IconeUtil.iconeProva;
+  String icone = AssetsUtil.iconeProva;
 
   _ProvaStoreBase({
     required this.id,
@@ -58,8 +59,10 @@ abstract class _ProvaStoreBase with Store {
     await downloadService.configure();
 
     print('** Total Downloads ${downloadService.downloads.length}');
-    print('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
-    print('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
+    print(
+        '** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
+    print(
+        '** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
 
     downloadService.onStatusChange((downloadStatus, progressoDownload) {
       this.downloadStatus = downloadStatus;
@@ -107,14 +110,14 @@ abstract class _ProvaStoreBase with Store {
     switch (statusDownload) {
       case EnumDownloadStatus.NAO_INICIADO:
       case EnumDownloadStatus.CONCLUIDO:
-        icone = IconeUtil.iconeProva;
+        icone = AssetsUtil.iconeProva;
         break;
       case EnumDownloadStatus.BAIXANDO:
-        icone = IconeUtil.iconeProvaDownload;
+        icone = AssetsUtil.iconeProvaDownload;
         break;
       case EnumDownloadStatus.ERRO:
       case EnumDownloadStatus.PAUSADO:
-        icone = IconeUtil.iconeProvaErroDownload;
+        icone = AssetsUtil.iconeProvaErroDownload;
         break;
     }
   }
