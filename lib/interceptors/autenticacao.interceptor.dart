@@ -1,19 +1,15 @@
 import 'dart:async';
 
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
 import 'package:chopper/chopper.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ServiceAuthenticator extends Authenticator {
-  var log = Logger('ServiceAuthenticator');
-
+class ServiceAuthenticator extends Authenticator with Loggable {
   @override
   FutureOr<Request?> authenticate(Request request, Response<dynamic> response) async {
-    // TODO obter o token antigo da store;
-
     if (response.statusCode == 401) {
       SharedPreferences pref = GetIt.I.get();
 
@@ -21,13 +17,12 @@ class ServiceAuthenticator extends Authenticator {
       String? expiration = pref.getString('token_expiration');
 
       if (token == null) {
-        // TODO redirecionar para tela de login
-        log.info('Redirecionando para o Login');
+        fine('Token null - Redirecionando para o Login');
       }
 
       if (expiration == null || DateTime.parse(expiration).isBefore(DateTime.now())) {
         // Token expirou, atualizar
-        log.info('Redirecionando para o Login');
+        fine('Token expirou - Atualizando token');
         var newToken = await refreshToken(token!);
         token = newToken;
       }
@@ -43,11 +38,13 @@ class ServiceAuthenticator extends Authenticator {
   Future<String?> refreshToken(String oldToken) async {
     ApiService service = GetIt.I.get();
 
+    fine('Atualizando token');
     Response<AutenticacaoResponseDTO> response = await service.auth.revalidar(token: oldToken);
 
     if (response.isSuccessful) {
       String newToken = response.body!.token;
       DateTime expiration = response.body!.dataHoraExpiracao;
+      fine('Novo token - Data Expiracao ($expiration) $newToken');
 
       SharedPreferences pref = GetIt.I.get();
       pref.setString('token', newToken);
