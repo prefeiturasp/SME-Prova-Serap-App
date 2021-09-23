@@ -35,7 +35,7 @@ jobs:
                -Dsonar.login=${{ secrets.SONAR_KEY }}
       - name: Build the Docker image
         run: |
-               docker build . --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
+               docker build -t dockerfile.flutter --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front .
                docker push ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
   deploy-development:
     runs-on: serap
