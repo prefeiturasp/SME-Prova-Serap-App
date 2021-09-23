@@ -19,6 +19,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   int? resposta = 1;
 
   @observable
+  int quantidadeDeQuestoesSemRespostas = 0;
+
+  @observable
   ObservableList<ProvaResposta> respostas = ObservableList<ProvaResposta>();
 
   ReactionDisposer? _disposer;
@@ -33,7 +36,8 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
 
   @action
   onChangeRespostas(int tamanho) async {
-    for (var resposta in respostas.where((element) => !element.sincronizado).toList()) {
+    for (var resposta
+        in respostas.where((element) => !element.sincronizado).toList()) {
       try {
         await _service.enviar(
           questaoId: resposta.questaoId,
@@ -41,7 +45,8 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
           resposta: resposta.resposta,
           dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta),
         );
-        print("Resposta Salva ${resposta.questaoId} | ${resposta.alternativaId}");
+        print(
+            "Resposta Salva ${resposta.questaoId} | ${resposta.alternativaId}");
 
         respostas[respostas.indexOf(resposta)].sincronizado = true;
       } catch (e) {
@@ -49,7 +54,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
       }
     }
 
-    respostas.removeWhere((element) => element.sincronizado);
+    //respostas.removeWhere((element) => element.sincronizado);
   }
 
   @action

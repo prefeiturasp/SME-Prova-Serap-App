@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -18,6 +19,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
+
+import 'resumo_respostas.view.dart';
 
 class ProvaView extends BaseStatefulWidget {
   const ProvaView({required this.provaStore}) : super(title: "Prova");
@@ -84,7 +87,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   children: [
                     Text(
                       'Questão ${index + 1} ',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
                       'de ${widget.provaStore.prova.questoes.length}',
@@ -95,9 +99,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                 SizedBox(height: 8),
                 HtmlWidget(
                   tratarArquivos(questao.titulo, questao.arquivos),
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  textStyle:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
-                    Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
+                    Uint8List imagem = base64.decode(
+                        imageMetadata.sources.first.url.split(',').last);
 
                     _exibirImagem(context, imagem);
                   },
@@ -105,9 +111,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                 SizedBox(height: 8),
                 HtmlWidget(
                   tratarArquivos(questao.descricao, questao.arquivos),
-                  textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  textStyle:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
-                    Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
+                    Uint8List imagem = base64.decode(
+                        imageMetadata.sources.first.url.split(',').last);
 
                     _exibirImagem(context, imagem);
                   },
@@ -140,11 +148,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
               ),
               Observer(
                 builder: (context) {
-                  if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
+                  if (store.questaoAtual <
+                      widget.provaStore.prova.questoes.length) {
                     return BotaoDefaultWidget(
                       textoBotao: 'Proxima questão',
                       onPressed: () async {
-                        await store.adicionarResposta(questao.id, store.resposta!);
+                        print(store.resposta);
+                        await store.adicionarResposta(
+                            questao.id, store.resposta!);
                         listaQuestoesController.nextPage(
                           duration: Duration(milliseconds: 300),
                           curve: Curves.easeIn,
@@ -157,9 +168,18 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   return BotaoDefaultWidget(
                     textoBotao: 'Finalizar prova',
                     onPressed: () async {
-                      await store.adicionarResposta(questao.id, store.resposta!);
+                      await store.adicionarResposta(
+                          questao.id, store.resposta!);
                       store.questaoAtual = 0;
-                      Navigator.of(context).pop();
+                      //Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResumoRespostasView(
+                            provaStore: widget.provaStore,
+                          ),
+                        ),
+                      );
                     },
                   );
                 },
@@ -211,7 +231,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                         ),
                         Text(
                           'Fechar',
-                          style: TextStyle(fontSize: 18, color: TemaUtil.laranja02, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: TemaUtil.laranja02,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -286,9 +310,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
     List<Alternativa> alternativasQuestoes = questao.alternativas;
 
     alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
-
     return Column(
-      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, e.descricao)).toList(),
+      children: alternativasQuestoes
+          .map((e) => _buildAlternativa(e.id, e.numeracao, e.descricao))
+          .toList(),
     );
   }
 
@@ -343,10 +368,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
     for (var i = 0; i < matches.length; i++) {
       var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo = arquivos.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
+      var arquivo = arquivos
+          .where((arq) => arq.id == int.parse(arquivoId.split("#")[1]))
+          .first;
       var obterTipo = arquivo.caminho.split(".");
 
-      texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto.replaceAll(arquivoId,
+          "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
     return texto;
     // #123456#
