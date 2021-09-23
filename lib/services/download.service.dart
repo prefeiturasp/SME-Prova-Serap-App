@@ -256,8 +256,8 @@ class DownloadService with Loggable {
       await saveProva(prova);
       await deleteDownload();
 
-      print('Download Concluido');
-      print('Tempo total ${DateTime.now().difference(inicio).inSeconds}');
+      fine('Download Concluido');
+      fine('Tempo total ${DateTime.now().difference(inicio).inSeconds}');
     }
 
     cancelTimer();

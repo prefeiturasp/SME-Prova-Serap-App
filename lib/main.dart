@@ -28,9 +28,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void setupLogging() {
-  Logger.root.level = Level.INFO;
+  Logger.root.level = Level.FINE;
   Logger.root.onRecord.listen((rec) {
-    print('(${rec.loggerName}) ${rec.level.name}: ${rec.time}: ${rec.message}');
+    print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
   });
 }
 
@@ -44,11 +44,11 @@ void registerFonts() {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setupLogging();
+
   await setupAppConfig();
 
   registerFonts();
-
-  setupLogging();
 
   final ioc = DependenciasIoC();
   ioc.registrar();
@@ -59,7 +59,7 @@ Future<void> main() async {
   try {
     await Firebase.initializeApp();
 
-    FirebaseMessaging.instance.subscribeToTopic('1');
+    await FirebaseMessaging.instance.subscribeToTopic('1');
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (e) {
     // ignore: avoid_print

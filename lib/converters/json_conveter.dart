@@ -20,7 +20,7 @@ class JsonSerializableConverter extends JsonConverter {
 
   T? _decodeMap<T>(Map<String, dynamic> values) {
     final jsonFactory = factories[T.toString()];
-    log.fine("jsonFactory: $jsonFactory");
+    log.finest("jsonFactory: $jsonFactory");
 
     if (jsonFactory == null) {
       log.warning("jsonFactory is null");
