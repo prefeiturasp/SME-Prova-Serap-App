@@ -14,4 +14,7 @@ class QuestaoRespostaResponseDTO {
 
   static const fromJson = _$QuestaoRespostaResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$QuestaoRespostaResponseDTOToJson(this);
+
+  @override
+  String toString() => 'QuestaoRespostaResponseDTO(alternativaId: $alternativaId, resposta: $resposta)';
 }

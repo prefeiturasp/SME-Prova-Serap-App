@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:collection/collection.dart';
 
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
@@ -143,7 +144,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                     return BotaoDefaultWidget(
                       textoBotao: 'Proxima questão',
                       onPressed: () async {
-                        await store.adicionarResposta(questao.id, store.resposta!);
+                        if (store.resposta != null) {
+                          await store.adicionarResposta(questao.id, store.resposta!);
+                        }
+
                         listaQuestoesController.nextPage(
                           duration: Duration(milliseconds: 300),
                           curve: Curves.easeIn,
@@ -286,51 +290,47 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
     List<Alternativa> alternativasQuestoes = questao.alternativas;
 
     alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
+    //var resposta = store.respostasSalvas.firstWhereOrNull((element) => element.questaoId == questao.id);
 
     return Column(
-      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, e.descricao)).toList(),
+      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, questao.id, e.descricao)).toList(),
     );
   }
 
-  Widget _buildAlternativa(int? id, String? numeracao, String? descricao) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      margin: EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: Colors.black.withOpacity(0.34),
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(12),
-        ),
-      ),
-      child: Row(
-        children: [
-          Observer(builder: (_) {
-            return Radio<int?>(
-              value: id,
-              groupValue: store.resposta,
-              onChanged: (value) => store.resposta = value,
-            );
-          }),
-          Expanded(
-            child: Row(
-              children: [
-                Text(
-                  "$numeracao ",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                HtmlWidget(
-                  descricao!,
-                  textStyle: TextStyle(fontSize: 16),
-                ),
-              ],
+  Widget _buildAlternativa(int id, String? numeracao, int? questaoId, String? descricao) {
+    //store.resposta = resposta;
+
+    return Observer(builder: (_) {
+      return Container(
+          padding: EdgeInsets.all(16),
+          margin: EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.black.withOpacity(0.34),
             ),
-          )
-        ],
-      ),
-    );
+            borderRadius: BorderRadius.all(
+              Radius.circular(12),
+            ),
+          ),
+          child: RadioListTile<int>(
+            value: id,
+            groupValue: store.resposta != null
+                ? store.resposta
+                : store.respostasSalvas.firstWhereOrNull((element) => element.questaoId == questaoId)?.alternativaId,
+            onChanged: (value) => store.resposta = value,
+            title: Row(children: [
+              Text(
+                "$numeracao ",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              HtmlWidget(
+                descricao!,
+                textStyle: TextStyle(fontSize: 16),
+              ),
+            ]),
+          ));
+    });
   }
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {

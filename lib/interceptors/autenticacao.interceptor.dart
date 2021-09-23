@@ -25,12 +25,15 @@ class ServiceAuthenticator extends Authenticator {
         log.info('Redirecionando para o Login');
       }
 
-      if (expiration == null || DateTime.parse(expiration).isBefore(DateTime.now())) {
-        // Token expirou, atualizar
-        log.info('Redirecionando para o Login');
-        var newToken = await refreshToken(token!);
-        token = newToken;
-      }
+      var newToken = await refreshToken(token!);
+      token = newToken;
+
+      // if (expiration == null || DateTime.parse(expiration).isBefore(DateTime.now())) {
+      //   // Token expirou, atualizar
+      //   log.info('Redirecionando para o Login');
+      //   var newToken = await refreshToken(token!);
+      //   token = newToken;
+      // }
 
       Map<String, String> updatedHeaders = Map.of(request.headers);
 

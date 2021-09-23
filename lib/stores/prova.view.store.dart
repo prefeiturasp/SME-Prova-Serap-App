@@ -25,6 +25,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   @observable
   ObservableList<ProvaResposta> respostas = ObservableList<ProvaResposta>();
 
+  @observable
+  ObservableList<ProvaResposta> respostasSalvas = ObservableList<ProvaResposta>();
+
   ReactionDisposer? _disposer;
 
   setup() async {
@@ -34,14 +37,28 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
 
   void dispose() {
     _disposer!();
+    respostasSalvas = ObservableList<ProvaResposta>();
   }
 
   @action
   obterRespostasServidor() async {
     for (var questao in questoes) {
       try {
-        var _respostaSalva = await _service.getRespostaPorQuestaoId(questaoId: questao.id);
-        print(_respostaSalva);
+        var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: questao.id);
+        if (respostaBanco.isSuccessful) {
+          var body = respostaBanco.body!;
+
+          respostasSalvas.add(
+            ProvaResposta(
+              questaoId: questao.id,
+              sincronizado: true,
+              alternativaId: body.alternativaId,
+              resposta: body.resposta,
+            ),
+          );
+
+          print("Resposta Banco ${body.alternativaId} | ${body.resposta}");
+        }
       } catch (e) {
         severe(e);
       }
@@ -56,7 +73,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
           questaoId: resposta.questaoId,
           alternativaId: resposta.alternativaId,
           resposta: resposta.resposta,
-          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta),
+          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
         );
         print("Resposta Salva ${resposta.questaoId} | ${resposta.alternativaId}");
 
@@ -79,5 +96,6 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
         dataHoraResposta: DateTime.now(),
       ),
     );
+    this.resposta = null;
   }
 }
