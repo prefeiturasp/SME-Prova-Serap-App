@@ -33,6 +33,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   setup() async {
     _disposer = reaction((_) => respostas.length, onChangeRespostas);
     await obterRespostasServidor();
+    questaoAtual = 1;
   }
 
   void dispose() {
@@ -75,7 +76,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
           resposta: resposta.resposta,
           dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
         );
-        print("Resposta Salva ${resposta.questaoId} | ${resposta.alternativaId}");
+        fine("Resposta Salva ${resposta.questaoId} | ${resposta.alternativaId}");
 
         respostas[respostas.indexOf(resposta)].sincronizado = true;
       } catch (e) {
