@@ -40,6 +40,7 @@ abstract class _HomeStoreBase with Store, Loggable {
               dataInicio: provaResponse.dataInicio,
               dataFim: provaResponse.dataFim,
               descricao: provaResponse.descricao,
+              status: provaResponse.status,
               questoes: [],
             ),
           );
@@ -49,6 +50,7 @@ abstract class _HomeStoreBase with Store, Loggable {
         }
       }
     } on SocketException {
+      // Carrega provas do cache
       List<int> ids = listProvasCache();
 
       for (var id in ids) {

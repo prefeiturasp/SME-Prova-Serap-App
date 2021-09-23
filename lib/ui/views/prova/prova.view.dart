@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:collection/collection.dart';
 
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
@@ -37,6 +39,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
   @override
   void initState() {
+    store.questoes = widget.provaStore.prova.questoes;
     store.setup();
     super.initState();
   }
@@ -113,7 +116,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   },
                 ),
                 SizedBox(height: 16),
-                _buildResposta(questao),
+                Observer(builder: (_) {
+                  return _buildResposta(questao);
+                }),
               ],
             ),
           ),
@@ -144,7 +149,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                     return BotaoDefaultWidget(
                       textoBotao: 'Proxima questão',
                       onPressed: () async {
-                        await store.adicionarResposta(questao.id, store.resposta!);
+                        if (store.respostas[questao.id] != null) {
+                          await store.sincronizarResposta();
+                        }
+
                         listaQuestoesController.nextPage(
                           duration: Duration(milliseconds: 300),
                           curve: Curves.easeIn,
@@ -157,7 +165,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   return BotaoDefaultWidget(
                     textoBotao: 'Finalizar prova',
                     onPressed: () async {
-                      await store.adicionarResposta(questao.id, store.resposta!);
+                      await store.sincronizarResposta();
                       store.questaoAtual = 0;
                       Navigator.of(context).pop();
                     },
@@ -238,6 +246,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
   }
 
   _buildDescritiva(Questao questao) {
+    String? respostaRemota = store.respostasSalvas[questao.id]?.resposta;
+    String? respostaLocal = store.respostas[questao.id]?.resposta;
+
+    String? resposta = respostaRemota ?? respostaLocal;
+
+    controller.setText(resposta ?? "");
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -288,11 +303,15 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
     alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
 
     return Column(
-      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, e.descricao)).toList(),
+      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, questao.id, e.descricao)).toList(),
     );
   }
 
-  Widget _buildAlternativa(int? id, String? numeracao, String? descricao) {
+  Widget _buildAlternativa(int idAlternativa, String numeracao, int questaoId, String descricao) {
+    ProvaResposta? resposta = store.obterResposta(questaoId);
+
+    print("${idAlternativa} ${resposta}");
+
     return Container(
       padding: EdgeInsets.all(16),
       margin: EdgeInsets.only(bottom: 16),
@@ -305,30 +324,20 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
           Radius.circular(12),
         ),
       ),
-      child: Row(
-        children: [
-          Observer(builder: (_) {
-            return Radio<int?>(
-              value: id,
-              groupValue: store.resposta,
-              onChanged: (value) => store.resposta = value,
-            );
-          }),
-          Expanded(
-            child: Row(
-              children: [
-                Text(
-                  "$numeracao ",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                HtmlWidget(
-                  descricao!,
-                  textStyle: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-          )
-        ],
+      child: RadioListTile<int>(
+        value: idAlternativa,
+        groupValue: resposta?.alternativaId,
+        onChanged: (value) => store.definirResposta(questaoId, value!),
+        title: Row(children: [
+          Text(
+            "$numeracao ",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          HtmlWidget(
+            descricao,
+            textStyle: TextStyle(fontSize: 16),
+          ),
+        ]),
       ),
     );
   }

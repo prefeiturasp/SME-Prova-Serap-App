@@ -1,1 +1,12 @@
-enum EnumProvaStatus { NAO_INICIADA, INICIADA, FINALIZADA }
+import 'package:json_annotation/json_annotation.dart';
+
+enum EnumProvaStatus {
+  @JsonValue(0)
+  NAO_INICIADA,
+
+  @JsonValue(1)
+  INICIADA,
+
+  @JsonValue(2)
+  FINALIZADA,
+}

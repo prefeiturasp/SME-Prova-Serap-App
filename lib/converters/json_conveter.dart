@@ -6,6 +6,7 @@ import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
+import 'package:appserap/dtos/questao_resposta.response.dto.dart';
 import 'package:chopper/chopper.dart' hide Post;
 import 'package:logging/logging.dart';
 
@@ -19,7 +20,7 @@ class JsonSerializableConverter extends JsonConverter {
 
   T? _decodeMap<T>(Map<String, dynamic> values) {
     final jsonFactory = factories[T.toString()];
-    log.fine("jsonFactory: $jsonFactory");
+    log.finest("jsonFactory: $jsonFactory");
 
     if (jsonFactory == null) {
       log.warning("jsonFactory is null");
@@ -60,4 +61,5 @@ final jsonConverter = JsonSerializableConverter({
   "ArquivoResponseDTO": ArquivoResponseDTO.fromJson,
   "AlternativaResponseDTO": AlternativaResponseDTO.fromJson,
   "ProvaResponseDTO": ProvaResponseDTO.fromJson,
+  "QuestaoRespostaResponseDTO": QuestaoRespostaResponseDTO.fromJson,
 });
