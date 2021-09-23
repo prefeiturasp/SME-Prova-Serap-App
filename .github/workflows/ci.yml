@@ -12,10 +12,21 @@ on:
 
 jobs:
 
-  build:
-
+  flutter_config:
     runs-on: serap
+    environment:
+      name: ${GITHUB_REF##*/}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Ajustando configuração
+        env: # Ou como uma variável de ambiente
+          APP_CONFIG: ${{ secrets.APP_CONFIG }}
+        run: |
+          mkdir -p config && echo $APP_CONFIG > config/app_config.json
 
+  build:
+    runs-on: serap
+    needs: [flutter_config]
     steps:
       - uses: actions/checkout@v2
       - name: Login to registry
@@ -35,8 +46,10 @@ jobs:
                -Dsonar.login=${{ secrets.SONAR_KEY }}
       - name: Build the Docker image
         run: |
-               docker build -t dockerfile.flutter --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front .
+               docker build -f Dockerfile.flutter --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front .
                docker push ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
+               
+               
   deploy-development:
     runs-on: serap
     if: ${{ github.ref == 'refs/heads/development' }}
@@ -55,6 +68,8 @@ jobs:
        run: |
          kubectl rollout restart deployment/sme-prova-serap-front -n sme-serap-estudante
          rm -f /runner/.kube/config
+         
+         
   deploy-release:
     runs-on: serap
     if: ${{ github.ref == 'refs/heads/release' }}
