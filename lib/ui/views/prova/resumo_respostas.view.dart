@@ -7,7 +7,7 @@ import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
-import 'package:appserap/utils/icone.util.dart';
+import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -86,7 +86,7 @@ class _ResumoRespostasViewState
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: SvgPicture.asset(
-                IconeUtil.iconeQuestaoNaoRespondida,
+                AssetsUtil.iconeQuestaoNaoRespondida,
               ),
             ),
             //
@@ -155,7 +155,7 @@ class _ResumoRespostasViewState
         } else {
           store.quantidadeDeQuestoesSemRespostas++;
           resposta = SvgPicture.asset(
-            IconeUtil.iconeQuestaoNaoRespondida,
+            AssetsUtil.iconeQuestaoNaoRespondida,
           );
         }
 
@@ -192,10 +192,11 @@ class _ResumoRespostasViewState
                     Radius.circular(10),
                   ),
                   onTap: () {
-                    print("TOCANDO PARA REVISAR $questao['questao']");
+                    print(questao['questao_ordem']);
+                    Navigator.of(context).pop(questao['questao_ordem']);
                   },
                   child: SvgPicture.asset(
-                    IconeUtil.iconeRevisarQuestao,
+                    AssetsUtil.iconeRevisarQuestao,
                   ),
                 ),
               ),
@@ -267,6 +268,5 @@ class _ResumoRespostasViewState
         ),
       ),
     );
-
   }
 }
