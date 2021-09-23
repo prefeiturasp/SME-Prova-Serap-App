@@ -109,7 +109,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   tratarArquivos(questao.descricao, questao.arquivos),
                   textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   onTapImage: (ImageMetadata imageMetadata) {
-                    print(imageMetadata.sources.first.url);
+                    Uint8List imagem = base64.decode(imageMetadata.sources.first.url.split(',').last);
+
+                    _exibirImagem(context, imagem);
                   },
                 ),
                 SizedBox(height: 16),
@@ -250,13 +252,12 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
         ),
         child: HtmlEditor(
           controller: controller,
+          callbacks: Callbacks(onInit: () {
+            controller.execCommand('fontName', argument: "Poppins");
+          }),
           htmlToolbarOptions: HtmlToolbarOptions(
             toolbarPosition: ToolbarPosition.belowEditor,
             defaultToolbarButtons: [
-              // FontSettingButtons(
-              //   fontName: false,
-              //   fontSizeUnit: false,
-              // ),
               FontButtons(
                 subscript: false,
                 superscript: false,
@@ -265,8 +266,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
               ParagraphButtons(
                 lineHeight: false,
                 caseConverter: false,
-                decreaseIndent: false,
-                increaseIndent: false,
+                decreaseIndent: true,
+                increaseIndent: true,
                 textDirection: false,
                 alignRight: false,
               ),
