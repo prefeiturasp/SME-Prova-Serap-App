@@ -1,0 +1,75 @@
+
+name: Docker Image CI
+ 
+on:
+
+  push:
+    branches: [ development]
+    paths-ignore:
+    - ".github/workflows/**"  
+  
+  workflow_dispatch:
+
+jobs:
+
+  build:
+
+    runs-on: serap
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Login to registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ secrets.REGISTRY_HOST }}
+          username: ${{ secrets.REGISTRY_USER }}
+          password: ${{ secrets.REGISTRY_PWD }}
+
+      - name: Sonar Development
+        if: ${{ github.ref == 'refs/heads/development_' }}
+        run: |
+               sonar-scanner \
+               -Dsonar.projectKey=SME-prova-serap-front \
+               -Dsonar.sources=. \
+               -Dsonar.host.url=http://sonar.sme.prefeitura.sp.gov.br \
+               -Dsonar.login=${{ secrets.SONAR_KEY }}
+      - name: Build the Docker image
+        run: |
+               docker build . --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
+               docker push ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
+  deploy-development:
+    runs-on: serap
+    if: ${{ github.ref == 'refs/heads/development' }}
+    environment:
+      name: development
+    needs: [ build ]
+    steps:
+      - name: Run an adjust of kubernetes dev
+        env: # Ou como uma variável de ambiente
+          RANCHER_URL: ${{ secrets.RANCHER_URL }}
+          RANCHER_TOKEN: ${{ secrets.RANCHER_TOKEN }}
+        run: |
+          sed -e "s/\${RANCHER_URL}/$RANCHER_URL/" -e "s/\${RANCHER_TOKEN}/$RANCHER_TOKEN/" /runner/config_template > /runner/.kube/config
+      -
+       name: Change Images
+       run: |
+         kubectl rollout restart deployment/sme-prova-serap-front -n sme-serap-estudante
+         rm -f /runner/.kube/config
+  deploy-release:
+    runs-on: serap
+    if: ${{ github.ref == 'refs/heads/release' }}
+    environment:
+      name: release
+    needs: [ build ]
+    steps:
+      - name: Run an adjust of kubernetes dev
+        env: # Ou como uma variável de ambiente
+          RANCHER_URL: ${{ secrets.RANCHER_URL }}
+          RANCHER_TOKEN: ${{ secrets.RANCHER_TOKEN }}
+        run: |
+          sed -e "s/\${RANCHER_URL}/$RANCHER_URL/" -e "s/\${RANCHER_TOKEN}/$RANCHER_TOKEN/" /runner/config_template > /runner/.kube/config
+      -
+       name: Change Images
+       run: |
+         kubectl rollout restart deployment/sme-prova-serap-front -n sme-serap-estudante
+         rm -f /runner/.kube/config
