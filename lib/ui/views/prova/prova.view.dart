@@ -90,7 +90,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
               builder: (context) {
                 return BotaoDefaultWidget(
                   textoBotao: 'Proximo item da revisão',
-                  onPressed: () async {},
+                  onPressed: () async {
+                    //! IMPLEMENTAR
+                  },
                 );
               },
             ),
@@ -99,6 +101,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                 return BotaoDefaultWidget(
                   textoBotao: 'Confirmar e voltar para o resumo',
                   onPressed: () async {
+                    //! IMPLEMENTAR
                     try {
                       String posicaoDaQuestao = await Navigator.push(
                         context,
