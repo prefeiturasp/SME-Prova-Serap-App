@@ -18,14 +18,8 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   @observable
   int? resposta = 1;
 
-  @action
-  setResposta(int? value) => resposta = value;
-
   @observable
   int quantidadeDeQuestoesSemRespostas = 0;
-
-  @action
-  setQuantidadeDeQuestoesSemRespostas() => quantidadeDeQuestoesSemRespostas++;
 
   @observable
   ObservableList<ProvaResposta> respostas = ObservableList<ProvaResposta>();

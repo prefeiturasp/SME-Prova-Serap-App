@@ -33,15 +33,21 @@ class _ResumoRespostasViewState
   String tratarTexto(String texto) {
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
-    textoNovo = textoNovo.replaceAll('\n', '');
+    textoNovo = textoNovo.replaceAll('\n', ' ');
+    if (textoNovo.length >= 50) {
+      textoNovo = textoNovo.substring(0, 51) + '...';
+    }
     return textoNovo;
   }
 
   void popularMapaDeQuestoes() {
+    int ordemQuestao = 0;
     for (Questao questao in widget.provaStore.prova.questoes) {
       for (ProvaResposta resposta in store.respostas) {
         if (questao.id == resposta.questaoId) {
+          ordemQuestao++;
           String alternativaSelecionada = "";
+
           questao.alternativas.forEach(
             (alternativa) {
               if (alternativa.id == resposta.alternativaId) {
@@ -49,17 +55,19 @@ class _ResumoRespostasViewState
               }
             },
           );
-
           String respostaNaTela = resposta.resposta ?? alternativaSelecionada;
 
           String questaoProva =
               tratarTexto(questao.titulo) + tratarTexto(questao.descricao);
 
+          String ordemQuestaoTratada =
+              ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
+
           mapaDeQuestoes.add(
             {
-              'questao': '${questao.ordem + 1} - $questaoProva',
+              'questao': '$ordemQuestaoTratada - $questaoProva',
               'resposta': respostaNaTela,
-              'questao_ordem': '${questao.ordem}'
+              'questao_ordem': '${ordemQuestao - 1}'
             },
           );
         }
@@ -135,15 +143,17 @@ class _ResumoRespostasViewState
         Widget resposta;
 
         if (questao['resposta'] != "") {
-          print(1);
-          resposta = Text(
-            questao['resposta'].replaceAll(")", ""),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+          resposta = Center(
+            child: Text(
+              questao['resposta'].replaceAll(")", ""),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
           );
         } else {
-          store.setQuantidadeDeQuestoesSemRespostas();
+          store.quantidadeDeQuestoesSemRespostas++;
           resposta = SvgPicture.asset(
             IconeUtil.iconeQuestaoNaoRespondida,
           );
@@ -172,8 +182,9 @@ class _ResumoRespostasViewState
                 ),
               ),
               Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: resposta),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: resposta,
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: InkWell(
@@ -226,6 +237,7 @@ class _ResumoRespostasViewState
         color: backgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             //
             Padding(
@@ -242,11 +254,8 @@ class _ResumoRespostasViewState
             //
             mensagemDeQuestoesSemRespostas(),
             //
-            //
-            //
-            //
-            //
             Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               columnWidths: {
                 0: FractionColumnWidth(.7),
                 1: FractionColumnWidth(.2),
@@ -259,82 +268,5 @@ class _ResumoRespostasViewState
       ),
     );
 
-    /*return DataTable(
-      columnSpacing: 60,
-
-      columns: <DataColumn>[
-        DataColumn(
-          label: Text("Questão"),
-        ),
-        DataColumn(
-          label: Text("Alternativa selecionada"),
-        ),
-        DataColumn(
-          label: Text("Revisar"),
-        ),
-      ],
-      rows: <DataRow>[
-        //
-        DataRow(
-          cells: <DataCell>[
-            DataCell(
-              Text("Questão 1 - pipipi"),
-            ),
-            DataCell(
-              SvgPicture.asset(
-                IconeUtil.iconeQuestaoNaoRespondida,
-              ),
-            ),
-            DataCell(
-              InkWell(
-                child: SvgPicture.asset(
-                  IconeUtil.iconeRevisarQuestao,
-                ),
-              ),
-            ),
-          ],
-        ),
-        //
-        DataRow(
-          cells: <DataCell>[
-            DataCell(
-              Text("Questão 1 - pipipi"),
-            ),
-            DataCell(
-              SvgPicture.asset(
-                IconeUtil.iconeQuestaoNaoRespondida,
-              ),
-            ),
-            DataCell(
-              InkWell(
-                child: SvgPicture.asset(
-                  IconeUtil.iconeRevisarQuestao,
-                ),
-              ),
-            ),
-          ],
-        ),
-        //
-        DataRow(
-          cells: <DataCell>[
-            DataCell(
-              Text("Questão 1 - pipipi"),
-            ),
-            DataCell(
-              SvgPicture.asset(
-                IconeUtil.iconeQuestaoNaoRespondida,
-              ),
-            ),
-            DataCell(
-              InkWell(
-                child: SvgPicture.asset(
-                  IconeUtil.iconeRevisarQuestao,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );*/
   }
 }

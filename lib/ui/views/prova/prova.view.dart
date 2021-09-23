@@ -336,7 +336,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
             return Radio<int?>(
               value: id,
               groupValue: store.resposta,
-              onChanged: (value) => store.setResposta(value),
+              onChanged: (value) => store.resposta = value,
             );
           }),
           Expanded(
