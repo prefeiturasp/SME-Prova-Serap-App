@@ -88,6 +88,8 @@ scripts:
   mobx-w: flutter pub run build_runner watch --delete-conflicting-outputs
   mobx-c: flutter pub run build_runner clean
   release: flutter build apk --release
+  release-web: flutter build web --release
+  build-web: flutter build web --profile
 
 flutter_native_splash:
   color: "#ffffff"
