@@ -100,7 +100,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   }
 
   @action
-  definirResposta(int questaoId, int resposta) {
+  definirResposta(int questaoId, int? resposta) {
     respostas[questaoId] = ProvaResposta(
       questaoId: questaoId,
       alternativaId: resposta,
