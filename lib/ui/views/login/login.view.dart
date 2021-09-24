@@ -1,6 +1,7 @@
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,13 +52,14 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
               SizedBox(
                 height: 150,
               ),
-              SvgPicture.asset("assets/images/logo-serap.svg"),
+              SvgPicture.asset(AssetsUtil.logoSerap),
               SizedBox(
                 height: 10,
               ),
               Text(
                 "Bem-vindo",
-                style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold),
+                style: GoogleFonts.poppins(
+                    fontSize: 24, fontWeight: FontWeight.bold),
               ),
               Observer(
                 builder: (_) => Padding(
@@ -71,13 +73,17 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                     child: Padding(
                       padding: EdgeInsets.only(left: 15, right: 15, top: 5),
                       child: TextField(
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         focusNode: _codigoEOLFocus,
                         onChanged: (value) => store.codigoEOL = value,
                         decoration: InputDecoration(
                           labelText: 'Digite o código EOL',
                           labelStyle: TextStyle(
-                            color: _codigoEOLFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                            color: _codigoEOLFocus.hasFocus
+                                ? TemaUtil.laranja01
+                                : TemaUtil.preto,
                           ),
                           prefixText: "RA-",
                           errorText: store.autenticacaoErroStore.codigoEOL,
@@ -104,10 +110,14 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                           keyboardType: TextInputType.number,
                           onChanged: (value) => store.senha = value,
                           focusNode: _senhaFocus,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           decoration: InputDecoration(
                             suffixIcon: IconButton(
-                              icon: store.ocultarSenha ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
+                              icon: store.ocultarSenha
+                                  ? Icon(Icons.visibility)
+                                  : Icon(Icons.visibility_off),
                               color: TemaUtil.pretoSemFoco,
                               onPressed: () {
                                 store.ocultarSenha = !store.ocultarSenha;
