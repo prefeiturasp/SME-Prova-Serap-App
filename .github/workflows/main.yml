@@ -40,7 +40,7 @@ jobs:
       - run: flutter pub get   
       - run: flutter pub run build_runner build --delete-conflicting-outputs
       - run: flutter build apk
-      - run: zip -P ${{ZIP_ENCODE}} app.zip build/app/outputs/flutter-apk/app-release.apk
+      - run: zip -P $ZIP_ENCODE app.zip build/app/outputs/flutter-apk/app-release.apk
 
       # Upload generated apk to the artifacts.
       - uses: actions/upload-artifact@v1
