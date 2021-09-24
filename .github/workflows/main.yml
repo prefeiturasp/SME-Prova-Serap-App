@@ -34,8 +34,8 @@ jobs:
           flutter-version: '2.5'
       - name: Ler variáveis
         env:
-          FIREBASE_ANDROID: ${{ secrets.FIREBASE_ANDROID }}
-          APP_CONFIG: ${{ secrets.APP_CONFIG }}
+          FIREBASE_ANDROID: ${{ env.FIREBASE_ANDROID }}
+          APP_CONFIG: ${{ env.APP_CONFIG }}
         run: echo $FIREBASE_ANDROID > android/app/google-services.json && mkdir -p config && echo $APP_CONFIG > config/app_config.json
       - run: flutter pub get   
       - run: flutter pub run build_runner build --delete-conflicting-outputs
