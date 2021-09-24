@@ -52,7 +52,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
       String questaoProva = tratarTexto(tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
       String ordemQuestaoTratada = ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
 
-      debugger();
       if (questao.id == resposta?.questaoId) {
         questao.alternativas.forEach(
           (alternativa) {
