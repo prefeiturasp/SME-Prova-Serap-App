@@ -21,8 +21,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
   List<ReactionDisposer> _reactions = [];
 
   @observable
-  ObservableStream<ConnectivityResult> conexaoStream =
-      ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   late DownloadService downloadService;
 

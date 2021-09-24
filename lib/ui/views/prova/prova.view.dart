@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:appserap/models/prova_resposta.model.dart';
-import 'package:collection/collection.dart';
 
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
@@ -17,8 +16,9 @@ import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -91,8 +91,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
           children: [
             Observer(
               builder: (context) {
-                if (store.questaoAtual <
-                    widget.provaStore.prova.questoes.length) {
+                if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
                   return BotaoDefaultWidget(
                     textoBotao: 'Proximo item da revisão',
                     onPressed: () async {
@@ -171,8 +170,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
           ),
           Observer(
             builder: (context) {
-              if (store.questaoAtual <
-                  widget.provaStore.prova.questoes.length) {
+              if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
@@ -236,8 +234,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   children: [
                     Text(
                       'Questão ${index + 1} ',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
                       'de ${widget.provaStore.prova.questoes.length}',
@@ -246,25 +243,25 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                   ],
                 ),
                 SizedBox(height: 8),
-                HtmlWidget(
-                  tratarArquivos(questao.titulo, questao.arquivos),
-                  textStyle:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  onTapImage: (ImageMetadata imageMetadata) {
-                    Uint8List imagem = base64.decode(
-                        imageMetadata.sources.first.url.split(',').last);
+                Html(
+                  data: tratarArquivos(questao.titulo, questao.arquivos),
+                  style: {
+                    '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
+                  },
+                  onImageTap: (url, _, attributes, element) {
+                    Uint8List imagem = base64.decode(url!.split(',').last);
 
                     _exibirImagem(context, imagem);
                   },
                 ),
                 SizedBox(height: 8),
-                HtmlWidget(
-                  tratarArquivos(questao.descricao, questao.arquivos),
-                  textStyle:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  onTapImage: (ImageMetadata imageMetadata) {
-                    Uint8List imagem = base64.decode(
-                        imageMetadata.sources.first.url.split(',').last);
+                Html(
+                  data: tratarArquivos(questao.descricao, questao.arquivos),
+                  style: {
+                    '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
+                  },
+                  onImageTap: (url, _, attributes, element) {
+                    Uint8List imagem = base64.decode(url!.split(',').last);
 
                     _exibirImagem(context, imagem);
                   },
@@ -276,7 +273,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
               ],
             ),
           ),
-          //
           _botoesProva(questao),
         ],
       ),
@@ -410,21 +406,15 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
     alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
     return Column(
-      children: alternativasQuestoes
-          .map((e) =>
-              _buildAlternativa(e.id, e.numeracao, questao.id, e.descricao))
-          .toList(),
+      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, questao.id, e.descricao)).toList(),
     );
   }
 
-  Widget _buildAlternativa(
-      int idAlternativa, String numeracao, int questaoId, String descricao) {
+  Widget _buildAlternativa(int idAlternativa, String numeracao, int questaoId, String descricao) {
     ProvaResposta? resposta = store.obterResposta(questaoId);
 
-    print("${idAlternativa} ${resposta}");
-
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.all(8),
       margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -438,15 +428,24 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
       child: RadioListTile<int>(
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
-        onChanged: (value) => store.definirResposta(questaoId, value!),
+        onChanged: (value) {
+          store.definirResposta(questaoId, value);
+        },
+        toggleable: true,
         title: Row(children: [
           Text(
             "$numeracao ",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
-          HtmlWidget(
-            descricao,
-            textStyle: TextStyle(fontSize: 16),
+          Expanded(
+            child: Html(
+              data: descricao,
+              style: {
+                '*': Style.fromTextStyle(
+                  GoogleFonts.poppins(fontSize: 16),
+                )
+              },
+            ),
           ),
         ]),
       ),
@@ -455,7 +454,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {
     texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-      return '<center>${match.group(0)}</center>';
+      return '<div style="text-align: center">${match.group(0)}</div>';
     });
 
     RegExp exp = RegExp(r"#(\d+)#", multiLine: true, caseSensitive: true);
@@ -463,13 +462,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
     for (var i = 0; i < matches.length; i++) {
       var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo = arquivos
-          .where((arq) => arq.id == int.parse(arquivoId.split("#")[1]))
-          .first;
+      var arquivo = arquivos.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
       var obterTipo = arquivo.caminho.split(".");
 
-      texto = texto.replaceAll(arquivoId,
-          "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
     return texto;
     // #123456#
