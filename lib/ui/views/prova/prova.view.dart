@@ -239,7 +239,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                     Text(
                       'de ${widget.provaStore.prova.questoes.length}',
                       style: TextStyle(fontSize: 20, color: Colors.grey),
-                    )
+                    ),
                   ],
                 ),
                 SizedBox(height: 8),

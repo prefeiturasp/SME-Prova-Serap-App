@@ -43,48 +43,54 @@ class _ResumoRespostasViewState
   void popularMapaDeQuestoes() {
     int ordemQuestao = 0;
 
-    for (Questao questao in widget.provaStore.prova.questoes) {
-      store.respostasSalvas.forEach(
-        (questaoId, questaoResposta) {
-          if (questao.id == questaoResposta.questaoId) {
-            ordemQuestao++;
-            String alternativaSelecionada = "";
+    for (Questao questao in store.questoes) {
+      print(store.respostas);
+      ProvaResposta? resposta = store.obterResposta(questao.id);
+      print(resposta);
 
-            questao.alternativas.forEach(
-              (alternativa) {
-                ProvaResposta? resposta =
-                    store.obterResposta(questaoResposta.questaoId);
-                if (alternativa.id == resposta!.alternativaId) {
-                  alternativaSelecionada = alternativa.numeracao;
-                }
-              },
-            );
+      ordemQuestao++;
+      String alternativaSelecionada = "";
+      String respostaNaTela = "";
+      String questaoProva = tratarTexto(
+          tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
+      String ordemQuestaoTratada =
+          ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
 
-            String respostaNaTela = "";
-            if (questaoResposta.resposta != null) {
-              respostaNaTela = "OK";
-            } else {
-              respostaNaTela = alternativaSelecionada;
+      debugger();
+      if (questao.id == resposta?.questaoId) {
+        questao.alternativas.forEach(
+          (alternativa) {
+            if (alternativa.id == resposta!.alternativaId) {
+              alternativaSelecionada = alternativa.numeracao;
             }
+          },
+        );
 
-            String questaoProva = tratarTexto(
-                tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
+        if (resposta!.resposta != null) {
+          respostaNaTela = "OK";
+        } else {
+          respostaNaTela = alternativaSelecionada;
+        }
 
-            String ordemQuestaoTratada =
-                ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
-
-            mapaDeQuestoes.add(
-              {
-                'questao': '$ordemQuestaoTratada - $questaoProva',
-                'resposta': respostaNaTela,
-                'questao_ordem': '${ordemQuestao - 1}'
-              },
-            );
-          }
-        },
-      );
+        mapaDeQuestoes.add(
+          {
+            'questao': '$ordemQuestaoTratada - $questaoProva',
+            'resposta': respostaNaTela,
+            'questao_ordem': '${ordemQuestao - 1}'
+          },
+        );
+      } else {
+        store.quantidadeDeQuestoesSemRespostas++;
+        mapaDeQuestoes.add(
+          {
+            'questao': '$ordemQuestaoTratada - $questaoProva',
+            'resposta': respostaNaTela,
+            'questao_ordem': '${ordemQuestao - 1}'
+          },
+        );
+      }
+      popularTabelaComQuestoes();
     }
-    popularTabelaComQuestoes();
   }
 
   Widget mensagemDeQuestoesSemRespostas() {
@@ -164,7 +170,6 @@ class _ResumoRespostasViewState
             ),
           );
         } else {
-          store.quantidadeDeQuestoesSemRespostas++;
           resposta = SvgPicture.asset(
             AssetsUtil.iconeQuestaoNaoRespondida,
           );
@@ -184,12 +189,11 @@ class _ResumoRespostasViewState
               //
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: HtmlWidget(
+                child: Text(
                   questao['questao'],
-                  textStyle: TextStyle(fontSize: 12),
-                  customStylesBuilder: (element) {
-                    return {'font-size': '12px'};
-                  },
+                  style: TextStyle(
+                    fontSize: 12,
+                  ),
                 ),
               ),
               Padding(
@@ -203,6 +207,7 @@ class _ResumoRespostasViewState
                     Radius.circular(10),
                   ),
                   onTap: () {
+                    store.quantidadeDeQuestoesSemRespostas = 0;
                     Navigator.of(context).pop(questao['questao_ordem']);
                   },
                   child: SvgPicture.asset(
