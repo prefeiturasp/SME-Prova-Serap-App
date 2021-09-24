@@ -184,12 +184,11 @@ class _ResumoRespostasViewState
               //
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: HtmlWidget(
+                child: Text(
                   questao['questao'],
-                  textStyle: TextStyle(fontSize: 12),
-                  customStylesBuilder: (element) {
-                    return {'font-size': '12px'};
-                  },
+                  style: TextStyle(
+                    fontSize: 12,
+                  ),
                 ),
               ),
               Padding(
