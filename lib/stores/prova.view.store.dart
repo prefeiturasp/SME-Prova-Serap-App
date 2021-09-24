@@ -20,6 +20,12 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   int questaoAtual = 1;
 
   @observable
+  int quantidadeDeQuestoesSemRespostas = 0;
+
+  @observable
+  bool revisandoProva = false;
+
+  @observable
   ObservableMap<int, ProvaResposta> respostas = <int, ProvaResposta>{}.asObservable();
 
   @observable
