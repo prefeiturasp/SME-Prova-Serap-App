@@ -20,12 +20,15 @@ class ServiceAuthenticator extends Authenticator with Loggable {
         fine('Token null - Redirecionando para o Login');
       }
 
-      if (expiration == null || DateTime.parse(expiration).isBefore(DateTime.now())) {
-        // Token expirou, atualizar
-        fine('Token expirou - Atualizando token');
-        var newToken = await refreshToken(token!);
-        token = newToken;
-      }
+      var newToken = await refreshToken(token!);
+      token = newToken;
+
+      // if (expiration == null || DateTime.parse(expiration).isBefore(DateTime.now())) {
+      //   // Token expirou, atualizar
+      //   log.info('Redirecionando para o Login');
+      //   var newToken = await refreshToken(token!);
+      //   token = newToken;
+      // }
 
       Map<String, String> updatedHeaders = Map.of(request.headers);
 
