@@ -1,5 +1,6 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:get_it/get_it.dart';
@@ -13,10 +14,10 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   final _service = GetIt.I.get<ApiService>().questaoResposta;
 
   @observable
-  int questaoAtual = 1;
+  List<Questao> questoes = [];
 
   @observable
-  int? resposta = 1;
+  int questaoAtual = 1;
 
   @observable
   int quantidadeDeQuestoesSemRespostas = 0;
@@ -25,50 +26,92 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   bool revisandoProva = false;
 
   @observable
-  ObservableList<ProvaResposta> respostas = ObservableList<ProvaResposta>();
+  ObservableMap<int, ProvaResposta> respostas = <int, ProvaResposta>{}.asObservable();
 
-  ReactionDisposer? _disposer;
+  @observable
+  ObservableMap<int, ProvaResposta> respostasSalvas = <int, ProvaResposta>{}.asObservable();
 
-  setup() {
-    _disposer = reaction((_) => respostas.length, onChangeRespostas);
+  setup() async {
+    await obterRespostasServidor();
+    questaoAtual = 1;
   }
 
   void dispose() {
-    _disposer!();
+    respostasSalvas = <int, ProvaResposta>{}.asObservable();
   }
 
   @action
-  onChangeRespostas(int tamanho) async {
-    for (var resposta
-        in respostas.where((element) => !element.sincronizado).toList()) {
+  obterRespostasServidor() async {
+    for (var questao in questoes) {
       try {
-        await _service.enviar(
-          questaoId: resposta.questaoId,
-          alternativaId: resposta.alternativaId,
-          resposta: resposta.resposta,
-          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta),
-        );
-        print(
-            "Resposta Salva ${resposta.questaoId} | ${resposta.alternativaId}");
+        var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: questao.id);
+        if (respostaBanco.isSuccessful) {
+          var body = respostaBanco.body!;
 
-        respostas[respostas.indexOf(resposta)].sincronizado = true;
+          respostasSalvas[questao.id] = ProvaResposta(
+            questaoId: questao.id,
+            sincronizado: true,
+            alternativaId: body.alternativaId,
+            resposta: body.resposta,
+            dataHoraResposta: body.dataHoraResposta.toLocal(),
+          );
+
+          fine("Resposta Banco Questao ${questao.id} - ${body.alternativaId} | ${body.resposta}");
+        }
       } catch (e) {
         severe(e);
       }
     }
+  }
 
-    //respostas.removeWhere((element) => element.sincronizado);
+  ProvaResposta? obterResposta(int questaoId) {
+    var respostaRemota = respostasSalvas[questaoId];
+    var respostaLocal = respostas[questaoId];
+
+    if (respostaRemota != null && respostaLocal != null) {
+      if (respostaRemota.dataHoraResposta!.isBefore(respostaLocal.dataHoraResposta!)) {
+        return respostaLocal;
+      } else {
+        return respostaRemota;
+      }
+    }
+
+    return respostaRemota ?? respostaLocal;
   }
 
   @action
-  adicionarResposta(int questaoId, int resposta) {
-    respostas.add(
-      ProvaResposta(
-        questaoId: questaoId,
-        alternativaId: resposta,
-        sincronizado: false,
-        dataHoraResposta: DateTime.now(),
-      ),
+  sincronizarResposta() async {
+    for (MapEntry<int, ProvaResposta> item
+        in respostas.entries.where((element) => element.value.sincronizado == false)) {
+      int idQuestao = item.key;
+      ProvaResposta resposta = item.value;
+
+      try {
+        var response = await _service.postResposta(
+          questaoId: idQuestao,
+          alternativaId: resposta.alternativaId,
+          resposta: resposta.resposta,
+          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+        );
+
+        if (response.isSuccessful) {
+          fine("Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
+
+          resposta.sincronizado = true;
+        }
+      } catch (e) {
+        severe(e);
+      }
+    }
+  }
+
+  @action
+  definirResposta(int questaoId, int resposta) {
+    respostas[questaoId] = ProvaResposta(
+      questaoId: questaoId,
+      alternativaId: resposta,
+      sincronizado: false,
+      dataHoraResposta: DateTime.now(),
     );
   }
 }

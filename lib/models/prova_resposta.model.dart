@@ -8,14 +8,14 @@ class ProvaResposta {
   int? alternativaId;
   String? resposta;
   bool sincronizado = false;
-  DateTime dataHoraResposta = DateTime.now();
+  DateTime? dataHoraResposta = DateTime.now();
 
   ProvaResposta({
     required this.questaoId,
     this.alternativaId,
     this.resposta,
     required this.sincronizado,
-    required this.dataHoraResposta,
+    this.dataHoraResposta,
   });
 
   factory ProvaResposta.fromJson(Map<String, dynamic> json) => _$ProvaRespostaFromJson(json);
@@ -23,6 +23,6 @@ class ProvaResposta {
 
   @override
   String toString() {
-    return 'ProvaResposta(questaoId: $questaoId, alternativaId: $alternativaId, resposta: $resposta, sincronizado: $sincronizado, dataHoraResposta: $dataHoraResposta)';
+    return 'ProvaResposta(questaoId: $questaoId, alternativaId: $alternativaId, resposta: $resposta, sincronizado: $sincronizado)';
   }
 }

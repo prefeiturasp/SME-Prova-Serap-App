@@ -33,7 +33,7 @@ class _ResumoRespostasViewState
   String tratarTexto(String texto) {
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
-    textoNovo = textoNovo.replaceAll('\n', ' ');
+    textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
     if (textoNovo.length >= 50) {
       textoNovo = textoNovo.substring(0, 51) + '...';
     }
@@ -42,36 +42,47 @@ class _ResumoRespostasViewState
 
   void popularMapaDeQuestoes() {
     int ordemQuestao = 0;
+
     for (Questao questao in widget.provaStore.prova.questoes) {
-      for (ProvaResposta resposta in store.respostas) {
-        if (questao.id == resposta.questaoId) {
-          ordemQuestao++;
-          String alternativaSelecionada = "";
+      store.respostasSalvas.forEach(
+        (questaoId, questaoResposta) {
+          if (questao.id == questaoResposta.questaoId) {
+            ordemQuestao++;
+            String alternativaSelecionada = "";
 
-          questao.alternativas.forEach(
-            (alternativa) {
-              if (alternativa.id == resposta.alternativaId) {
-                alternativaSelecionada = alternativa.numeracao;
-              }
-            },
-          );
-          String respostaNaTela = resposta.resposta ?? alternativaSelecionada;
+            questao.alternativas.forEach(
+              (alternativa) {
+                ProvaResposta? resposta =
+                    store.obterResposta(questaoResposta.questaoId);
+                if (alternativa.id == resposta!.alternativaId) {
+                  alternativaSelecionada = alternativa.numeracao;
+                }
+              },
+            );
 
-          String questaoProva =
-              tratarTexto(questao.titulo) + tratarTexto(questao.descricao);
+            String respostaNaTela = "";
+            if (questaoResposta.resposta != null) {
+              respostaNaTela = "OK";
+            } else {
+              respostaNaTela = alternativaSelecionada;
+            }
 
-          String ordemQuestaoTratada =
-              ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
+            String questaoProva = tratarTexto(
+                tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
 
-          mapaDeQuestoes.add(
-            {
-              'questao': '$ordemQuestaoTratada - $questaoProva',
-              'resposta': respostaNaTela,
-              'questao_ordem': '${ordemQuestao - 1}'
-            },
-          );
-        }
-      }
+            String ordemQuestaoTratada =
+                ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
+
+            mapaDeQuestoes.add(
+              {
+                'questao': '$ordemQuestaoTratada - $questaoProva',
+                'resposta': respostaNaTela,
+                'questao_ordem': '${ordemQuestao - 1}'
+              },
+            );
+          }
+        },
+      );
     }
     popularTabelaComQuestoes();
   }
@@ -124,7 +135,7 @@ class _ResumoRespostasViewState
 
   @override
   void dispose() {
-    store.dispose();
+    //store.dispose();
     super.dispose();
   }
 
@@ -192,7 +203,6 @@ class _ResumoRespostasViewState
                     Radius.circular(10),
                   ),
                   onTap: () {
-                    print(questao['questao_ordem']);
                     Navigator.of(context).pop(questao['questao_ordem']);
                   },
                   child: SvgPicture.asset(
