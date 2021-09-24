@@ -6,9 +6,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ development_ ]
+    branches: [ development ]
   pull_request:
-    branches: [ development_ ]
+    branches: [ development ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -40,12 +40,12 @@ jobs:
       - run: flutter pub get   
       - run: flutter pub run build_runner build --delete-conflicting-outputs
       - run: flutter build apk
-      # - run: flutter build web
+      - run: zip -P ${{ZIP_ENCODE}} app.zip build/app/outputs/flutter-apk/app-release.apk
 
       # Upload generated apk to the artifacts.
-      # - uses: actions/upload-artifact@v1
-      #   with:
-      #     name: ${{ env.APP_VERSION }}
-      #     path: build/app/outputs/flutter-apk/app-release.apk
+      - uses: actions/upload-artifact@v1
+        with:
+          name: ${{ env.APP_VERSION }}
+          path: app.zip
 
    
