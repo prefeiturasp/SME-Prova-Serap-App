@@ -12,7 +12,6 @@ import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:get_it/get_it.dart';
 
 class ResumoRespostasView extends BaseStatefulWidget {
@@ -25,8 +24,7 @@ class ResumoRespostasView extends BaseStatefulWidget {
   _ResumoRespostasViewState createState() => _ResumoRespostasViewState();
 }
 
-class _ResumoRespostasViewState
-    extends BaseStateWidget<ResumoRespostasView, ProvaViewStore> {
+class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, ProvaViewStore> {
   List<Map<String, dynamic>> mapaDeQuestoes = [];
   List<TableRow> questoesTabela = [];
 
@@ -51,10 +49,8 @@ class _ResumoRespostasViewState
       ordemQuestao++;
       String alternativaSelecionada = "";
       String respostaNaTela = "";
-      String questaoProva = tratarTexto(
-          tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
-      String ordemQuestaoTratada =
-          ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
+      String questaoProva = tratarTexto(tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
+      String ordemQuestaoTratada = ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
 
       debugger();
       if (questao.id == resposta?.questaoId) {
