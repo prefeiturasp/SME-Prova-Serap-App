@@ -31,12 +31,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   String tratarTexto(String texto) {
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
-
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
     if (textoNovo.length >= 50) {
       textoNovo = textoNovo.substring(0, 50) + '...';
     }
-    
     return textoNovo;
   }
 
