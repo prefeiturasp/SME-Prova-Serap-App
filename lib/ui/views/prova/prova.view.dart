@@ -57,6 +57,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
   PreferredSizeWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
+      subtitulo: widget.provaStore.prova.descricao,
     );
   }
 

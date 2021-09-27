@@ -8,8 +8,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
+  final String? subtitulo;
 
-  AppBarWidget({required this.popView});
+  AppBarWidget({required this.popView, this.subtitulo});
 
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
@@ -29,14 +30,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              // _provaStore.descricao != null
-              //     ? Text(
-              //         "${_provaStore.descricao}",
-              //         style: TextStyle(fontSize: 12),
-              //       )
-              //     : SizedBox(
-              //         height: 0,
-              //       ),
+              _buildSubtitulo(),
             ],
           );
         },
@@ -64,6 +58,19 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           ],
         ),
       ],
+    );
+  }
+
+  _buildSubtitulo() {
+    if (subtitulo != null) {
+      return Text(
+        subtitulo!,
+        style: TextStyle(fontSize: 12),
+      );
+    }
+
+    return SizedBox(
+      height: 0,
     );
   }
 }
