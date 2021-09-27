@@ -17,7 +17,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   List<Questao> questoes = [];
 
   @observable
-  int questaoAtual = 1;
+  int questaoAtual = 0;
 
   @observable
   int quantidadeDeQuestoesSemRespostas = 0;

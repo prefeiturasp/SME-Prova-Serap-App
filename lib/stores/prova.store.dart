@@ -79,12 +79,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
 
     prova = await downloadService.getProva();
 
-    prova.questoes.sort(
-      (questao1, questao2) {
-        return questao1.ordem.compareTo(questao2.ordem);
-      },
-    );
-
   }
 
   setupReactions() {
