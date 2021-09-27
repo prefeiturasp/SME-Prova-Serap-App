@@ -39,27 +39,20 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   }
 
   void popularMapaDeQuestoes() {
-    int ordemQuestao = 0;
-
     for (Questao questao in store.questoes) {
-      print(store.respostas);
       ProvaResposta? resposta = store.obterResposta(questao.id);
-      print(resposta);
 
-      ordemQuestao++;
       String alternativaSelecionada = "";
       String respostaNaTela = "";
       String questaoProva = tratarTexto(tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
-      String ordemQuestaoTratada = ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
+      String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
 
       if (questao.id == resposta?.questaoId) {
-        questao.alternativas.forEach(
-          (alternativa) {
-            if (alternativa.id == resposta!.alternativaId) {
-              alternativaSelecionada = alternativa.numeracao;
-            }
-          },
-        );
+        for (var alternativa in questao.alternativas) {
+          if (alternativa.id == resposta!.alternativaId) {
+            alternativaSelecionada = alternativa.numeracao;
+          }
+        }
 
         if (resposta!.resposta != null) {
           respostaNaTela = "OK";
@@ -71,7 +64,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           {
             'questao': '$ordemQuestaoTratada - $questaoProva',
             'resposta': respostaNaTela,
-            'questao_ordem': '${ordemQuestao - 1}'
+            'questao_ordem': questao.ordem
           },
         );
       } else {
@@ -80,10 +73,17 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           {
             'questao': '$ordemQuestaoTratada - $questaoProva',
             'resposta': respostaNaTela,
-            'questao_ordem': '${ordemQuestao - 1}'
+            'questao_ordem': questao.ordem
           },
         );
       }
+
+      mapaDeQuestoes.sort(
+        (questao1, questao2) {
+          return questao1['questao_ordem'].compareTo(questao2['questao_ordem']);
+        },
+      );
+
       popularTabelaComQuestoes();
     }
   }
@@ -150,71 +150,69 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   List<TableRow> popularTabelaComQuestoes() {
     List<TableRow> linhas = [];
 
-    mapaDeQuestoes.forEach(
-      (questao) {
-        Widget resposta;
+    for (var questao in mapaDeQuestoes) {
+      Widget resposta;
 
-        if (questao['resposta'] != "") {
-          resposta = Center(
-            child: Text(
-              questao['resposta'].replaceAll(")", ""),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+      if (questao['resposta'] != "") {
+        resposta = Center(
+          child: Text(
+            questao['resposta'].replaceAll(")", ""),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
             ),
-          );
-        } else {
-          resposta = SvgPicture.asset(
-            AssetsUtil.iconeQuestaoNaoRespondida,
-          );
-        }
-
-        linhas.add(
-          TableRow(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: TemaUtil.pretoSemFoco2,
-                  style: BorderStyle.solid,
-                ),
-              ),
-            ),
-            children: [
-              //
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  questao['questao'],
-                  style: TextStyle(
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: resposta,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: InkWell(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
-                  ),
-                  onTap: () {
-                    store.quantidadeDeQuestoesSemRespostas = 0;
-                    Navigator.of(context).pop(questao['questao_ordem']);
-                  },
-                  child: SvgPicture.asset(
-                    AssetsUtil.iconeRevisarQuestao,
-                  ),
-                ),
-              ),
-            ],
           ),
         );
-      },
-    );
+      } else {
+        resposta = SvgPicture.asset(
+          AssetsUtil.iconeQuestaoNaoRespondida,
+        );
+      }
+
+      linhas.add(
+        TableRow(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: TemaUtil.pretoSemFoco2,
+                style: BorderStyle.solid,
+              ),
+            ),
+          ),
+          children: [
+            //
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                questao['questao'],
+                style: TextStyle(
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: resposta,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: InkWell(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10),
+                ),
+                onTap: () {
+                  store.quantidadeDeQuestoesSemRespostas = 0;
+                  Navigator.of(context).pop(questao['questao_ordem'] + 1);
+                },
+                child: SvgPicture.asset(
+                  AssetsUtil.iconeRevisarQuestao,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     questoesTabela = linhas;
 

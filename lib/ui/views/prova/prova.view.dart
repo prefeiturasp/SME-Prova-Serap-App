@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:appserap/models/prova_resposta.model.dart';
-
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
@@ -32,7 +32,7 @@ class ProvaView extends BaseStatefulWidget {
   _ProvaViewState createState() => _ProvaViewState();
 }
 
-class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
+class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Loggable {
   final PageController listaQuestoesController = PageController(initialPage: 0);
 
   HtmlEditorController controller = HtmlEditorController();
@@ -78,6 +78,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
   }
 
   Widget _botoesProva(Questao questao) {
+
     if (store.revisandoProva) {
       return Padding(
         padding: const EdgeInsets.only(
@@ -137,7 +138,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                         );
                       }
                     } catch (e) {
-                      print(e);
+                      fine(e);
                     }
                   },
                 );
@@ -191,10 +192,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                 textoBotao: 'Finalizar prova',
                 onPressed: () async {
                   await store.sincronizarResposta();
-                  store.questaoAtual = 0;
-                  //Navigator.of(context).pop();
                   try {
-                    String posicaoDaQuestao = await Navigator.push(
+                    int posicaoDaQuestao = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ResumoRespostasView(
@@ -203,14 +202,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                       ),
                     );
 
-                    if (!int.parse(posicaoDaQuestao).isNaN) {
+                    if (!posicaoDaQuestao.isNaN) {
                       store.revisandoProva = true;
-                      listaQuestoesController.jumpToPage(
-                        int.parse(posicaoDaQuestao),
-                      );
+                      store.questaoAtual = posicaoDaQuestao;
+                      listaQuestoesController.jumpToPage(posicaoDaQuestao);
                     }
                   } catch (e) {
-                    print(e);
+                      fine(e);
                   }
                 },
               );
@@ -273,7 +271,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
               ],
             ),
           ),
-          _botoesProva(questao),
+          Observer(builder: (context) {
+            return _botoesProva(questao);
+          }),
         ],
       ),
     );
