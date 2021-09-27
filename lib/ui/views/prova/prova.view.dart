@@ -339,17 +339,17 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
   Widget _buildResposta(Questao questao) {
     switch (questao.tipo) {
-      case EnumTipoQuestao.multiplaEscolha:
+      case EnumTipoQuestao.MULTIPLA_ESCOLHA:
         return _buildAlternativas(questao);
-      case EnumTipoQuestao.descritiva:
-        return _buildDescritiva(questao);
+      case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
+        return _buildRespostaConstruida(questao);
 
       default:
         return SizedBox.shrink();
     }
   }
 
-  _buildDescritiva(Questao questao) {
+  _buildRespostaConstruida(Questao questao) {
     String? respostaRemota = store.respostasSalvas[questao.id]?.resposta;
     String? respostaLocal = store.respostas[questao.id]?.resposta;
 
