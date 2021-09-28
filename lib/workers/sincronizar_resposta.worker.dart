@@ -1,4 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:background_fetch/background_fetch.dart';
+import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/dependencias.ioc.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -6,8 +11,6 @@ import 'package:appserap/interfaces/worker.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:background_fetch/background_fetch.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SincronizarRespostas with Worker, Loggable {
   final _service = ServiceLocator.get<ApiService>().questaoResposta;
@@ -22,23 +25,32 @@ class SincronizarRespostas with Worker, Loggable {
         requiredNetworkType: NetworkType.ANY,
       ),
     );
+
+    Timer.periodic(Duration(seconds: 30), (timer) {
+      sincronizar();
+    });
   }
 
   @override
   onFetch(String taskId) async {
     fine('[BackgroundFetch] Event received.');
 
-    BackgroundFetch.finish(taskId);
+    sincronizar();
+
+    if (taskId.isNotEmpty) {
+      BackgroundFetch.finish(taskId);
+    }
   }
 
   sincronizar() async {
     fine('Sincronizando respostas para o servidor');
 
     var respostasLocal = carregaRespostasCache();
-    fine('${respostasLocal.length} respostas salvas localmente');
+    print(respostasLocal);
+    info('${respostasLocal.length} respostas salvas localmente');
 
     var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
-    fine('${respostasNaoSincronizadas.length} respostas não sincronizadas');
+    info('${respostasNaoSincronizadas.length} respostas ainda não sincronizadas');
 
     for (MapEntry<int, ProvaResposta> item in respostasNaoSincronizadas) {
       int idQuestao = item.key;
@@ -53,7 +65,7 @@ class SincronizarRespostas with Worker, Loggable {
         );
 
         if (response.isSuccessful) {
-          fine("[${resposta.questaoId}] Resposta Sincronizada - (${resposta.alternativaId ?? resposta.resposta}");
+          info("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
 
           resposta.sincronizado = true;
 
@@ -63,7 +75,7 @@ class SincronizarRespostas with Worker, Loggable {
         severe(e);
       }
     }
-    fine('Sincronização com o servidor servidor concluida');
+    info('Sincronização com o servidor servidor concluida');
   }
 
   salvarCacheMap(Map<int, ProvaResposta> respostas) async {
@@ -77,16 +89,18 @@ class SincronizarRespostas with Worker, Loggable {
   }
 
   saveCahe(ProvaResposta resposta) async {
-    SharedPreferences _pref = ServiceLocator.get();
+    SharedPreferences _pref = GetIt.I.get();
 
-    await _pref.setString(
+    print(resposta.toJson());
+
+    return await _pref.setString(
       'resposta_${resposta.questaoId}',
       jsonEncode(resposta.toJson()),
     );
   }
 
   Map<int, ProvaResposta> carregaRespostasCache() {
-    SharedPreferences _pref = ServiceLocator.get();
+    SharedPreferences _pref = GetIt.I.get();
 
     List<String> keysResposta = _pref.getKeys().toList().where((element) => element.startsWith('resposta_')).toList();
 
