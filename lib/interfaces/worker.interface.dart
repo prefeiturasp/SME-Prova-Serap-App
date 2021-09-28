@@ -12,5 +12,7 @@ abstract class Worker {
   }
 
   onFetch(String taskId);
-  onTimeOut(String taskId);
+  onTimeOut(String taskId) async {
+    BackgroundFetch.finish(taskId);
+  }
 }

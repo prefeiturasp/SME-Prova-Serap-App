@@ -6,6 +6,7 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/stores/prova_resposta.store.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,6 +44,7 @@ abstract class _HomeStoreBase with Store, Loggable {
               status: provaResponse.status,
               questoes: [],
             ),
+            respostas: ProvaRespostaStore(idProva: provaResponse.id),
           );
           provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
@@ -58,6 +60,7 @@ abstract class _HomeStoreBase with Store, Loggable {
         provasStore.add(ProvaStore(
           id: id,
           prova: provaBanco,
+          respostas: ProvaRespostaStore(idProva: id),
         ));
       }
     } catch (e, stacktrace) {

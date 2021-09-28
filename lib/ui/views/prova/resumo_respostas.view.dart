@@ -111,8 +111,8 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   void popularMapaDeQuestoes() {
     int ordemQuestao = 0;
 
-    for (Questao questao in store.questoes) {
-      ProvaResposta? resposta = store.obterResposta(questao.id);
+    for (Questao questao in widget.provaStore.prova.questoes) {
+      ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questao.id);
 
       ordemQuestao++;
       String alternativaSelecionada = "";

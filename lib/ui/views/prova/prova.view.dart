@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:typed_data';
 import 'package:appserap/models/prova_resposta.model.dart';
 
@@ -33,23 +32,21 @@ class ProvaView extends BaseStatefulWidget {
 }
 
 class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
-  final PageController listaQuestoesController = PageController(initialPage: 0);
-
-  HtmlEditorController controller = HtmlEditorController();
+  final listaQuestoesController = PageController(initialPage: 0);
+  final controller = HtmlEditorController();
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
   @override
   void initState() {
-    store.questoes = widget.provaStore.prova.questoes;
+    widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
     store.setup();
     super.initState();
   }
 
   @override
   void dispose() {
-    store.dispose();
     super.dispose();
   }
 
@@ -76,150 +73,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
         return _buildQuestoes(questoes[index], index);
       },
     );
-  }
-
-  Widget _botoesProva(Questao questao) {
-    if (store.revisandoProva) {
-      return Padding(
-        padding: const EdgeInsets.only(
-          left: 16,
-          right: 16,
-          bottom: 20,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Observer(
-              builder: (context) {
-                if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
-                  return BotaoDefaultWidget(
-                    textoBotao: 'Proximo item da revisão',
-                    onPressed: () async {
-                      //! IMPLEMENTAR
-                      if (store.respostas[questao.id] != null) {
-                        await store.sincronizarResposta();
-                        await store.obterRespostasServidor();
-                      }
-
-                      listaQuestoesController.nextPage(
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeIn,
-                      );
-                      store.questaoAtual++;
-                    },
-                  );
-                }
-                return Container();
-              },
-            ),
-            Observer(
-              builder: (context) {
-                return BotaoDefaultWidget(
-                  textoBotao: 'Confirmar e voltar para o resumo',
-                  onPressed: () async {
-                    try {
-                      await store.sincronizarResposta();
-                      await store.obterRespostasServidor();
-                      String posicaoDaQuestao = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ResumoRespostasView(
-                            provaStore: widget.provaStore,
-                          ),
-                        ),
-                      );
-
-                      if (!int.parse(posicaoDaQuestao).isNaN) {
-                        store.revisandoProva = true;
-                        store.questaoAtual = int.parse(posicaoDaQuestao);
-                        listaQuestoesController.jumpToPage(
-                          int.parse(posicaoDaQuestao),
-                        );
-                      }
-                    } catch (e) {
-                      print(e);
-                    }
-                  },
-                );
-              },
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Observer(
-            builder: (context) {
-              if (store.questaoAtual == 1) {
-                return SizedBox.shrink();
-              }
-
-              return BotaoSecundarioWidget(
-                textoBotao: 'Questão anterior',
-                onPressed: () {
-                  listaQuestoesController.previousPage(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeIn,
-                  );
-                },
-              );
-            },
-          ),
-          Observer(
-            builder: (context) {
-              if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
-                return BotaoDefaultWidget(
-                  textoBotao: 'Proxima questão',
-                  onPressed: () async {
-                    if (store.respostas[questao.id] != null) {
-                      await store.sincronizarResposta();
-                    }
-
-                    listaQuestoesController.nextPage(
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeIn,
-                    );
-                    store.questaoAtual++;
-                  },
-                );
-              }
-
-              return BotaoDefaultWidget(
-                textoBotao: 'Finalizar prova',
-                onPressed: () async {
-                  await store.sincronizarResposta();
-                  store.questaoAtual = 0;
-                  //Navigator.of(context).pop();
-                  try {
-                    String posicaoDaQuestao = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ResumoRespostasView(
-                          provaStore: widget.provaStore,
-                        ),
-                      ),
-                    );
-
-                    if (!int.parse(posicaoDaQuestao).isNaN) {
-                      store.revisandoProva = true;
-                      listaQuestoesController.jumpToPage(
-                        int.parse(posicaoDaQuestao),
-                      );
-                    }
-                  } catch (e) {
-                    print(e);
-                  }
-                },
-              );
-            },
-          ),
-        ],
-      );
-    }
   }
 
   Widget _buildQuestoes(Questao questao, int index) {
@@ -351,12 +204,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
   }
 
   _buildDescritiva(Questao questao) {
-    String? respostaRemota = store.respostasSalvas[questao.id]?.resposta;
-    String? respostaLocal = store.respostas[questao.id]?.resposta;
+    ProvaResposta? provaResposta = widget.provaStore.respostas.obterResposta(questao.id);
 
-    String? resposta = respostaRemota ?? respostaLocal;
-
-    controller.setText(resposta ?? "");
+    controller.setText(provaResposta?.resposta ?? "");
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
@@ -412,7 +262,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
   }
 
   Widget _buildAlternativa(int idAlternativa, String numeracao, int questaoId, String descricao) {
-    ProvaResposta? resposta = store.obterResposta(questaoId);
+    ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questaoId);
 
     return Container(
       padding: EdgeInsets.all(8),
@@ -430,7 +280,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
         onChanged: (value) {
-          store.definirResposta(questaoId, value);
+          widget.provaStore.respostas.definirResposta(questaoId, value);
         },
         toggleable: true,
         title: Row(children: [
@@ -451,6 +301,137 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
         ]),
       ),
     );
+  }
+
+  Widget _botoesProva(Questao questao) {
+    if (store.revisandoProva) {
+      return Padding(
+        padding: const EdgeInsets.only(
+          left: 16,
+          right: 16,
+          bottom: 20,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Observer(
+              builder: (context) {
+                if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
+                  return BotaoDefaultWidget(
+                    textoBotao: 'Proximo item da revisão',
+                    onPressed: () async {
+                      listaQuestoesController.nextPage(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      );
+                      store.questaoAtual++;
+                    },
+                  );
+                }
+                return Container();
+              },
+            ),
+            Observer(
+              builder: (context) {
+                return BotaoDefaultWidget(
+                  textoBotao: 'Confirmar e voltar para o resumo',
+                  onPressed: () async {
+                    try {
+                      String posicaoDaQuestao = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResumoRespostasView(
+                            provaStore: widget.provaStore,
+                          ),
+                        ),
+                      );
+
+                      if (!int.parse(posicaoDaQuestao).isNaN) {
+                        store.revisandoProva = true;
+                        store.questaoAtual = int.parse(posicaoDaQuestao);
+                        listaQuestoesController.jumpToPage(
+                          int.parse(posicaoDaQuestao),
+                        );
+                      }
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Observer(
+            builder: (context) {
+              if (store.questaoAtual == 1) {
+                return SizedBox.shrink();
+              }
+
+              return BotaoSecundarioWidget(
+                textoBotao: 'Questão anterior',
+                onPressed: () {
+                  listaQuestoesController.previousPage(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeIn,
+                  );
+                },
+              );
+            },
+          ),
+          Observer(
+            builder: (context) {
+              if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
+                return BotaoDefaultWidget(
+                  textoBotao: 'Proxima questão',
+                  onPressed: () async {
+                    listaQuestoesController.nextPage(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeIn,
+                    );
+                    store.questaoAtual++;
+                  },
+                );
+              }
+
+              return BotaoDefaultWidget(
+                textoBotao: 'Finalizar prova',
+                onPressed: () async {
+                  store.questaoAtual = 0;
+                  //Navigator.of(context).pop();
+                  try {
+                    String posicaoDaQuestao = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResumoRespostasView(
+                          provaStore: widget.provaStore,
+                        ),
+                      ),
+                    );
+
+                    if (!int.parse(posicaoDaQuestao).isNaN) {
+                      store.revisandoProva = true;
+                      listaQuestoesController.jumpToPage(
+                        int.parse(posicaoDaQuestao),
+                      );
+                    }
+                  } catch (e) {
+                    print(e);
+                  }
+                },
+              );
+            },
+          ),
+        ],
+      );
+    }
   }
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {

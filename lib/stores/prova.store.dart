@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/prova_resposta.store.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
@@ -31,6 +32,17 @@ abstract class _ProvaStoreBase with Store, Loggable {
   @observable
   Prova prova;
 
+  _ProvaStoreBase({
+    required this.id,
+    required this.prova,
+    required this.respostas,
+  }) {
+    downloadService = DownloadService(idProva: id);
+  }
+
+  @observable
+  ProvaRespostaStore respostas;
+
   @observable
   EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
@@ -45,13 +57,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
 
   @observable
   String icone = AssetsUtil.iconeProva;
-
-  _ProvaStoreBase({
-    required this.id,
-    required this.prova,
-  }) {
-    downloadService = DownloadService(idProva: id);
-  }
 
   @action
   iniciarDownload() async {

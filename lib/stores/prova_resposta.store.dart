@@ -9,6 +9,8 @@ import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../dependencias.ioc.dart';
+
 part 'prova_resposta.store.g.dart';
 
 class ProvaRespostaStore = _ProvaRespostaStoreBase with _$ProvaRespostaStore;
@@ -19,13 +21,15 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   @observable
   int idProva;
 
-  _ProvaRespostaStoreBase({required this.idProva});
+  _ProvaRespostaStoreBase({required this.idProva}) {
+    respostasLocal = carregaRespostasCache().asObservable();
+  }
 
   @observable
   ObservableMap<int, ProvaResposta> respostasSalvas = <int, ProvaResposta>{}.asObservable();
 
   @observable
-  ObservableMap<int, ProvaResposta> respostas = <int, ProvaResposta>{}.asObservable();
+  ObservableMap<int, ProvaResposta> respostasLocal = <int, ProvaResposta>{}.asObservable();
 
   void dispose() {
     respostasSalvas = <int, ProvaResposta>{}.asObservable();
@@ -37,7 +41,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
     List<int> idsQuestao = [];
 
-    prova ??= carregaProvaCache();
+    prova ??= Prova.carregaProvaCache(idProva);
 
     if (prova != null) {
       idsQuestao = prova.questoes.map((e) => e.id).toList();
@@ -67,7 +71,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
   ProvaResposta? obterResposta(int questaoId) {
     var respostaRemota = respostasSalvas[questaoId];
-    var respostaLocal = respostas[questaoId];
+    var respostaLocal = respostasLocal[questaoId];
 
     if (respostaRemota != null && respostaLocal != null) {
       if (respostaRemota.dataHoraResposta!.isBefore(respostaLocal.dataHoraResposta!)) {
@@ -82,8 +86,10 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
   @action
   sincronizarResposta() async {
+    //TODO carregar cache local
+
     fine('[$idProva] - Sincronizando respostas para o servidor');
-    var respostasNaoSincronizadas = respostas.entries.where((element) => element.value.sincronizado == false);
+    var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
 
     for (MapEntry<int, ProvaResposta> item in respostasNaoSincronizadas) {
       int idQuestao = item.key;
@@ -107,25 +113,52 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       }
     }
     fine('[$idProva] - Sincronização com o servidor servidor concluida');
+
+    salvarCache();
   }
 
   @action
   definirResposta(int questaoId, int? resposta) {
-    respostas[questaoId] = ProvaResposta(
+    respostasLocal[questaoId] = ProvaResposta(
       questaoId: questaoId,
       alternativaId: resposta,
       sincronizado: false,
       dataHoraResposta: DateTime.now(),
     );
+
+    salvarCache();
   }
 
-  Prova? carregaProvaCache() {
+  salvarCache() async {
     var _pref = GetIt.I.get<SharedPreferences>();
 
-    String? provaJson = _pref.getString('prova_$idProva');
+    List<Future<bool>> futures = [];
 
-    if (provaJson != null) {
-      return Prova.fromJson(jsonDecode(provaJson));
+    for (var respostaLocal in respostasLocal.entries) {
+      futures.add(_pref.setString(
+        'resposta_${idProva}_${respostaLocal.key}',
+        jsonEncode(respostaLocal.value.toJson()),
+      ));
     }
+
+    await Future.wait(futures);
+  }
+
+  Map<int, ProvaResposta> carregaRespostasCache() {
+    SharedPreferences _pref = ServiceLocator.get();
+
+    List<String> keysResposta = _pref.getKeys().toList().where((element) => element.startsWith('resposta_')).toList();
+
+    Map<int, ProvaResposta> respostas = {};
+
+    if (keysResposta.isNotEmpty) {
+      for (var keyResposta in keysResposta) {
+        var provaResposta = ProvaResposta.fromJson(jsonDecode(_pref.getString(keyResposta)!));
+
+        respostas[provaResposta.questaoId] = provaResposta;
+      }
+    }
+
+    return respostas;
   }
 }

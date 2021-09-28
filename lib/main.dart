@@ -2,6 +2,7 @@ import 'package:appserap/dependencias.ioc.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
+import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +13,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:asuka/asuka.dart' as asuka;
+
+import 'workers/sincronizar_resposta.worker.dart';
 
 Future setupAppConfig() async {
   try {
@@ -42,6 +45,21 @@ void registerFonts() {
   });
 }
 
+void backgroundFetchHeadlessTask(HeadlessTask task) async {
+  String taskId = task.taskId;
+  bool isTimeout = task.timeout;
+  if (isTimeout) {
+    // This task has exceeded its allowed running-time.
+    // You must stop what you're doing and immediately .finish(taskId)
+    print("[BackgroundFetch] Headless task timed-out: $taskId");
+    BackgroundFetch.finish(taskId);
+    return;
+  }
+  print('[BackgroundFetch] Headless event received.');
+  // Do your work here...
+  BackgroundFetch.finish(taskId);
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLogging();
@@ -55,6 +73,9 @@ Future<void> main() async {
 
   initializeDateFormatting();
   Intl.defaultLocale = 'pt_BR';
+
+  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+  SincronizarRespostas().setup();
 
   try {
     await Firebase.initializeApp();
