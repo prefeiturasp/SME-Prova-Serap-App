@@ -6,4 +6,6 @@ abstract class AssetsUtil {
   static const iconeQuestaoNaoRespondida =
       "assets/images/icone_questao_nao_respondida.svg";
   static const iconeRevisarQuestao = "assets/images/icone_revisao.svg";
+  static const semConexao = "assets/images/no-wifi.svg";
+  static const check = "assets/images/check.svg";
 }

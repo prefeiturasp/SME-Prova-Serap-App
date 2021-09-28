@@ -9,10 +9,14 @@ import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialog_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 
 class ResumoRespostasView extends BaseStatefulWidget {
@@ -83,14 +87,57 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
               children: questoesTabela,
             ),
             SizedBox(height: 32),
-            Center(
-              child: BotaoDefaultWidget(
-                textoBotao: 'FINALIZAR E ENVIAR',
-                largura: 392,
-                onPressed: () async {
-                  widget.provaStore.finalizarProva();
-                },
-              ),
+            Observer(
+              builder: (_) {
+                return Center(
+                  child: BotaoDefaultWidget(
+                    textoBotao: 'FINALIZAR E ENVIAR',
+                    largura: 392,
+                    onPressed: () async {
+                      String mensagem = "Sua prova foi enviada com sucesso!";
+                      String icone = AssetsUtil.check;
+                      String mensagemBotao = "OK";
+
+                      ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+
+                      if (resultado == ConnectivityResult.none) {
+                        mensagem = "Conecte-se a internet para que a sua prova seja enviada.";
+                        icone = AssetsUtil.semConexao;
+                        mensagemBotao = "ENTENDI";
+                      } else {
+                        widget.provaStore.finalizarProva();
+                      }
+                      //
+                      showDialog(
+                        context: context,
+                        barrierColor: Colors.black87,
+                        builder: (context) {
+                          return DialogDefaultWidget(
+                            cabecalho: SvgPicture.asset(icone),
+                            corpo: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 70,
+                              ),
+                              child: Text(
+                                mensagem,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            mensagemOpcionalBotao: mensagemBotao,
+                          );
+                        },
+                      );
+
+                      //
+                    },
+                  ),
+                );
+              },
             )
           ],
         ),
@@ -102,8 +149,8 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
-    if (textoNovo.length >= 50) {
-      textoNovo = textoNovo.substring(0, 51) + '...';
+    if (textoNovo.length >= 40) {
+      textoNovo = textoNovo.substring(0, 40) + '...';
     }
     return textoNovo;
   }
