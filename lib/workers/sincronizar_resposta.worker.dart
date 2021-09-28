@@ -46,11 +46,10 @@ class SincronizarRespostas with Worker, Loggable {
     fine('Sincronizando respostas para o servidor');
 
     var respostasLocal = carregaRespostasCache();
-    print(respostasLocal);
-    info('${respostasLocal.length} respostas salvas localmente');
+    fine('${respostasLocal.length} respostas salvas localmente');
 
     var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
-    info('${respostasNaoSincronizadas.length} respostas ainda não sincronizadas');
+    fine('${respostasNaoSincronizadas.length} respostas ainda não sincronizadas');
 
     for (MapEntry<int, ProvaResposta> item in respostasNaoSincronizadas) {
       int idQuestao = item.key;
@@ -65,7 +64,7 @@ class SincronizarRespostas with Worker, Loggable {
         );
 
         if (response.isSuccessful) {
-          info("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
+          fine("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
 
           resposta.sincronizado = true;
 
@@ -75,7 +74,7 @@ class SincronizarRespostas with Worker, Loggable {
         severe(e);
       }
     }
-    info('Sincronização com o servidor servidor concluida');
+    fine('Sincronização com o servidor servidor concluida');
   }
 
   salvarCacheMap(Map<int, ProvaResposta> respostas) async {
