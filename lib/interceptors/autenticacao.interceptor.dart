@@ -50,8 +50,8 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       fine('Novo token - Data Expiracao ($expiration) $newToken');
 
       SharedPreferences prefs = GetIt.I.get();
-      prefs.setString('token', newToken);
-      prefs.setString('token_expiration', expiration.toIso8601String());
+      await prefs.setString('token', newToken);
+      await prefs.setString('token_expiration', expiration.toIso8601String());
 
       return newToken;
     }
