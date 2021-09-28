@@ -103,7 +103,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
     if (textoNovo.length >= 50) {
-      textoNovo = textoNovo.substring(0, 51) + '...';
+      textoNovo = textoNovo.substring(0, 50) + '...';
     }
     return textoNovo;
   }
