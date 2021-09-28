@@ -136,7 +136,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
     for (var respostaLocal in respostasLocal.entries) {
       futures.add(_pref.setString(
-        'resposta_${idProva}_${respostaLocal.key}',
+        'resposta_${respostaLocal.key}',
         jsonEncode(respostaLocal.value.toJson()),
       ));
     }

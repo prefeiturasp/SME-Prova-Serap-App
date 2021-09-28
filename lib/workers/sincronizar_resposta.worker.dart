@@ -91,8 +91,6 @@ class SincronizarRespostas with Worker, Loggable {
   saveCahe(ProvaResposta resposta) async {
     SharedPreferences _pref = GetIt.I.get();
 
-    print(resposta.toJson());
-
     return await _pref.setString(
       'resposta_${resposta.questaoId}',
       jsonEncode(resposta.toJson()),
