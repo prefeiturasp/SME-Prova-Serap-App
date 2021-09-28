@@ -35,7 +35,7 @@ abstract class _UsuarioStoreBase with Store {
 
   @action
   Future<void> carregarUsuario() async {
-    SharedPreferences prefs = await GetIt.I.getAsync();
+    SharedPreferences prefs = GetIt.I.get();
     nome = prefs.getString("serapUsuarioNome");
     token = prefs.getString("serapUsuarioToken");
     codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
@@ -51,7 +51,7 @@ abstract class _UsuarioStoreBase with Store {
     this.ano = ano;
     this.tipoTurno = tipoTurno;
 
-    SharedPreferences prefs = await GetIt.I.getAsync();
+    SharedPreferences prefs = GetIt.I.get();
     await prefs.setString('serapUsuarioNome', nome);
     await prefs.setString('serapUsuarioToken', token);
     await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
