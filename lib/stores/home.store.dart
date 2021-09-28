@@ -61,7 +61,8 @@ abstract class _HomeStoreBase with Store, Loggable {
         ));
       }
     } catch (e, stacktrace) {
-      severe(e, stacktrace);
+      severe(e);
+      severe(stacktrace);
     }
 
     if (provasStore.isNotEmpty) {

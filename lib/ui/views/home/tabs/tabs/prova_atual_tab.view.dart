@@ -48,7 +48,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
           }
 
           if (provas.isEmpty) {
-            Padding(
+            return Padding(
               padding: const EdgeInsets.all(10.0),
               child: SizedBox(
                 height: MediaQuery.of(context).size.height - 400,

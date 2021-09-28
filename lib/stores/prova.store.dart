@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -74,6 +75,12 @@ abstract class _ProvaStoreBase with Store, Loggable {
     await downloadService.startDownload();
 
     prova = await downloadService.getProva();
+
+    prova.questoes.sort(
+      (questao1, questao2) {
+        return questao1.ordem.compareTo(questao2.ordem);
+      },
+    );
   }
 
   setupReactions() {
@@ -134,5 +141,12 @@ abstract class _ProvaStoreBase with Store, Loggable {
     SharedPreferences pref = GetIt.I.get();
 
     await pref.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
+  }
+
+  finalizarProva() {
+    // TODO: worker para enviar provas
+    // TODO: alterar status para finalizado
+
+    // TODO: enviar mensagem caso nao estiver conectado
   }
 }

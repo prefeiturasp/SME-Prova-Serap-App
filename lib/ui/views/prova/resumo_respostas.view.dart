@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -7,12 +8,16 @@ import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialog_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 
 class ResumoRespostasView extends BaseStatefulWidget {
   const ResumoRespostasView({
@@ -24,16 +29,128 @@ class ResumoRespostasView extends BaseStatefulWidget {
   _ResumoRespostasViewState createState() => _ResumoRespostasViewState();
 }
 
-class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, ProvaViewStore> {
+class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, ProvaViewStore> with Loggable {
   List<Map<String, dynamic>> mapaDeQuestoes = [];
   List<TableRow> questoesTabela = [];
+
+  @override
+  void initState() {
+    super.initState();
+    popularMapaDeQuestoes();
+  }
+
+  @override
+  void dispose() {
+    //store.dispose();
+    super.dispose();
+  }
+
+  @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
+  PreferredSizeWidget buildAppBar() {
+    return AppBarWidget(
+      popView: true,
+      subtitulo: widget.provaStore.prova.descricao,
+    );
+  }
+
+  @override
+  Widget builder(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        color: backgroundColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            //
+            Text(
+              'Resumo das respostas',
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            //
+            mensagemDeQuestoesSemRespostas(),
+            //
+            Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              columnWidths: {
+                0: FractionColumnWidth(.7),
+                1: FractionColumnWidth(.2),
+                2: FractionColumnWidth(.1),
+              },
+              children: questoesTabela,
+            ),
+            SizedBox(height: 32),
+            Observer(
+              builder: (_) {
+                return Center(
+                  child: BotaoDefaultWidget(
+                    textoBotao: 'FINALIZAR E ENVIAR',
+                    largura: 392,
+                    onPressed: () async {
+                      String mensagem = "Sua prova foi enviada com sucesso!";
+                      String icone = AssetsUtil.check;
+                      String mensagemBotao = "OK";
+
+                      ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+
+                      if (resultado == ConnectivityResult.none) {
+                        mensagem = "Conecte-se a internet para que a sua prova seja enviada.";
+                        icone = AssetsUtil.semConexao;
+                        mensagemBotao = "ENTENDI";
+                      } else {
+                        widget.provaStore.finalizarProva();
+                      }
+                      //
+                      showDialog(
+                        context: context,
+                        barrierColor: Colors.black87,
+                        builder: (context) {
+                          return DialogDefaultWidget(
+                            cabecalho: SvgPicture.asset(icone),
+                            corpo: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 70,
+                              ),
+                              child: Text(
+                                mensagem,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            mensagemOpcionalBotao: mensagemBotao,
+                          );
+                        },
+                      );
+
+                      //
+                    },
+                  ),
+                );
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
 
   String tratarTexto(String texto) {
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
-    if (textoNovo.length >= 50) {
-      textoNovo = textoNovo.substring(0, 51) + '...';
+    if (textoNovo.length >= 40) {
+      textoNovo = textoNovo.substring(0, 40) + '...';
     }
     return textoNovo;
   }
@@ -42,9 +159,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     int ordemQuestao = 0;
 
     for (Questao questao in store.questoes) {
-      print(store.respostas);
       ProvaResposta? resposta = store.obterResposta(questao.id);
-      print(resposta);
 
       ordemQuestao++;
       String alternativaSelecionada = "";
@@ -52,15 +167,12 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
       String questaoProva = tratarTexto(tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
       String ordemQuestaoTratada = ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
 
-      debugger();
       if (questao.id == resposta?.questaoId) {
-        questao.alternativas.forEach(
-          (alternativa) {
-            if (alternativa.id == resposta!.alternativaId) {
-              alternativaSelecionada = alternativa.numeracao;
-            }
-          },
-        );
+        for (var alternativa in questao.alternativas) {
+          if (alternativa.id == resposta!.alternativaId) {
+            alternativaSelecionada = alternativa.numeracao;
+          }
+        }
 
         if (resposta!.resposta != null) {
           respostaNaTela = "OK";
@@ -108,12 +220,14 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                     "${store.quantidadeDeQuestoesSemRespostas} Questões sem resposta",
                     style: TextStyle(
                       color: TemaUtil.laranja03,
+                      fontSize: 14,
                     ),
                   )
                 : Text(
                     "${store.quantidadeDeQuestoesSemRespostas} Questão sem resposta",
                     style: TextStyle(
                       color: TemaUtil.laranja03,
+                      fontSize: 14,
                     ),
                   )
           ],
@@ -121,101 +235,71 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
       );
     } else {
       return SizedBox(
-        height: 10,
+        height: 40,
       );
     }
-  }
-
-  @override
-  Color? get backgroundColor => TemaUtil.corDeFundo;
-
-  @override
-  void initState() {
-    super.initState();
-    popularMapaDeQuestoes();
-  }
-
-  @override
-  void dispose() {
-    //store.dispose();
-    super.dispose();
-  }
-
-  @override
-  PreferredSizeWidget buildAppBar() {
-    return AppBarWidget(
-      popView: true,
-    );
   }
 
   List<TableRow> popularTabelaComQuestoes() {
     List<TableRow> linhas = [];
 
-    mapaDeQuestoes.forEach(
-      (questao) {
-        Widget resposta;
+    for (var questao in mapaDeQuestoes) {
+      Widget resposta = SvgPicture.asset(AssetsUtil.iconeQuestaoNaoRespondida);
 
-        if (questao['resposta'] != "") {
-          resposta = Center(
-            child: Text(
-              questao['resposta'].replaceAll(")", ""),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          );
-        } else {
-          resposta = SvgPicture.asset(
-            AssetsUtil.iconeQuestaoNaoRespondida,
-          );
-        }
-
-        linhas.add(
-          TableRow(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: TemaUtil.pretoSemFoco2,
-                  style: BorderStyle.solid,
-                ),
-              ),
-            ),
-            children: [
-              //
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Text(
-                  questao['questao'],
-                  style: TextStyle(
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: resposta,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: InkWell(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
-                  ),
-                  onTap: () {
-                    store.quantidadeDeQuestoesSemRespostas = 0;
-                    Navigator.of(context).pop(questao['questao_ordem']);
-                  },
-                  child: SvgPicture.asset(
-                    AssetsUtil.iconeRevisarQuestao,
-                  ),
-                ),
-              ),
-            ],
+      if (questao['resposta'] != "") {
+        resposta = Center(
+          child: Text(
+            questao['resposta'].replaceAll(")", ""),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
           ),
         );
-      },
-    );
+      }
+
+      linhas.add(
+        TableRow(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: TemaUtil.pretoSemFoco2,
+                style: BorderStyle.solid,
+              ),
+            ),
+          ),
+          children: [
+            //
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                questao['questao'],
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: resposta,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: InkWell(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10),
+                ),
+                onTap: () {
+                  store.quantidadeDeQuestoesSemRespostas = 0;
+                  Navigator.of(context).pop(questao['questao_ordem']);
+                },
+                child: SvgPicture.asset(
+                  AssetsUtil.iconeRevisarQuestao,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     questoesTabela = linhas;
 
@@ -232,52 +316,22 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         ),
         children: [
           //
-          Text("Questão"),
-          Text("Alternativa selecionada"),
-          Text("Revisar"),
+          Text(
+            "Questão",
+            style: TextStyle(fontSize: 14, color: TemaUtil.appBar),
+          ),
+          Text(
+            "Alternativa selecionada",
+            style: TextStyle(fontSize: 14, color: TemaUtil.appBar),
+          ),
+          Text(
+            "Revisar",
+            style: TextStyle(fontSize: 14, color: TemaUtil.appBar),
+          ),
         ],
       ),
     );
 
     return questoesTabela;
-  }
-
-  @override
-  Widget builder(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        color: backgroundColor,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //
-            Padding(
-              padding: const EdgeInsets.only(bottom: 5),
-              child: Text(
-                'Resumo das respostas',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            //
-            mensagemDeQuestoesSemRespostas(),
-            //
-            Table(
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              columnWidths: {
-                0: FractionColumnWidth(.7),
-                1: FractionColumnWidth(.2),
-                2: FractionColumnWidth(.1),
-              },
-              children: questoesTabela,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
