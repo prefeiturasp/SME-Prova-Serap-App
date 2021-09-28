@@ -137,9 +137,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
   }
 
   saveProva() async {
-    SharedPreferences pref = GetIt.I.get();
+    SharedPreferences prefs = GetIt.I.get();
 
-    await pref.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
+    await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 
   finalizarProva() {

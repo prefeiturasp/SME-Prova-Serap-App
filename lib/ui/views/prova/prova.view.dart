@@ -208,8 +208,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   _buildRespostaConstruida(Questao questao) {
     ProvaResposta? provaResposta = widget.provaStore.respostas.obterResposta(questao.id);
 
-    controller.setText(provaResposta?.resposta ?? "");
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -221,6 +219,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           controller: controller,
           callbacks: Callbacks(onInit: () {
             controller.execCommand('fontName', argument: "Poppins");
+            controller.setText(provaResposta?.resposta ?? "");
           }),
           htmlToolbarOptions: HtmlToolbarOptions(
             toolbarPosition: ToolbarPosition.belowEditor,
@@ -282,7 +281,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
         onChanged: (value) {
-          widget.provaStore.respostas.definirResposta(questaoId, value);
+          widget.provaStore.respostas.definirResposta(questaoId, alternativaId: value);
         },
         toggleable: true,
         title: Row(children: [
@@ -394,6 +393,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
+                    if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
+                      await widget.provaStore.respostas
+                          .definirResposta(questao.id, resposta: await controller.getText());
+                    }
+
                     listaQuestoesController.nextPage(
                       duration: Duration(milliseconds: 300),
                       curve: Curves.easeIn,
