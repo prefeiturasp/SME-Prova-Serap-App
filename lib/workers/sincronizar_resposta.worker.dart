@@ -11,20 +11,23 @@ import 'package:appserap/interfaces/worker.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class SincronizarRespostas with Worker, Loggable {
   final _service = ServiceLocator.get<ApiService>().questaoResposta;
 
   setup() {
-    configure(
-      BackgroundFetchConfig(
-        minimumFetchInterval: 1,
-        stopOnTerminate: false,
-        startOnBoot: true,
-        enableHeadless: true,
-        requiredNetworkType: NetworkType.ANY,
-      ),
-    );
+    if (!kIsWeb) {
+      configure(
+        BackgroundFetchConfig(
+          minimumFetchInterval: 1,
+          stopOnTerminate: false,
+          startOnBoot: true,
+          enableHeadless: true,
+          requiredNetworkType: NetworkType.ANY,
+        ),
+      );
+    }
 
     Timer.periodic(Duration(seconds: 30), (timer) {
       sincronizar();

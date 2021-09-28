@@ -114,34 +114,41 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     }
     fine('[$idProva] - Sincronização com o servidor servidor concluida');
 
-    salvarCache();
+    salvarAllCache();
   }
 
   @action
-  definirResposta(int questaoId, int? resposta) {
-    respostasLocal[questaoId] = ProvaResposta(
+  definirResposta(int questaoId, {int? alternativaId, String? textoResposta}) {
+    var resposta = ProvaResposta(
       questaoId: questaoId,
-      alternativaId: resposta,
+      alternativaId: alternativaId,
+      resposta: textoResposta,
       sincronizado: false,
       dataHoraResposta: DateTime.now(),
     );
 
-    salvarCache();
+    respostasLocal[questaoId] = resposta;
+
+    salvarCache(resposta);
   }
 
-  salvarCache() async {
-    var _pref = GetIt.I.get<SharedPreferences>();
-
+  salvarAllCache() async {
     List<Future<bool>> futures = [];
 
     for (var respostaLocal in respostasLocal.entries) {
-      futures.add(_pref.setString(
-        'resposta_${respostaLocal.key}',
-        jsonEncode(respostaLocal.value.toJson()),
-      ));
+      futures.add(salvarCache(respostaLocal.value));
     }
 
     await Future.wait(futures);
+  }
+
+  salvarCache(ProvaResposta resposta) async {
+    SharedPreferences _pref = GetIt.I.get();
+
+    return await _pref.setString(
+      'resposta_${resposta.questaoId}',
+      jsonEncode(resposta.toJson()),
+    );
   }
 
   Map<int, ProvaResposta> carregaRespostasCache() {

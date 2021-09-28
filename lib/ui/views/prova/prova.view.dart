@@ -395,7 +395,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   onPressed: () async {
                     if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
                       await widget.provaStore.respostas
-                          .definirResposta(questao.id, resposta: await controller.getText());
+                          .definirResposta(questao.id, textoResposta: await controller.getText());
                     }
 
                     listaQuestoesController.nextPage(
