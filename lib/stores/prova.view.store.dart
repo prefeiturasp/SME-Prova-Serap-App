@@ -106,10 +106,20 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   }
 
   @action
-  definirResposta(int questaoId, int? resposta) {
+  definirAlternativa(int questaoId, int? alternativaId) {
     respostas[questaoId] = ProvaResposta(
       questaoId: questaoId,
-      alternativaId: resposta,
+      alternativaId: alternativaId,
+      sincronizado: false,
+      dataHoraResposta: DateTime.now(),
+    );
+  }
+
+  @action
+  definirResposta(int questaoId, String? resposta) {
+    respostas[questaoId] = ProvaResposta(
+      questaoId: questaoId,
+      resposta: resposta,
       sincronizado: false,
       dataHoraResposta: DateTime.now(),
     );

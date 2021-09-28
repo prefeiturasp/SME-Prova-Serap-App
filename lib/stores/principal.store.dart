@@ -54,7 +54,7 @@ abstract class _PrincipalStoreBase with Store {
 
   @action
   Future<void> sair() async {
-    var prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = GetIt.I.get();
     await prefs.clear();
     usuario.dispose();
   }

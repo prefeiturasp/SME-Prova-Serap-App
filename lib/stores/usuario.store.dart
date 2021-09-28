@@ -1,3 +1,4 @@
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -34,7 +35,7 @@ abstract class _UsuarioStoreBase with Store {
 
   @action
   Future<void> carregarUsuario() async {
-    var prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await GetIt.I.getAsync();
     nome = prefs.getString("serapUsuarioNome");
     token = prefs.getString("serapUsuarioToken");
     codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
@@ -50,7 +51,7 @@ abstract class _UsuarioStoreBase with Store {
     this.ano = ano;
     this.tipoTurno = tipoTurno;
 
-    var prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await GetIt.I.getAsync();
     await prefs.setString('serapUsuarioNome', nome);
     await prefs.setString('serapUsuarioToken', token);
     await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
