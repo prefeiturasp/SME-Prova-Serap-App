@@ -87,9 +87,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
               children: questoesTabela,
             ),
             SizedBox(height: 32),
-            Observer(
-              builder: (_) {
-                return Center(
+            Center(
                   child: BotaoDefaultWidget(
                     textoBotao: 'FINALIZAR E ENVIAR',
                     largura: 392,
@@ -132,13 +130,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                           );
                         },
                       );
-
                       //
                     },
                   ),
-                );
-              },
-            )
+                )
           ],
         ),
       ),
