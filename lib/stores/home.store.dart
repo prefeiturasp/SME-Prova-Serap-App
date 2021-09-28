@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
+import 'package:chopper/src/response.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +29,7 @@ abstract class _HomeStoreBase with Store, Loggable {
     carregando = true;
     List<ProvaStore> provasStore = [];
     try {
-      var response = await GetIt.I.get<ApiService>().prova.getProvas();
+      Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
 
       if (response.isSuccessful) {
         var provasResponse = response.body!;

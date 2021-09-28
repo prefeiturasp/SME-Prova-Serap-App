@@ -40,9 +40,7 @@ class SincronizarRespostas with Worker, Loggable {
 
     sincronizar();
 
-    if (taskId.isNotEmpty) {
-      BackgroundFetch.finish(taskId);
-    }
+    BackgroundFetch.finish(taskId);
   }
 
   sincronizar() async {
