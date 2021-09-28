@@ -59,7 +59,7 @@ Future<void> main() async {
   try {
     await Firebase.initializeApp();
 
-    await FirebaseMessaging.instance.subscribeToTopic('1');
+    //await FirebaseMessaging.instance.subscribeToTopic('1');
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (e) {
     // ignore: avoid_print

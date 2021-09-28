@@ -1,5 +1,6 @@
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/ui/views/login/login.view.dart';
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
                 if (popView) {
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => LoginView()),
+                    MaterialPageRoute(builder: (context) => SplashScreenView()),
                     (_) => false,
                   );
                 }

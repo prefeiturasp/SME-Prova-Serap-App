@@ -93,8 +93,8 @@ abstract class _LoginStoreBase with Store, Loggable {
         _usuarioStore.token = body.token;
         _usuarioStore.tokenDataHoraExpiracao = body.dataHoraExpiracao;
 
-        SharedPreferences pref = GetIt.I.get();
-        await pref.setString('token', body.token);
+        SharedPreferences prefs = GetIt.I.get();
+        await prefs.setString('token', body.token);
 
         var responseMeusDados = await _autenticacaoService.meusDados();
 

@@ -78,7 +78,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   }
 
   Widget _botoesProva(Questao questao) {
-
     if (store.revisandoProva) {
       return Padding(
         padding: const EdgeInsets.only(
@@ -175,6 +174,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
+                    if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
+                      await store.definirResposta(questao.id, await controller.getText());
+                    }
+
                     if (store.respostas[questao.id] != null) {
                       await store.sincronizarResposta();
                     }
@@ -208,7 +211,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       listaQuestoesController.jumpToPage(posicaoDaQuestao);
                     }
                   } catch (e) {
-                      fine(e);
+                    fine(e);
                   }
                 },
               );
@@ -339,23 +342,18 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   Widget _buildResposta(Questao questao) {
     switch (questao.tipo) {
-      case EnumTipoQuestao.multiplaEscolha:
+      case EnumTipoQuestao.MULTIPLA_ESCOLHA:
         return _buildAlternativas(questao);
-      case EnumTipoQuestao.descritiva:
-        return _buildDescritiva(questao);
+      case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
+        return _buildRespostaConstruida(questao);
 
       default:
         return SizedBox.shrink();
     }
   }
 
-  _buildDescritiva(Questao questao) {
-    String? respostaRemota = store.respostasSalvas[questao.id]?.resposta;
-    String? respostaLocal = store.respostas[questao.id]?.resposta;
-
-    String? resposta = respostaRemota ?? respostaLocal;
-
-    controller.setText(resposta ?? "");
+  _buildRespostaConstruida(Questao questao) {
+    ProvaResposta? provaResposta = store.obterResposta(questao.id);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
@@ -368,6 +366,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           controller: controller,
           callbacks: Callbacks(onInit: () {
             controller.execCommand('fontName', argument: "Poppins");
+            controller.setText(provaResposta?.resposta ?? "");
           }),
           htmlToolbarOptions: HtmlToolbarOptions(
             toolbarPosition: ToolbarPosition.belowEditor,
@@ -429,7 +428,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
         onChanged: (value) {
-          store.definirResposta(questaoId, value);
+          store.definirAlternativa(questaoId, value);
         },
         toggleable: true,
         title: Row(children: [
