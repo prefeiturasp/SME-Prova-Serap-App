@@ -195,17 +195,17 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   Widget _buildResposta(Questao questao) {
     switch (questao.tipo) {
-      case EnumTipoQuestao.multiplaEscolha:
+      case EnumTipoQuestao.MULTIPLA_ESCOLHA:
         return _buildAlternativas(questao);
-      case EnumTipoQuestao.descritiva:
-        return _buildDescritiva(questao);
+      case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
+        return _buildRespostaConstruida(questao);
 
       default:
         return SizedBox.shrink();
     }
   }
 
-  _buildDescritiva(Questao questao) {
+  _buildRespostaConstruida(Questao questao) {
     ProvaResposta? provaResposta = widget.provaStore.respostas.obterResposta(questao.id);
 
     controller.setText(provaResposta?.resposta ?? "");

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
@@ -162,6 +163,7 @@ class DownloadService with Loggable {
                     ordem: questao.ordem,
                     alternativas: [],
                     arquivos: [],
+                    tipo: questao.tipo,
                   ));
                 }
               }
