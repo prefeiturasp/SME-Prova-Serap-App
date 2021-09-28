@@ -114,11 +114,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     for (Questao questao in widget.provaStore.prova.questoes) {
       ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questao.id);
 
-      ordemQuestao++;
       String alternativaSelecionada = "";
       String respostaNaTela = "";
       String questaoProva = tratarTexto(tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
-      String ordemQuestaoTratada = ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
+      String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
 
       if (questao.id == resposta?.questaoId) {
         for (var alternativa in questao.alternativas) {
@@ -137,7 +136,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           {
             'questao': '$ordemQuestaoTratada - $questaoProva',
             'resposta': respostaNaTela,
-            'questao_ordem': '${ordemQuestao - 1}'
+            'questao_ordem': questao.ordem
           },
         );
       } else {
@@ -146,10 +145,17 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           {
             'questao': '$ordemQuestaoTratada - $questaoProva',
             'resposta': respostaNaTela,
-            'questao_ordem': '${ordemQuestao - 1}'
+            'questao_ordem': questao.ordem
           },
         );
       }
+
+      mapaDeQuestoes.sort(
+        (questao1, questao2) {
+          return questao1['questao_ordem'].compareTo(questao2['questao_ordem']);
+        },
+      );
+
       popularTabelaComQuestoes();
     }
   }
@@ -197,15 +203,21 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     List<TableRow> linhas = [];
 
     for (var questao in mapaDeQuestoes) {
-      Widget resposta = SvgPicture.asset(AssetsUtil.iconeQuestaoNaoRespondida);
+      Widget resposta;
 
       if (questao['resposta'] != "") {
         resposta = Center(
           child: Text(
             questao['resposta'].replaceAll(")", ""),
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
+        );
+      } else {
+        resposta = SvgPicture.asset(
+          AssetsUtil.iconeQuestaoNaoRespondida,
         );
       }
 
@@ -226,7 +238,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
               child: Text(
                 questao['questao'],
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
               ),
             ),
@@ -242,7 +254,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 ),
                 onTap: () {
                   store.quantidadeDeQuestoesSemRespostas = 0;
-                  Navigator.of(context).pop(questao['questao_ordem']);
+                  Navigator.of(context).pop(questao['questao_ordem'] + 1);
                 },
                 child: SvgPicture.asset(
                   AssetsUtil.iconeRevisarQuestao,

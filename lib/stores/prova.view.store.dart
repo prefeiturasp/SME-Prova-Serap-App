@@ -12,7 +12,7 @@ class ProvaViewStore = _ProvaViewStoreBase with _$ProvaViewStore;
 
 abstract class _ProvaViewStoreBase with Store, Loggable {
   @observable
-  int questaoAtual = 1;
+  int questaoAtual = 0;
 
   @observable
   int quantidadeDeQuestoesSemRespostas = 0;

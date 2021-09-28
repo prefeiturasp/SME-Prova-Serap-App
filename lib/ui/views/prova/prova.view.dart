@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:appserap/models/prova_resposta.model.dart';
-
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
@@ -31,7 +31,7 @@ class ProvaView extends BaseStatefulWidget {
   _ProvaViewState createState() => _ProvaViewState();
 }
 
-class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
+class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Loggable {
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
 
@@ -127,7 +127,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
               ],
             ),
           ),
-          _botoesProva(questao),
+          Observer(builder: (context) {
+            return _botoesProva(questao);
+          }),
         ],
       ),
     );
