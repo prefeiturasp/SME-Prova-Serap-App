@@ -210,49 +210,72 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   _buildRespostaConstruida(Questao questao) {
     ProvaResposta? provaResposta = widget.provaStore.respostas.obterResposta(questao.id);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: HtmlEditor(
-          controller: controller,
-          callbacks: Callbacks(onInit: () {
-            controller.execCommand('fontName', argument: "Poppins");
-            controller.setText(provaResposta?.resposta ?? "");
-          }),
-          htmlToolbarOptions: HtmlToolbarOptions(
-            toolbarPosition: ToolbarPosition.belowEditor,
-            defaultToolbarButtons: [
-              FontButtons(
-                subscript: false,
-                superscript: false,
-                strikethrough: false,
+    return Observer(builder: (_) {
+      return Column(
+        children: [
+          //
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
               ),
-              ParagraphButtons(
-                lineHeight: false,
-                caseConverter: false,
-                decreaseIndent: true,
-                increaseIndent: true,
-                textDirection: false,
-                alignRight: false,
+              child: HtmlEditor(
+                controller: controller,
+                callbacks: Callbacks(onInit: () {
+                  controller.execCommand('fontName', argument: "Poppins");
+                  controller.setText(provaResposta?.resposta ?? "");
+                }, onChangeContent: (String? textoDigitado) {
+                  if (textoDigitado!.length > 0){
+                    store.questaoConstruida = textoDigitado;
+                  } else {
+                    store.questaoConstruida = provaResposta!.resposta!;
+                  }
+
+                }),
+                htmlToolbarOptions: HtmlToolbarOptions(
+                  toolbarPosition: ToolbarPosition.belowEditor,
+                  defaultToolbarButtons: [
+                    FontButtons(
+                      subscript: false,
+                      superscript: false,
+                      strikethrough: false,
+                    ),
+                    ParagraphButtons(
+                      lineHeight: false,
+                      caseConverter: false,
+                      decreaseIndent: true,
+                      increaseIndent: true,
+                      textDirection: false,
+                      alignRight: false,
+                    ),
+                    ListButtons(
+                      listStyles: false,
+                    ),
+                  ],
+                ),
+                htmlEditorOptions: HtmlEditorOptions(
+                  hint: "Digite sua resposta aqui...",
+                ),
+                otherOptions: OtherOptions(
+                  height: 328,
+                ),
               ),
-              ListButtons(
-                listStyles: false,
-              ),
-            ],
+            ),
           ),
-          htmlEditorOptions: HtmlEditorOptions(
-            hint: "Digite sua resposta aqui...",
+          //
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 15),
+            width: MediaQuery.of(context).size.width,
+            child: Text(
+              'Caracteres digitados: ${store.questaoConstruida.length}',
+              textAlign: TextAlign.end,
+            ),
           ),
-          otherOptions: OtherOptions(
-            height: 328,
-          ),
-        ),
-      ),
-    );
+        ],
+      );
+    });
   }
 
   _buildAlternativas(Questao questao) {
@@ -341,7 +364,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   textoBotao: 'Confirmar e voltar para o resumo',
                   onPressed: () async {
                     try {
-                      String posicaoDaQuestao = await Navigator.push(
+                      int posicaoDaQuestao = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ResumoRespostasView(
@@ -350,15 +373,15 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                         ),
                       );
 
-                      if (!int.parse(posicaoDaQuestao).isNaN) {
+                      if (!posicaoDaQuestao.isNaN) {
                         store.revisandoProva = true;
-                        store.questaoAtual = int.parse(posicaoDaQuestao);
+                        store.questaoAtual = posicaoDaQuestao;
                         listaQuestoesController.jumpToPage(
-                          int.parse(posicaoDaQuestao),
+                          posicaoDaQuestao,
                         );
                       }
                     } catch (e) {
-                      print(e);
+                      fine(e);
                     }
                   },
                 );
@@ -413,11 +436,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 textoBotao: 'Finalizar prova',
                 onPressed: () async {
                   store.questaoAtual = 0;
-                  //Navigator.of(context).pop();
                   try {
                     await SincronizarRespostasWorker().sincronizar();
 
-                    String posicaoDaQuestao = await Navigator.push(
+                    int posicaoDaQuestao = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ResumoRespostasView(
@@ -426,14 +448,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       ),
                     );
 
-                    if (!int.parse(posicaoDaQuestao).isNaN) {
+                    if (!posicaoDaQuestao.isNaN) {
                       store.revisandoProva = true;
                       listaQuestoesController.jumpToPage(
-                        int.parse(posicaoDaQuestao),
+                        posicaoDaQuestao,
                       );
                     }
                   } catch (e) {
-                    print(e);
+                    fine(e);
                   }
                 },
               );
