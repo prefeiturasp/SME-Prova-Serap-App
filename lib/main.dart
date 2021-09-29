@@ -2,6 +2,7 @@ import 'package:appserap/dependencias.ioc.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
+import 'package:appserap/workers/finalizar_prova.worker.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -75,7 +76,9 @@ Future<void> main() async {
   Intl.defaultLocale = 'pt_BR';
 
   BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
-  SincronizarRespostas().setup();
+
+  SincronizarRespostasWorker().setup();
+  FinalizarProvaWorker().setup();
 
   try {
     await Firebase.initializeApp();

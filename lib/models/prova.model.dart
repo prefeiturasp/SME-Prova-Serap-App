@@ -50,6 +50,11 @@ class Prova {
     }
   }
 
+  static salvaProvaCache(Prova prova) async {
+    SharedPreferences prefs = GetIt.I.get();
+    await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
+  }
+
   @override
   String toString() {
     return 'Prova(id: $id, downloadStatus: $downloadStatus, downloadProgresso: $downloadProgresso, status: $status, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, questoes: $questoes)';

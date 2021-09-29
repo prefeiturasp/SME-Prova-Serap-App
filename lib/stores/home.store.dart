@@ -58,7 +58,7 @@ abstract class _HomeStoreBase with Store, Loggable {
       List<int> ids = listProvasCache();
 
       for (var id in ids) {
-        var provaBanco = carregaProvaCache(id)!;
+        var provaBanco = Prova.carregaProvaCache(id)!;
         provasStore.add(ProvaStore(
           id: id,
           prova: provaBanco,
@@ -93,7 +93,7 @@ abstract class _HomeStoreBase with Store, Loggable {
   }
 
   Future<void> carregaProva(int idProva, ProvaStore provaStore) async {
-    var prova = carregaProvaCache(idProva);
+    Prova? prova = Prova.carregaProvaCache(idProva);
 
     if (prova != null) {
       provaStore.prova = prova;
@@ -101,27 +101,12 @@ abstract class _HomeStoreBase with Store, Loggable {
       provaStore.progressoDownload = prova.downloadProgresso;
       provaStore.status = prova.status;
     } else {
-      await salvaProvaCache(provaStore.prova);
+      await Prova.salvaProvaCache(provaStore.prova);
     }
 
     if (provaStore.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
       provaStore.iniciarDownload();
     }
-  }
-
-  Prova? carregaProvaCache(int idProva) {
-    SharedPreferences prefs = GetIt.I.get();
-
-    String? provaJson = prefs.getString('prova_$idProva');
-
-    if (provaJson != null) {
-      return Prova.fromJson(jsonDecode(provaJson));
-    }
-  }
-
-  salvaProvaCache(Prova prova) async {
-    SharedPreferences prefs = GetIt.I.get();
-    await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 
   @action

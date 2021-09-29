@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:background_fetch/background_fetch.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,14 +14,14 @@ import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-class SincronizarRespostas with Worker, Loggable {
+class SincronizarRespostasWorker with Worker, Loggable {
   final _service = ServiceLocator.get<ApiService>().questaoResposta;
 
   setup() {
     if (!kIsWeb) {
       configure(
         BackgroundFetchConfig(
-          minimumFetchInterval: 1,
+          minimumFetchInterval: 15,
           stopOnTerminate: false,
           startOnBoot: true,
           enableHeadless: true,
@@ -29,7 +30,7 @@ class SincronizarRespostas with Worker, Loggable {
       );
     }
 
-    Timer.periodic(Duration(seconds: 30), (timer) {
+    Timer.periodic(Duration(minutes: 1), (timer) {
       sincronizar();
     });
   }
@@ -43,39 +44,49 @@ class SincronizarRespostas with Worker, Loggable {
     BackgroundFetch.finish(taskId);
   }
 
-  sincronizar() async {
+  Future<void> sincronizar([List<ProvaResposta>? respostas]) async {
     fine('Sincronizando respostas para o servidor');
 
-    var respostasLocal = carregaRespostasCache();
+    var respostasLocal = respostas ?? carregaRespostasCache();
     fine('${respostasLocal.length} respostas salvas localmente');
 
-    var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
+    var respostasNaoSincronizadas = respostasLocal.where((element) => element.sincronizado == false);
     fine('${respostasNaoSincronizadas.length} respostas ainda não sincronizadas');
 
-    for (MapEntry<int, ProvaResposta> item in respostasNaoSincronizadas) {
-      int idQuestao = item.key;
-      ProvaResposta resposta = item.value;
-
-      try {
-        var response = await _service.postResposta(
-          questaoId: idQuestao,
-          alternativaId: resposta.alternativaId,
-          resposta: resposta.resposta,
-          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
-        );
-
-        if (response.isSuccessful) {
-          fine("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
-
-          resposta.sincronizado = true;
-
-          await saveCahe(resposta);
-        }
-      } catch (e) {
-        severe(e);
-      }
+    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+    if (respostasNaoSincronizadas.isNotEmpty && resultado == ConnectivityResult.none) {
+      info('Falha na sincronização. Sem Conexão....');
+      return;
     }
+
+    for (ProvaResposta resposta in respostasNaoSincronizadas) {
+      await sincronizarResposta(resposta);
+    }
+
     fine('Sincronização com o servidor servidor concluida');
+  }
+
+  sincronizarResposta(ProvaResposta resposta) async {
+    int idQuestao = resposta.questaoId;
+
+    try {
+      var response = await _service.postResposta(
+        questaoId: idQuestao,
+        alternativaId: resposta.alternativaId,
+        resposta: resposta.resposta,
+        dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+      );
+
+      if (response.isSuccessful) {
+        fine("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
+
+        resposta.sincronizado = true;
+
+        await saveCahe(resposta);
+      }
+    } catch (e) {
+      severe(e);
+    }
   }
 
   salvarCacheMap(Map<int, ProvaResposta> respostas) async {
@@ -97,18 +108,18 @@ class SincronizarRespostas with Worker, Loggable {
     );
   }
 
-  Map<int, ProvaResposta> carregaRespostasCache() {
+  List<ProvaResposta> carregaRespostasCache() {
     SharedPreferences _pref = GetIt.I.get();
 
     List<String> keysResposta = _pref.getKeys().toList().where((element) => element.startsWith('resposta_')).toList();
 
-    Map<int, ProvaResposta> respostas = {};
+    List<ProvaResposta> respostas = [];
 
     if (keysResposta.isNotEmpty) {
       for (var keyResposta in keysResposta) {
         var provaResposta = ProvaResposta.fromJson(jsonDecode(_pref.getString(keyResposta)!));
 
-        respostas[provaResposta.questaoId] = provaResposta;
+        respostas.add(provaResposta);
       }
     }
 
