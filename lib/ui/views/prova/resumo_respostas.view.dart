@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -72,7 +73,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
               ),
             ),
             //
-            mensagemDeQuestoesSemRespostas(),
+            Observer(builder: (context) {
+              return mensagemDeQuestoesSemRespostas();
+            }),
             //
             Table(
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -127,8 +130,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
         if (resposta!.resposta != null) {
           respostaNaTela = "OK";
-        } else {
+        } else if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
+        } else {
+          store.quantidadeDeQuestoesSemRespostas++;
         }
 
         mapaDeQuestoes.add(
