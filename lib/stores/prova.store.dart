@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:appserap/dependencias.ioc.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
@@ -162,16 +163,36 @@ abstract class _ProvaStoreBase with Store, Loggable {
 
         mostrarDialogSemInternet();
       } else {
-        // Atualiza para fiinalizada
+        // Atualiza para finalizada
         setStatusProva(EnumProvaStatus.FINALIZADA);
         await saveProva();
 
-        // Sincroniza com a api
-        await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.FINALIZADA.index);
-
         await SincronizarRespostasWorker().sincronizar();
 
-        mostrarDialogProvaEnviada();
+        // Sincroniza com a api
+        var response = await GetIt.I.get<ApiService>().prova.setStatusProva(
+              idProva: id,
+              status: EnumProvaStatus.FINALIZADA.index,
+            );
+
+        if (response.isSuccessful) {
+          mostrarDialogProvaEnviada();
+        } else {
+          switch (response.statusCode) {
+            case 411:
+              // Remove prova do cache
+              SharedPreferences prefs = ServiceLocator.get();
+              await prefs.remove('prova_${prova.id}');
+
+              // Remove respostas da prova do cache
+              for (var questoes in prova.questoes) {
+                await prefs.remove('resposta_${questoes.id}');
+              }
+
+              mostrarDialogProvaJaEnviada();
+              break;
+          }
+        }
       }
 
       return true;

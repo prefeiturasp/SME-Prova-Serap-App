@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:background_fetch/background_fetch.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:collection/collection.dart';
 
 import 'package:appserap/dependencias.ioc.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -15,22 +13,21 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+import 'package:workmanager/workmanager.dart';
 
 class FinalizarProvaWorker with Worker, Loggable {
-  setup() {
+  setup() async {
     if (!kIsWeb) {
-      configure(
-        BackgroundFetchConfig(
-          minimumFetchInterval: 1,
-          stopOnTerminate: false,
-          startOnBoot: true,
-          enableHeadless: true,
-          requiredNetworkType: NetworkType.ANY,
+      await Workmanager().registerPeriodicTask(
+        "1",
+        "FinalizarProvaWorker",
+        frequency: Duration(minutes: 15),
+        constraints: Constraints(
+          networkType: NetworkType.connected,
         ),
       );
     }
-
-    Timer.periodic(Duration(seconds: 30), (timer) {
+    Timer.periodic(Duration(minutes: 1), (timer) {
       sincronizar();
     });
   }
@@ -41,7 +38,7 @@ class FinalizarProvaWorker with Worker, Loggable {
 
     sincronizar();
 
-    BackgroundFetch.finish(taskId);
+    // BackgroundFetch.finish(taskId);
   }
 
   sincronizar() async {

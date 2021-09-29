@@ -86,3 +86,43 @@ mostrarDialogProvaEnviada() {
     },
   );
 }
+
+mostrarDialogProvaJaEnviada() {
+  String mensagem = "Esta prova já foi finalizada";
+  String icone = AssetsUtil.erro;
+  String mensagemBotao = "OK";
+
+  asuka.showDialog(
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: SvgPicture.asset(icone),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 70,
+          ),
+          child: Text(
+            mensagem,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            largura: 170,
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => HomeView()),
+                  (Route<dynamic> route) => false);
+            },
+            textoBotao: mensagemBotao,
+          )
+        ],
+      );
+    },
+  );
+}

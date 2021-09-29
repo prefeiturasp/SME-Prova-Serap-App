@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:background_fetch/background_fetch.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,23 +12,20 @@ import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:workmanager/workmanager.dart';
 
 class SincronizarRespostasWorker with Worker, Loggable {
-  final _service = ServiceLocator.get<ApiService>().questaoResposta;
-
-  setup() {
+  setup() async {
     if (!kIsWeb) {
-      configure(
-        BackgroundFetchConfig(
-          minimumFetchInterval: 15,
-          stopOnTerminate: false,
-          startOnBoot: true,
-          enableHeadless: true,
-          requiredNetworkType: NetworkType.ANY,
+      await Workmanager().registerPeriodicTask(
+        "2",
+        "SincronizarRespostasWorker",
+        frequency: Duration(minutes: 15),
+        constraints: Constraints(
+          networkType: NetworkType.connected,
         ),
       );
     }
-
     Timer.periodic(Duration(minutes: 1), (timer) {
       sincronizar();
     });
@@ -37,11 +33,8 @@ class SincronizarRespostasWorker with Worker, Loggable {
 
   @override
   onFetch(String taskId) async {
-    fine('[BackgroundFetch] Event received.');
-
+    fine('[Worker] Event received.');
     sincronizar();
-
-    BackgroundFetch.finish(taskId);
   }
 
   Future<void> sincronizar([List<ProvaResposta>? respostas]) async {
@@ -68,6 +61,7 @@ class SincronizarRespostasWorker with Worker, Loggable {
 
   sincronizarResposta(ProvaResposta resposta) async {
     int idQuestao = resposta.questaoId;
+    final _service = ServiceLocator.get<ApiService>().questaoResposta;
 
     try {
       var response = await _service.postResposta(

@@ -14,6 +14,7 @@ import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -414,6 +415,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   store.questaoAtual = 0;
                   //Navigator.of(context).pop();
                   try {
+                    await SincronizarRespostasWorker().sincronizar();
+
                     String posicaoDaQuestao = await Navigator.push(
                       context,
                       MaterialPageRoute(
