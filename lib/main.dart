@@ -57,7 +57,10 @@ void backgroundFetchHeadlessTask(HeadlessTask task) async {
     return;
   }
   print('[BackgroundFetch] Headless event received.');
-  // Do your work here...
+
+  SincronizarRespostasWorker().sincronizar();
+  FinalizarProvaWorker().sincronizar();
+
   BackgroundFetch.finish(taskId);
 }
 

@@ -31,7 +31,7 @@ class FinalizarProvaWorker with Worker, Loggable {
     }
 
     Timer.periodic(Duration(seconds: 30), (timer) {
-      finalzarProva();
+      sincronizar();
     });
   }
 
@@ -39,17 +39,13 @@ class FinalizarProvaWorker with Worker, Loggable {
   onFetch(String taskId) {
     fine('[BackgroundFetch] Event received.');
 
-    finalzarProva();
+    sincronizar();
 
     BackgroundFetch.finish(taskId);
   }
 
-  finalzarProva() async {
+  sincronizar() async {
     fine('Sincronizando provas para o servidor');
-
-    // TODO pegar as provas com o status pendente de envio e sincronizar status
-
-    // TODO verificar se todas as respostas foram sincronizadas;
 
     List<Prova> provas = listProvasCache()
         .map((e) => Prova.carregaProvaCache(e)!)
