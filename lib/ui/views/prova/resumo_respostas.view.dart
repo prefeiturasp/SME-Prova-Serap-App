@@ -1,5 +1,9 @@
-import 'dart:developer';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -7,12 +11,10 @@ import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
 
 class ResumoRespostasView extends BaseStatefulWidget {
   const ResumoRespostasView({
@@ -24,9 +26,78 @@ class ResumoRespostasView extends BaseStatefulWidget {
   _ResumoRespostasViewState createState() => _ResumoRespostasViewState();
 }
 
-class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, ProvaViewStore> {
+class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, ProvaViewStore> with Loggable {
   List<Map<String, dynamic>> mapaDeQuestoes = [];
   List<TableRow> questoesTabela = [];
+
+  @override
+  void initState() {
+    super.initState();
+    popularMapaDeQuestoes();
+  }
+
+  @override
+  void dispose() {
+    //store.dispose();
+    super.dispose();
+  }
+
+  @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
+  PreferredSizeWidget buildAppBar() {
+    return AppBarWidget(
+      popView: true,
+      subtitulo: widget.provaStore.prova.descricao,
+    );
+  }
+
+  @override
+  Widget builder(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        color: backgroundColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            //
+            Text(
+              'Resumo das respostas',
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            //
+            mensagemDeQuestoesSemRespostas(),
+            //
+            Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              columnWidths: {
+                0: FractionColumnWidth(.7),
+                1: FractionColumnWidth(.2),
+                2: FractionColumnWidth(.1),
+              },
+              children: questoesTabela,
+            ),
+            SizedBox(height: 32),
+            Center(
+              child: BotaoDefaultWidget(
+                textoBotao: 'FINALIZAR E ENVIAR',
+                largura: 392,
+                onPressed: () async {
+                  await widget.provaStore.finalizarProva();
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
 
   String tratarTexto(String texto) {
     RegExp r = RegExp(r"<[^>]*>");
@@ -39,8 +110,8 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   }
 
   void popularMapaDeQuestoes() {
-    for (Questao questao in store.questoes) {
-      ProvaResposta? resposta = store.obterResposta(questao.id);
+    for (Questao questao in widget.provaStore.prova.questoes) {
+      ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questao.id);
 
       String alternativaSelecionada = "";
       String respostaNaTela = "";
@@ -107,12 +178,14 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                     "${store.quantidadeDeQuestoesSemRespostas} Questões sem resposta",
                     style: TextStyle(
                       color: TemaUtil.laranja03,
+                      fontSize: 14,
                     ),
                   )
                 : Text(
                     "${store.quantidadeDeQuestoesSemRespostas} Questão sem resposta",
                     style: TextStyle(
                       color: TemaUtil.laranja03,
+                      fontSize: 14,
                     ),
                   )
           ],
@@ -120,31 +193,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
       );
     } else {
       return SizedBox(
-        height: 10,
+        height: 40,
       );
     }
-  }
-
-  @override
-  Color? get backgroundColor => TemaUtil.corDeFundo;
-
-  @override
-  void initState() {
-    super.initState();
-    popularMapaDeQuestoes();
-  }
-
-  @override
-  void dispose() {
-    //store.dispose();
-    super.dispose();
-  }
-
-  @override
-  PreferredSizeWidget buildAppBar() {
-    return AppBarWidget(
-      popView: true,
-    );
   }
 
   List<TableRow> popularTabelaComQuestoes() {
@@ -229,52 +280,22 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         ),
         children: [
           //
-          Text("Questão"),
-          Text("Alternativa selecionada"),
-          Text("Revisar"),
+          Text(
+            "Questão",
+            style: TextStyle(fontSize: 14, color: TemaUtil.appBar),
+          ),
+          Text(
+            "Alternativa selecionada",
+            style: TextStyle(fontSize: 14, color: TemaUtil.appBar),
+          ),
+          Text(
+            "Revisar",
+            style: TextStyle(fontSize: 14, color: TemaUtil.appBar),
+          ),
         ],
       ),
     );
 
     return questoesTabela;
-  }
-
-  @override
-  Widget builder(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        color: backgroundColor,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //
-            Padding(
-              padding: const EdgeInsets.only(bottom: 5),
-              child: Text(
-                'Resumo das respostas',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            //
-            mensagemDeQuestoesSemRespostas(),
-            //
-            Table(
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              columnWidths: {
-                0: FractionColumnWidth(.7),
-                1: FractionColumnWidth(.2),
-                2: FractionColumnWidth(.1),
-              },
-              children: questoesTabela,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

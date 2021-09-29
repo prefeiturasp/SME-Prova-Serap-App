@@ -1,10 +1,15 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="br.gov.sp.prefeitura.sme.appserap">
+
     <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
         android:label="SERAp Estudantes"
         android:icon="@mipmap/ic_launcher"
         android:name="androidx.multidex.MultiDexApplication"
+        tools:replace="android:label"
         >
         <activity
             android:name=".MainActivity"

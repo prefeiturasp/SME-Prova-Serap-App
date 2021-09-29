@@ -9,4 +9,7 @@ enum EnumProvaStatus {
 
   @JsonValue(2)
   FINALIZADA,
+
+  @JsonValue(3)
+  PENDENTE,
 }

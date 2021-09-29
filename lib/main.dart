@@ -2,6 +2,7 @@ import 'package:appserap/dependencias.ioc.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
+import 'package:appserap/workers/finalizar_prova.worker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -12,6 +13,9 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:asuka/asuka.dart' as asuka;
+import 'package:workmanager/workmanager.dart';
+
+import 'workers/sincronizar_resposta.worker.dart';
 
 Future setupAppConfig() async {
   try {
@@ -42,6 +46,51 @@ void registerFonts() {
   });
 }
 
+// void backgroundFetchHeadlessTask(HeadlessTask task) async {
+//   String taskId = task.taskId;
+//   bool isTimeout = task.timeout;
+//   if (isTimeout) {
+//     // This task has exceeded its allowed running-time.
+//     // You must stop what you're doing and immediately .finish(taskId)
+//     print("[BackgroundFetch] Headless task timed-out: $taskId");
+//     BackgroundFetch.finish(taskId);
+//     return;
+//   }
+//   print('[BackgroundFetch] Headless event received.');
+
+//   SincronizarRespostasWorker().sincronizar();
+//   FinalizarProvaWorker().sincronizar();
+
+//   BackgroundFetch.finish(taskId);
+// }
+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    print("Native called background task: $task");
+
+    try {
+      setupLogging();
+
+      await setupAppConfig();
+
+      final ioc = DependenciasIoC();
+      await ioc.registrar();
+
+      if (task == "SincronizarRespostasWorker") {
+        SincronizarRespostasWorker().sincronizar();
+      } else if (task == "FinalizarProvaWorker") {
+        FinalizarProvaWorker().sincronizar();
+      }
+
+      return Future.value(true);
+    } catch (e, stacktrace) {
+      print(e);
+      print(stacktrace);
+      return Future.error(e);
+    }
+  });
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLogging();
@@ -51,10 +100,18 @@ Future<void> main() async {
   registerFonts();
 
   final ioc = DependenciasIoC();
-  ioc.registrar();
+  await ioc.registrar();
 
   initializeDateFormatting();
   Intl.defaultLocale = 'pt_BR';
+
+  Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: true,
+  );
+
+  await SincronizarRespostasWorker().setup();
+  await FinalizarProvaWorker().setup();
 
   try {
     await Firebase.initializeApp();

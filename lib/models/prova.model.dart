@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:get_it/get_it.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'prova.model.g.dart';
 
@@ -35,6 +39,21 @@ class Prova {
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
   Map<String, dynamic> toJson() => _$ProvaToJson(this);
+
+  static Prova? carregaProvaCache(int idProva) {
+    var _pref = GetIt.I.get<SharedPreferences>();
+
+    String? provaJson = _pref.getString('prova_$idProva');
+
+    if (provaJson != null) {
+      return Prova.fromJson(jsonDecode(provaJson));
+    }
+  }
+
+  static salvaProvaCache(Prova prova) async {
+    SharedPreferences prefs = GetIt.I.get();
+    await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
+  }
 
   @override
   String toString() {
