@@ -5,8 +5,12 @@ enum EnumTipoQuestao {
   NAO_CADASTRADO,
 
   @JsonValue(1)
-  MULTIPLA_ESCOLHA,
+  MULTIPLA_ESCOLHA_4,
 
   @JsonValue(2)
+  MULTIPLA_ESCOLHA_5,
+
+  @JsonValue(3)
   RESPOSTA_CONTRUIDA,
+
 }

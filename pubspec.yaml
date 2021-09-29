@@ -68,7 +68,8 @@ dependencies:
   html_editor_enhanced: ^2.3.0
 
   # Workmanager
-  background_fetch: ^1.0.1
+  # background   _fetch: ^1.0.1
+  workmanager: ^0.5.0-dev.7
 
 dependency_overrides:
   flutter_colorpicker: ^0.6.0

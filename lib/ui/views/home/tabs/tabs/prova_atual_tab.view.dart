@@ -240,7 +240,11 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
 
     // Prova baixada -- iniciar
     if (provaStore.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
-      return _buildIniciarProva(provaStore);
+      if (provaStore.status == EnumProvaStatus.PENDENTE) {
+        return _buildProvaPendente(provaStore);
+      } else {
+        return _buildIniciarProva(provaStore);
+      }
     }
 
     return SizedBox.shrink();
@@ -344,6 +348,43 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
       onPressed: () async {
         await provaStore.iniciarDownload();
       },
+    );
+  }
+
+  Widget _buildProvaPendente(ProvaStore provaStore) {
+    return SizedBox(
+      width: 350,
+      height: 40,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: LinearPercentIndicator(
+              lineHeight: 7.0,
+              percent: 1,
+              linearStrokeCap: LinearStrokeCap.roundAll,
+              progressColor: TemaUtil.laranja02,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+            child: Row(
+              children: [
+                TextoDefaultWidget(
+                  "Aguardando envio",
+                  color: TemaUtil.laranja01,
+                  fontSize: 12,
+                  bold: true,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

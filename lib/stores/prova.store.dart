@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:appserap/dependencias.ioc.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/prova_resposta.store.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -31,6 +35,17 @@ abstract class _ProvaStoreBase with Store, Loggable {
   @observable
   Prova prova;
 
+  _ProvaStoreBase({
+    required this.id,
+    required this.prova,
+    required this.respostas,
+  }) {
+    downloadService = DownloadService(idProva: id);
+  }
+
+  @observable
+  ProvaRespostaStore respostas;
+
   @observable
   EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
@@ -45,13 +60,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
 
   @observable
   String icone = AssetsUtil.iconeProva;
-
-  _ProvaStoreBase({
-    required this.id,
-    required this.prova,
-  }) {
-    downloadService = DownloadService(idProva: id);
-  }
 
   @action
   iniciarDownload() async {
@@ -123,12 +131,17 @@ abstract class _ProvaStoreBase with Store, Loggable {
 
   @action
   iniciarProva() async {
-    prova.status = EnumProvaStatus.INICIADA;
-    status = EnumProvaStatus.INICIADA;
+    setStatusProva(EnumProvaStatus.INICIADA);
 
     await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
 
     await saveProva();
+  }
+
+  @action
+  setStatusProva(EnumProvaStatus provaStatus) {
+    prova.status = provaStatus;
+    status = provaStatus;
   }
 
   saveProva() async {
@@ -137,10 +150,55 @@ abstract class _ProvaStoreBase with Store, Loggable {
     await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 
-  finalizarProva() {
-    // TODO: worker para enviar provas
-    // TODO: alterar status para finalizado
+  @action
+  Future<bool> finalizarProva() async {
+    try {
+      ConnectivityResult resultado = await (Connectivity().checkConnectivity());
 
-    // TODO: enviar mensagem caso nao estiver conectado
+      if (resultado == ConnectivityResult.none) {
+        // Se estiver sem internet alterar status para pendente (worker ira sincronizar)
+
+        setStatusProva(EnumProvaStatus.PENDENTE);
+        await saveProva();
+
+        mostrarDialogSemInternet();
+      } else {
+        // Atualiza para finalizada
+        setStatusProva(EnumProvaStatus.FINALIZADA);
+        await saveProva();
+
+        await SincronizarRespostasWorker().sincronizar();
+
+        // Sincroniza com a api
+        var response = await GetIt.I.get<ApiService>().prova.setStatusProva(
+              idProva: id,
+              status: EnumProvaStatus.FINALIZADA.index,
+            );
+
+        if (response.isSuccessful) {
+          mostrarDialogProvaEnviada();
+        } else {
+          switch (response.statusCode) {
+            case 411:
+              // Remove prova do cache
+              SharedPreferences prefs = ServiceLocator.get();
+              await prefs.remove('prova_${prova.id}');
+
+              // Remove respostas da prova do cache
+              for (var questoes in prova.questoes) {
+                await prefs.remove('resposta_${questoes.id}');
+              }
+
+              mostrarDialogProvaJaEnviada();
+              break;
+          }
+        }
+      }
+
+      return true;
+    } catch (e) {
+      severe(e);
+      return false;
+    }
   }
 }

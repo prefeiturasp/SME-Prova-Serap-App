@@ -33,6 +33,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
 
   Future<void> carregarInformacoes() async {
     Future.delayed(const Duration(seconds: 5), () => "5");
+    await GetIt.instance.allReady();
     await _principalStore.setup();
 
     await _principalStore.usuario.carregarUsuario();
