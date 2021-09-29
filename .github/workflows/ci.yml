@@ -13,7 +13,7 @@ on:
 jobs:
 
   flutter_config:
-    runs-on: serap
+    runs-on: master
     environment:
       name: development
     steps:
@@ -25,7 +25,7 @@ jobs:
           mkdir -p config && echo $APP_CONFIG > config/app_config.json
 
   build:
-    runs-on: serap
+    runs-on: master
     needs: [flutter_config]
     steps:
       - name: Login to registry
@@ -35,14 +35,14 @@ jobs:
           username: ${{ secrets.REGISTRY_USER }}
           password: ${{ secrets.REGISTRY_PWD }}
 
-      - name: Sonar Development
-        if: ${{ github.ref == 'refs/heads/development_' }}
-        run: |
-               sonar-scanner \
-               -Dsonar.projectKey=SME-prova-serap-front \
-               -Dsonar.sources=. \
-               -Dsonar.host.url=http://sonar.sme.prefeitura.sp.gov.br \
-               -Dsonar.login=${{ secrets.SONAR_KEY }}
+        #- name: Sonar Development
+        #if: ${{ github.ref == 'refs/heads/development' }}
+        #run: |
+        #       sonar-scanner \
+        #       -Dsonar.projectKey=SME-prova-serap-front \
+        #       -Dsonar.sources=. \
+        #       -Dsonar.host.url=http://sonar.sme.prefeitura.sp.gov.br \
+        #       -Dsonar.login=${{ secrets.SONAR_KEY }}
       - name: Build the Docker image
         run: |
                docker build -f Dockerfile.flutter --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front .
@@ -50,40 +50,32 @@ jobs:
                
                
   deploy-development:
-    runs-on: serap
+    runs-on: master
     if: ${{ github.ref == 'refs/heads/development' }}
     environment:
-      name: development
+      name: release
     needs: [ build ]
     steps:
-      - name: Run an adjust of kubernetes dev
-        env: # Ou como uma variável de ambiente
+      - name: Redeploy
+        uses: luizhpriotto/action_images@kubectl-v1.0
+        env: 
           RANCHER_URL: ${{ secrets.RANCHER_URL }}
           RANCHER_TOKEN: ${{ secrets.RANCHER_TOKEN }}
-        run: |
-          sed -e "s/\${RANCHER_URL}/$RANCHER_URL/" -e "s/\${RANCHER_TOKEN}/$RANCHER_TOKEN/" /runner/config_template > /runner/.kube/config
-      -
-       name: Change Images
-       run: |
-         kubectl rollout restart deployment/sme-prova-serap-front -n sme-serap-estudante
-         rm -f /runner/.kube/config
+          WORKLOAD: sme-prova-serap-front
+          NAMESPACE: sme-serap-estudante
          
          
   deploy-release:
-    runs-on: serap
+    runs-on: master
     if: ${{ github.ref == 'refs/heads/release' }}
     environment:
       name: release
     needs: [ build ]
     steps:
-      - name: Run an adjust of kubernetes dev
-        env: # Ou como uma variável de ambiente
+      - name: Redeploy
+        uses: luizhpriotto/action_images@kubectl-v1.0
+        env: 
           RANCHER_URL: ${{ secrets.RANCHER_URL }}
           RANCHER_TOKEN: ${{ secrets.RANCHER_TOKEN }}
-        run: |
-          sed -e "s/\${RANCHER_URL}/$RANCHER_URL/" -e "s/\${RANCHER_TOKEN}/$RANCHER_TOKEN/" /runner/config_template > /runner/.kube/config
-      -
-       name: Change Images
-       run: |
-         kubectl rollout restart deployment/sme-prova-serap-front -n sme-serap-estudante
-         rm -f /runner/.kube/config
+          WORKLOAD: sme-prova-serap-front
+          NAMESPACE: sme-serap-estudante
