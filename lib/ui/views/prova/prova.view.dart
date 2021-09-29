@@ -227,12 +227,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   controller.execCommand('fontName', argument: "Poppins");
                   controller.setText(provaResposta?.resposta ?? "");
                 }, onChangeContent: (String? textoDigitado) {
-                  if (textoDigitado!.length > 0){
+                  if (textoDigitado!.length > 0) {
                     store.questaoConstruida = textoDigitado;
                   } else {
                     store.questaoConstruida = provaResposta!.resposta!;
                   }
-
                 }),
                 htmlToolbarOptions: HtmlToolbarOptions(
                   toolbarPosition: ToolbarPosition.belowEditor,
@@ -358,33 +357,29 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 return Container();
               },
             ),
-            Observer(
-              builder: (context) {
-                return BotaoDefaultWidget(
-                  textoBotao: 'Confirmar e voltar para o resumo',
-                  onPressed: () async {
-                    try {
-                      int posicaoDaQuestao = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ResumoRespostasView(
-                            provaStore: widget.provaStore,
-                          ),
-                        ),
-                      );
+            BotaoDefaultWidget(
+              textoBotao: 'Confirmar e voltar para o resumo',
+              onPressed: () async {
+                try {
+                  int posicaoDaQuestao = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ResumoRespostasView(
+                        provaStore: widget.provaStore,
+                      ),
+                    ),
+                  );
 
-                      if (!posicaoDaQuestao.isNaN) {
-                        store.revisandoProva = true;
-                        store.questaoAtual = posicaoDaQuestao;
-                        listaQuestoesController.jumpToPage(
-                          posicaoDaQuestao,
-                        );
-                      }
-                    } catch (e) {
-                      fine(e);
-                    }
-                  },
-                );
+                  if (!posicaoDaQuestao.isNaN) {
+                    store.revisandoProva = true;
+                    store.questaoAtual = posicaoDaQuestao;
+                    listaQuestoesController.jumpToPage(
+                      posicaoDaQuestao,
+                    );
+                  }
+                } catch (e) {
+                  fine(e);
+                }
               },
             ),
           ],
