@@ -26,10 +26,11 @@ class FinalizarProvaWorker with Worker, Loggable {
           networkType: NetworkType.connected,
         ),
       );
+    } else {
+      Timer.periodic(Duration(minutes: 1), (timer) {
+        sincronizar();
+      });
     }
-    Timer.periodic(Duration(minutes: 1), (timer) {
-      sincronizar();
-    });
   }
 
   @override

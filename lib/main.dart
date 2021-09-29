@@ -65,10 +65,17 @@ void registerFonts() {
 // }
 
 void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) {
+  Workmanager().executeTask((task, inputData) async {
     print("Native called background task: $task");
 
     try {
+      setupLogging();
+
+      await setupAppConfig();
+
+      final ioc = DependenciasIoC();
+      await ioc.registrar();
+
       if (task == "SincronizarRespostasWorker") {
         SincronizarRespostasWorker().sincronizar();
       } else if (task == "FinalizarProvaWorker") {
@@ -76,7 +83,9 @@ void callbackDispatcher() {
       }
 
       return Future.value(true);
-    } catch (e) {
+    } catch (e, stacktrace) {
+      print(e);
+      print(stacktrace);
       return Future.error(e);
     }
   });
