@@ -240,12 +240,6 @@ class DownloadService with Loggable {
           downloadAtual = i;
           prova.downloadProgresso = getPorcentagem();
 
-          prova.questoes.sort(
-            (questao1, questao2) {
-              return questao1.ordem.compareTo(questao2.ordem);
-            },
-          );
-
           await saveProva(prova);
           await saveDownloads();
         } catch (e, stak) {
@@ -264,6 +258,12 @@ class DownloadService with Loggable {
 
       onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
       onTempoPrevistoChangeCallback(getTempoPrevisto());
+
+      prova.questoes.sort(
+        (questao1, questao2) {
+          return questao1.ordem.compareTo(questao2.ordem);
+        },
+      );
 
       await saveProva(prova);
       await deleteDownload();
