@@ -75,12 +75,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
     await downloadService.startDownload();
 
     prova = await downloadService.getProva();
-
-    prova.questoes.sort(
-      (questao1, questao2) {
-        return questao1.ordem.compareTo(questao2.ordem);
-      },
-    );
   }
 
   setupReactions() {
@@ -138,9 +132,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
   }
 
   saveProva() async {
-    SharedPreferences pref = GetIt.I.get();
+    SharedPreferences prefs = GetIt.I.get();
 
-    await pref.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
+    await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 
   finalizarProva() {

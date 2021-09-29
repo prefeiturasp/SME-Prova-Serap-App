@@ -88,52 +88,52 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
             ),
             SizedBox(height: 32),
             Center(
-                  child: BotaoDefaultWidget(
-                    textoBotao: 'FINALIZAR E ENVIAR',
-                    largura: 392,
-                    onPressed: () async {
-                      String mensagem = "Sua prova foi enviada com sucesso!";
-                      String icone = AssetsUtil.check;
-                      String mensagemBotao = "OK";
+              child: BotaoDefaultWidget(
+                textoBotao: 'FINALIZAR E ENVIAR',
+                largura: 392,
+                onPressed: () async {
+                  String mensagem = "Sua prova foi enviada com sucesso!";
+                  String icone = AssetsUtil.check;
+                  String mensagemBotao = "OK";
 
-                      ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+                  ConnectivityResult resultado = await (Connectivity().checkConnectivity());
 
-                      if (resultado == ConnectivityResult.none) {
-                        mensagem = "Conecte-se a internet para que a sua prova seja enviada.";
-                        icone = AssetsUtil.semConexao;
-                        mensagemBotao = "ENTENDI";
-                      } else {
-                        widget.provaStore.finalizarProva();
-                      }
-                      //
-                      showDialog(
-                        context: context,
-                        barrierColor: Colors.black87,
-                        builder: (context) {
-                          return DialogDefaultWidget(
-                            cabecalho: SvgPicture.asset(icone),
-                            corpo: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 70,
-                              ),
-                              child: Text(
-                                mensagem,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
+                  if (resultado == ConnectivityResult.none) {
+                    mensagem = "Conecte-se a internet para que a sua prova seja enviada.";
+                    icone = AssetsUtil.semConexao;
+                    mensagemBotao = "ENTENDI";
+                  } else {
+                    widget.provaStore.finalizarProva();
+                  }
+                  //
+                  showDialog(
+                    context: context,
+                    barrierColor: Colors.black87,
+                    builder: (context) {
+                      return DialogDefaultWidget(
+                        cabecalho: SvgPicture.asset(icone),
+                        corpo: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 70,
+                          ),
+                          child: Text(
+                            mensagem,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
                             ),
-                            mensagemOpcionalBotao: mensagemBotao,
-                          );
-                        },
+                          ),
+                        ),
+                        mensagemOpcionalBotao: mensagemBotao,
                       );
-                      //
                     },
-                  ),
-                )
+                  );
+                  //
+                },
+              ),
+            )
           ],
         ),
       ),
@@ -144,23 +144,20 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
-    if (textoNovo.length >= 40) {
-      textoNovo = textoNovo.substring(0, 40) + '...';
+    if (textoNovo.length >= 50) {
+      textoNovo = textoNovo.substring(0, 50) + '...';
     }
     return textoNovo;
   }
 
   void popularMapaDeQuestoes() {
-    int ordemQuestao = 0;
-
     for (Questao questao in store.questoes) {
       ProvaResposta? resposta = store.obterResposta(questao.id);
 
-      ordemQuestao++;
       String alternativaSelecionada = "";
       String respostaNaTela = "";
       String questaoProva = tratarTexto(tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
-      String ordemQuestaoTratada = ordemQuestao <= 9 ? '0$ordemQuestao' : '$ordemQuestao';
+      String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
 
       if (questao.id == resposta?.questaoId) {
         for (var alternativa in questao.alternativas) {
@@ -179,7 +176,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           {
             'questao': '$ordemQuestaoTratada - $questaoProva',
             'resposta': respostaNaTela,
-            'questao_ordem': '${ordemQuestao - 1}'
+            'questao_ordem': questao.ordem
           },
         );
       } else {
@@ -188,10 +185,17 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           {
             'questao': '$ordemQuestaoTratada - $questaoProva',
             'resposta': respostaNaTela,
-            'questao_ordem': '${ordemQuestao - 1}'
+            'questao_ordem': questao.ordem
           },
         );
       }
+
+      mapaDeQuestoes.sort(
+        (questao1, questao2) {
+          return questao1['questao_ordem'].compareTo(questao2['questao_ordem']);
+        },
+      );
+
       popularTabelaComQuestoes();
     }
   }
@@ -239,15 +243,21 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     List<TableRow> linhas = [];
 
     for (var questao in mapaDeQuestoes) {
-      Widget resposta = SvgPicture.asset(AssetsUtil.iconeQuestaoNaoRespondida);
+      Widget resposta;
 
       if (questao['resposta'] != "") {
         resposta = Center(
           child: Text(
             questao['resposta'].replaceAll(")", ""),
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
+        );
+      } else {
+        resposta = SvgPicture.asset(
+          AssetsUtil.iconeQuestaoNaoRespondida,
         );
       }
 
@@ -268,7 +278,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
               child: Text(
                 questao['questao'],
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
               ),
             ),
@@ -284,7 +294,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 ),
                 onTap: () {
                   store.quantidadeDeQuestoesSemRespostas = 0;
-                  Navigator.of(context).pop(questao['questao_ordem']);
+                  Navigator.of(context).pop(questao['questao_ordem'] + 1);
                 },
                 child: SvgPicture.asset(
                   AssetsUtil.iconeRevisarQuestao,

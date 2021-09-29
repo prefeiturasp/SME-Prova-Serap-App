@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:appserap/models/prova_resposta.model.dart';
-
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
@@ -32,7 +32,7 @@ class ProvaView extends BaseStatefulWidget {
   _ProvaViewState createState() => _ProvaViewState();
 }
 
-class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
+class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Loggable {
   final PageController listaQuestoesController = PageController(initialPage: 0);
 
   HtmlEditorController controller = HtmlEditorController();
@@ -138,7 +138,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                         );
                       }
                     } catch (e) {
-                      print(e);
+                      fine(e);
                     }
                   },
                 );
@@ -175,6 +175,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
+                    if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
+                      await store.definirResposta(questao.id, await controller.getText());
+                    }
+
                     if (store.respostas[questao.id] != null) {
                       await store.sincronizarResposta();
                     }
@@ -192,10 +196,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                 textoBotao: 'Finalizar prova',
                 onPressed: () async {
                   await store.sincronizarResposta();
-                  store.questaoAtual = 0;
-                  //Navigator.of(context).pop();
                   try {
-                    String posicaoDaQuestao = await Navigator.push(
+                    int posicaoDaQuestao = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ResumoRespostasView(
@@ -204,14 +206,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
                       ),
                     );
 
-                    if (!int.parse(posicaoDaQuestao).isNaN) {
+                    if (!posicaoDaQuestao.isNaN) {
                       store.revisandoProva = true;
-                      listaQuestoesController.jumpToPage(
-                        int.parse(posicaoDaQuestao),
-                      );
+                      store.questaoAtual = posicaoDaQuestao;
+                      listaQuestoesController.jumpToPage(posicaoDaQuestao);
                     }
                   } catch (e) {
-                    print(e);
+                    fine(e);
                   }
                 },
               );
@@ -274,7 +275,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
               ],
             ),
           ),
-          _botoesProva(questao),
+          Observer(builder: (context) {
+            return _botoesProva(questao);
+          }),
         ],
       ),
     );
@@ -340,23 +343,18 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
 
   Widget _buildResposta(Questao questao) {
     switch (questao.tipo) {
-      case EnumTipoQuestao.multiplaEscolha:
+      case EnumTipoQuestao.MULTIPLA_ESCOLHA:
         return _buildAlternativas(questao);
-      case EnumTipoQuestao.descritiva:
-        return _buildDescritiva(questao);
+      case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
+        return _buildRespostaConstruida(questao);
 
       default:
         return SizedBox.shrink();
     }
   }
 
-  _buildDescritiva(Questao questao) {
-    String? respostaRemota = store.respostasSalvas[questao.id]?.resposta;
-    String? respostaLocal = store.respostas[questao.id]?.resposta;
-
-    String? resposta = respostaRemota ?? respostaLocal;
-
-    controller.setText(resposta ?? "");
+  _buildRespostaConstruida(Questao questao) {
+    ProvaResposta? provaResposta = store.obterResposta(questao.id);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
@@ -369,6 +367,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
           controller: controller,
           callbacks: Callbacks(onInit: () {
             controller.execCommand('fontName', argument: "Poppins");
+            controller.setText(provaResposta?.resposta ?? "");
           }),
           htmlToolbarOptions: HtmlToolbarOptions(
             toolbarPosition: ToolbarPosition.belowEditor,
@@ -430,7 +429,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> {
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
         onChanged: (value) {
-          store.definirResposta(questaoId, value);
+          store.definirAlternativa(questaoId, value);
         },
         toggleable: true,
         title: Row(children: [

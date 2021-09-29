@@ -18,7 +18,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   List<Questao> questoes = [];
 
   @observable
-  int questaoAtual = 1;
+  int questaoAtual = 0;
 
   @observable
   int quantidadeDeQuestoesSemRespostas = 0;
@@ -107,10 +107,20 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   }
 
   @action
-  definirResposta(int questaoId, int? resposta) {
+  definirAlternativa(int questaoId, int? alternativaId) {
     respostas[questaoId] = ProvaResposta(
       questaoId: questaoId,
-      alternativaId: resposta,
+      alternativaId: alternativaId,
+      sincronizado: false,
+      dataHoraResposta: DateTime.now(),
+    );
+  }
+
+  @action
+  definirResposta(int questaoId, String? resposta) {
+    respostas[questaoId] = ProvaResposta(
+      questaoId: questaoId,
+      resposta: resposta,
       sincronizado: false,
       dataHoraResposta: DateTime.now(),
     );

@@ -77,9 +77,9 @@ abstract class _HomeStoreBase with Store, Loggable {
   }
 
   List<int> listProvasCache() {
-    SharedPreferences _pref = GetIt.I.get();
+    SharedPreferences prefs = GetIt.I.get();
 
-    var ids = _pref.getKeys().toList().where((element) => element.startsWith('prova_'));
+    var ids = prefs.getKeys().toList().where((element) => element.startsWith('prova_'));
 
     if (ids.isNotEmpty) {
       return ids.map((e) => e.replaceAll('prova_', '')).map((e) => int.parse(e)).toList();
@@ -105,9 +105,9 @@ abstract class _HomeStoreBase with Store, Loggable {
   }
 
   Prova? carregaProvaCache(int idProva) {
-    var _pref = GetIt.I.get<SharedPreferences>();
+    SharedPreferences prefs = GetIt.I.get();
 
-    String? provaJson = _pref.getString('prova_$idProva');
+    String? provaJson = prefs.getString('prova_$idProva');
 
     if (provaJson != null) {
       return Prova.fromJson(jsonDecode(provaJson));
@@ -115,8 +115,8 @@ abstract class _HomeStoreBase with Store, Loggable {
   }
 
   salvaProvaCache(Prova prova) async {
-    var _pref = GetIt.I.get<SharedPreferences>();
-    await _pref.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
+    SharedPreferences prefs = GetIt.I.get();
+    await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 
   @action

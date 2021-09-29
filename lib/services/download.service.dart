@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
@@ -162,6 +163,7 @@ class DownloadService with Loggable {
                     ordem: questao.ordem,
                     alternativas: [],
                     arquivos: [],
+                    tipo: questao.tipo,
                   ));
                 }
               }
@@ -238,6 +240,12 @@ class DownloadService with Loggable {
           downloadAtual = i;
           prova.downloadProgresso = getPorcentagem();
 
+          prova.questoes.sort(
+            (questao1, questao2) {
+              return questao1.ordem.compareTo(questao2.ordem);
+            },
+          );
+
           await saveProva(prova);
           await saveDownloads();
         } catch (e, stak) {
@@ -278,17 +286,17 @@ class DownloadService with Loggable {
   }
 
   saveDownloads() async {
-    SharedPreferences pref = await GetIt.I.getAsync();
+    SharedPreferences prefs = GetIt.I.get();
 
     var downloadJson = jsonEncode(downloads);
 
-    await pref.setString('download_$idProva', downloadJson);
+    await prefs.setString('download_$idProva', downloadJson);
   }
 
   loadDownloads() async {
-    SharedPreferences pref = await GetIt.I.getAsync();
+    SharedPreferences prefs = GetIt.I.get();
 
-    var downloadJson = pref.getString('download_$idProva');
+    var downloadJson = prefs.getString('download_$idProva');
 
     if (downloadJson != null) {
       downloads = (jsonDecode(downloadJson) as List<dynamic>)
@@ -306,22 +314,22 @@ class DownloadService with Loggable {
   }
 
   Future<Prova> getProva() async {
-    SharedPreferences pref = GetIt.I.get();
+    SharedPreferences prefs = GetIt.I.get();
 
-    var provaJson = pref.getString('prova_$idProva');
+    var provaJson = prefs.getString('prova_$idProva');
 
     return Prova.fromJson(jsonDecode(provaJson!));
   }
 
   saveProva(Prova prova) async {
-    SharedPreferences pref = GetIt.I.get();
+    SharedPreferences prefs = GetIt.I.get();
 
-    await pref.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
+    await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
   }
 
   deleteDownload() {
-    SharedPreferences pref = GetIt.I.get();
-    pref.remove('download_$idProva');
+    SharedPreferences prefs = GetIt.I.get();
+    prefs.remove('download_$idProva');
   }
 
   Future<void> pause() async {

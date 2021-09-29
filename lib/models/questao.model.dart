@@ -24,7 +24,7 @@ class Questao {
     required this.ordem,
     required this.alternativas,
     required this.arquivos,
-    this.tipo = EnumTipoQuestao.multiplaEscolha,
+    required this.tipo,
   });
 
   factory Questao.fromJson(Map<String, dynamic> json) => _$QuestaoFromJson(json);

@@ -11,10 +11,10 @@ class ServiceAuthenticator extends Authenticator with Loggable {
   @override
   FutureOr<Request?> authenticate(Request request, Response<dynamic> response) async {
     if (response.statusCode == 401) {
-      SharedPreferences pref = GetIt.I.get();
+      SharedPreferences prefs = GetIt.I.get();
 
-      String? token = pref.getString('token');
-      String? expiration = pref.getString('token_expiration');
+      String? token = prefs.getString('token');
+      String? expiration = prefs.getString('token_expiration');
 
       if (token == null) {
         fine('Token null - Redirecionando para o Login');
@@ -49,9 +49,9 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       DateTime expiration = response.body!.dataHoraExpiracao;
       fine('Novo token - Data Expiracao ($expiration) $newToken');
 
-      SharedPreferences pref = GetIt.I.get();
-      pref.setString('token', newToken);
-      pref.setString('token_expiration', expiration.toIso8601String());
+      SharedPreferences prefs = GetIt.I.get();
+      await prefs.setString('token', newToken);
+      await prefs.setString('token_expiration', expiration.toIso8601String());
 
       return newToken;
     }
@@ -65,8 +65,8 @@ class CustomAuthInterceptor implements RequestInterceptor {
 
   @override
   FutureOr<Request> onRequest(Request request) {
-    SharedPreferences pref = GetIt.I.get();
-    String? token = pref.getString('token');
+    SharedPreferences prefs = GetIt.I.get();
+    String? token = prefs.getString('token');
 
     if (token != null) {
       return applyHeaders(request, {'Authorization': 'Bearer $token'});
