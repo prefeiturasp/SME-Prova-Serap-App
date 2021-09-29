@@ -77,9 +77,9 @@ void callbackDispatcher() {
       await ioc.registrar();
 
       if (task == "SincronizarRespostasWorker") {
-        SincronizarRespostasWorker().sincronizar();
+        await SincronizarRespostasWorker().sincronizar();
       } else if (task == "FinalizarProvaWorker") {
-        FinalizarProvaWorker().sincronizar();
+        await FinalizarProvaWorker().sincronizar();
       }
 
       return Future.value(true);
