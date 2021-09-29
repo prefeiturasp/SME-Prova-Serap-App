@@ -202,7 +202,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 ),
                 onTap: () {
                   store.quantidadeDeQuestoesSemRespostas = 0;
-                  Navigator.of(context).pop(questao['questao_ordem'] + 1);
+                  Navigator.of(context).pop(questao['questao_ordem']);
                 },
                 child: SvgPicture.asset(
                   AssetsUtil.iconeRevisarQuestao,

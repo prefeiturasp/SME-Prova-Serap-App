@@ -46,7 +46,7 @@ class ApiService {
       ],
       interceptors: [
         // CurlInterceptor(),
-        HttpLoggingInterceptor(),
+        // HttpLoggingInterceptor(),
         CustomAuthInterceptor(),
       ],
     ));
