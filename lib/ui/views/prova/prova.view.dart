@@ -120,7 +120,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                     try {
                       await store.sincronizarResposta();
                       await store.obterRespostasServidor();
-                      String posicaoDaQuestao = await Navigator.push(
+                      int posicaoDaQuestao = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ResumoRespostasView(
@@ -129,11 +129,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                         ),
                       );
 
-                      if (!int.parse(posicaoDaQuestao).isNaN) {
+                      if (!posicaoDaQuestao.isNaN) {
                         store.revisandoProva = true;
-                        store.questaoAtual = int.parse(posicaoDaQuestao);
+                        store.questaoAtual = posicaoDaQuestao;
                         listaQuestoesController.jumpToPage(
-                          int.parse(posicaoDaQuestao),
+                          posicaoDaQuestao,
                         );
                       }
                     } catch (e) {
@@ -342,7 +342,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   Widget _buildResposta(Questao questao) {
     switch (questao.tipo) {
-      case EnumTipoQuestao.MULTIPLA_ESCOLHA:
+      case EnumTipoQuestao.MULTIPLA_ESCOLHA_4:
+      case EnumTipoQuestao.MULTIPLA_ESCOLHA_5:
         return _buildAlternativas(questao);
       case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
         return _buildRespostaConstruida(questao);
