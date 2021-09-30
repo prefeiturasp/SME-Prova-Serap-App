@@ -1,3 +1,4 @@
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -93,6 +94,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 largura: 392,
                 onPressed: () async {
                   await widget.provaStore.finalizarProva();
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => SplashScreenView()),
+                    (_) => false,
+                  );
                 },
               ),
             )

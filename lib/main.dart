@@ -1,4 +1,5 @@
 import 'package:appserap/dependencias.ioc.dart';
+import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
@@ -147,6 +148,11 @@ class MyApp extends StatelessWidget {
       locale: Locale('pt', 'BR'),
       home: SplashScreenView(),
       scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+      //initialRoute: '/',
+      // routes: {
+      //   '/': (context) => SplashScreenView(),
+      //   '/home': (context) => HomeView(),
+      // },
     );
   }
 }

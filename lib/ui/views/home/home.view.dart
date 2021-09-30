@@ -16,21 +16,29 @@ class HomeView extends BaseStatefulWidget {
 
 class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerProviderStateMixin {
   late TabController tabController;
+  bool isLoad = false;
 
   @override
   void initState() {
-    store.carregarProvas();
-    tabController = TabController(
-      initialIndex: 0,
-      length: 1,
-      vsync: this,
-    );
-    super.initState();
+    if (!isLoad) {
+      store.carregarProvas();
+      tabController = TabController(
+        initialIndex: 0,
+        length: 1,
+        vsync: this,
+      );
+      super.initState();
+      setState(() {
+        isLoad = true;
+      });
+    }
   }
 
   @override
   void dispose() {
+    isLoad = false;
     store.dispose();
+    tabController.dispose();
     super.dispose();
   }
 

@@ -1,4 +1,5 @@
 import 'package:appserap/ui/views/home/home.view.dart';
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:asuka/asuka.dart' as asuka;
@@ -7,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'dialog_default.widget.dart';
 
-mostrarDialogSemInternet() {
+Future<bool>? mostrarDialogSemInternet() {
   String mensagem = "Sua prova será enviada quando houver conexão com a internet.";
   String icone = AssetsUtil.semConexao;
   String mensagemBotao = "ENTENDI";
@@ -34,10 +35,9 @@ mostrarDialogSemInternet() {
         botoes: [
           BotaoDefaultWidget(
             largura: 170,
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => HomeView()),
-                  (Route<dynamic> route) => false);
+            onPressed: () async {
+              Navigator.of(context).pop();
+              return true;
             },
             textoBotao: mensagemBotao,
           )
