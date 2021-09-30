@@ -9,6 +9,7 @@ import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
 import 'package:chopper/src/response.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,32 +29,50 @@ abstract class _HomeStoreBase with Store, Loggable {
   carregarProvas() async {
     carregando = true;
     List<ProvaStore> provasStore = [];
-    try {
-      Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
+    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+    if (resultado != ConnectivityResult.none) {
+      try {
+        Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
 
-      if (response.isSuccessful) {
-        var provasResponse = response.body!;
+        if (response.isSuccessful) {
+          var provasResponse = response.body!;
 
-        for (var provaResponse in provasResponse) {
-          var provaStore = ProvaStore(
-            id: provaResponse.id,
-            prova: Prova(
+          for (var provaResponse in provasResponse) {
+            var provaStore = ProvaStore(
               id: provaResponse.id,
-              itensQuantidade: provaResponse.itensQuantidade,
-              dataInicio: provaResponse.dataInicio,
-              dataFim: provaResponse.dataFim,
-              descricao: provaResponse.descricao,
-              status: provaResponse.status,
-              questoes: [],
-            ),
-            respostas: ProvaRespostaStore(idProva: provaResponse.id),
-          );
-          provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+              prova: Prova(
+                id: provaResponse.id,
+                itensQuantidade: provaResponse.itensQuantidade,
+                dataInicio: provaResponse.dataInicio,
+                dataFim: provaResponse.dataFim,
+                descricao: provaResponse.descricao,
+                status: provaResponse.status,
+                questoes: [],
+              ),
+              respostas: ProvaRespostaStore(idProva: provaResponse.id),
+            );
+            provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
-          provasStore.add(provaStore);
+            provasStore.add(provaStore);
+          }
         }
+      } on SocketException {
+        // Carrega provas do cache
+        List<int> ids = listProvasCache();
+
+        for (var id in ids) {
+          var provaBanco = Prova.carregaProvaCache(id)!;
+          provasStore.add(ProvaStore(
+            id: id,
+            prova: provaBanco,
+            respostas: ProvaRespostaStore(idProva: id),
+          ));
+        }
+      } catch (e, stacktrace) {
+        severe(e);
+        severe(stacktrace);
       }
-    } on SocketException {
+    } else {
       // Carrega provas do cache
       List<int> ids = listProvasCache();
 
@@ -65,9 +84,6 @@ abstract class _HomeStoreBase with Store, Loggable {
           respostas: ProvaRespostaStore(idProva: id),
         ));
       }
-    } catch (e, stacktrace) {
-      severe(e);
-      severe(stacktrace);
     }
 
     if (provasStore.isNotEmpty) {

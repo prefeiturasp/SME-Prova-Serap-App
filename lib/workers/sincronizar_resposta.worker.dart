@@ -5,7 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:appserap/dependencias.ioc.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/interfaces/worker.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
