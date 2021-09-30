@@ -161,7 +161,8 @@ abstract class _ProvaStoreBase with Store, Loggable {
         setStatusProva(EnumProvaStatus.PENDENTE);
         await saveProva();
 
-        mostrarDialogSemInternet();
+        var retorno = await mostrarDialogSemInternet();
+        return retorno ?? false;
       } else {
         // Atualiza para finalizada
         setStatusProva(EnumProvaStatus.FINALIZADA);
