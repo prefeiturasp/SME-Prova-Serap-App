@@ -1,4 +1,5 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 part 'prova.view.store.g.dart';
@@ -21,4 +22,10 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   setup() async {
     questaoAtual = 1;
   }
+
+  void dispose() {
+    quantidadeDeQuestoesSemRespostas = 0;
+    revisandoProva = false;
+  }
+  
 }

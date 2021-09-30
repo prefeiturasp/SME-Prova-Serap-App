@@ -39,7 +39,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
   @override
   void dispose() {
-    //store.dispose();
+    store.dispose();
     super.dispose();
   }
 
