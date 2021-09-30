@@ -1,4 +1,5 @@
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class DialogDefaultWidget extends StatelessWidget {
@@ -17,7 +18,11 @@ class DialogDefaultWidget extends StatelessWidget {
     this.mensagemOpcionalBotao = "",
     this.espacamentoHorizontal = 100,
     this.espacamentoVertical = 300,
-  });
+  }) {
+    if(kIsWeb){
+      espacamentoHorizontal = 300;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
