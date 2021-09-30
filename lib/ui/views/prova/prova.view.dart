@@ -398,7 +398,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
               return BotaoSecundarioWidget(
                 textoBotao: 'Questão anterior',
-                onPressed: () {
+                onPressed: () async {
+                  await SincronizarRespostasWorker().sincronizar();
                   listaQuestoesController.previousPage(
                     duration: Duration(milliseconds: 300),
                     curve: Curves.easeIn,
@@ -413,6 +414,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
+                    await SincronizarRespostasWorker().sincronizar();
                     if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
                       await widget.provaStore.respostas
                           .definirResposta(questao.id, textoResposta: await controller.getText());
