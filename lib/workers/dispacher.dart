@@ -2,6 +2,7 @@
 
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../main.ioc.dart';
@@ -36,10 +37,12 @@ class Worker with Loggable {
   setup() async {
     config('Configurando Workers');
 
-    await Workmanager().initialize(
-      callbackDispatcher,
-      isInDebugMode: true,
-    );
+    if (!kIsWeb) {
+      await Workmanager().initialize(
+        callbackDispatcher,
+        isInDebugMode: true,
+      );
+    }
 
     await registerWorkers();
   }
