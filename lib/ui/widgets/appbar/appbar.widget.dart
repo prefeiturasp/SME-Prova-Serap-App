@@ -1,4 +1,5 @@
 import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/views/login/login.view.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -45,6 +46,9 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 await _principalStore.sair();
 
                 if (popView) {
+                  var prova = GetIt.I.get<ProvaViewStore>();
+                  prova.dispose();
+
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => SplashScreenView()),
                     (_) => false,
