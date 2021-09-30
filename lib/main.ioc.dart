@@ -15,7 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 GetIt ServiceLocator = GetIt.instance;
 
 class DependenciasIoC with Loggable {
-  registrar() async {
+  setup() async {
+    config('Configurando Injeção de Dependencias');
     registrarServicos();
     registrarStores();
     await ServiceLocator.allReady();

@@ -9,7 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../dependencias.ioc.dart';
+import '../main.ioc.dart';
 
 part 'prova_resposta.store.g.dart';
 
