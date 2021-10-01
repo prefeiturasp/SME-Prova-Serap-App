@@ -35,6 +35,7 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   Color? backgroundColor;
 
   double defaultPadding = 16.0;
+  double? defaultPaddingTop;
 
   bool? resizeToAvoidBottomInset;
 
@@ -54,7 +55,7 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
               padding: EdgeInsets.only(
                 left: defaultPadding,
                 right: defaultPadding,
-                top: defaultPadding,
+                top: defaultPaddingTop ?? defaultPadding,
                 bottom: showBottomNaviationBar ? 0 : defaultPadding,
               ),
               child: builder(context),

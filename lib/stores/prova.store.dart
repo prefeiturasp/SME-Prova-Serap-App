@@ -1,27 +1,28 @@
 import 'dart:convert';
 
-import 'package:appserap/main.ioc.dart';
-import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/services/api.dart';
-import 'package:appserap/stores/prova_resposta.store.dart';
-import 'package:appserap/ui/widgets/dialog/dialogs.dart';
-import 'package:appserap/utils/assets.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/services/download.service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:appserap/stores/prova_resposta.store.dart';
+import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 
 part 'prova.store.g.dart';
 
 class ProvaStore = _ProvaStoreBase with _$ProvaStore;
 
-abstract class _ProvaStoreBase with Store, Loggable {
+abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   List<ReactionDisposer> _reactions = [];
 
   @observable
@@ -59,6 +60,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
 
   @observable
   String icone = AssetsUtil.iconeProva;
+
+  @observable
+  ProvaTempoExecucao? tempoExecucaoStore;
 
   @action
   iniciarDownload() async {
@@ -134,6 +138,10 @@ abstract class _ProvaStoreBase with Store, Loggable {
 
     await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
 
+    tempoExecucaoStore =
+        ProvaTempoExecucao(dataHoraInicioProva: DateTime.now(), duracaoProva: Duration(seconds: prova.questoes.length));
+    tempoExecucaoStore!.iniciarProva();
+
     await saveProva();
   }
 
@@ -200,5 +208,10 @@ abstract class _ProvaStoreBase with Store, Loggable {
       severe(e);
       return false;
     }
+  }
+
+  @override
+  onDispose() {
+    tempoExecucaoStore?.onDispose();
   }
 }

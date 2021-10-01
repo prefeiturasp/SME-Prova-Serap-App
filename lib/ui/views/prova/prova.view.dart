@@ -1,26 +1,30 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:appserap/models/prova_resposta.model.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/enums/tipo_questao.enum.dart';
-import 'package:appserap/models/alternativa.model.dart';
-import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/questao.model.dart';
-import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/stores/prova.view.store.dart';
-import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
-import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
-import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
+
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/models/alternativa.model.dart';
+import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/stores/prova.view.store.dart';
+import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
+import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
+import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 
 import 'resumo_respostas.view.dart';
 
@@ -40,14 +44,23 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
   @override
+  double get defaultPadding => 0;
+
+  @override
   void initState() {
     widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
+
+    widget.provaStore.tempoExecucaoStore =
+        ProvaTempoExecucao(dataHoraInicioProva: DateTime.now(), duracaoProva: Duration(seconds: 100));
+    widget.provaStore.tempoExecucaoStore!.iniciarProva();
+
     store.setup();
     super.initState();
   }
 
   @override
   void dispose() {
+    widget.provaStore.onDispose();
     super.dispose();
   }
 
@@ -63,16 +76,31 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   Widget builder(BuildContext context) {
     var questoes = widget.provaStore.prova.questoes;
 
-    return PageView.builder(
-      physics: NeverScrollableScrollPhysics(),
-      controller: listaQuestoesController,
-      onPageChanged: (value) {
-        store.questaoAtual = value + 1;
-      },
-      itemCount: questoes.length,
-      itemBuilder: (context, index) {
-        return _buildQuestoes(questoes[index], index);
-      },
+    return Column(
+      children: [
+        Observer(builder: (_) {
+          return BarraProgresso(
+            progresso: widget.provaStore.tempoExecucaoStore!.porcentagem,
+            tempoRestante: widget.provaStore.tempoExecucaoStore!.tempoRestante,
+          );
+        }),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: listaQuestoesController,
+              onPageChanged: (value) {
+                store.questaoAtual = value + 1;
+              },
+              itemCount: questoes.length,
+              itemBuilder: (context, index) {
+                return _buildQuestoes(questoes[index], index);
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 

@@ -86,7 +86,34 @@ int getTicks(DateTime data) {
   return data.microsecondsSinceEpoch * 10 + _epochTicks;
 }
 
-
 // extension TicksOnDateTime on DateTime {
 //   int get ticks => ;
 // }
+
+/// Returns a formatted string for the given Duration [d] to be DD:HH:mm:ss
+/// and ignore if 0.
+String formatDuration(Duration d) {
+  var seconds = d.inSeconds;
+  final days = seconds ~/ Duration.secondsPerDay;
+  seconds -= days * Duration.secondsPerDay;
+  final hours = seconds ~/ Duration.secondsPerHour;
+  seconds -= hours * Duration.secondsPerHour;
+  final minutes = seconds ~/ Duration.secondsPerMinute;
+  seconds -= minutes * Duration.secondsPerMinute;
+
+  final List<String> tokens = [];
+  if (days != 0) {
+    tokens.add('$days dias');
+  }
+  if (tokens.isNotEmpty || hours != 0) {
+    tokens.add('$hours horas');
+  }
+  if (tokens.isNotEmpty || minutes != 0) {
+    tokens.add('$minutes min');
+  }
+  if (tokens.length < 2) {
+    tokens.add('$seconds s');
+  }
+
+  return tokens.join(' ');
+}
