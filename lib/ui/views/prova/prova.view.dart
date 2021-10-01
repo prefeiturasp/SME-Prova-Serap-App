@@ -268,7 +268,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             padding: EdgeInsets.symmetric(vertical: 15),
             width: MediaQuery.of(context).size.width,
             child: Text(
-              'Caracteres digitados: ${store.questaoConstruida.length}',
+              'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').length}',
               textAlign: TextAlign.end,
             ),
           ),
