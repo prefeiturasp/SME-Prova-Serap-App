@@ -210,71 +210,68 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   _buildRespostaConstruida(Questao questao) {
     ProvaResposta? provaResposta = widget.provaStore.respostas.obterResposta(questao.id);
 
-    return Observer(builder: (_) {
-      return Column(
-        children: [
-          //
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: HtmlEditor(
-                controller: controller,
-                callbacks: Callbacks(onInit: () {
+    return Column(
+      children: [
+        //
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: HtmlEditor(
+              controller: controller,
+              callbacks: Callbacks(
+                onInit: () {
                   controller.execCommand('fontName', argument: "Poppins");
                   controller.setText(provaResposta?.resposta ?? "");
-                }, onChangeContent: (String? textoDigitado) {
-                  if (textoDigitado!.length > 0) {
-                    store.questaoConstruida = textoDigitado;
-                  } else {
-                    store.questaoConstruida = provaResposta!.resposta!;
-                  }
-                }),
-                htmlToolbarOptions: HtmlToolbarOptions(
-                  toolbarPosition: ToolbarPosition.belowEditor,
-                  defaultToolbarButtons: [
-                    FontButtons(
-                      subscript: false,
-                      superscript: false,
-                      strikethrough: false,
-                    ),
-                    ParagraphButtons(
-                      lineHeight: false,
-                      caseConverter: false,
-                      decreaseIndent: true,
-                      increaseIndent: true,
-                      textDirection: false,
-                      alignRight: false,
-                    ),
-                    ListButtons(
-                      listStyles: false,
-                    ),
-                  ],
-                ),
-                htmlEditorOptions: HtmlEditorOptions(
-                  hint: "Digite sua resposta aqui...",
-                ),
-                otherOptions: OtherOptions(
-                  height: 328,
-                ),
+                },
+                onChangeContent: (String? textoDigitado) {
+                  widget.provaStore.respostas.definirResposta(questao.id, textoResposta: textoDigitado);
+                },
+              ),
+              htmlToolbarOptions: HtmlToolbarOptions(
+                toolbarPosition: ToolbarPosition.belowEditor,
+                defaultToolbarButtons: [
+                  FontButtons(
+                    subscript: false,
+                    superscript: false,
+                    strikethrough: false,
+                  ),
+                  ParagraphButtons(
+                    lineHeight: false,
+                    caseConverter: false,
+                    decreaseIndent: true,
+                    increaseIndent: true,
+                    textDirection: false,
+                    alignRight: false,
+                  ),
+                  ListButtons(
+                    listStyles: false,
+                  ),
+                ],
+              ),
+              htmlEditorOptions: HtmlEditorOptions(
+                hint: "Digite sua resposta aqui...",
+              ),
+              otherOptions: OtherOptions(
+                height: 328,
               ),
             ),
           ),
-          //
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 15),
-            width: MediaQuery.of(context).size.width,
-            child: Text(
-              'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').length}',
-              textAlign: TextAlign.end,
-            ),
+        ),
+        //
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 15),
+          width: MediaQuery.of(context).size.width,
+          child: Text(
+            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').length}',
+            textAlign: TextAlign.end,
           ),
-        ],
-      );
-    });
+        ),
+      ],
+    );
   }
 
   _buildAlternativas(Questao questao) {
