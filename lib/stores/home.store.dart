@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';

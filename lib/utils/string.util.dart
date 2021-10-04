@@ -56,10 +56,12 @@ void prettyPrintJson(String input) {
   JsonEncoder encoder = JsonEncoder.withIndent('  ');
   var object = decoder.convert(input);
   var prettyString = encoder.convert(object);
+  // ignore: avoid_print
   prettyString.split('\n').forEach((element) => print(element));
 }
 
 void prettyPrintMap(Map<String, dynamic> object) {
+  // ignore: avoid_print
   print(object.toString().replaceAll(', ', ', \n\t').replaceAll("{", "{\n\t").replaceAll("}", "\n}"));
 }
 
