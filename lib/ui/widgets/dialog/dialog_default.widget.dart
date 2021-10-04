@@ -10,17 +10,20 @@ class DialogDefaultWidget extends StatelessWidget {
 
   double? espacamentoHorizontal;
   double? espacamentoVertical;
+  bool? dialogLargo;
 
   DialogDefaultWidget({
     this.cabecalho,
     this.corpo,
     this.botoes = const [],
     this.mensagemOpcionalBotao = "",
-    this.espacamentoHorizontal = 100,
-    this.espacamentoVertical = 300,
+    this.espacamentoHorizontal = .2,
+    this.espacamentoVertical = .3,
+    this.dialogLargo = false,
   }) {
-    if(kIsWeb){
-      espacamentoHorizontal = 300;
+    if (kIsWeb && !dialogLargo!) {
+      espacamentoHorizontal = .35;
+      espacamentoVertical = .2;
     }
   }
 
@@ -41,35 +44,42 @@ class DialogDefaultWidget extends StatelessWidget {
       posicaoBotao = MainAxisAlignment.end;
     }
 
-    return Dialog(
-      insetPadding: EdgeInsets.symmetric(
-        horizontal: espacamentoHorizontal!,
-        vertical: espacamentoVertical!,
-      ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-      elevation: 2,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          // CABECALHO
-          Padding(
-            padding: const EdgeInsets.only(bottom: 25),
-            child: cabecalho!,
-          ),
-          // CORPO
-          corpo!,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double w = MediaQuery.of(context).size.width;
+        double h = MediaQuery.of(context).size.height;
 
-          // BOTOES
-          Padding(
-            padding: const EdgeInsets.only(top: 25),
-            child: Row(
-              mainAxisAlignment: posicaoBotao,
-              children: botoes,
-            ),
+        return Dialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: w * espacamentoHorizontal!,
+            vertical: h * espacamentoVertical!,
           ),
-        ],
-      ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+          elevation: 2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // CABECALHO
+              Padding(
+                padding: const EdgeInsets.only(bottom: 25),
+                child: cabecalho!,
+              ),
+              // CORPO
+              corpo!,
+
+              // BOTOES
+              Padding(
+                padding: const EdgeInsets.only(top: 25),
+                child: Row(
+                  mainAxisAlignment: posicaoBotao,
+                  children: botoes,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

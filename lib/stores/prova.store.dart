@@ -208,6 +208,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       severe(e);
       return false;
     }
+
   }
 
   @override
