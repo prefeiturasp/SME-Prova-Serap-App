@@ -29,7 +29,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
-  late DownloadManager downloadService;
+  late DownloadManager downloadManager;
 
   int id;
 
@@ -41,7 +41,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     required this.prova,
     required this.respostas,
   }) {
-    downloadService = DownloadManager(idProva: id);
+    downloadManager = DownloadManager(idProva: id);
   }
 
   @observable
@@ -69,20 +69,20 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-    await downloadService.configure();
+    await downloadManager.configure();
 
-    downloadService.onStatusChange((downloadStatus, progressoDownload) {
+    downloadManager.onStatusChange((downloadStatus, progressoDownload) {
       this.downloadStatus = downloadStatus;
       this.progressoDownload = progressoDownload;
     });
 
-    downloadService.onTempoPrevistoChange((tempoPrevisto) {
+    downloadManager.onTempoPrevistoChange((tempoPrevisto) {
       this.tempoPrevisto = tempoPrevisto;
     });
 
-    await downloadService.startDownload();
+    await downloadManager.startDownload();
 
-    prova = await downloadService.getProva();
+    prova = await downloadManager.getProva();
   }
 
   setupReactions() {
@@ -108,7 +108,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       iniciarDownload();
     } else {
       downloadStatus = EnumDownloadStatus.PAUSADO;
-      downloadService.pause();
+      downloadManager.pause();
     }
   }
 
