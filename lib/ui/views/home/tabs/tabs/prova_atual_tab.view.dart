@@ -5,6 +5,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobx/mobx.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
@@ -14,33 +15,33 @@ import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/ui/views/prova/prova.view.dart';
+import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 
-class ProvaAtualTabView extends StatefulWidget {
+class ProvaAtualTabView extends BaseStatefulWidget {
   @override
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
-  final store = GetIt.I.get<HomeStore>();
-
+class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
   @override
-  void initState() {
-    super.initState();
+  void onAfterBuild(BuildContext context) {
+    store.carregarProvas();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget builder(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
       child: Observer(
         builder: (_) {
-          var provas = store.provas;
+          ObservableMap<int, ProvaStore> provas = store.provas;
 
           if (store.carregando) {
             return Center(
@@ -64,12 +65,18 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
             );
           }
 
-          return ListView.builder(
-            itemCount: provas.length,
-            itemBuilder: (_, index) {
-              var prova = provas[index];
-              return _buildProva(prova);
+          return RefreshIndicator(
+            onRefresh: () async {
+              await store.carregarProvas();
             },
+            child: ListView.builder(
+              itemCount: provas.length,
+              itemBuilder: (_, index) {
+                var keys = provas.keys.toList();
+                var prova = provas[keys[index]]!;
+                return _buildProva(prova);
+              },
+            ),
           );
         },
       ),

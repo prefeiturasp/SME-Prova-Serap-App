@@ -39,8 +39,12 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
 
   bool? resizeToAvoidBottomInset;
 
+  onAfterBuild(BuildContext context) {}
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
+
     return Scaffold(
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       backgroundColor: backgroundColor,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,9 +10,9 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/managers/download.manager.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/services/download.service.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
@@ -28,7 +29,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
-  late DownloadService downloadService;
+  late DownloadManager downloadService;
 
   int id;
 
@@ -40,7 +41,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     required this.prova,
     required this.respostas,
   }) {
-    downloadService = DownloadService(idProva: id);
+    downloadService = DownloadManager(idProva: id);
   }
 
   @observable
@@ -69,10 +70,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
     await downloadService.configure();
-
-    fine('** Total Downloads ${downloadService.downloads.length}');
-    fine('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
-    fine('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
 
     downloadService.onStatusChange((downloadStatus, progressoDownload) {
       this.downloadStatus = downloadStatus;
@@ -158,7 +155,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  Future<bool> finalizarProva() async {
+  Future<bool> finalizarProva(BuildContext context) async {
     try {
       ConnectivityResult resultado = await (Connectivity().checkConnectivity());
 
@@ -168,7 +165,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         setStatusProva(EnumProvaStatus.PENDENTE);
         await saveProva();
 
-        var retorno = await mostrarDialogSemInternet();
+        var retorno = await mostrarDialogSemInternet(context);
         return retorno ?? false;
       } else {
         // Atualiza para finalizada
@@ -184,7 +181,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
             );
 
         if (response.isSuccessful) {
-          mostrarDialogProvaEnviada();
+          var retorno = await mostrarDialogProvaEnviada(context);
+          return retorno ?? false;
         } else {
           switch (response.statusCode) {
             case 411:
@@ -197,7 +195,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
                 await prefs.remove('resposta_${questoes.id}');
               }
 
-              mostrarDialogProvaJaEnviada();
+              mostrarDialogProvaJaEnviada(context);
               break;
           }
         }
@@ -208,7 +206,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       severe(e);
       return false;
     }
-
   }
 
   @override
