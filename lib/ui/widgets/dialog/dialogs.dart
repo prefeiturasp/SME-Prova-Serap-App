@@ -1,19 +1,18 @@
-import 'package:appserap/ui/views/home/home.view.dart';
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
-import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:appserap/utils/assets.util.dart';
-import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/utils/assets.util.dart';
+
 import 'dialog_default.widget.dart';
 
-Future<bool>? mostrarDialogSemInternet() {
+Future<bool>? mostrarDialogSemInternet(BuildContext context) {
   String mensagem = "Sua prova será enviada quando houver conexão com a internet.";
   String icone = AssetsUtil.semConexao;
   String mensagemBotao = "ENTENDI";
 
-  asuka.showDialog(
+  showDialog(
+    context: context,
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
@@ -47,12 +46,13 @@ Future<bool>? mostrarDialogSemInternet() {
   );
 }
 
-mostrarDialogProvaEnviada() {
+mostrarDialogProvaEnviada(BuildContext context) {
   String mensagem = "Sua prova foi enviada com sucesso!";
   String icone = AssetsUtil.check;
   String mensagemBotao = "OK";
 
-  asuka.showDialog(
+  showDialog(
+    context: context,
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
@@ -76,8 +76,7 @@ mostrarDialogProvaEnviada() {
             largura: 170,
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => HomeView()),
-                  (Route<dynamic> route) => false);
+              return true;
             },
             textoBotao: mensagemBotao,
           )
@@ -87,12 +86,13 @@ mostrarDialogProvaEnviada() {
   );
 }
 
-mostrarDialogProvaJaEnviada() {
+mostrarDialogProvaJaEnviada(BuildContext context) {
   String mensagem = "Esta prova já foi finalizada";
   String icone = AssetsUtil.erro;
   String mensagemBotao = "OK";
 
-  asuka.showDialog(
+  showDialog(
+    context: context,
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
@@ -116,8 +116,7 @@ mostrarDialogProvaJaEnviada() {
             largura: 170,
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => HomeView()),
-                  (Route<dynamic> route) => false);
+              return true;
             },
             textoBotao: mensagemBotao,
           )
