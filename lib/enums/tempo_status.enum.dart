@@ -1,0 +1,1 @@
+enum EnumTempoStatus { PARADO, CORRENDO }
