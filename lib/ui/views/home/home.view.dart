@@ -21,7 +21,6 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
   @override
   void initState() {
     if (!isLoad) {
-      store.carregarProvas();
       tabController = TabController(
         initialIndex: 0,
         length: 1,
@@ -37,7 +36,6 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
   @override
   void dispose() {
     isLoad = false;
-    store.dispose();
     tabController.dispose();
     super.dispose();
   }
@@ -76,6 +74,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
             controller: tabController,
             children: [
               ProvaAtualTabView(),
+              // Container(),
             ],
           ),
         )
