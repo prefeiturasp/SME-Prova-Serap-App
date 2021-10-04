@@ -21,7 +21,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
-
+import 'package:collection/collection.dart';
 import 'resumo_respostas.view.dart';
 
 class ProvaView extends BaseStatefulWidget {
@@ -210,71 +210,67 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   _buildRespostaConstruida(Questao questao) {
     ProvaResposta? provaResposta = widget.provaStore.respostas.obterResposta(questao.id);
 
-    return Observer(
-      builder: (_) {
-        return Column(
-          children: [
-            //
-            ClipRRect(
+    return Column(
+      children: [
+        //
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: HtmlEditor(
-                  controller: controller,
-                  callbacks: Callbacks(
-                    onInit: () {
-                      controller.execCommand('fontName', argument: "Poppins");
-                      controller.setText(provaResposta?.resposta ?? "");
-                    },
-                    onChangeContent: (String? textoDigitado) {
-                      store.totalCaracteresDigitadosRespostaConstruida = textoDigitado!.length;
-                    },
+            ),
+            child: HtmlEditor(
+              controller: controller,
+              callbacks: Callbacks(
+                onInit: () {
+                  controller.execCommand('fontName', argument: "Poppins");
+                  controller.setText(provaResposta?.resposta ?? "");
+                },
+                onChangeContent: (String? textoDigitado) {
+                  widget.provaStore.respostas.definirResposta(questao.id, textoResposta: textoDigitado);
+                },
+              ),
+              htmlToolbarOptions: HtmlToolbarOptions(
+                toolbarPosition: ToolbarPosition.belowEditor,
+                defaultToolbarButtons: [
+                  FontButtons(
+                    subscript: false,
+                    superscript: false,
+                    strikethrough: false,
                   ),
-                  htmlToolbarOptions: HtmlToolbarOptions(
-                    toolbarPosition: ToolbarPosition.belowEditor,
-                    defaultToolbarButtons: [
-                      FontButtons(
-                        subscript: false,
-                        superscript: false,
-                        strikethrough: false,
-                      ),
-                      ParagraphButtons(
-                        lineHeight: false,
-                        caseConverter: false,
-                        decreaseIndent: true,
-                        increaseIndent: true,
-                        textDirection: false,
-                        alignRight: false,
-                      ),
-                      ListButtons(
-                        listStyles: false,
-                      ),
-                    ],
+                  ParagraphButtons(
+                    lineHeight: false,
+                    caseConverter: false,
+                    decreaseIndent: true,
+                    increaseIndent: true,
+                    textDirection: false,
+                    alignRight: false,
                   ),
-                  htmlEditorOptions: HtmlEditorOptions(
-                    hint: "Digite sua resposta aqui...",
+                  ListButtons(
+                    listStyles: false,
                   ),
-                  otherOptions: OtherOptions(
-                    height: 328,
-                  ),
-                ),
+                ],
+              ),
+              htmlEditorOptions: HtmlEditorOptions(
+                hint: "Digite sua resposta aqui...",
+              ),
+              otherOptions: OtherOptions(
+                height: 328,
               ),
             ),
-            //
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 15),
-              width: MediaQuery.of(context).size.width,
-              child: Text(
-                'Caracteres digitados: ${store.totalCaracteresDigitadosRespostaConstruida}',
-                textAlign: TextAlign.end,
-              ),
-            ),
-          ],
-        );
-      },
+          ),
+        ),
+        //
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 15),
+          width: MediaQuery.of(context).size.width,
+          child: Text(
+            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').length}',
+            textAlign: TextAlign.end,
+          ),
+        ),
+      ],
     );
   }
 
@@ -343,17 +339,23 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           children: [
             Observer(
               builder: (context) {
-                if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
-                  return BotaoDefaultWidget(
-                    textoBotao: 'Proximo item da revisão',
-                    onPressed: () async {
-                      listaQuestoesController.nextPage(
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeIn,
-                      );
-                      store.questaoAtual++;
-                    },
-                  );
+                if (store.questoesRevisao.isNotEmpty) {
+                  var proximoItem = store.questoesRevisao.entries
+                      .firstWhereOrNull((element) => element.value == false && element.key != questao.ordem);
+                  if (proximoItem != null) {
+                    return BotaoDefaultWidget(
+                      textoBotao: 'Proximo item da revisão',
+                      onPressed: () async {
+                        store.questoesRevisao[questao.ordem] = true;
+                        store.revisandoProva = true;
+                        listaQuestoesController.animateToPage(
+                          proximoItem.key,
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeIn,
+                        );
+                      },
+                    );
+                  }
                 }
                 return Container();
               },

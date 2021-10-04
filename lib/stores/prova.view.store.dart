@@ -11,21 +11,22 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   int questaoAtual = 0;
 
   @observable
+  ObservableMap<int, bool> questoesRevisao = <int, bool>{}.asObservable();
+
+  @observable
   int quantidadeDeQuestoesSemRespostas = 0;
 
   @observable
   bool revisandoProva = false;
 
-  @observable
-  int totalCaracteresDigitadosRespostaConstruida = 0;
-
   setup() async {
+    questoesRevisao = <int, bool>{}.asObservable();
     questaoAtual = 1;
   }
 
   void dispose() {
     quantidadeDeQuestoesSemRespostas = 0;
+    questoesRevisao = <int, bool>{}.asObservable();
     revisandoProva = false;
   }
-  
 }

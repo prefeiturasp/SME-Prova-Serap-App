@@ -113,9 +113,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
-    if (textoNovo.length >= 50) {
-      textoNovo = textoNovo.substring(0, 50) + '...';
-    }
     return textoNovo;
   }
 
@@ -125,7 +122,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
       String alternativaSelecionada = "";
       String respostaNaTela = "";
-      String questaoProva = tratarTexto(tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
+      String questaoProva = tratarTexto(questao.titulo) + tratarTexto(questao.descricao);
+      if (questaoProva.length >= 50) {
+        questaoProva = questaoProva.substring(0, 50) + '...';
+      }
       String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
 
       if (questao.id == resposta?.questaoId) {
@@ -140,6 +140,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         } else if (resposta!.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
         } else {
+          store.questoesRevisao[questao.ordem] = false;
           store.quantidadeDeQuestoesSemRespostas++;
         }
 
