@@ -132,11 +132,12 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
   );
 }
 
-mostrarDialogAindaPossuiTempo(String tempo) {
+mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
   String mensagemCorpo =
       "Se finalizar a prova agora, não poderá mais fazer alterações mesmo que o tempo não tenha se esgotado";
 
-  asuka.showDialog(
+  showDialog(
+    context: context,
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
@@ -156,7 +157,7 @@ mostrarDialogAindaPossuiTempo(String tempo) {
               style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black87),
               children: [
                 TextSpan(
-                  text: tempo,
+                  text: "1 minuto",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
