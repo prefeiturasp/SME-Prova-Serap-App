@@ -6,9 +6,9 @@ import 'package:appserap/services/gerenciador_tempo.service.dart';
 
 part 'prova_tempo_exeucao.store.g.dart';
 
-class ProvaTempoExecucao = _ProvaTempoExecucaoBase with _$ProvaTempoExecucao;
+class ProvaTempoExecucaoStore = _ProvaTempoExecucaoStoreBase with _$ProvaTempoExecucaoStore;
 
-abstract class _ProvaTempoExecucaoBase with Store, Loggable, Disposable {
+abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   @observable
   double porcentagem = 0;
 
@@ -21,7 +21,7 @@ abstract class _ProvaTempoExecucaoBase with Store, Loggable, Disposable {
 
   late GerenciadorTempo gerenciadorTempo;
 
-  _ProvaTempoExecucaoBase({
+  _ProvaTempoExecucaoStoreBase({
     required this.dataHoraInicioProva,
     required this.duracaoProva,
   });

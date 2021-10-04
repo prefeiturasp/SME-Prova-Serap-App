@@ -63,7 +63,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   String icone = AssetsUtil.iconeProva;
 
   @observable
-  ProvaTempoExecucao? tempoExecucaoStore;
+  ProvaTempoExecucaoStore? tempoExecucaoStore;
 
   @action
   iniciarDownload() async {
@@ -135,11 +135,21 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
 
-    tempoExecucaoStore =
-        ProvaTempoExecucao(dataHoraInicioProva: DateTime.now(), duracaoProva: Duration(seconds: prova.questoes.length));
-    tempoExecucaoStore!.iniciarProva();
+    _configurarTempoExecucao();
 
     await saveProva();
+  }
+
+  /// Configura o tempo de execução da prova
+  _configurarTempoExecucao() {
+    tempoExecucaoStore = ProvaTempoExecucaoStore(
+      // TODO definir o horario da prova e salvar
+      dataHoraInicioProva: DateTime.now(),
+      duracaoProva: Duration(
+        seconds: prova.questoes.length,
+      ),
+    );
+    tempoExecucaoStore!.iniciarProva();
   }
 
   @action

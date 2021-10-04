@@ -17,8 +17,6 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/workers/dispacher.dart';
 
-import 'main.route.dart';
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

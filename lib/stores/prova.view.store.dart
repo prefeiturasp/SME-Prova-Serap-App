@@ -1,5 +1,4 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 part 'prova.view.store.g.dart';
