@@ -83,9 +83,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
             Table(
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               columnWidths: {
-                0: FractionColumnWidth(.7),
+                0: FractionColumnWidth(.65),
                 1: FractionColumnWidth(.2),
-                2: FractionColumnWidth(.1),
+                2: FractionColumnWidth(.15),
               },
               children: questoesTabela,
             ),
@@ -123,9 +123,11 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
       String alternativaSelecionada = "";
       String respostaNaTela = "";
       String questaoProva = tratarTexto(questao.titulo) + tratarTexto(questao.descricao);
-      if (questaoProva.length >= 50) {
-        questaoProva = questaoProva.substring(0, 50) + '...';
+
+      if (questaoProva.length >= 45) {
+        questaoProva = questaoProva.substring(0, 45) + '...';
       }
+
       String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
 
       if (questao.id == resposta?.questaoId) {
@@ -137,7 +139,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
-        } else if (resposta!.resposta!.isNotEmpty) {
+        } else if (resposta!.resposta != null || resposta.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
         } else {
           store.questoesRevisao[questao.ordem] = false;
