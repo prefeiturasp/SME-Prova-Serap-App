@@ -21,7 +21,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
-
+import 'package:collection/collection.dart';
 import 'resumo_respostas.view.dart';
 
 class ProvaView extends BaseStatefulWidget {
@@ -342,17 +342,23 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           children: [
             Observer(
               builder: (context) {
-                if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
-                  return BotaoDefaultWidget(
-                    textoBotao: 'Proximo item da revisão',
-                    onPressed: () async {
-                      listaQuestoesController.nextPage(
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeIn,
-                      );
-                      store.questaoAtual++;
-                    },
-                  );
+                if (store.questoesRevisao.isNotEmpty) {
+                  var proximoItem = store.questoesRevisao.entries
+                      .firstWhereOrNull((element) => element.value == false && element.key != questao.ordem);
+                  if (proximoItem != null) {
+                    return BotaoDefaultWidget(
+                      textoBotao: 'Proximo item da revisão',
+                      onPressed: () async {
+                        store.questoesRevisao[questao.ordem] = true;
+                        store.revisandoProva = true;
+                        listaQuestoesController.animateToPage(
+                          proximoItem.key,
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeIn,
+                        );
+                      },
+                    );
+                  }
                 }
                 return Container();
               },
