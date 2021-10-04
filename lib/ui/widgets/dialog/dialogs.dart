@@ -144,16 +144,16 @@ mostrarDialogAindaPossuiTempo(String tempo) {
         espacamentoHorizontal: .1,
         dialogLargo: true,
         cabecalho: Padding(
-          padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
           child: RichText(
             textAlign: TextAlign.left,
             text: TextSpan(
               text: "Você ainda tem ",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: Colors.black87
-              ),
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black87),
               children: [
                 TextSpan(
                   text: tempo,
@@ -181,11 +181,7 @@ mostrarDialogAindaPossuiTempo(String tempo) {
           child: Text(
             mensagemCorpo,
             textAlign: TextAlign.left,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black.withOpacity(0.7)
-            ),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black.withOpacity(0.7)),
           ),
         ),
         botoes: [
