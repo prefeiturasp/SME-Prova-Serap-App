@@ -197,6 +197,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
     } catch (e) {
       severe(e);
       return false;
-    }
+    } 
   }
 }

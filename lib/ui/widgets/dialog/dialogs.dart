@@ -1,8 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:asuka/asuka.dart' as asuka;
+import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_html/shims/dart_ui_real.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'dialog_default.widget.dart';
 
@@ -56,6 +60,7 @@ mostrarDialogProvaEnviada(BuildContext context) {
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
+        espacamentoVertical: .32,
         cabecalho: SvgPicture.asset(icone),
         corpo: Padding(
           padding: const EdgeInsets.symmetric(
@@ -96,6 +101,7 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
+        espacamentoVertical: .35,
         cabecalho: SvgPicture.asset(icone),
         corpo: Padding(
           padding: const EdgeInsets.symmetric(
@@ -119,6 +125,76 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
               return true;
             },
             textoBotao: mensagemBotao,
+          )
+        ],
+      );
+    },
+  );
+}
+
+mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
+  String mensagemCorpo =
+      "Se finalizar a prova agora, não poderá mais fazer alterações mesmo que o tempo não tenha se esgotado";
+
+  showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        espacamentoVertical: .35,
+        espacamentoHorizontal: .1,
+        dialogLargo: true,
+        cabecalho: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: RichText(
+            textAlign: TextAlign.left,
+            text: TextSpan(
+              text: "Você ainda tem ",
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black87),
+              children: [
+                TextSpan(
+                  text: "1 minuto",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: " para fazer a prova, tem certeza que quer finalizar agora?",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Text(
+            mensagemCorpo,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black.withOpacity(0.7)),
+          ),
+        ),
+        botoes: [
+          BotaoSecundarioWidget(
+            textoBotao: "CANCELAR",
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          BotaoDefaultWidget(
+            onPressed: () {},
+            textoBotao: "FINALIZAR PROVA",
           )
         ],
       );
