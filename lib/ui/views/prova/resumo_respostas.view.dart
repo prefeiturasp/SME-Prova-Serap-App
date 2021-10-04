@@ -95,7 +95,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 textoBotao: 'FINALIZAR E ENVIAR',
                 largura: 392,
                 onPressed: () async {
-                  await widget.provaStore.finalizarProva();
+                  await widget.provaStore.finalizarProva(context);
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => SplashScreenView()),
                     (_) => false,
