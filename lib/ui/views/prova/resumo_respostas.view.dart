@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -133,10 +135,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           }
         }
 
-        if (resposta!.resposta != null) {
-          respostaNaTela = "OK";
-        } else if (alternativaSelecionada.isNotEmpty) {
+        if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
+        } else if (resposta!.resposta!.isNotEmpty) {
+          respostaNaTela = "OK";
         } else {
           store.quantidadeDeQuestoesSemRespostas++;
         }
@@ -213,7 +215,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
     for (var questao in mapaDeQuestoes) {
       Widget resposta;
-
       if (questao['resposta'] != "") {
         resposta = Center(
           child: Text(

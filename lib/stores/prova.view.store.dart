@@ -17,7 +17,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   bool revisandoProva = false;
 
   @observable
-  String questaoConstruida = '';
+  int totalCaracteresDigitadosRespostaConstruida = 0;
 
   setup() async {
     questaoAtual = 1;

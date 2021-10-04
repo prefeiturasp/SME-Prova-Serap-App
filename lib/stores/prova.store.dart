@@ -150,8 +150,8 @@ abstract class _ProvaStoreBase with Store, Loggable {
   }
 
   @action
-  Future<bool> finalizarProva() async {
-    try {
+  Future<void> finalizarProva() async {
+    /* try {
       ConnectivityResult resultado = await (Connectivity().checkConnectivity());
 
       if (resultado == ConnectivityResult.none) {
@@ -199,7 +199,8 @@ abstract class _ProvaStoreBase with Store, Loggable {
     } catch (e) {
       severe(e);
       return false;
-    }
+    } */
 
+    mostrarDialogProvaEnviada();
   }
 }
