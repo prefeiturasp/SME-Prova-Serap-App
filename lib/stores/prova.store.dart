@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -25,7 +27,8 @@ abstract class _ProvaStoreBase with Store, Loggable {
   List<ReactionDisposer> _reactions = [];
 
   @observable
-  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityResult> conexaoStream =
+      ObservableStream(Connectivity().onConnectivityChanged);
 
   late DownloadService downloadService;
 
@@ -49,6 +52,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
   EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
   @observable
+  EnumTempoStatus tempoCorrendo = EnumTempoStatus.PARADO;
+
+  @observable
   EnumProvaStatus status = EnumProvaStatus.NAO_INICIADA;
 
   @observable
@@ -60,6 +66,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
   @observable
   String icone = AssetsUtil.iconeProva;
 
+  @observable
+  int segundos = 0;
+
   @action
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
@@ -67,8 +76,10 @@ abstract class _ProvaStoreBase with Store, Loggable {
     await downloadService.configure();
 
     fine('** Total Downloads ${downloadService.downloads.length}');
-    fine('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
-    fine('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
+    fine(
+        '** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
+    fine(
+        '** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
 
     downloadService.onStatusChange((downloadStatus, progressoDownload) {
       this.downloadStatus = downloadStatus;
@@ -88,12 +99,31 @@ abstract class _ProvaStoreBase with Store, Loggable {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction((_) => conexaoStream.value, onChangeConexao),
+      reaction((_) => tempoCorrendo, onChangeContadorQuestao),
     ];
   }
 
   dispose() {
+    // onChangeContadorQuestao(true);
     for (var _reaction in _reactions) {
       _reaction();
+    }
+  }
+
+  @observable
+  late Timer timer;
+
+  @action
+  onChangeContadorQuestao(EnumTempoStatus finalizado) {
+    const umSegundo = Duration(seconds: 1);
+
+    if (finalizado == EnumTempoStatus.PARADO) {
+      timer.cancel();
+    } else {
+      timer = Timer.periodic(umSegundo, (timer) {
+        segundos++;
+        fine(' Segundos ${segundos}');
+      });
     }
   }
 
@@ -132,7 +162,10 @@ abstract class _ProvaStoreBase with Store, Loggable {
   iniciarProva() async {
     setStatusProva(EnumProvaStatus.INICIADA);
 
-    await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
+    await GetIt.I
+        .get<ApiService>()
+        .prova
+        .setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
 
     await saveProva();
   }
