@@ -5,39 +5,103 @@ import 'package:get_it/get_it.dart';
 
 import 'package:appserap/interfaces/loggable.interface.dart';
 
-typedef DuracaoChangeCallback = void Function(double porcentagemTotal, Duration tempoRestante);
+typedef DuracaoChangeCallback = void Function(TempoChangeData changeData);
+
+enum EnumProvaTempoEventType { INICIADO, EM_EXECUCAO, ACABANDO, EXTENDIDO, FINALIZADO }
 
 class GerenciadorTempo with Loggable, Disposable {
-  late Duration duration;
   late DateTime dataHoraInicioProva;
+
+  late Duration duracaoProva;
+  Duration? duracaoTempoExtra;
+  late Duration duracaoTempoFinalizando;
+
+  EnumProvaTempoEventType estagioTempo = EnumProvaTempoEventType.INICIADO;
+
   DuracaoChangeCallback? _onChangeDuracaoCallback;
-  VoidCallback? _onDuracaoEndCallback;
 
   Timer? timer;
+  Timer? timerAdicional;
 
-  configure({required DateTime dataHoraInicioProva, required Duration duration}) {
+  configure({
+    required DateTime dataHoraInicioProva,
+    required Duration duracaoProva,
+    required Duration duracaoTempoExtra,
+    required Duration duracaoTempoFinalizando,
+  }) {
     this.dataHoraInicioProva = dataHoraInicioProva;
-    this.duration = duration;
+    this.duracaoProva = duracaoProva;
+    this.duracaoTempoExtra = duracaoTempoExtra;
+    this.duracaoTempoFinalizando = duracaoTempoFinalizando;
 
-    process();
+    if (_onChangeDuracaoCallback != null) {
+      _onChangeDuracaoCallback!(
+        TempoChangeData(
+          eventType: EnumProvaTempoEventType.INICIADO,
+          porcentagemTotal: 0,
+          tempoRestante: duracaoProva,
+        ),
+      );
+    }
+
     timer = Timer.periodic(Duration(milliseconds: 100), (_) => process());
   }
 
   process() {
-    var tempoRestante = dataHoraInicioProva.add(duration).difference(DateTime.now());
+    var tempoRestante = dataHoraInicioProva.add(duracaoProva).difference(DateTime.now());
 
-    var porcentagemDecorrida = ((tempoRestante.inMilliseconds / duration.inMilliseconds) - 1) * -1;
+    var porcentagemDecorrida = ((tempoRestante.inMilliseconds / duracaoProva.inMilliseconds) - 1) * -1;
+
+    if (duracaoProva < duracaoTempoFinalizando || duracaoProva.inMinutes < 5 && porcentagemDecorrida > 0.80) {
+      estagioTempo = EnumProvaTempoEventType.ACABANDO;
+    }
 
     if (porcentagemDecorrida > 1) {
-      porcentagemDecorrida = 1;
+      porcentagemDecorrida = 0;
       timer?.cancel();
-      if (_onDuracaoEndCallback != null) {
-        _onDuracaoEndCallback!();
+
+      if (duracaoTempoExtra != null && duracaoTempoExtra!.inSeconds > 0) {
+        estagioTempo = EnumProvaTempoEventType.EXTENDIDO;
+        iniciarTimerProvaExtendida();
+      } else {
+        estagioTempo = EnumProvaTempoEventType.FINALIZADO;
       }
+    }
+    if (_onChangeDuracaoCallback != null) {
+      _onChangeDuracaoCallback!(
+        TempoChangeData(
+          eventType: estagioTempo,
+          porcentagemTotal: porcentagemDecorrida,
+          tempoRestante: Duration(seconds: tempoRestante.inSeconds),
+        ),
+      );
+    }
+  }
+
+  iniciarTimerProvaExtendida() {
+    timerAdicional = Timer.periodic(Duration(milliseconds: 100), (_) => processAdicional());
+  }
+
+  processAdicional() {
+    var tempoRestante = dataHoraInicioProva.add(duracaoProva + duracaoTempoExtra!).difference(DateTime.now());
+
+    var porcentagemDecorrida = ((tempoRestante.inMilliseconds / duracaoTempoExtra!.inMilliseconds) - 1) * -1;
+
+    if (porcentagemDecorrida > 1) {
+      porcentagemDecorrida = 0;
+      timerAdicional?.cancel();
+
+      estagioTempo = EnumProvaTempoEventType.FINALIZADO;
     }
 
     if (_onChangeDuracaoCallback != null) {
-      _onChangeDuracaoCallback!(porcentagemDecorrida, Duration(seconds: tempoRestante.inSeconds));
+      _onChangeDuracaoCallback!(
+        TempoChangeData(
+          eventType: estagioTempo,
+          porcentagemTotal: porcentagemDecorrida,
+          tempoRestante: Duration(seconds: tempoRestante.inSeconds),
+        ),
+      );
     }
   }
 
@@ -45,12 +109,21 @@ class GerenciadorTempo with Loggable, Disposable {
     _onChangeDuracaoCallback = onChangeDuracaoCallback;
   }
 
-  onDuracaoEnd(VoidCallback onDuracaoEndCallback) {
-    _onDuracaoEndCallback = onDuracaoEndCallback;
-  }
-
   @override
   onDispose() {
     timer?.cancel();
+    timerAdicional?.cancel();
   }
+}
+
+class TempoChangeData {
+  EnumProvaTempoEventType eventType;
+  double porcentagemTotal;
+  Duration tempoRestante;
+
+  TempoChangeData({
+    required this.eventType,
+    required this.porcentagemTotal,
+    required this.tempoRestante,
+  });
 }

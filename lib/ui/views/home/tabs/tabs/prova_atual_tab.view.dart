@@ -419,7 +419,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       largura: 256,
       onPressed: () async {
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
-          provaStore.iniciarProva();
+          await provaStore.iniciarProva();
+        } else {
+          await provaStore.continuarProva();
         }
 
         Navigator.push(

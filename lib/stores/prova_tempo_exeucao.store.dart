@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
@@ -8,61 +9,120 @@ part 'prova_tempo_exeucao.store.g.dart';
 
 class ProvaTempoExecucaoStore = _ProvaTempoExecucaoStoreBase with _$ProvaTempoExecucaoStore;
 
-enum EnumProvaTempoEventType { INICIADO, EXTENDIDO, FINALIZADO }
-
 typedef TimerChangeCallback = void Function(EnumProvaTempoEventType eventType, Duration tempoRestante);
 
 abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
-  @observable
-  double porcentagem = 0;
+  List<ReactionDisposer> _reactions = [];
+
+  late GerenciadorTempo gerenciadorTempo;
+
+  late DateTime dataHoraInicioProva;
 
   Duration duracaoProva;
+  Duration duracaoTempoExtra;
+  Duration duracaoTempoFinalizando;
 
-  TimerChangeCallback? timerChangeCallback;
+  VoidCallback? finalizarProvaCallback;
+  VoidCallback? finalizandoProvaCallback;
+  VoidCallback? extenderProvaCallback;
+
+  @observable
+  EnumProvaTempoEventType status = EnumProvaTempoEventType.INICIADO;
+
+  @observable
+  double porcentagem = 0;
 
   @observable
   Duration tempoRestante = Duration(seconds: 0);
 
-  late DateTime dataHoraInicioProva;
-
-  late GerenciadorTempo gerenciadorTempo;
-
   _ProvaTempoExecucaoStoreBase({
     required this.dataHoraInicioProva,
     required this.duracaoProva,
-  });
+    required this.duracaoTempoExtra,
+    required this.duracaoTempoFinalizando,
+  }) {
+    setupReactions();
+  }
 
   @action
-  iniciarProva() {
+  iniciarContador() {
     configugure();
   }
 
+  setupReactions() {
+    _reactions = [
+      reaction((_) => status, onStatusChange),
+    ];
+  }
+
+  onStatusChange(EnumProvaTempoEventType status) {
+    switch (status) {
+      case EnumProvaTempoEventType.ACABANDO:
+        if (finalizandoProvaCallback != null) {
+          finalizandoProvaCallback!();
+        }
+
+        break;
+
+      case EnumProvaTempoEventType.EXTENDIDO:
+        if (extenderProvaCallback != null) {
+          extenderProvaCallback!();
+        }
+        break;
+
+      case EnumProvaTempoEventType.FINALIZADO:
+        if (finalizarProvaCallback != null) {
+          finalizarProvaCallback!();
+        }
+
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  @action
   configugure() {
     gerenciadorTempo = GerenciadorTempo();
-    gerenciadorTempo.configure(dataHoraInicioProva: dataHoraInicioProva, duration: duracaoProva);
-    gerenciadorTempo.onChangeDuracao((porcentagem, tempoRestante) {
-      this.porcentagem = porcentagem;
-      this.tempoRestante = tempoRestante;
-    });
 
-    gerenciadorTempo.onDuracaoEnd(() {
-      onChange(EnumProvaTempoEventType.FINALIZADO);
+    gerenciadorTempo.configure(
+      dataHoraInicioProva: dataHoraInicioProva,
+      duracaoProva: duracaoProva,
+      duracaoTempoExtra: duracaoTempoExtra,
+      duracaoTempoFinalizando: duracaoTempoFinalizando,
+    );
+
+    gerenciadorTempo.onChangeDuracao((TempoChangeData changeData) {
+      status = changeData.eventType;
+      porcentagem = changeData.porcentagemTotal;
+      tempoRestante = changeData.tempoRestante;
     });
   }
 
-  addListener(TimerChangeCallback timerChangeCallback) {
-    this.timerChangeCallback = timerChangeCallback;
+  onFinalizarlProva(finalizarProvaCallback) {
+    this.finalizarProvaCallback = finalizarProvaCallback;
   }
 
-  onChange(EnumProvaTempoEventType eventType) {
-    if (timerChangeCallback != null) {
-      timerChangeCallback!(eventType, tempoRestante);
-    }
+  onFinalizandoProva(finalizandoProvaCallback) {
+    this.finalizandoProvaCallback = finalizandoProvaCallback;
+  }
+
+  onExtenderProva(extenderProvaCallback) {
+    this.extenderProvaCallback = extenderProvaCallback;
   }
 
   @override
   onDispose() {
     gerenciadorTempo.onDispose();
-    timerChangeCallback = null;
+    finalizarProvaCallback = null;
+    finalizandoProvaCallback = null;
+    extenderProvaCallback = null;
+
+    for (var reaction in _reactions) {
+      reaction();
+    }
+
+    _reactions = [];
   }
 }

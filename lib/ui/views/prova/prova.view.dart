@@ -17,7 +17,6 @@ import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
-import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
@@ -51,13 +50,16 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   void initState() {
     widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
 
-    widget.provaStore.tempoExecucaoStore =
-        ProvaTempoExecucaoStore(dataHoraInicioProva: DateTime.now(), duracaoProva: Duration(seconds: 10));
-    widget.provaStore.tempoExecucaoStore!.iniciarProva();
+    widget.provaStore.tempoExecucaoStore!.onFinalizandoProva(() {
+      print('Prova quase acabando');
+    });
 
-    widget.provaStore.tempoExecucaoStore!.addListener((eventType, time) {
-      print(eventType);
-      print(time);
+    widget.provaStore.tempoExecucaoStore!.onExtenderProva(() {
+      print('Prova extendida');
+    });
+
+    widget.provaStore.tempoExecucaoStore!.onFinalizarlProva(() {
+      print('Prova finalizada');
     });
 
     store.setup();
@@ -86,8 +88,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       children: [
         Observer(builder: (_) {
           return BarraProgresso(
-            progresso: widget.provaStore.tempoExecucaoStore!.porcentagem,
-            tempoRestante: widget.provaStore.tempoExecucaoStore!.tempoRestante,
+            progresso: widget.provaStore.tempoExecucaoStore?.porcentagem ?? 0,
+            tempoRestante: widget.provaStore.tempoExecucaoStore?.tempoRestante ?? Duration(),
+            variant: widget.provaStore.tempoExecucaoStore?.status,
           );
         }),
         Expanded(

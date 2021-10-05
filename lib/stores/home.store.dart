@@ -60,6 +60,8 @@ abstract class _HomeStoreBase with Store, Loggable {
                 dataFim: provaResponse.dataFim,
                 descricao: provaResponse.descricao,
                 status: provaResponse.status,
+                tempoExecucao: provaResponse.tempoExecucao,
+                tempoExtra: provaResponse.tempoExtra,
                 questoes: [],
               ),
               respostas: ProvaRespostaStore(idProva: provaResponse.id),

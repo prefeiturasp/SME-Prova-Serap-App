@@ -16,6 +16,9 @@ class ProvaResponseDTO {
 
   EnumProvaStatus status;
 
+  int tempoExecucao;
+  int tempoExtra;
+
   ProvaResponseDTO({
     required this.id,
     required this.descricao,
@@ -23,6 +26,8 @@ class ProvaResponseDTO {
     required this.dataInicio,
     required this.dataFim,
     required this.status,
+    required this.tempoExecucao,
+    required this.tempoExtra,
   });
 
   static const fromJson = _$ProvaResponseDTOFromJson;
@@ -30,6 +35,6 @@ class ProvaResponseDTO {
 
   @override
   String toString() {
-    return 'ProvaResponseDTO(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, status: $status)';
+    return 'ProvaResponseDTO(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, status: $status, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra)';
   }
 }

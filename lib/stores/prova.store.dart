@@ -132,6 +132,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @action
   iniciarProva() async {
     setStatusProva(EnumProvaStatus.INICIADA);
+    prova.dataHoraInicio = DateTime.now();
 
     await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
 
@@ -140,16 +141,27 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     await saveProva();
   }
 
+  @action
+  continuarProva() async {
+    _configurarTempoExecucao();
+
+    await saveProva();
+  }
+
   /// Configura o tempo de execução da prova
+  @action
   _configurarTempoExecucao() {
+    // TODO definir o horario da prova e salvar
+
     tempoExecucaoStore = ProvaTempoExecucaoStore(
-      // TODO definir o horario da prova e salvar
+      // dataHoraInicioProva: prova.dataHoraInicio!,
       dataHoraInicioProva: DateTime.now(),
-      duracaoProva: Duration(
-        seconds: prova.questoes.length,
-      ),
+      duracaoProva: Duration(seconds: 10),
+      duracaoTempoExtra: Duration(seconds: 3),
+      duracaoTempoFinalizando: Duration(seconds: 8),
     );
-    tempoExecucaoStore!.iniciarProva();
+
+    tempoExecucaoStore!.iniciarContador();
   }
 
   @action
