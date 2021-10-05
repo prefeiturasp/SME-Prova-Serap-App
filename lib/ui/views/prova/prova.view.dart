@@ -76,7 +76,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       },
       itemCount: questoes.length,
       itemBuilder: (context, index) {
-        return Observer(builder: (_) => _buildQuestoes(questoes[index], index));
+        return _buildQuestoes(questoes[index], index);
       },
     );
   }
