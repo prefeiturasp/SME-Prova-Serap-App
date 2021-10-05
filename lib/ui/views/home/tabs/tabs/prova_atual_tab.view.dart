@@ -9,6 +9,7 @@ import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -29,6 +30,8 @@ class ProvaAtualTabView extends BaseStatefulWidget {
 
 class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
+
+  FocusNode _codigoProvaFocus = FocusNode();
 
   @override
   void onAfterBuild(BuildContext context) {
@@ -418,10 +421,41 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       ),
       largura: 256,
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
-          provaStore.iniciarProva();
-        }
+        print("PASSANDO AQUI 1");
 
+        mostrarDialogPrecisaDeSenha(
+          context,
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: TextField(
+              focusNode: _codigoProvaFocus,
+              onChanged: (value) => provaStore.codigoIniciarProva = value,
+              maxLength: 10,
+              decoration: InputDecoration(
+                labelText: 'Digite o código para liberar a prova',
+                labelStyle: TextStyle(
+                  color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                ),
+              ),
+            ),
+          ),
+          BotaoDefaultWidget(
+            onPressed: () {
+              print("Batendo aqui");
+              Navigator.pop(context);
+              mostrarDialogSenhaErrada(context);
+            },
+            textoBotao: "ENVIAR CODIGO",
+          ),
+        );
+
+        print("PASSANDO AQUI 2");
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
+          //provaStore.iniciarProva();
+        }
+/*
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -430,6 +464,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             ),
           ),
         );
+        */
       },
     );
   }

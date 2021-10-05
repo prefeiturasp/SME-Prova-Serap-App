@@ -71,6 +71,8 @@ dependencies:
   # background   _fetch: ^1.0.1
   workmanager: ^0.5.0-dev.7
 
+  crypto: ^3.0.1
+
 dependency_overrides:
   flutter_colorpicker: ^0.6.0
 

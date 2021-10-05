@@ -1,6 +1,7 @@
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/utils/tema.util.dart';
 import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -154,7 +155,11 @@ mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
             textAlign: TextAlign.left,
             text: TextSpan(
               text: "Você ainda tem ",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black87),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: Colors.black87,
+              ),
               children: [
                 TextSpan(
                   text: "1 minuto",
@@ -182,7 +187,11 @@ mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
           child: Text(
             mensagemCorpo,
             textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black.withOpacity(0.7)),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black.withOpacity(0.7),
+            ),
           ),
         ),
         botoes: [
@@ -195,6 +204,88 @@ mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
           BotaoDefaultWidget(
             onPressed: () {},
             textoBotao: "FINALIZAR PROVA",
+          )
+        ],
+      );
+    },
+  );
+}
+
+mostrarDialogPrecisaDeSenha(BuildContext context, Widget corpo, Widget botao) {
+  String mensagemCabecalho = "Insira a senha informada para iniciar a prova";
+
+  showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: Text(
+            mensagemCabecalho,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: corpo
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () {},
+            textoBotao: "ENVIAR",
+          )
+        ],
+      );
+    },
+  );
+}
+
+mostrarDialogSenhaErrada(BuildContext context) {
+  String mensagemCorpo = "O código está incorreto. Solicite o código para o professor.";
+
+  showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: SvgPicture.asset(AssetsUtil.erro),
+        ),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Text(
+            mensagemCorpo,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            textoBotao: "ENTENDI",
           )
         ],
       );

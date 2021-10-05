@@ -61,6 +61,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
   @observable
   String icone = AssetsUtil.iconeProva;
 
+  @observable
+  String codigoIniciarProva = "";
+
   @action
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
@@ -197,6 +200,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
     } catch (e) {
       severe(e);
       return false;
-    } 
+    }
   }
 }
