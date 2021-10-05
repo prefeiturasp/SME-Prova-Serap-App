@@ -421,7 +421,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       ),
       largura: 256,
       onPressed: () async {
-        print("PASSANDO AQUI 1");
 
         mostrarDialogPrecisaDeSenha(
           context,
@@ -443,7 +442,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           ),
           BotaoDefaultWidget(
             onPressed: () {
-              print("Batendo aqui");
               Navigator.pop(context);
               mostrarDialogSenhaErrada(context);
             },
@@ -451,7 +449,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           ),
         );
 
-        print("PASSANDO AQUI 2");
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
           //provaStore.iniciarProva();
         }
