@@ -164,8 +164,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
                   SizedBox(width: 5),
-                  Text("Sair",
-                      style: GoogleFonts.poppins(color: TemaUtil.laranja02)),
+                  Text("Sair", style: GoogleFonts.poppins(color: TemaUtil.laranja02)),
                   SizedBox(width: 5),
                 ],
               ),

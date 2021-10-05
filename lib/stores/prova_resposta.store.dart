@@ -27,12 +27,10 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @observable
-  ObservableMap<int, ProvaResposta> respostasSalvas =
-      <int, ProvaResposta>{}.asObservable();
+  ObservableMap<int, ProvaResposta> respostasSalvas = <int, ProvaResposta>{}.asObservable();
 
   @observable
-  ObservableMap<int, ProvaResposta> respostasLocal =
-      <int, ProvaResposta>{}.asObservable();
+  ObservableMap<int, ProvaResposta> respostasLocal = <int, ProvaResposta>{}.asObservable();
 
   void dispose() {
     respostasSalvas = <int, ProvaResposta>{}.asObservable();
@@ -52,8 +50,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     fine('[$idProva] - Carregando resposta das questoes $idsQuestao');
     for (var idQuestao in idsQuestao) {
       try {
-        var respostaBanco =
-            await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
+        var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
         if (respostaBanco.isSuccessful) {
           var body = respostaBanco.body!;
 
@@ -65,8 +62,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
             dataHoraResposta: body.dataHoraResposta.toLocal(),
           );
 
-          finer(
-              "[$idProva] - Resposta Banco Questao $idQuestao - ${body.alternativaId} | ${body.resposta}");
+          finer("[$idProva] - Resposta Banco Questao $idQuestao - ${body.alternativaId} | ${body.resposta}");
         }
       } catch (e) {
         severe(e);
@@ -79,8 +75,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     var respostaLocal = respostasLocal[questaoId];
 
     if (respostaRemota != null && respostaLocal != null) {
-      if (respostaRemota.dataHoraResposta!
-          .isBefore(respostaLocal.dataHoraResposta!)) {
+      if (respostaRemota.dataHoraResposta!.isBefore(respostaLocal.dataHoraResposta!)) {
         return respostaLocal;
       } else {
         return respostaRemota;
@@ -95,8 +90,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     //TODO carregar cache local
 
     fine('[$idProva] - Sincronizando respostas para o servidor');
-    var respostasNaoSincronizadas = respostasLocal.entries
-        .where((element) => element.value.sincronizado == false);
+    var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
 
     for (MapEntry<int, ProvaResposta> item in respostasNaoSincronizadas) {
       int idQuestao = item.key;
@@ -111,8 +105,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
         );
 
         if (response.isSuccessful) {
-          fine(
-              "[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
+          fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
 
           resposta.sincronizado = true;
         }
@@ -126,8 +119,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  definirResposta(int questaoId,
-      {int? alternativaId, String? textoResposta, int? tempoQuestao}) {
+  definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) {
     var resposta = ProvaResposta(
       questaoId: questaoId,
       alternativaId: alternativaId,
@@ -169,18 +161,13 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   Map<int, ProvaResposta> carregaRespostasCache() {
     SharedPreferences _pref = ServiceLocator.get();
 
-    List<String> keysResposta = _pref
-        .getKeys()
-        .toList()
-        .where((element) => element.startsWith('resposta_'))
-        .toList();
+    List<String> keysResposta = _pref.getKeys().toList().where((element) => element.startsWith('resposta_')).toList();
 
     Map<int, ProvaResposta> respostas = {};
 
     if (keysResposta.isNotEmpty) {
       for (var keyResposta in keysResposta) {
-        var provaResposta =
-            ProvaResposta.fromJson(jsonDecode(_pref.getString(keyResposta)!));
+        var provaResposta = ProvaResposta.fromJson(jsonDecode(_pref.getString(keyResposta)!));
 
         respostas[provaResposta.questaoId] = provaResposta;
       }

@@ -27,8 +27,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
   List<ReactionDisposer> _reactions = [];
 
   @observable
-  ObservableStream<ConnectivityResult> conexaoStream =
-      ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   late DownloadService downloadService;
 
@@ -76,10 +75,8 @@ abstract class _ProvaStoreBase with Store, Loggable {
     await downloadService.configure();
 
     fine('** Total Downloads ${downloadService.downloads.length}');
-    fine(
-        '** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
-    fine(
-        '** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
+    fine('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
+    fine('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
 
     downloadService.onStatusChange((downloadStatus, progressoDownload) {
       this.downloadStatus = downloadStatus;
@@ -162,10 +159,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
   iniciarProva() async {
     setStatusProva(EnumProvaStatus.INICIADA);
 
-    await GetIt.I
-        .get<ApiService>()
-        .prova
-        .setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
+    await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
 
     await saveProva();
   }
