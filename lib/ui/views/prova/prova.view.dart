@@ -57,7 +57,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     return AppBarWidget(
       popView: true,
       subtitulo: widget.provaStore.prova.descricao,
-      provaStore: widget.provaStore,
       botaoVoltar: () {
         widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
         Navigator.pop(context);

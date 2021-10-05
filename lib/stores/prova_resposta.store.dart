@@ -134,11 +134,6 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     salvarCache(resposta);
   }
 
-  @action
-  tempoResposta(int questaoId, int tempoQuestao) {
-    var tempo = TempoResposta(questaoId: questaoId, tempo: tempoQuestao);
-  }
-
   salvarAllCache() async {
     List<Future<bool>> futures = [];
 

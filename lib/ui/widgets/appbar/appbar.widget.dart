@@ -11,107 +11,18 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html_editor_enhanced/utils/utils.dart';
 
-// class AppBarWidget extends StatefulWidget  {
-//   final bool? popView;
-//   final String? subtitulo;
-//   final Function()? botaoVoltar;
-//   final ProvaStore? provaStore;
-//   const AppBarWidget(
-//       {Key? key,
-//       this.popView,
-//       this.subtitulo,
-//       this.botaoVoltar,
-//       this.provaStore})
-//       : super(key: key);
-
-//   @override
-//   _AppBarWidgetState createState() => _AppBarWidgetState();
-// }
-
-// class _AppBarWidgetState extends State<AppBarWidget> {
-//   final _principalStore = GetIt.I.get<PrincipalStore>();
-
-//   @override
-//   Size get preferredSize => Size.fromHeight(50);
-//   @override
-//   Widget build(BuildContext context) {
-//     return AppBar(
-//       backgroundColor: TemaUtil.appBar,
-//       title: Observer(
-//         builder: (_) {
-//           return Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Text(
-//                 "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
-//                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//               ),
-//               _buildSubtitulo(),
-//             ],
-//           );
-//         },
-//       ),
-//       leading: Observer(
-//         builder: (_) => IconButton(
-//           onPressed: () {
-//             widget.provaStore!.tempoCorrendo = true;
-//           },
-//           icon: Icon(
-//             Icons.arrow_back,
-//             color: Colors.white,
-//           ),
-//         ),
-//       ),
-//       actions: [
-//         Row(
-//           children: [
-//             TextButton(
-//               onPressed: () async {
-//                 await _principalStore.sair();
-
-//                 if (widget.popView!) {
-//                   var prova = GetIt.I.get<ProvaViewStore>();
-//                   prova.dispose();
-
-//                   Navigator.of(context).pushAndRemoveUntil(
-//                     MaterialPageRoute(builder: (context) => SplashScreenView()),
-//                     (_) => false,
-//                   );
-//                 }
-//               },
-//               child: Row(
-//                 children: [
-//                   Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
-//                   SizedBox(width: 5),
-//                   Text("Sair",
-//                       style: GoogleFonts.poppins(color: TemaUtil.laranja02)),
-//                   SizedBox(width: 5),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ],
-//     );
-//   }
-
-//
-// }
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
   final String? subtitulo;
   final Function()? botaoVoltar;
-  final ProvaStore? provaStore;
 
   AppBarWidget({
     required this.popView,
     this.subtitulo,
     this.botaoVoltar,
-    this.provaStore,
   });
 
   final _principalStore = GetIt.I.get<PrincipalStore>();
-  // final _provaStore = GetIt.I.get<ProvaStore>();
 
   @override
   Size get preferredSize => Size.fromHeight(50);
@@ -134,13 +45,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           );
         },
       ),
-      leading: Observer(
-        builder: (_) => IconButton(
-          onPressed: botaoVoltar,
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
+      leading: IconButton(
+        onPressed: botaoVoltar,
+        icon: Icon(
+          Icons.arrow_back,
+          color: Colors.white,
         ),
       ),
       actions: [

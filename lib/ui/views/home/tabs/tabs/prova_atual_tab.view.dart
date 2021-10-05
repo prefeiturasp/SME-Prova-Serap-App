@@ -77,7 +77,6 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
   }
 
   _buildProva(ProvaStore provaStore) {
-    // provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
     return Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
       decoration: BoxDecoration(
