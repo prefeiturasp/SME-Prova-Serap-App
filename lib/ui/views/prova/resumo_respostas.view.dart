@@ -139,9 +139,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
-        } else if (resposta!.resposta != null || resposta.resposta!.isNotEmpty) {
+        } else if (resposta!.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
-        } else {
+        } else if (resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) {
+          respostaNaTela = "";
           store.questoesRevisao[questao.ordem] = false;
           store.quantidadeDeQuestoesSemRespostas++;
         }
