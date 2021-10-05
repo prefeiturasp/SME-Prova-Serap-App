@@ -52,8 +52,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
 
     widget.provaStore.tempoExecucaoStore =
-        ProvaTempoExecucaoStore(dataHoraInicioProva: DateTime.now(), duracaoProva: Duration(seconds: 100));
+        ProvaTempoExecucaoStore(dataHoraInicioProva: DateTime.now(), duracaoProva: Duration(seconds: 10));
     widget.provaStore.tempoExecucaoStore!.iniciarProva();
+
+    widget.provaStore.tempoExecucaoStore!.addListener((eventType, time) {
+      print(eventType);
+      print(time);
+    });
 
     store.setup();
     super.initState();
