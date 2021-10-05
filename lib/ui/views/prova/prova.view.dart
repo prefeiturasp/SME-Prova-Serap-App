@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -33,8 +32,7 @@ class ProvaView extends BaseStatefulWidget {
   _ProvaViewState createState() => _ProvaViewState();
 }
 
-class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
-    with Loggable {
+class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Loggable {
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
 
@@ -43,8 +41,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
 
   @override
   void initState() {
-    widget.provaStore.respostas
-        .carregarRespostasServidor(widget.provaStore.prova);
+    widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
     store.setup();
     super.initState();
   }
@@ -59,11 +56,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
     return AppBarWidget(
       popView: true,
       subtitulo: widget.provaStore.prova.descricao,
-      provaStore: widget.provaStore,
-      botaoVoltar: () {
-        widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-        Navigator.pop(context);
-      },
     );
   }
 
@@ -79,13 +71,12 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
       },
       itemCount: questoes.length,
       itemBuilder: (context, index) {
-        return Observer(builder: (_) => _buildQuestoes(questoes[index], index));
+        return _buildQuestoes(questoes[index], index);
       },
     );
   }
 
   Widget _buildQuestoes(Questao questao, int index) {
-    widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -98,8 +89,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
                   children: [
                     Text(
                       'Questão ${index + 1} ',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
                       'de ${widget.provaStore.prova.questoes.length}',
@@ -111,8 +101,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
                 Html(
                   data: tratarArquivos(questao.titulo, questao.arquivos),
                   style: {
-                    '*': Style.fromTextStyle(GoogleFonts.poppins(
-                        fontSize: 16, fontWeight: FontWeight.w500)),
+                    '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
                   },
                   onImageTap: (url, _, attributes, element) {
                     Uint8List imagem = base64.decode(url!.split(',').last);
@@ -124,8 +113,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
                 Html(
                   data: tratarArquivos(questao.descricao, questao.arquivos),
                   style: {
-                    '*': Style.fromTextStyle(GoogleFonts.poppins(
-                        fontSize: 16, fontWeight: FontWeight.w500)),
+                    '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
                   },
                   onImageTap: (url, _, attributes, element) {
                     Uint8List imagem = base64.decode(url!.split(',').last);
@@ -220,8 +208,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
   }
 
   _buildRespostaConstruida(Questao questao) {
-    ProvaResposta? provaResposta =
-        widget.provaStore.respostas.obterResposta(questao.id);
+    ProvaResposta? provaResposta = widget.provaStore.respostas.obterResposta(questao.id);
 
     return Observer(builder: (_) {
       return Column(
@@ -295,17 +282,12 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
 
     alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
     return Column(
-      children: alternativasQuestoes
-          .map((e) =>
-              _buildAlternativa(e.id, e.numeracao, questao.id, e.descricao))
-          .toList(),
+      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, questao.id, e.descricao)).toList(),
     );
   }
 
-  Widget _buildAlternativa(
-      int idAlternativa, String numeracao, int questaoId, String descricao) {
-    ProvaResposta? resposta =
-        widget.provaStore.respostas.obterResposta(questaoId);
+  Widget _buildAlternativa(int idAlternativa, String numeracao, int questaoId, String descricao) {
+    ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questaoId);
 
     return Container(
       padding: EdgeInsets.all(8),
@@ -323,8 +305,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
         onChanged: (value) {
-          widget.provaStore.respostas
-              .definirResposta(questaoId, alternativaId: value);
+          widget.provaStore.respostas.definirResposta(questaoId, alternativaId: value);
         },
         toggleable: true,
         title: Row(children: [
@@ -361,8 +342,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
           children: [
             Observer(
               builder: (context) {
-                if (store.questaoAtual <
-                    widget.provaStore.prova.questoes.length) {
+                if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
                   return BotaoDefaultWidget(
                     textoBotao: 'Proximo item da revisão',
                     onPressed: () async {
@@ -419,8 +399,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
               return BotaoSecundarioWidget(
                 textoBotao: 'Questão anterior',
                 onPressed: () async {
-                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                  widget.provaStore.segundos = 0;
                   await SincronizarRespostasWorker().sincronizar();
                   listaQuestoesController.previousPage(
                     duration: Duration(milliseconds: 300),
@@ -432,20 +410,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
           ),
           Observer(
             builder: (context) {
-              if (store.questaoAtual <
-                  widget.provaStore.prova.questoes.length) {
+              if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
-                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                    widget.provaStore.segundos = 0;
                     await SincronizarRespostasWorker().sincronizar();
                     if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
-                      await widget.provaStore.respostas.definirResposta(
-                        questao.id,
-                        textoResposta: await controller.getText(),
-                        tempoQuestao: widget.provaStore.segundos,
-                      );
+                      await widget.provaStore.respostas
+                          .definirResposta(questao.id, textoResposta: await controller.getText());
                     }
 
                     listaQuestoesController.nextPage(
@@ -501,13 +473,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore>
 
     for (var i = 0; i < matches.length; i++) {
       var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo = arquivos
-          .where((arq) => arq.id == int.parse(arquivoId.split("#")[1]))
-          .first;
+      var arquivo = arquivos.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
       var obterTipo = arquivo.caminho.split(".");
 
-      texto = texto.replaceAll(arquivoId,
-          "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
     return texto;
     // #123456#

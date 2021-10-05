@@ -1,6 +1,5 @@
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';
@@ -31,7 +30,6 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
 
   @override
   void initState() {
-    ("TESTE");
     super.initState();
   }
 
@@ -78,7 +76,6 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
   }
 
   _buildProva(ProvaStore provaStore) {
-    // provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
     return Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
       decoration: BoxDecoration(
@@ -103,8 +100,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
                   // Titulo
                   AutoSizeText(
                     provaStore.prova.descricao,
-                    style: GoogleFonts.poppins(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
                     maxLines: 2,
                   ),
                   SizedBox(height: 10),
@@ -203,8 +199,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
           AutoSizeText(
             formatEddMMyyyy(prova.dataInicio),
             maxLines: 2,
-            style:
-                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           AutoSizeText(
             " à ",
@@ -214,8 +209,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
           AutoSizeText(
             formatEddMMyyyy(prova.dataFim!),
             maxLines: 2,
-            style:
-                GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ],
       );
@@ -225,13 +219,11 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
   }
 
   _buildBotao(ProvaStore provaStore) {
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
-        !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
     }
 
-    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO &&
-        !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
       return _buildPausado(provaStore);
     }
 
@@ -242,8 +234,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
     }
 
     // Baixando prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO &&
-        _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO && _principalStore.temConexao) {
       return _buildDownloadProgresso(provaStore);
     }
 
@@ -350,8 +341,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.download, color: Colors.white, size: 18),
-          TextoDefaultWidget(" BAIXAR PROVA",
-              color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          TextoDefaultWidget(" BAIXAR PROVA", color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
         ],
       ),
       largura: 256,
@@ -414,8 +404,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextoDefaultWidget('$texto ',
-              color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          TextoDefaultWidget('$texto ', color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
@@ -438,9 +427,8 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {
-    var tempoRestante = prova.tempoPrevisto > 0
-        ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes"
-        : "";
+    var tempoRestante =
+        prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes" : "";
 
     return SizedBox(
       width: 350,
@@ -461,8 +449,7 @@ class _ProvaAtualTabViewState extends State<ProvaAtualTabView> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Text(
-                "Download em progresso ${(prova.progressoDownload * 100).toStringAsFixed(2)}% $tempoRestante"),
+            child: Text("Download em progresso ${(prova.progressoDownload * 100).toStringAsFixed(2)}% $tempoRestante"),
           ),
         ],
       ),
