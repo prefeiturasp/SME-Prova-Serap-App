@@ -102,6 +102,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
           alternativaId: resposta.alternativaId,
           resposta: resposta.resposta,
           dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+          tempoRespostaAluno: resposta.tempoRespostaAluno,
         );
 
         if (response.isSuccessful) {
@@ -132,6 +133,16 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     respostasLocal[questaoId] = resposta;
 
     salvarCache(resposta);
+  }
+
+  @action
+  definirTempoResposta(int questaoId, {int? tempoQuestao}) {
+    var resposta = respostasLocal[questaoId];
+
+    if (resposta != null) {
+      resposta.tempoRespostaAluno = tempoQuestao;
+      salvarCache(resposta);
+    }
   }
 
   salvarAllCache() async {

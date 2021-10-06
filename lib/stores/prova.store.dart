@@ -117,6 +117,8 @@ abstract class _ProvaStoreBase with Store, Loggable {
     if (finalizado == EnumTempoStatus.CORRENDO) {
       inicioQuestao = DateTime.now();
       fine(' Inicio da Questão: $inicioQuestao');
+    } else if (finalizado == EnumTempoStatus.CONTINUAR) {
+      return;
     } else {
       DateTime fimQuestao = DateTime.now();
 

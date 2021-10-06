@@ -36,6 +36,8 @@ class ProvaView extends BaseStatefulWidget {
 class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Loggable {
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
+  int? _questaoId;
+  int? _alternativaId;
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
@@ -309,7 +311,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
         onChanged: (value) {
-          widget.provaStore.respostas.definirResposta(questaoId, alternativaId: value);
+          widget.provaStore.respostas.definirResposta(
+            questaoId,
+            alternativaId: value,
+            tempoQuestao: null,
+          );
         },
         toggleable: true,
         title: Row(children: [
@@ -420,15 +426,22 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
                     widget.provaStore.onChangeContadorQuestao(EnumTempoStatus.PARADO);
-                    await SincronizarRespostasWorker().sincronizar();
+
                     if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
                       await widget.provaStore.respostas.definirResposta(
                         questao.id,
                         textoResposta: await controller.getText(),
                         tempoQuestao: widget.provaStore.segundos,
                       );
-                      widget.provaStore.segundos = 0;
                     }
+                    if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
+                      await widget.provaStore.respostas.definirTempoResposta(
+                        questao.id,
+                        tempoQuestao: widget.provaStore.segundos,
+                      );
+                    }
+                    await SincronizarRespostasWorker().sincronizar();
+                    widget.provaStore.segundos = 0;
 
                     listaQuestoesController.nextPage(
                       duration: Duration(milliseconds: 300),
