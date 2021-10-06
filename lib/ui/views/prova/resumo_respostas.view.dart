@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -16,7 +13,6 @@ import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 
@@ -139,9 +135,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
-        } else if (resposta!.resposta != null || resposta.resposta!.isNotEmpty) {
+        } else if (resposta!.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
-        } else {
+        } else if (resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) {
+          respostaNaTela = "";
           store.questoesRevisao[questao.ordem] = false;
           store.quantidadeDeQuestoesSemRespostas++;
         }
