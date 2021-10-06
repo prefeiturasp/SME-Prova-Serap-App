@@ -20,7 +20,7 @@ class HomeStore = _HomeStoreBase with _$HomeStore;
 
 abstract class _HomeStoreBase with Store, Loggable {
   @observable
-  ObservableList<ProvaStore> provas = ObservableList<ProvaStore>();
+  ObservableMap<int, ProvaStore> provas = ObservableMap<int, ProvaStore>();
 
   @observable
   bool carregando = false;
@@ -28,8 +28,24 @@ abstract class _HomeStoreBase with Store, Loggable {
   @action
   carregarProvas() async {
     carregando = true;
-    List<ProvaStore> provasStore = [];
+
+    Map<int, ProvaStore> provasStore = {};
+
+    // Carrega provas do cache
+    List<int> ids = listProvasCache();
+
+    for (var id in ids) {
+      var provaBanco = Prova.carregaProvaCache(id)!;
+      provasStore[provaBanco.id] = ProvaStore(
+        id: id,
+        prova: provaBanco,
+        respostas: ProvaRespostaStore(idProva: id),
+      );
+    }
+
     ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+
+    // Atualizar lista de provas do cache
     if (resultado != ConnectivityResult.none) {
       try {
         Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
@@ -51,48 +67,28 @@ abstract class _HomeStoreBase with Store, Loggable {
               ),
               respostas: ProvaRespostaStore(idProva: provaResponse.id),
             );
-            provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
-            provasStore.add(provaStore);
+            // caso nao tenha o id, define como nova prova
+            if (!provas.keys.contains(provaStore.id)) {
+              provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+            }
+
+            provasStore[provaStore.id] = provaStore;
           }
-        }
-      } on SocketException {
-        // Carrega provas do cache
-        List<int> ids = listProvasCache();
-
-        for (var id in ids) {
-          var provaBanco = Prova.carregaProvaCache(id)!;
-          provasStore.add(ProvaStore(
-            id: id,
-            prova: provaBanco,
-            respostas: ProvaRespostaStore(idProva: id),
-          ));
         }
       } catch (e, stacktrace) {
         severe(e);
         severe(stacktrace);
       }
-    } else {
-      // Carrega provas do cache
-      List<int> ids = listProvasCache();
-
-      for (var id in ids) {
-        var provaBanco = Prova.carregaProvaCache(id)!;
-        provasStore.add(ProvaStore(
-          id: id,
-          prova: provaBanco,
-          respostas: ProvaRespostaStore(idProva: id),
-        ));
-      }
     }
 
     if (provasStore.isNotEmpty) {
-      for (var provaStore in provasStore) {
+      for (var provaStore in provasStore.values) {
         provaStore.setupReactions();
         await carregaProva(provaStore.id, provaStore);
       }
     }
-    provas = ObservableList.of(provasStore);
+    provas = ObservableMap.of(provasStore);
 
     carregando = false;
   }
@@ -132,6 +128,6 @@ abstract class _HomeStoreBase with Store, Loggable {
 
   @action
   limpar() {
-    provas = <ProvaStore>[].asObservable();
+    provas = <int, ProvaStore>{}.asObservable();
   }
 }

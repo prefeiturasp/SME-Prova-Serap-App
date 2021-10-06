@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
-import 'package:appserap/enums/tipo_questao.enum.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
@@ -17,6 +14,7 @@ import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/download_prova.model.dart';
@@ -26,7 +24,7 @@ import 'package:appserap/services/api.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
 
-class DownloadService with Loggable {
+class DownloadManager with Loggable {
   int idProva;
   List<DownloadProva> downloads = [];
   late DateTime inicio;
@@ -37,7 +35,7 @@ class DownloadService with Loggable {
 
   Timer? timer;
 
-  DownloadService({
+  DownloadManager({
     required this.idProva,
   });
 
@@ -91,8 +89,10 @@ class DownloadService with Loggable {
         }
       }
 
-      info('Total de Downloads ${downloads.length}');
-      // TODO salvar download
+      finer('** Total Downloads ${downloads.length}');
+      finer('** Downloads concluidos ${getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
+      finer('** Downloads nao Iniciados ${getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
+
       await saveDownloads();
     } catch (e) {
       AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();

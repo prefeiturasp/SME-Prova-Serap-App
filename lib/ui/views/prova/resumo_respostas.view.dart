@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -81,9 +83,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
             Table(
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               columnWidths: {
-                0: FractionColumnWidth(.7),
+                0: FractionColumnWidth(.65),
                 1: FractionColumnWidth(.2),
-                2: FractionColumnWidth(.1),
+                2: FractionColumnWidth(.15),
               },
               children: questoesTabela,
             ),
@@ -93,7 +95,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 textoBotao: 'FINALIZAR E ENVIAR',
                 largura: 392,
                 onPressed: () async {
-                  await widget.provaStore.finalizarProva();
+                  await widget.provaStore.finalizarProva(context);
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => SplashScreenView()),
                     (_) => false,
@@ -111,9 +113,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
-    if (textoNovo.length >= 50) {
-      textoNovo = textoNovo.substring(0, 50) + '...';
-    }
     return textoNovo;
   }
 
@@ -123,7 +122,12 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
       String alternativaSelecionada = "";
       String respostaNaTela = "";
-      String questaoProva = tratarTexto(tratarTexto(questao.titulo) + tratarTexto(questao.descricao));
+      String questaoProva = tratarTexto(questao.titulo) + tratarTexto(questao.descricao);
+
+      if (questaoProva.length >= 45) {
+        questaoProva = questaoProva.substring(0, 45) + '...';
+      }
+
       String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
 
       if (questao.id == resposta?.questaoId) {
@@ -133,10 +137,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           }
         }
 
-        if (resposta!.resposta != null && resposta.resposta!.isNotEmpty) {
-          respostaNaTela = "OK";
-        } else if (alternativaSelecionada.isNotEmpty) {
+        if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
+        } else if (resposta!.resposta != null || resposta.resposta!.isNotEmpty) {
+          respostaNaTela = "OK";
         } else {
           store.questoesRevisao[questao.ordem] = false;
           store.quantidadeDeQuestoesSemRespostas++;
@@ -214,7 +218,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
     for (var questao in mapaDeQuestoes) {
       Widget resposta;
-
       if (questao['resposta'] != "") {
         resposta = Center(
           child: Text(

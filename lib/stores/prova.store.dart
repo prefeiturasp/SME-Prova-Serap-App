@@ -9,12 +9,13 @@ import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/services/download.service.dart';
+import 'package:appserap/managers/download.manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'prova.store.g.dart';
@@ -27,7 +28,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
   @observable
   ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
-  late DownloadService downloadService;
+  late DownloadManager downloadService;
 
   int id;
 
@@ -39,7 +40,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
     required this.prova,
     required this.respostas,
   }) {
-    downloadService = DownloadService(idProva: id);
+    downloadService = DownloadManager(idProva: id);
   }
 
   @observable
@@ -65,10 +66,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
     await downloadService.configure();
-
-    fine('** Total Downloads ${downloadService.downloads.length}');
-    fine('** Downloads concluidos ${downloadService.getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
-    fine('** Downloads nao Iniciados ${downloadService.getDownlodsByStatus(EnumDownloadStatus.NAO_INICIADO).length}');
 
     downloadService.onStatusChange((downloadStatus, progressoDownload) {
       this.downloadStatus = downloadStatus;
@@ -150,7 +147,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
   }
 
   @action
-  Future<bool> finalizarProva() async {
+  Future<bool> finalizarProva(BuildContext context) async {
     try {
       ConnectivityResult resultado = await (Connectivity().checkConnectivity());
 
@@ -160,7 +157,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
         setStatusProva(EnumProvaStatus.PENDENTE);
         await saveProva();
 
-        var retorno = await mostrarDialogSemInternet();
+        var retorno = await mostrarDialogSemInternet(context);
         return retorno ?? false;
       } else {
         // Atualiza para finalizada
@@ -176,7 +173,8 @@ abstract class _ProvaStoreBase with Store, Loggable {
             );
 
         if (response.isSuccessful) {
-          mostrarDialogProvaEnviada();
+          var retorno = await mostrarDialogProvaEnviada(context);
+          return retorno ?? false;
         } else {
           switch (response.statusCode) {
             case 411:
@@ -189,7 +187,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
                 await prefs.remove('resposta_${questoes.id}');
               }
 
-              mostrarDialogProvaJaEnviada();
+              mostrarDialogProvaJaEnviada(context);
               break;
           }
         }
@@ -199,7 +197,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
     } catch (e) {
       severe(e);
       return false;
-    }
-
+    } 
   }
 }

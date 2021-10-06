@@ -19,9 +19,6 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   @observable
   bool revisandoProva = false;
 
-  @observable
-  String questaoConstruida = '';
-
   setup() async {
     questoesRevisao = <int, bool>{}.asObservable();
     questaoAtual = 1;
