@@ -1,6 +1,7 @@
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -186,7 +187,7 @@ mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
               style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black87),
               children: [
                 TextSpan(
-                  text: "1 minuto",
+                  text: formatDuration(tempo),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
