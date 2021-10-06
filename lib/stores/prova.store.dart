@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -27,7 +27,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   List<ReactionDisposer> _reactions = [];
 
   @observable
-  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   late GerenciadorDownload gerenciadorDownload;
 
@@ -99,13 +99,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  Future onChangeConexao(ConnectivityResult? resultado) async {
+  Future onChangeConexao(ConnectivityStatus? resultado) async {
     if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
-    if (resultado != ConnectivityResult.none) {
-      iniciarDownload();
+    if (resultado != ConnectivityStatus.none) {
+      await iniciarDownload();
     } else {
       downloadStatus = EnumDownloadStatus.PAUSADO;
       gerenciadorDownload.pause();
@@ -183,9 +183,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @action
   Future<bool> finalizarProva(BuildContext context, [bool automaticamente = false]) async {
     try {
-      ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+      ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
 
-      if (resultado == ConnectivityResult.none) {
+      if (resultado == ConnectivityStatus.none) {
         // Se estiver sem internet alterar status para pendente (worker ira sincronizar)
 
         setStatusProva(EnumProvaStatus.PENDENTE);

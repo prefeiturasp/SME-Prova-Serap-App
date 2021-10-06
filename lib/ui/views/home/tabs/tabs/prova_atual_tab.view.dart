@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
@@ -236,8 +235,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     }
 
     // Baixar prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
-        _principalStore.status != ConnectivityResult.none) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && _principalStore.temConexao) {
       return _buildBaixarProva(provaStore);
     }
 

@@ -1,7 +1,6 @@
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -102,7 +101,7 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
           builder: (_) {
             var cor = TemaUtil.preto;
 
-            if (_principalStore.status == ConnectivityResult.none) {
+            if (!_principalStore.temConexao) {
               cor = TemaUtil.vermelhoErro;
             }
 
