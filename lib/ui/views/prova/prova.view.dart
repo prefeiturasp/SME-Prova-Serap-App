@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:collection/collection.dart';
@@ -69,9 +70,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         await _iniciarRevisaoProva();
       });
 
-      widget.provaStore.tempoExecucaoStore!.onFinalizarlProva(() {
+      widget.provaStore.tempoExecucaoStore!.onFinalizarlProva(() async {
         print('Prova finalizada');
-        widget.provaStore.finalizarProva(context, true);
+        await widget.provaStore.finalizarProva(context, true);
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => SplashScreenView()),
+          (_) => false,
+        );
       });
     }
   }

@@ -218,6 +218,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
           return retorno ?? false;
         } else {
           switch (response.statusCode) {
+            // Prova ja finalizada
             case 411:
               // Remove prova do cache
               SharedPreferences prefs = ServiceLocator.get();
