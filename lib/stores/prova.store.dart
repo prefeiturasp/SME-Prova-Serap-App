@@ -68,6 +68,12 @@ abstract class _ProvaStoreBase with Store, Loggable {
   @observable
   int segundos = 0;
 
+  @observable
+  DateTime inicioQuestao = DateTime.now();
+
+  @observable
+  DateTime fimQuestao = DateTime.now();
+
   @action
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
@@ -96,7 +102,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction((_) => conexaoStream.value, onChangeConexao),
-      reaction((_) => tempoCorrendo, onChangeContadorQuestao),
     ];
   }
 
@@ -107,20 +112,19 @@ abstract class _ProvaStoreBase with Store, Loggable {
     }
   }
 
-  @observable
-  late Timer timer;
-
   @action
   onChangeContadorQuestao(EnumTempoStatus finalizado) {
-    const umSegundo = Duration(seconds: 1);
-
-    if (finalizado == EnumTempoStatus.PARADO) {
-      timer.cancel();
+    if (finalizado == EnumTempoStatus.CORRENDO) {
+      inicioQuestao = DateTime.now();
+      fine(' Inicio da Questão: $inicioQuestao');
     } else {
-      timer = Timer.periodic(umSegundo, (timer) {
-        segundos++;
-        fine(' Segundos ${segundos}');
-      });
+      DateTime fimQuestao = DateTime.now();
+
+      segundos = fimQuestao.difference(inicioQuestao).inSeconds;
+
+      fine(' Fim da Questão: $fimQuestao');
+
+      fine(' Segundos: $segundos');
     }
   }
 

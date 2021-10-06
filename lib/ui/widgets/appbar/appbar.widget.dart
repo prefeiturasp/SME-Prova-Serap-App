@@ -14,12 +14,10 @@ import 'package:html_editor_enhanced/utils/utils.dart';
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
   final String? subtitulo;
-  final Function()? botaoVoltar;
 
   AppBarWidget({
     required this.popView,
     this.subtitulo,
-    this.botaoVoltar,
   });
 
   final _principalStore = GetIt.I.get<PrincipalStore>();
@@ -44,13 +42,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             ],
           );
         },
-      ),
-      leading: IconButton(
-        onPressed: botaoVoltar,
-        icon: Icon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ),
       ),
       actions: [
         Row(

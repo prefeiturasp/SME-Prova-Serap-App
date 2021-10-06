@@ -126,7 +126,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       resposta: textoResposta,
       sincronizado: false,
       dataHoraResposta: DateTime.now(),
-      tempoQuestao: tempoQuestao,
+      tempoRespostaAluno: tempoQuestao,
     );
 
     respostasLocal[questaoId] = resposta;

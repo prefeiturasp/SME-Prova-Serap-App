@@ -57,10 +57,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     return AppBarWidget(
       popView: true,
       subtitulo: widget.provaStore.prova.descricao,
-      botaoVoltar: () {
-        widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-        Navigator.pop(context);
-      },
     );
   }
 
@@ -76,13 +72,15 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       },
       itemCount: questoes.length,
       itemBuilder: (context, index) {
-        return _buildQuestoes(questoes[index], index);
+        return Observer(builder: (_) {
+          return _buildQuestoes(questoes[index], index);
+        });
       },
     );
   }
 
   Widget _buildQuestoes(Questao questao, int index) {
-    widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
+    widget.provaStore.onChangeContadorQuestao(EnumTempoStatus.CORRENDO);
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -405,8 +403,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               return BotaoSecundarioWidget(
                 textoBotao: 'Questão anterior',
                 onPressed: () async {
-                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                  widget.provaStore.segundos = 0;
+                  widget.provaStore.onChangeContadorQuestao(EnumTempoStatus.PARADO);
                   await SincronizarRespostasWorker().sincronizar();
                   listaQuestoesController.previousPage(
                     duration: Duration(milliseconds: 300),
@@ -422,8 +419,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
-                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                    widget.provaStore.segundos = 0;
+                    widget.provaStore.onChangeContadorQuestao(EnumTempoStatus.PARADO);
                     await SincronizarRespostasWorker().sincronizar();
                     if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
                       await widget.provaStore.respostas.definirResposta(
@@ -431,6 +427,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                         textoResposta: await controller.getText(),
                         tempoQuestao: widget.provaStore.segundos,
                       );
+                      widget.provaStore.segundos = 0;
                     }
 
                     listaQuestoesController.nextPage(
