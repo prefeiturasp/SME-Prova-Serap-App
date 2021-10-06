@@ -29,7 +29,7 @@ jobs:
     runs-on: master
     if: ${{ github.ref == 'refs/heads/release' }}
     environment:
-      name: development
+      name: release
     steps:
       - uses: actions/checkout@v2
       - name: Ajustando configuração
@@ -41,6 +41,8 @@ jobs:
   build_dev:
     runs-on: master
     if: ${{ github.ref == 'refs/heads/development' }}
+    environment:
+      name: development
     needs: [flutter_conf_dev]
     steps:
       - name: Login to registry
@@ -58,6 +60,8 @@ jobs:
   build_release:
     runs-on: master
     if: ${{ github.ref == 'refs/heads/release' }}
+    environment:
+      name: release
     needs: [flutter_conf_rel]
     steps:
       - name: Login to registry
@@ -77,7 +81,7 @@ jobs:
     runs-on: master
     if: ${{ github.ref == 'refs/heads/development' }}
     environment:
-      name: release
+      name: development
     needs: [ build_dev ]
     steps:
       - name: Redeploy
