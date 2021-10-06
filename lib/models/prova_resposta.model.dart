@@ -8,6 +8,7 @@ class ProvaResposta {
   int? alternativaId;
   String? resposta;
   bool sincronizado = false;
+  int? tempoRespostaAluno;
   DateTime? dataHoraResposta = DateTime.now();
 
   ProvaResposta({
@@ -16,6 +17,7 @@ class ProvaResposta {
     this.resposta,
     required this.sincronizado,
     this.dataHoraResposta,
+    this.tempoRespostaAluno,
   });
 
   factory ProvaResposta.fromJson(Map<String, dynamic> json) => _$ProvaRespostaFromJson(json);

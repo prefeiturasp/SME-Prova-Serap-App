@@ -1,4 +1,5 @@
 import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/views/login/login.view.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
@@ -8,12 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:html_editor_enhanced/utils/utils.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
   final String? subtitulo;
 
-  AppBarWidget({required this.popView, this.subtitulo});
+  AppBarWidget({
+    required this.popView,
+    this.subtitulo,
+  });
 
   final _principalStore = GetIt.I.get<PrincipalStore>();
 

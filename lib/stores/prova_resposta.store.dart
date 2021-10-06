@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/tempo_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:get_it/get_it.dart';
@@ -101,6 +102,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
           alternativaId: resposta.alternativaId,
           resposta: resposta.resposta,
           dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+          tempoRespostaAluno: resposta.tempoRespostaAluno,
         );
 
         if (response.isSuccessful) {
@@ -118,18 +120,29 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  definirResposta(int questaoId, {int? alternativaId, String? textoResposta}) {
+  definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) {
     var resposta = ProvaResposta(
       questaoId: questaoId,
       alternativaId: alternativaId,
       resposta: textoResposta,
       sincronizado: false,
       dataHoraResposta: DateTime.now(),
+      tempoRespostaAluno: tempoQuestao,
     );
 
     respostasLocal[questaoId] = resposta;
 
     salvarCache(resposta);
+  }
+
+  @action
+  definirTempoResposta(int questaoId, {int? tempoQuestao}) {
+    var resposta = respostasLocal[questaoId];
+
+    if (resposta != null) {
+      resposta.tempoRespostaAluno = tempoQuestao;
+      salvarCache(resposta);
+    }
   }
 
   salvarAllCache() async {
