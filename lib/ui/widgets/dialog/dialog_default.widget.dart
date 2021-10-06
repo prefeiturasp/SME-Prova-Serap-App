@@ -8,24 +8,12 @@ class DialogDefaultWidget extends StatelessWidget {
   List<Widget> botoes = <Widget>[];
   String? mensagemOpcionalBotao;
 
-  double? espacamentoHorizontal;
-  double? espacamentoVertical;
-  bool? dialogLargo;
-
   DialogDefaultWidget({
     this.cabecalho,
     required this.corpo,
     this.botoes = const [],
     this.mensagemOpcionalBotao = "",
-    this.espacamentoHorizontal = .2,
-    this.espacamentoVertical = .3,
-    this.dialogLargo = false,
-  }) {
-    if (kIsWeb && !dialogLargo!) {
-      espacamentoHorizontal = .35;
-      espacamentoVertical = .2;
-    }
-  }
+  });
 
   @override
   Widget build(BuildContext context) {

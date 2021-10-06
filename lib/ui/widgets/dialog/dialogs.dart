@@ -94,7 +94,6 @@ mostrarDialogProvaEnviada(BuildContext context) {
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
-        espacamentoVertical: .32,
         cabecalho: SvgPicture.asset(icone),
         corpo: Padding(
           padding: const EdgeInsets.symmetric(
@@ -135,7 +134,6 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
-        espacamentoVertical: .35,
         cabecalho: SvgPicture.asset(icone),
         corpo: Padding(
           padding: const EdgeInsets.symmetric(
@@ -175,9 +173,6 @@ mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
-        espacamentoVertical: .35,
-        espacamentoHorizontal: .1,
-        dialogLargo: true,
         cabecalho: Padding(
           padding: const EdgeInsets.only(
             top: 16,
