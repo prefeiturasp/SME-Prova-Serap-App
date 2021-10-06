@@ -19,9 +19,6 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   bool revisandoProva = false;
 
   @observable
-  String questaoConstruida = '';
-
-  @observable
   bool mostrarAlertaDeTempoAcabando = false;
 
   setup() async {

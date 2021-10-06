@@ -1,12 +1,11 @@
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/utils/assets.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:appserap/utils/assets.util.dart';
 
 import 'dialog_default.widget.dart';
 
@@ -167,7 +166,7 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
   );
 }
 
-mostrarDialogAindaPossuiTempo(BuildContext context, String tempo) {
+mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
   String mensagemCorpo =
       "Se finalizar a prova agora, não poderá mais fazer alterações mesmo que o tempo não tenha se esgotado";
 
@@ -192,7 +191,7 @@ mostrarDialogAindaPossuiTempo(BuildContext context, String tempo) {
               style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black87),
               children: [
                 TextSpan(
-                  text: tempo,
+                  text: "1 minuto",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -222,7 +221,7 @@ mostrarDialogAindaPossuiTempo(BuildContext context, String tempo) {
         ),
         botoes: [
           BotaoSecundarioWidget(
-            textoBotao: "CAMCELAR",
+            textoBotao: "CANCELAR",
             onPressed: () {
               Navigator.pop(context);
             },
