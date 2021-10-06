@@ -39,85 +39,79 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
 
   @override
   Widget builder(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-
     return SingleChildScrollView(
-      child: Form(
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 150,
-              ),
-              SvgPicture.asset(AssetsUtil.logoSerap),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Bem-vindo",
-                style: GoogleFonts.poppins(
-                    fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              Observer(
-                builder: (_) => Padding(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 150,
+          ),
+          SvgPicture.asset(AssetsUtil.logoSerap),
+          SizedBox(
+            height: 48,
+          ),
+          Text(
+            "Bem-vindo",
+            style: GoogleFonts.poppins(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(
+            height: 24,
+          ),
+          Form(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
                   padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
                   child: Container(
-                    width: screenSize.width * .8,
+                    constraints: BoxConstraints(maxWidth: 392),
                     decoration: BoxDecoration(
                       color: Color.fromARGB(15, 51, 51, 51),
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: Padding(
                       padding: EdgeInsets.only(left: 15, right: 15, top: 5),
-                      child: TextField(
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        focusNode: _codigoEOLFocus,
-                        onChanged: (value) => store.codigoEOL = value,
-                        decoration: InputDecoration(
-                          labelText: 'Digite o código EOL',
-                          labelStyle: TextStyle(
-                            color: _codigoEOLFocus.hasFocus
-                                ? TemaUtil.laranja01
-                                : TemaUtil.preto,
+                      child: Observer(
+                        builder: (_) => TextField(
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          focusNode: _codigoEOLFocus,
+                          onChanged: (value) => store.codigoEOL = value,
+                          decoration: InputDecoration(
+                            labelText: 'Digite o código EOL',
+                            labelStyle: TextStyle(
+                              color: _codigoEOLFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                            ),
+                            prefixText: "RA-",
+                            errorText: store.autenticacaoErroStore.codigoEOL,
                           ),
-                          prefixText: "RA-",
-                          errorText: store.autenticacaoErroStore.codigoEOL,
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Observer(
-                builder: (_) {
-                  return Padding(
-                    padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                    child: Container(
-                      width: screenSize.width * .8,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(15, 51, 51, 51),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 15, right: 15, top: 5),
-                        child: TextField(
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 392),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(15, 51, 51, 51),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 15, right: 15, top: 5),
+                      child: Observer(
+                        builder: (_) => TextField(
                           obscureText: store.ocultarSenha,
                           keyboardType: TextInputType.number,
                           onChanged: (value) => store.senha = value,
                           focusNode: _senhaFocus,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           decoration: InputDecoration(
                             suffixIcon: IconButton(
-                              icon: store.ocultarSenha
-                                  ? Icon(Icons.visibility)
-                                  : Icon(Icons.visibility_off),
+                              icon: store.ocultarSenha ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
                               color: TemaUtil.pretoSemFoco,
                               onPressed: () {
                                 store.ocultarSenha = !store.ocultarSenha;
@@ -129,55 +123,57 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
-              Observer(
-                builder: (_) {
-                  return store.carregando
-                      ? Center(
-                          child: CircularProgressIndicator(
-                            backgroundColor: TemaUtil.laranja01,
-                          ),
-                        )
-                      : TextButton(
-                          onPressed: () async {
-                            _senhaFocus.unfocus();
-                            _codigoEOLFocus.unfocus();
+                  ),
+                ),
+                Observer(
+                  builder: (_) {
+                    if (store.carregando) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: TemaUtil.laranja01,
+                        ),
+                      );
+                    }
 
-                            store.validateTodos();
-                            if (!store.autenticacaoErroStore.possuiErros) {
-                              await store.autenticar();
-                            }
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                            child: Container(
-                              width: screenSize.width * .8,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: TemaUtil.laranja01,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "ENTRAR",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: TemaUtil.branco,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
+                    return TextButton(
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
+                        child: Container(
+                          constraints: BoxConstraints(maxWidth: 392),
+                          height: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: TemaUtil.laranja01,
+                          ),
+                          child: Center(
+                            child: Text(
+                              "ENTRAR",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: TemaUtil.branco,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
                               ),
                             ),
                           ),
-                        );
-                },
-              ),
-            ],
+                        ),
+                      ),
+                      onPressed: () async {
+                        _senhaFocus.unfocus();
+                        _codigoEOLFocus.unfocus();
+
+                        store.validateTodos();
+                        if (!store.autenticacaoErroStore.possuiErros) {
+                          await store.autenticar();
+                        }
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

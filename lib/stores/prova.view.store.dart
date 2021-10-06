@@ -21,6 +21,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   @observable
   String questaoConstruida = '';
 
+  @observable
+  bool mostrarAlertaDeTempoAcabando = false;
+
   setup() async {
     questoesRevisao = <int, bool>{}.asObservable();
     questaoAtual = 1;
@@ -28,6 +31,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
 
   void dispose() {
     quantidadeDeQuestoesSemRespostas = 0;
+    mostrarAlertaDeTempoAcabando = false;
     questoesRevisao = <int, bool>{}.asObservable();
     revisandoProva = false;
   }

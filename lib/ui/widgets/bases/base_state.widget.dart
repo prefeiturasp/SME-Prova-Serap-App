@@ -45,27 +45,30 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   Widget build(BuildContext context) {
     WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
 
-    return Scaffold(
-      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      backgroundColor: backgroundColor,
-      appBar: showAppBar ? buildAppBar() : null,
-      bottomNavigationBar: _buildBottomNavigationBar(),
-      persistentFooterButtons: _buildPersistentFooterButtons(),
-      floatingActionButton: buildFloatingActionButton(),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.only(
-                left: defaultPadding,
-                right: defaultPadding,
-                top: defaultPaddingTop ?? defaultPadding,
-                bottom: showBottomNaviationBar ? 0 : defaultPadding,
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+        backgroundColor: backgroundColor,
+        appBar: showAppBar ? buildAppBar() : null,
+        bottomNavigationBar: _buildBottomNavigationBar(),
+        persistentFooterButtons: _buildPersistentFooterButtons(),
+        floatingActionButton: buildFloatingActionButton(),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.only(
+                  left: defaultPadding,
+                  right: defaultPadding,
+                  top: defaultPaddingTop ?? defaultPadding,
+                  bottom: showBottomNaviationBar ? 0 : defaultPadding,
+                ),
+                child: builder(context),
               ),
-              child: builder(context),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

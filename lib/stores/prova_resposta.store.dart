@@ -31,10 +31,6 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   @observable
   ObservableMap<int, ProvaResposta> respostasLocal = <int, ProvaResposta>{}.asObservable();
 
-  void dispose() {
-    respostasSalvas = <int, ProvaResposta>{}.asObservable();
-  }
-
   @action
   carregarRespostasServidor([Prova? prova]) async {
     fine('[$idProva] - Carregando respostas da prova');

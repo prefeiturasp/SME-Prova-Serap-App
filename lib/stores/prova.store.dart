@@ -143,6 +143,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   continuarProva() async {
+    prova.dataHoraInicio ??= DateTime.now();
+
     _configurarTempoExecucao();
 
     await saveProva();
@@ -153,15 +155,17 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   _configurarTempoExecucao() {
     // TODO definir o horario da prova e salvar
 
-    tempoExecucaoStore = ProvaTempoExecucaoStore(
-      // dataHoraInicioProva: prova.dataHoraInicio!,
-      dataHoraInicioProva: DateTime.now(),
-      duracaoProva: Duration(seconds: 10),
-      duracaoTempoExtra: Duration(seconds: 3),
-      duracaoTempoFinalizando: Duration(seconds: 8),
-    );
+    if (prova.tempoExecucao > 0) {
+      tempoExecucaoStore = ProvaTempoExecucaoStore(
+        dataHoraInicioProva: prova.dataHoraInicio!,
+        // dataHoraInicioProva: DateTime.now(),
+        duracaoProva: Duration(seconds: prova.tempoExecucao ~/ 60),
+        duracaoTempoExtra: Duration(seconds: prova.tempoExtra ~/ 60),
+        duracaoTempoFinalizando: Duration(minutes: 5),
+      );
 
-    tempoExecucaoStore!.iniciarContador();
+      tempoExecucaoStore!.iniciarContador();
+    }
   }
 
   @action
@@ -177,7 +181,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  Future<bool> finalizarProva(BuildContext context) async {
+  Future<bool> finalizarProva(BuildContext context, [bool automaticamente = false]) async {
     try {
       ConnectivityResult resultado = await (Connectivity().checkConnectivity());
 
@@ -203,7 +207,14 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
             );
 
         if (response.isSuccessful) {
-          var retorno = await mostrarDialogProvaEnviada(context);
+          var retorno;
+
+          if (automaticamente) {
+            retorno = await mostrarDialogProvaFinalizadaAutomaticamente(context);
+          } else {
+            retorno = await mostrarDialogProvaEnviada(context);
+          }
+
           return retorno ?? false;
         } else {
           switch (response.statusCode) {

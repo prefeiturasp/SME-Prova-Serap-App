@@ -51,19 +51,21 @@ abstract class _HomeStoreBase with Store, Loggable {
           var provasResponse = response.body!;
 
           for (var provaResponse in provasResponse) {
+            var prova = Prova(
+              id: provaResponse.id,
+              descricao: provaResponse.descricao,
+              itensQuantidade: provaResponse.itensQuantidade,
+              dataInicio: provaResponse.dataInicio,
+              dataFim: provaResponse.dataFim,
+              status: provaResponse.status,
+              tempoExecucao: provaResponse.tempoExecucao,
+              tempoExtra: provaResponse.tempoExtra,
+              questoes: [],
+            );
+
             var provaStore = ProvaStore(
               id: provaResponse.id,
-              prova: Prova(
-                id: provaResponse.id,
-                itensQuantidade: provaResponse.itensQuantidade,
-                dataInicio: provaResponse.dataInicio,
-                dataFim: provaResponse.dataFim,
-                descricao: provaResponse.descricao,
-                status: provaResponse.status,
-                tempoExecucao: provaResponse.tempoExecucao,
-                tempoExtra: provaResponse.tempoExtra,
-                questoes: [],
-              ),
+              prova: prova,
               respostas: ProvaRespostaStore(idProva: provaResponse.id),
             );
 
@@ -71,6 +73,8 @@ abstract class _HomeStoreBase with Store, Loggable {
             if (!provas.keys.contains(provaStore.id)) {
               provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
             }
+
+            await provaStore.respostas.carregarRespostasServidor(prova);
 
             provasStore[provaStore.id] = provaStore;
           }

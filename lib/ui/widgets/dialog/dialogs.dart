@@ -50,6 +50,41 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
   );
 }
 
+Future<bool>? mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) {
+  String mensagem =
+      "Sua prova foi finalizada, pois o tempo acabou. As questões com resposta foram enviadas com sucesso.";
+  String icone = AssetsUtil.semConexao;
+  String mensagemBotao = "ENTENDI";
+
+  showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: SvgPicture.asset(icone),
+        corpo: Text(
+          mensagem,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              return true;
+            },
+            textoBotao: mensagemBotao,
+          )
+        ],
+      );
+    },
+  );
+}
+
 mostrarDialogProvaEnviada(BuildContext context) {
   String mensagem = "Sua prova foi enviada com sucesso!";
   String icone = AssetsUtil.check;

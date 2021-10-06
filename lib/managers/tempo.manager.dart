@@ -52,7 +52,7 @@ class GerenciadorTempo with Loggable, Disposable {
 
     var porcentagemDecorrida = ((tempoRestante.inMilliseconds / duracaoProva.inMilliseconds) - 1) * -1;
 
-    if (duracaoProva < duracaoTempoFinalizando || duracaoProva.inMinutes < 5 && porcentagemDecorrida > 0.80) {
+    if (tempoRestante < duracaoTempoFinalizando || duracaoProva.inMinutes < 5 && porcentagemDecorrida > 0.85) {
       estagioTempo = EnumProvaTempoEventType.ACABANDO;
     }
 
