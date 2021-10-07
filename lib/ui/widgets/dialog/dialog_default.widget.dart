@@ -1,7 +1,7 @@
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class DialogDefaultWidget extends StatelessWidget {
   Widget? cabecalho;
   Widget corpo;

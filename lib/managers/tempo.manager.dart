@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:appserap/interfaces/loggable.interface.dart';
 
 typedef DuracaoChangeCallback = void Function(TempoChangeData changeData);
 
-enum EnumProvaTempoEventType { INICIADO, EM_EXECUCAO, ACABANDO, EXTENDIDO, FINALIZADO }
+enum EnumProvaTempoEventType { INICIADO, ACABANDO, EXTENDIDO, FINALIZADO }
 
 class GerenciadorTempo with Loggable, Disposable {
   late DateTime dataHoraInicioProva;
@@ -60,7 +59,9 @@ class GerenciadorTempo with Loggable, Disposable {
       porcentagemDecorrida = 0;
       timer?.cancel();
 
-      if (duracaoTempoExtra != null && duracaoTempoExtra!.inSeconds > 0) {
+      bool possuiTempoExtra = duracaoTempoExtra != null && duracaoTempoExtra!.inSeconds > 0;
+
+      if (possuiTempoExtra) {
         estagioTempo = EnumProvaTempoEventType.EXTENDIDO;
         iniciarTimerProvaExtendida();
       } else {

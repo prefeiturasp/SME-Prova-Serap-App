@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:appserap/utils/date.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -42,6 +43,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     required this.respostas,
   }) {
     gerenciadorDownload = GerenciadorDownload(idProva: id);
+    status = prova.status;
   }
 
   @observable
@@ -67,6 +69,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   iniciarDownload() async {
+    info('Iniciando Download');
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
     await gerenciadorDownload.configure();
@@ -85,17 +88,17 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     prova = await gerenciadorDownload.getProva();
   }
 
-  setupReactions() {
+  @action
+  configure() {
+    _setupReactions();
+    _configurarTempoExecucao();
+  }
+
+  _setupReactions() {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction((_) => conexaoStream.value, onChangeConexao),
     ];
-  }
-
-  dispose() {
-    for (var _reaction in _reactions) {
-      _reaction();
-    }
   }
 
   @action
@@ -115,16 +118,18 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @action
   onStatusChange(EnumDownloadStatus statusDownload) {
     switch (statusDownload) {
-      case EnumDownloadStatus.NAO_INICIADO:
-      case EnumDownloadStatus.CONCLUIDO:
-        icone = AssetsUtil.iconeProva;
-        break;
       case EnumDownloadStatus.BAIXANDO:
         icone = AssetsUtil.iconeProvaDownload;
         break;
       case EnumDownloadStatus.ERRO:
       case EnumDownloadStatus.PAUSADO:
         icone = AssetsUtil.iconeProvaErroDownload;
+        break;
+
+      case EnumDownloadStatus.NAO_INICIADO:
+      case EnumDownloadStatus.CONCLUIDO:
+      default:
+        icone = AssetsUtil.iconeProva;
         break;
     }
   }
@@ -134,34 +139,38 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     setStatusProva(EnumProvaStatus.INICIADA);
     prova.dataInicioProvaAluno = DateTime.now();
 
-    await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
-
-    _configurarTempoExecucao();
+    try {
+      await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
+    } catch (e) {
+      warning(e);
+    }
 
     await saveProva();
+    iniciarTemporizador();
   }
 
   @action
   continuarProva() async {
-    _configurarTempoExecucao();
+    iniciarTemporizador();
+  }
 
-    await saveProva();
+  iniciarTemporizador() {
+    if (prova.tempoExecucao > 0) {
+      tempoExecucaoStore!.iniciarContador(prova.dataInicioProvaAluno!);
+    }
   }
 
   /// Configura o tempo de execução da prova
   @action
   _configurarTempoExecucao() {
-    // TODO definir o horario da prova e salvar
-
     if (prova.tempoExecucao > 0) {
+      fine('Configurando controlador de tempo');
+
       tempoExecucaoStore = ProvaTempoExecucaoStore(
-        dataHoraInicioProva: prova.dataInicioProvaAluno!,
-        duracaoProva: Duration(seconds: prova.tempoExecucao),
-        duracaoTempoExtra: Duration(seconds: prova.tempoExtra),
+        duracaoProva: Duration(seconds: prova.tempoExecucao ~/ 10),
+        duracaoTempoExtra: Duration(seconds: prova.tempoExtra ~/ 10),
         duracaoTempoFinalizando: Duration(minutes: 5),
       );
-
-      tempoExecucaoStore!.iniciarContador();
     }
   }
 
@@ -181,8 +190,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   Future<bool> finalizarProva(BuildContext context, [bool automaticamente = false]) async {
     try {
       ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
+      prova.dataFimProvaAluno = DateTime.now();
 
       if (resultado == ConnectivityStatus.none) {
+        warning('Prova finalizada sem internet. Sincronização Pendente.');
         // Se estiver sem internet alterar status para pendente (worker ira sincronizar)
 
         setStatusProva(EnumProvaStatus.PENDENTE);
@@ -201,6 +212,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         var response = await GetIt.I.get<ApiService>().prova.setStatusProva(
               idProva: id,
               status: EnumProvaStatus.FINALIZADA.index,
+              dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 
         if (response.isSuccessful) {
@@ -241,6 +253,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @override
   onDispose() {
+    for (var _reaction in _reactions) {
+      _reaction();
+    }
     tempoExecucaoStore?.onDispose();
   }
 }

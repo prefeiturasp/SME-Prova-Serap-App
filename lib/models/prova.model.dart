@@ -23,6 +23,7 @@ class Prova {
   int? tempoAlerta;
 
   DateTime? dataInicioProvaAluno;
+  DateTime? dataFimProvaAluno;
 
   List<Questao> questoes;
 
@@ -45,6 +46,7 @@ class Prova {
     this.downloadProgresso = 0,
     this.status = EnumProvaStatus.NAO_INICIADA,
     this.dataInicioProvaAluno,
+    this.dataFimProvaAluno,
   });
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
@@ -67,6 +69,6 @@ class Prova {
 
   @override
   String toString() {
-    return 'Prova(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno, questoes: $questoes, downloadStatus: $downloadStatus, downloadProgresso: $downloadProgresso, status: $status)';
+    return 'Prova(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno, dataFimProvaAluno: $dataFimProvaAluno, questoes: $questoes, downloadStatus: $downloadStatus, downloadProgresso: $downloadProgresso, status: $status)';
   }
 }

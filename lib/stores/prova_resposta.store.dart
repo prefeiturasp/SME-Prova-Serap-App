@@ -42,7 +42,6 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     if (prova != null) {
       idsQuestao = prova.questoes.map((e) => e.id).toList();
     }
-    fine('[$idProva] - Carregando resposta das questoes $idsQuestao');
     for (var idQuestao in idsQuestao) {
       try {
         var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
@@ -60,9 +59,11 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
           finer("[$idProva] - Resposta Banco Questao $idQuestao - ${body.alternativaId} | ${body.resposta}");
         }
       } catch (e) {
-        severe(e);
+        //severe(e);
       }
     }
+
+    fine('[$idProva] - ${respostasSalvas.length} respostas carregadas do banco de dados remoto');
   }
 
   ProvaResposta? obterResposta(int questaoId) {

@@ -1,4 +1,3 @@
-import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
@@ -322,8 +321,8 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   Future<bool> checarFinalizacaoComTempo() async {
     ProvaTempoExecucaoStore? tempoExecucaoStore = widget.provaStore.tempoExecucaoStore;
     if (tempoExecucaoStore != null) {
-      bool possuiTempoNormalRestante = tempoExecucaoStore.status == EnumProvaTempoEventType.EM_EXECUCAO &&
-          tempoExecucaoStore.tempoRestante.inSeconds > 0;
+      bool possuiTempoNormalRestante =
+          tempoExecucaoStore.isTempoNormalEmExecucao && tempoExecucaoStore.possuiTempoRestante;
 
       if (possuiTempoNormalRestante) {
         return (await mostrarDialogAindaPossuiTempo(

@@ -120,6 +120,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                             labelText: 'Digite a senha',
                             errorText: store.autenticacaoErroStore.senha,
                           ),
+                          onSubmitted: (value) => fazerLogin(),
                         ),
                       ),
                     ),
@@ -159,13 +160,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                         ),
                       ),
                       onPressed: () async {
-                        _senhaFocus.unfocus();
-                        _codigoEOLFocus.unfocus();
-
-                        store.validateTodos();
-                        if (!store.autenticacaoErroStore.possuiErros) {
-                          await store.autenticar();
-                        }
+                        fazerLogin();
                       },
                     );
                   },
@@ -176,5 +171,15 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
         ],
       ),
     );
+  }
+
+  Future<void> fazerLogin() async {
+    _senhaFocus.unfocus();
+    _codigoEOLFocus.unfocus();
+
+    store.validateTodos();
+    if (!store.autenticacaoErroStore.possuiErros) {
+      await store.autenticar();
+    }
   }
 }

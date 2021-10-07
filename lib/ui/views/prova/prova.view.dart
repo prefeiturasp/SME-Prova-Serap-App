@@ -2,10 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
-import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -71,14 +69,12 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         await _iniciarRevisaoProva();
       });
 
+      // Ao acabar o tempo, finalizar a prova e enviar respostas imediatamente
       widget.provaStore.tempoExecucaoStore!.onFinalizarlProva(() async {
         fine('Prova finalizada');
 
-        var confirm = await mostrarDialogAindaPossuiTempo(context, widget.provaStore.tempoExecucaoStore!.tempoRestante);
-        print(confirm);
-        if (confirm!) {
-          //await widget.provaStore.finalizarProva(context, true);
-
+        var confirm = await widget.provaStore.finalizarProva(context, true);
+        if (confirm) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => SplashScreenView()),
             (_) => false,
@@ -582,7 +578,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   Future<void> _iniciarRevisaoProva() async {
     await SincronizarRespostasWorker().sincronizar();
 
-    int posicaoDaQuestao = await Navigator.push(
+    int? posicaoDaQuestao = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ResumoRespostasView(
@@ -591,12 +587,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       ),
     );
 
-    store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+    if (posicaoDaQuestao != null) {
+      store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
 
-    store.revisandoProva = true;
+      store.revisandoProva = true;
 
-    listaQuestoesController.jumpToPage(
-      store.posicaoQuestaoSendoRevisada,
-    );
+      listaQuestoesController.jumpToPage(
+        store.posicaoQuestaoSendoRevisada,
+      );
+    }
   }
 }

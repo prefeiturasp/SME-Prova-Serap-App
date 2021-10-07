@@ -14,7 +14,7 @@ typedef TimerChangeCallback = void Function(EnumProvaTempoEventType eventType, D
 abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   List<ReactionDisposer> _reactions = [];
 
-  late GerenciadorTempo gerenciadorTempo;
+  GerenciadorTempo? gerenciadorTempo;
 
   late DateTime dataHoraInicioProva;
 
@@ -35,8 +35,17 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   @observable
   Duration tempoRestante = Duration(seconds: 0);
 
+  @computed
+  bool get isTempoNormalEmExecucao =>
+      status == EnumProvaTempoEventType.INICIADO || status == EnumProvaTempoEventType.ACABANDO;
+
+  @computed
+  bool get isTempoExtendido => status == EnumProvaTempoEventType.EXTENDIDO;
+
+  @computed
+  bool get possuiTempoRestante => tempoRestante.inSeconds > 0;
+
   _ProvaTempoExecucaoStoreBase({
-    required this.dataHoraInicioProva,
     required this.duracaoProva,
     required this.duracaoTempoExtra,
     required this.duracaoTempoFinalizando,
@@ -45,7 +54,11 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  iniciarContador() {
+  iniciarContador(
+    DateTime dataHoraInicioProva,
+  ) {
+    finer('Iniciando contador de tempo');
+    this.dataHoraInicioProva = dataHoraInicioProva;
     configugure();
   }
 
@@ -86,14 +99,14 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   configugure() {
     gerenciadorTempo = GerenciadorTempo();
 
-    gerenciadorTempo.configure(
+    gerenciadorTempo!.configure(
       dataHoraInicioProva: dataHoraInicioProva,
       duracaoProva: duracaoProva,
       duracaoTempoExtra: duracaoTempoExtra,
       duracaoTempoFinalizando: duracaoTempoFinalizando,
     );
 
-    gerenciadorTempo.onChangeDuracao((TempoChangeData changeData) {
+    gerenciadorTempo!.onChangeDuracao((TempoChangeData changeData) {
       status = changeData.eventType;
       porcentagem = changeData.porcentagemTotal;
       tempoRestante = changeData.tempoRestante;
@@ -114,7 +127,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
 
   @override
   onDispose() {
-    gerenciadorTempo.onDispose();
+    gerenciadorTempo?.onDispose();
     finalizarProvaCallback = null;
     finalizandoProvaCallback = null;
     extenderProvaCallback = null;

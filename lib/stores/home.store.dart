@@ -1,3 +1,4 @@
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:chopper/src/response.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -18,7 +19,7 @@ part 'home.store.g.dart';
 
 class HomeStore = _HomeStoreBase with _$HomeStore;
 
-abstract class _HomeStoreBase with Store, Loggable {
+abstract class _HomeStoreBase with Store, Loggable, Disposable {
   @observable
   ObservableMap<int, ProvaStore> provas = ObservableMap<int, ProvaStore>();
 
@@ -74,11 +75,20 @@ abstract class _HomeStoreBase with Store, Loggable {
               respostas: ProvaRespostaStore(idProva: provaResponse.id),
             );
 
-            provaStore.status = prova.status;
-
             // caso nao tenha o id, define como nova prova
-            if (!provas.keys.contains(provaStore.id)) {
+            if (!provasStore.keys.contains(provaStore.id)) {
               provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+              provaStore.prova.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+            } else {
+              provaStore.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              provaStore.prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+
+              if (provasStore[prova.id]!.status != EnumProvaStatus.PENDENTE) {
+                provaStore.status = prova.status;
+              } else {
+                provaStore.status = provasStore[prova.id]!.status;
+                prova.status = provasStore[prova.id]!.status;
+              }
             }
 
             await provaStore.respostas.carregarRespostasServidor(prova);
@@ -110,9 +120,8 @@ abstract class _HomeStoreBase with Store, Loggable {
         ..addEntries(mapEntries);
 
       for (var provaStore in provasStore.values) {
-        provaStore.setupReactions();
         await carregaProva(provaStore.id, provaStore);
-        info('${provaStore.id} - status ${provaStore.status} ');
+        provaStore.configure();
       }
     }
     provas = ObservableMap.of(provasStore);
@@ -146,20 +155,24 @@ abstract class _HomeStoreBase with Store, Loggable {
     Prova? prova = Prova.carregaProvaCache(idProva);
 
     if (prova != null) {
+      // atualizar prova com os valores remotos
+      prova.status = provaStore.prova.status;
+      prova.dataInicioProvaAluno = provaStore.prova.dataInicioProvaAluno;
+
       provaStore.prova = prova;
       provaStore.downloadStatus = prova.downloadStatus;
       provaStore.progressoDownload = prova.downloadProgresso;
-    } else {
-      await Prova.salvaProvaCache(provaStore.prova);
     }
+
+    await Prova.salvaProvaCache(provaStore.prova);
 
     if (provaStore.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
       provaStore.iniciarDownload();
     }
   }
 
-  @action
-  dispose() {
+  @override
+  onDispose() {
     limpar();
   }
 

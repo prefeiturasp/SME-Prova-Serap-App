@@ -1,3 +1,4 @@
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -7,7 +8,8 @@ import 'package:get_it/get_it.dart';
 
 import 'base_statefull.widget.dart';
 
-abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget> {
+abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget>
+    with Loggable {
   var store = GetIt.I.get<TBind>();
   var _principalStore = GetIt.I.get<PrincipalStore>();
 
@@ -20,6 +22,12 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   @override
   void dispose() {
     _principalStore.dispose();
+
+    // if (store is Disposable) {
+    //   info('Executando Dispose');
+    //   (store as Disposable).onDispose();
+    // }
+
     super.dispose();
   }
 
