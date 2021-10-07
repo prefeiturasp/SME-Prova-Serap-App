@@ -73,7 +73,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       return IconButton(
         onPressed: () {
           Navigator.of(context).pop();
-
           var prova = GetIt.I.get<ProvaViewStore>();
           prova.dispose();
         },
