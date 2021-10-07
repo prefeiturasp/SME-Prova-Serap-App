@@ -4,7 +4,7 @@ name: Docker Image CI
 on:
 
   push:
-    branches: [ development, release]
+    branches: [ development, release, master]
     paths-ignore:
     - ".github/workflows/**"  
   
@@ -12,25 +12,25 @@ on:
 
 jobs:
 
-  flutter_conf_dev:
+  ajuste_env:
     runs-on: master
-    if: ${{ github.ref == 'refs/heads/development' }}
-    environment:
-      name: development
     steps:
-      - uses: actions/checkout@v2
-      - name: Ajustando configuração
-        env: # Ou como uma variável de ambiente
-          APP_CONFIG: ${{ secrets.APP_CONFIG }}
-        run: |
-          mkdir -p config && echo $APP_CONFIG > config/app_config.json
-         
-  flutter_conf_rel:
+      - name: Ajuste de variaveis para ambiente de desenvolvimento
+        if: ${{ github.ref == 'refs/heads/development' }}
+        run: echo "::set-env name=ENVIRONMENT::development"
+        
+      - name: Ajuste de variaveis para ambiente de homologacao
+        if: ${{ github.ref == 'refs/heads/release' }}
+        run: echo "::set-env name=ENVIRONMENT::release"  
+        
+      - name: Ajuste de variaveis para ambiente de produção
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: echo "::set-env name=ENVIRONMENT::master" 
+
+  flutter_conf:
     runs-on: master
-    if: ${{ github.ref == 'refs/heads/release' }}
-    environment:
-      name: release
-    steps:
+    needs: ajuste_env
+    steps:      
       - uses: actions/checkout@v2
       - name: Ajustando configuração
         env: # Ou como uma variável de ambiente
@@ -38,12 +38,9 @@ jobs:
         run: |
           mkdir -p config && echo $APP_CONFIG > config/app_config.json
 
-  build_dev:
+  build:
     runs-on: master
-    if: ${{ github.ref == 'refs/heads/development' }}
-    environment:
-      name: development
-    needs: [flutter_conf_dev]
+    needs: [flutter_conf]
     steps:
       - name: Login to registry
         uses: docker/login-action@v1
@@ -55,50 +52,11 @@ jobs:
       - name: Build the Docker image
         run: |
                docker build -f Dockerfile.flutter --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front .
-               docker push ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
-  
-  build_release:
+               docker push ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front  
+             
+  deploy:
     runs-on: master
-    if: ${{ github.ref == 'refs/heads/release' }}
-    environment:
-      name: release
-    needs: [flutter_conf_rel]
-    steps:
-      - name: Login to registry
-        uses: docker/login-action@v1
-        with:
-          registry: ${{ secrets.REGISTRY_HOST }}
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PWD }}
-          
-      - name: Build the Docker image
-        run: |
-               docker build -f Dockerfile.flutter --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front .
-               docker push ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
-               
-               
-  deploy-development:
-    runs-on: master
-    if: ${{ github.ref == 'refs/heads/development' }}
-    environment:
-      name: development
-    needs: [ build_dev ]
-    steps:
-      - name: Redeploy
-        uses: luizhpriotto/action_images@kubectl-v1.0
-        env: 
-          RANCHER_URL: ${{ secrets.RANCHER_URL }}
-          RANCHER_TOKEN: ${{ secrets.RANCHER_TOKEN }}
-          WORKLOAD: sme-prova-serap-front
-          NAMESPACE: sme-serap-estudante
- 
-         
-  deploy-release:
-    runs-on: master
-    if: ${{ github.ref == 'refs/heads/release' }}
-    environment:
-      name: release
-    needs: [ build_release ]
+    needs: [ build ]
     steps:
       - name: Redeploy
         uses: luizhpriotto/action_images@kubectl-v1.0
