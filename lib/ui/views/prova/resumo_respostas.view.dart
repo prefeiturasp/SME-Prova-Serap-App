@@ -1,4 +1,7 @@
+import 'package:appserap/managers/tempo.manager.dart';
+import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -91,11 +94,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 textoBotao: 'FINALIZAR E ENVIAR',
                 largura: 392,
                 onPressed: () async {
-                  await widget.provaStore.finalizarProva(context);
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => SplashScreenView()),
-                    (_) => false,
-                  );
+                  await finalizarProva();
                 },
               ),
             )
@@ -308,5 +307,36 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     );
 
     return questoesTabela;
+  }
+
+  finalizarProva() async {
+    bool finalizar = true;
+
+    finalizar = await checarFinalizacaoComTempo();
+
+    if (finalizar) {
+      await widget.provaStore.finalizarProva(context);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => SplashScreenView()),
+        (_) => false,
+      );
+    }
+  }
+
+  Future<bool> checarFinalizacaoComTempo() async {
+    ProvaTempoExecucaoStore? tempoExecucaoStore = widget.provaStore.tempoExecucaoStore;
+    if (tempoExecucaoStore != null) {
+      bool possuiTempoNormalRestante = tempoExecucaoStore.status == EnumProvaTempoEventType.EM_EXECUCAO &&
+          tempoExecucaoStore.tempoRestante.inSeconds > 0;
+
+      if (possuiTempoNormalRestante) {
+        return (await mostrarDialogAindaPossuiTempo(
+          context,
+          widget.provaStore.tempoExecucaoStore!.tempoRestante,
+        ))!;
+      }
+    }
+
+    return true;
   }
 }

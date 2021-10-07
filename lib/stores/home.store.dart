@@ -63,6 +63,8 @@ abstract class _HomeStoreBase with Store, Loggable {
               status: provaResponse.status,
               tempoExecucao: provaResponse.tempoExecucao,
               tempoExtra: provaResponse.tempoExtra,
+              tempoAlerta: provaResponse.tempoAlerta,
+              dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
               questoes: [],
             );
 
@@ -91,8 +93,6 @@ abstract class _HomeStoreBase with Store, Loggable {
               await removerProvaLocal(provasStore[idLocal]!);
             }
           }
-
-          // TODO remover prova
           provasStore.removeWhere((idProva, prova) => !idsRemote.contains(idProva));
         }
       } catch (e, stacktrace) {
@@ -102,17 +102,18 @@ abstract class _HomeStoreBase with Store, Loggable {
     }
 
     if (provasStore.isNotEmpty) {
-      for (var provaStore in provasStore.values) {
-        provaStore.setupReactions();
-        await carregaProva(provaStore.id, provaStore);
-      }
-
       var mapEntries = provasStore.entries.toList()
         ..sort((a, b) => a.value.prova.dataInicio.compareTo(b.value.prova.dataInicio));
 
       provasStore
         ..clear()
         ..addEntries(mapEntries);
+
+      for (var provaStore in provasStore.values) {
+        provaStore.setupReactions();
+        await carregaProva(provaStore.id, provaStore);
+        info('${provaStore.id} - status ${provaStore.status} ');
+      }
     }
     provas = ObservableMap.of(provasStore);
 
@@ -148,7 +149,6 @@ abstract class _HomeStoreBase with Store, Loggable {
       provaStore.prova = prova;
       provaStore.downloadStatus = prova.downloadStatus;
       provaStore.progressoDownload = prova.downloadProgresso;
-      provaStore.status = prova.status;
     } else {
       await Prova.salvaProvaCache(provaStore.prova);
     }

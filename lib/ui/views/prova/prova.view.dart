@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:collection/collection.dart';
@@ -60,23 +61,29 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   _configureControlesTempoProva() {
     if (widget.provaStore.tempoExecucaoStore != null) {
       widget.provaStore.tempoExecucaoStore!.onFinalizandoProva(() {
-        print('Prova quase acabando');
+        fine('Prova quase acabando');
         store.mostrarAlertaDeTempoAcabando = true;
       });
 
       widget.provaStore.tempoExecucaoStore!.onExtenderProva(() async {
-        print('Prova extendida');
+        fine('Prova extendida');
         store.mostrarAlertaDeTempoAcabando = false;
         await _iniciarRevisaoProva();
       });
 
       widget.provaStore.tempoExecucaoStore!.onFinalizarlProva(() async {
-        print('Prova finalizada');
-        await widget.provaStore.finalizarProva(context, true);
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => SplashScreenView()),
-          (_) => false,
-        );
+        fine('Prova finalizada');
+
+        var confirm = await mostrarDialogAindaPossuiTempo(context, widget.provaStore.tempoExecucaoStore!.tempoRestante);
+        print(confirm);
+        if (confirm!) {
+          //await widget.provaStore.finalizarProva(context, true);
+
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => SplashScreenView()),
+            (_) => false,
+          );
+        }
       });
     }
   }

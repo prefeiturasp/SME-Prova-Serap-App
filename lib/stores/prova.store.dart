@@ -132,7 +132,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @action
   iniciarProva() async {
     setStatusProva(EnumProvaStatus.INICIADA);
-    prova.dataHoraInicio = DateTime.now();
+    prova.dataInicioProvaAluno = DateTime.now();
 
     await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
 
@@ -143,8 +143,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   continuarProva() async {
-    prova.dataHoraInicio ??= DateTime.now();
-
     _configurarTempoExecucao();
 
     await saveProva();
@@ -157,10 +155,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     if (prova.tempoExecucao > 0) {
       tempoExecucaoStore = ProvaTempoExecucaoStore(
-        dataHoraInicioProva: prova.dataHoraInicio!,
-        // dataHoraInicioProva: DateTime.now(),
-        duracaoProva: Duration(seconds: prova.tempoExecucao ~/ 60),
-        duracaoTempoExtra: Duration(seconds: prova.tempoExtra ~/ 60),
+        dataHoraInicioProva: prova.dataInicioProvaAluno!,
+        duracaoProva: Duration(seconds: prova.tempoExecucao),
+        duracaoTempoExtra: Duration(seconds: prova.tempoExtra),
         duracaoTempoFinalizando: Duration(minutes: 5),
       );
 

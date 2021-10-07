@@ -165,11 +165,11 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
   );
 }
 
-mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
+Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
   String mensagemCorpo =
       "Se finalizar a prova agora, não poderá mais fazer alterações mesmo que o tempo não tenha se esgotado";
 
-  showDialog(
+  return showDialog<bool>(
     context: context,
     barrierColor: Colors.black87,
     builder: (context) {
@@ -219,12 +219,14 @@ mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
           BotaoSecundarioWidget(
             textoBotao: "CANCELAR",
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, false);
             },
           ),
           BotaoDefaultWidget(
-            onPressed: () {},
             textoBotao: "FINALIZAR PROVA",
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
           )
         ],
       );
