@@ -36,6 +36,7 @@ jobs:
           APP_CONFIG: ${{ secrets.APP_CONFIG }}
         run: |
           mkdir -p config && echo $APP_CONFIG > config/app_config.json
+          
   build_dev:
     runs-on: master
     if: ${{ github.ref == 'refs/heads/development' }}
