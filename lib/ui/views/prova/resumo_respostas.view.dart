@@ -38,7 +38,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
   @override
   void dispose() {
-    store.dispose();
     super.dispose();
   }
 
@@ -50,56 +49,62 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     return AppBarWidget(
       popView: true,
       subtitulo: widget.provaStore.prova.descricao,
+      mostrarBotaoVoltar: false,
     );
   }
 
   @override
   Widget builder(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        color: backgroundColor,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //
-            Text(
-              'Resumo das respostas',
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: SingleChildScrollView(
+        child: Container(
+          color: backgroundColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              //
+              Text(
+                'Resumo das respostas',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            //
-            Observer(builder: (context) {
-              return mensagemDeQuestoesSemRespostas();
-            }),
-            //
-            Table(
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              columnWidths: {
-                0: FractionColumnWidth(.65),
-                1: FractionColumnWidth(.2),
-                2: FractionColumnWidth(.15),
-              },
-              children: questoesTabela,
-            ),
-            SizedBox(height: 32),
-            Center(
-              child: BotaoDefaultWidget(
-                textoBotao: 'FINALIZAR E ENVIAR',
-                largura: 392,
-                onPressed: () async {
-                  await widget.provaStore.finalizarProva(context);
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => SplashScreenView()),
-                    (_) => false,
-                  );
+              //
+              Observer(builder: (context) {
+                return mensagemDeQuestoesSemRespostas();
+              }),
+              //
+              Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                columnWidths: {
+                  0: FractionColumnWidth(.65),
+                  1: FractionColumnWidth(.2),
+                  2: FractionColumnWidth(.15),
                 },
+                children: questoesTabela,
               ),
-            )
-          ],
+              SizedBox(height: 32),
+              Center(
+                child: BotaoDefaultWidget(
+                  textoBotao: 'FINALIZAR E ENVIAR',
+                  largura: 392,
+                  onPressed: () async {
+                    await widget.provaStore.finalizarProva(context);
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => SplashScreenView()),
+                      (_) => false,
+                    );
+                  },
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -136,11 +141,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
           store.questoesParaRevisar.add(questao);
-        } else if (resposta!.resposta!.isNotEmpty) {
+        } else if (resposta!.resposta != null && resposta.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
           store.questoesParaRevisar.add(questao);
-        } else if (resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) {
-          respostaNaTela = "";
+        } else if ((resposta.resposta == null || resposta.resposta!.isEmpty) || alternativaSelecionada.isEmpty) {
           store.quantidadeDeQuestoesSemRespostas++;
         }
       } else {
