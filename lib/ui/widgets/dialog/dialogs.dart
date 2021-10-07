@@ -50,13 +50,13 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
   );
 }
 
-Future<bool>? mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) {
+Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) {
   String mensagem =
       "Sua prova foi finalizada, pois o tempo acabou. As questões com resposta foram enviadas com sucesso.";
   String icone = AssetsUtil.semConexao;
   String mensagemBotao = "ENTENDI";
 
-  showDialog(
+  return showDialog(
     context: context,
     barrierColor: Colors.black87,
     builder: (context) {
@@ -74,8 +74,7 @@ Future<bool>? mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) 
         botoes: [
           BotaoDefaultWidget(
             onPressed: () async {
-              Navigator.of(context).pop();
-              return true;
+              Navigator.of(context).pop(true);
             },
             textoBotao: mensagemBotao,
           )
