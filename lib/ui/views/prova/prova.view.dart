@@ -110,6 +110,26 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   @override
   Widget builder(BuildContext context) {
+    return Observer(builder: (context) {
+      return _buildProva();
+    });
+  }
+
+  Widget _buildProva() {
+    if (store.revisandoProva) {
+      var questoes = store.questoesParaRevisar.toList();
+      store.totalDeQuestoesParaRevisar = questoes.length - 1;
+      return PageView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        controller: listaQuestoesController,
+        itemCount: questoes.length,
+        itemBuilder: (context, index) {
+          store.posicaoQuestaoSendoRevisada = index;
+          return _buildQuestoes(questoes[index], index);
+        },
+      );
+    }
+
     var questoes = widget.provaStore.prova.questoes;
 
     return Column(
@@ -147,7 +167,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 Row(
                   children: [
                     Text(
-                      'Questão ${index + 1} ',
+                      'Questão ${questao.ordem + 1} ',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
@@ -398,23 +418,19 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           children: [
             Observer(
               builder: (context) {
-                if (store.questoesRevisao.isNotEmpty) {
-                  var proximoItem = store.questoesRevisao.entries
-                      .firstWhereOrNull((element) => element.value == false && element.key != questao.ordem);
-                  if (proximoItem != null) {
-                    return BotaoDefaultWidget(
-                      textoBotao: 'Proximo item da revisão',
-                      onPressed: () async {
-                        store.questoesRevisao[questao.ordem] = true;
-                        store.revisandoProva = true;
-                        listaQuestoesController.animateToPage(
-                          proximoItem.key,
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeIn,
-                        );
-                      },
-                    );
-                  }
+                if (store.posicaoQuestaoSendoRevisada != store.totalDeQuestoesParaRevisar) {
+                  return BotaoDefaultWidget(
+                    textoBotao: 'Proximo item da revisão',
+                    onPressed: () async {
+                      store.revisandoProva = true;
+                      store.posicaoQuestaoSendoRevisada++;
+                      listaQuestoesController.animateToPage(
+                        store.posicaoQuestaoSendoRevisada,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      );
+                    },
+                  );
                 }
                 return Container();
               },
@@ -432,13 +448,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                     ),
                   );
 
-                  if (!posicaoDaQuestao.isNaN) {
-                    store.revisandoProva = true;
-                    store.questaoAtual = posicaoDaQuestao;
-                    listaQuestoesController.jumpToPage(
-                      posicaoDaQuestao,
-                    );
-                  }
+                  store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+
+                  store.revisandoProva = true;
+                  store.questaoAtual = posicaoDaQuestao;
+                  listaQuestoesController.jumpToPage(
+                    posicaoDaQuestao,
+                  );
                 } catch (e) {
                   fine(e);
                 }
@@ -575,11 +591,12 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       ),
     );
 
-    if (!posicaoDaQuestao.isNaN) {
-      store.revisandoProva = true;
-      listaQuestoesController.jumpToPage(
-        posicaoDaQuestao,
-      );
-    }
+    store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+
+    store.revisandoProva = true;
+
+    listaQuestoesController.jumpToPage(
+      store.posicaoQuestaoSendoRevisada,
+    );
   }
 }

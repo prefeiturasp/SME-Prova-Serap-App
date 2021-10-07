@@ -134,35 +134,31 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
+          store.questoesParaRevisar.add(questao);
         } else if (resposta!.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
+          store.questoesParaRevisar.add(questao);
         } else if (resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) {
           respostaNaTela = "";
-          store.questoesRevisao[questao.ordem] = false;
           store.quantidadeDeQuestoesSemRespostas++;
         }
-
-        mapaDeQuestoes.add(
-          {
-            'questao': '$ordemQuestaoTratada - $questaoProva',
-            'resposta': respostaNaTela,
-            'questao_ordem': questao.ordem
-          },
-        );
       } else {
         store.quantidadeDeQuestoesSemRespostas++;
-        mapaDeQuestoes.add(
-          {
-            'questao': '$ordemQuestaoTratada - $questaoProva',
-            'resposta': respostaNaTela,
-            'questao_ordem': questao.ordem
-          },
-        );
       }
+
+      mapaDeQuestoes.add(
+        {
+          'questao': '$ordemQuestaoTratada - $questaoProva',
+          'resposta': respostaNaTela,
+          'questao_ordem': questao.ordem,
+        },
+      );
 
       mapaDeQuestoes.sort(
         (questao1, questao2) {
-          return questao1['questao_ordem'].compareTo(questao2['questao_ordem']);
+          return questao1['questao_ordem'].compareTo(
+            questao2['questao_ordem'],
+          );
         },
       );
 
