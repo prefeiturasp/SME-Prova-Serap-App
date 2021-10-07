@@ -70,15 +70,24 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildBotaoVoltar(BuildContext context) {
     if (mostrarBotaoVoltar) {
-      return IconButton(
-        onPressed: () {
-          Navigator.of(context).pop();
+      return Observer(
+        builder: (_) {
           var prova = GetIt.I.get<ProvaViewStore>();
-          prova.dispose();
+          if (prova.revisandoProva) {
+            return Container();
+          }
+          return IconButton(
+            onPressed: () {
+              if (!prova.revisandoProva) {
+                Navigator.of(context).pop();
+              }
+              prova.dispose();
+            },
+            icon: Icon(
+              Icons.arrow_back,
+            ),
+          );
         },
-        icon: Icon(
-          Icons.arrow_back,
-        ),
       );
     } else {
       return Container();
