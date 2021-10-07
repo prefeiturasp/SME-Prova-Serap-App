@@ -106,6 +106,13 @@ abstract class _HomeStoreBase with Store, Loggable {
         provaStore.setupReactions();
         await carregaProva(provaStore.id, provaStore);
       }
+
+      var mapEntries = provasStore.entries.toList()
+        ..sort((a, b) => a.value.prova.dataInicio.compareTo(b.value.prova.dataInicio));
+
+      provasStore
+        ..clear()
+        ..addEntries(mapEntries);
     }
     provas = ObservableMap.of(provasStore);
 
