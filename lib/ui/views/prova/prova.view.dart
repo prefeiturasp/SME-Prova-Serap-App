@@ -413,6 +413,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 textoBotao: 'Questão anterior',
                 onPressed: () async {
                   widget.provaStore.onChangeContadorQuestao(EnumTempoStatus.PARADO);
+                  await widget.provaStore.respostas.definirTempoResposta(
+                    questao.id,
+                    tempoQuestao: widget.provaStore.segundos,
+                  );
                   await SincronizarRespostasWorker().sincronizar();
                   listaQuestoesController.previousPage(
                     duration: Duration(milliseconds: 300),

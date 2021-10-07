@@ -142,6 +142,8 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     if (resposta != null) {
       resposta.tempoRespostaAluno = tempoQuestao;
       salvarCache(resposta);
+    } else {
+      definirResposta(questaoId, tempoQuestao: tempoQuestao);
     }
   }
 
