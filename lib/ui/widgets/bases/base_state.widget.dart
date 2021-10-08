@@ -1,14 +1,15 @@
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
 import 'base_statefull.widget.dart';
 
-abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget> {
+abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget>
+    with Loggable {
   var store = GetIt.I.get<TBind>();
   var _principalStore = GetIt.I.get<PrincipalStore>();
 
@@ -35,6 +36,7 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   Color? backgroundColor;
 
   double defaultPadding = 16.0;
+  double? defaultPaddingTop;
 
   bool? resizeToAvoidBottomInset;
 
@@ -44,27 +46,30 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   Widget build(BuildContext context) {
     WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
 
-    return Scaffold(
-      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      backgroundColor: backgroundColor,
-      appBar: showAppBar ? buildAppBar() : null,
-      bottomNavigationBar: _buildBottomNavigationBar(),
-      persistentFooterButtons: _buildPersistentFooterButtons(),
-      floatingActionButton: buildFloatingActionButton(),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.only(
-                left: defaultPadding,
-                right: defaultPadding,
-                top: defaultPadding,
-                bottom: showBottomNaviationBar ? 0 : defaultPadding,
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+        backgroundColor: backgroundColor,
+        appBar: showAppBar ? buildAppBar() : null,
+        bottomNavigationBar: _buildBottomNavigationBar(),
+        persistentFooterButtons: _buildPersistentFooterButtons(),
+        floatingActionButton: buildFloatingActionButton(),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.only(
+                  left: defaultPadding,
+                  right: defaultPadding,
+                  top: defaultPaddingTop ?? defaultPadding,
+                  bottom: showBottomNaviationBar ? 0 : defaultPadding,
+                ),
+                child: builder(context),
               ),
-              child: builder(context),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -98,7 +103,7 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
           builder: (_) {
             var cor = TemaUtil.preto;
 
-            if (_principalStore.status == ConnectivityResult.none) {
+            if (!_principalStore.temConexao) {
               cor = TemaUtil.vermelhoErro;
             }
 

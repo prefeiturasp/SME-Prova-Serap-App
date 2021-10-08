@@ -1,7 +1,6 @@
-import 'dart:developer';
-
+import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -16,7 +15,6 @@ import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 
@@ -42,7 +40,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
   @override
   void dispose() {
-    store.dispose();
     super.dispose();
   }
 
@@ -54,56 +51,58 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     return AppBarWidget(
       popView: true,
       subtitulo: widget.provaStore.prova.descricao,
+      mostrarBotaoVoltar: false,
     );
   }
 
   @override
   Widget builder(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        color: backgroundColor,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //
-            Text(
-              'Resumo das respostas',
-              textAlign: TextAlign.start,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: SingleChildScrollView(
+        child: Container(
+          color: backgroundColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              //
+              Text(
+                'Resumo das respostas',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            //
-            Observer(builder: (context) {
-              return mensagemDeQuestoesSemRespostas();
-            }),
-            //
-            Table(
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              columnWidths: {
-                0: FractionColumnWidth(.65),
-                1: FractionColumnWidth(.2),
-                2: FractionColumnWidth(.15),
-              },
-              children: questoesTabela,
-            ),
-            SizedBox(height: 32),
-            Center(
-              child: BotaoDefaultWidget(
-                textoBotao: 'FINALIZAR E ENVIAR',
-                largura: 392,
-                onPressed: () async {
-                  await widget.provaStore.finalizarProva(context);
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => SplashScreenView()),
-                    (_) => false,
-                  );
+              //
+              Observer(builder: (context) {
+                return mensagemDeQuestoesSemRespostas();
+              }),
+              //
+              Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                columnWidths: {
+                  0: FractionColumnWidth(.65),
+                  1: FractionColumnWidth(.2),
+                  2: FractionColumnWidth(.15),
                 },
+                children: questoesTabela,
               ),
-            )
-          ],
+              SizedBox(height: 32),
+              Center(
+                child: BotaoDefaultWidget(
+                  textoBotao: 'FINALIZAR E ENVIAR',
+                  largura: 392,
+                  onPressed: () async {
+                    await finalizarProva();
+                  },
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -139,34 +138,30 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
-        } else if (resposta!.resposta != null || resposta.resposta!.isNotEmpty) {
+          store.questoesParaRevisar.add(questao);
+        } else if (resposta!.resposta != null && resposta.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
-        } else {
-          store.questoesRevisao[questao.ordem] = false;
+          store.questoesParaRevisar.add(questao);
+        } else if ((resposta.resposta == null || resposta.resposta!.isEmpty) || alternativaSelecionada.isEmpty) {
           store.quantidadeDeQuestoesSemRespostas++;
         }
-
-        mapaDeQuestoes.add(
-          {
-            'questao': '$ordemQuestaoTratada - $questaoProva',
-            'resposta': respostaNaTela,
-            'questao_ordem': questao.ordem
-          },
-        );
       } else {
         store.quantidadeDeQuestoesSemRespostas++;
-        mapaDeQuestoes.add(
-          {
-            'questao': '$ordemQuestaoTratada - $questaoProva',
-            'resposta': respostaNaTela,
-            'questao_ordem': questao.ordem
-          },
-        );
       }
+
+      mapaDeQuestoes.add(
+        {
+          'questao': '$ordemQuestaoTratada - $questaoProva',
+          'resposta': respostaNaTela,
+          'questao_ordem': questao.ordem,
+        },
+      );
 
       mapaDeQuestoes.sort(
         (questao1, questao2) {
-          return questao1['questao_ordem'].compareTo(questao2['questao_ordem']);
+          return questao1['questao_ordem'].compareTo(
+            questao2['questao_ordem'],
+          );
         },
       );
 
@@ -311,5 +306,36 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     );
 
     return questoesTabela;
+  }
+
+  finalizarProva() async {
+    bool finalizar = true;
+
+    finalizar = await checarFinalizacaoComTempo();
+
+    if (finalizar) {
+      await widget.provaStore.finalizarProva(context);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => SplashScreenView()),
+        (_) => false,
+      );
+    }
+  }
+
+  Future<bool> checarFinalizacaoComTempo() async {
+    ProvaTempoExecucaoStore? tempoExecucaoStore = widget.provaStore.tempoExecucaoStore;
+    if (tempoExecucaoStore != null) {
+      bool possuiTempoNormalRestante =
+          tempoExecucaoStore.isTempoNormalEmExecucao && tempoExecucaoStore.possuiTempoRestante;
+
+      if (possuiTempoNormalRestante) {
+        return (await mostrarDialogAindaPossuiTempo(
+          context,
+          widget.provaStore.tempoExecucaoStore!.tempoRestante,
+        ))!;
+      }
+    }
+
+    return true;
   }
 }

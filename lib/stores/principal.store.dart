@@ -1,6 +1,6 @@
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +14,7 @@ abstract class _PrincipalStoreBase with Store {
   final usuario = GetIt.I.get<UsuarioStore>();
 
   @observable
-  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   ReactionDisposer? _disposer;
 
@@ -27,19 +27,19 @@ abstract class _PrincipalStoreBase with Store {
   }
 
   @observable
-  ConnectivityResult status = ConnectivityResult.wifi;
+  ConnectivityStatus status = ConnectivityStatus.wifi;
 
   @observable
   String versaoApp = "Versão 0";
 
   @computed
-  bool get temConexao => status != ConnectivityResult.none;
+  bool get temConexao => status != ConnectivityStatus.none;
 
   @computed
-  String get versao => "$versaoApp ${status == ConnectivityResult.none ? ' - Sem conexão' : ''}";
+  String get versao => "$versaoApp ${status == ConnectivityStatus.none ? ' - Sem conexão' : ''}";
 
   @action
-  Future onChangeConexao(ConnectivityResult? resultado) async {
+  Future onChangeConexao(ConnectivityStatus? resultado) async {
     status = resultado!;
   }
 

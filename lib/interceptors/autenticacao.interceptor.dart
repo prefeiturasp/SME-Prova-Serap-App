@@ -14,7 +14,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       SharedPreferences prefs = GetIt.I.get();
 
       String? token = prefs.getString('token');
-      String? expiration = prefs.getString('token_expiration');
+      // String? expiration = prefs.getString('token_expiration');
 
       if (token == null) {
         fine('Token null - Redirecionando para o Login');
@@ -33,7 +33,9 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       Map<String, String> updatedHeaders = Map.of(request.headers);
 
       updatedHeaders.update('Authorization', (value) => "Bearer $token", ifAbsent: () => "Bearer $token");
-
+      updatedHeaders.update('access-control-allow-origin', (value) => "*");
+      updatedHeaders.update('Access-Control-Allow-Methods',
+          (value) => "GET, PUT, POST, DELETE, HEAD, OPTIONS, PATCH, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK");
       return request.copyWith(headers: updatedHeaders);
     }
   }

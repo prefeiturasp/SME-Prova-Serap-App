@@ -1,27 +1,33 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:appserap/models/prova_resposta.model.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/enums/tipo_questao.enum.dart';
-import 'package:appserap/models/alternativa.model.dart';
-import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/questao.model.dart';
-import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/stores/prova.view.store.dart';
-import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
-import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
-import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:collection/collection.dart';
+
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/models/alternativa.model.dart';
+import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/stores/prova.view.store.dart';
+import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
+import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+
 import 'resumo_respostas.view.dart';
 
 class ProvaView extends BaseStatefulWidget {
@@ -40,15 +46,54 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
   @override
+  double get defaultPadding => 0;
+
+  @override
   void initState() {
     widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
+
     store.setup();
     super.initState();
   }
 
+  _configureControlesTempoProva() {
+    if (widget.provaStore.tempoExecucaoStore != null) {
+      widget.provaStore.tempoExecucaoStore!.onFinalizandoProva(() {
+        fine('Prova quase acabando');
+        store.mostrarAlertaDeTempoAcabando = true;
+      });
+
+      widget.provaStore.tempoExecucaoStore!.onExtenderProva(() async {
+        fine('Prova extendida');
+        store.mostrarAlertaDeTempoAcabando = false;
+        await _iniciarRevisaoProva();
+      });
+
+      // Ao acabar o tempo, finalizar a prova e enviar respostas imediatamente
+      widget.provaStore.tempoExecucaoStore!.onFinalizarlProva(() async {
+        fine('Prova finalizada');
+
+        var confirm = await widget.provaStore.finalizarProva(context, true);
+        if (confirm) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => SplashScreenView()),
+            (_) => false,
+          );
+        }
+      });
+    }
+  }
+
   @override
   void dispose() {
+    widget.provaStore.onDispose();
+    store.dispose();
     super.dispose();
+  }
+
+  @override
+  onAfterBuild(BuildContext context) {
+    _configureControlesTempoProva();
   }
 
   @override
@@ -61,18 +106,61 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   @override
   Widget builder(BuildContext context) {
+    return Observer(builder: (context) {
+      return WillPopScope(
+        onWillPop: () async {
+          if (store.revisandoProva) {
+            return false;
+          }
+          return true;
+        },
+        child: _buildProva(),
+      );
+    });
+  }
+
+  Widget _buildProva() {
+    if (store.revisandoProva) {
+      var questoes = store.questoesParaRevisar.toList();
+      store.totalDeQuestoesParaRevisar = questoes.length - 1;
+      return Column(
+        children: [
+          ..._buildTempoProva(),
+          PageView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            controller: listaQuestoesController,
+            itemCount: questoes.length,
+            itemBuilder: (context, index) {
+              store.posicaoQuestaoSendoRevisada = index;
+              return _buildQuestoes(questoes[index], index);
+            },
+          ),
+        ],
+      );
+    }
+
     var questoes = widget.provaStore.prova.questoes;
 
-    return PageView.builder(
-      physics: NeverScrollableScrollPhysics(),
-      controller: listaQuestoesController,
-      onPageChanged: (value) {
-        store.questaoAtual = value + 1;
-      },
-      itemCount: questoes.length,
-      itemBuilder: (context, index) {
-        return _buildQuestoes(questoes[index], index);
-      },
+    return Column(
+      children: [
+        ..._buildTempoProva(),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: listaQuestoesController,
+              onPageChanged: (value) {
+                store.questaoAtual = value + 1;
+              },
+              itemCount: questoes.length,
+              itemBuilder: (context, index) {
+                return _buildQuestoes(questoes[index], index);
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -88,7 +176,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 Row(
                   children: [
                     Text(
-                      'Questão ${index + 1} ',
+                      'Questão ${questao.ordem + 1} ',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
@@ -339,23 +427,19 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           children: [
             Observer(
               builder: (context) {
-                if (store.questoesRevisao.isNotEmpty) {
-                  var proximoItem = store.questoesRevisao.entries
-                      .firstWhereOrNull((element) => element.value == false && element.key != questao.ordem);
-                  if (proximoItem != null) {
-                    return BotaoDefaultWidget(
-                      textoBotao: 'Proximo item da revisão',
-                      onPressed: () async {
-                        store.questoesRevisao[questao.ordem] = true;
-                        store.revisandoProva = true;
-                        listaQuestoesController.animateToPage(
-                          proximoItem.key,
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeIn,
-                        );
-                      },
-                    );
-                  }
+                if (store.posicaoQuestaoSendoRevisada != store.totalDeQuestoesParaRevisar) {
+                  return BotaoDefaultWidget(
+                    textoBotao: 'Proximo item da revisão',
+                    onPressed: () async {
+                      store.revisandoProva = true;
+                      store.posicaoQuestaoSendoRevisada++;
+                      listaQuestoesController.animateToPage(
+                        store.posicaoQuestaoSendoRevisada,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      );
+                    },
+                  );
                 }
                 return Container();
               },
@@ -373,13 +457,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                     ),
                   );
 
-                  if (!posicaoDaQuestao.isNaN) {
-                    store.revisandoProva = true;
-                    store.questaoAtual = posicaoDaQuestao;
-                    listaQuestoesController.jumpToPage(
-                      posicaoDaQuestao,
-                    );
-                  }
+                  store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+
+                  store.revisandoProva = true;
+                  store.questaoAtual = posicaoDaQuestao;
+                  listaQuestoesController.jumpToPage(
+                    posicaoDaQuestao,
+                  );
                 } catch (e) {
                   fine(e);
                 }
@@ -437,23 +521,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 onPressed: () async {
                   store.questaoAtual = 0;
                   try {
-                    await SincronizarRespostasWorker().sincronizar();
-
-                    int posicaoDaQuestao = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ResumoRespostasView(
-                          provaStore: widget.provaStore,
-                        ),
-                      ),
-                    );
-
-                    if (!posicaoDaQuestao.isNaN) {
-                      store.revisandoProva = true;
-                      listaQuestoesController.jumpToPage(
-                        posicaoDaQuestao,
-                      );
-                    }
+                    await _iniciarRevisaoProva();
                   } catch (e) {
                     fine(e);
                   }
@@ -483,5 +551,63 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     }
     return texto;
     // #123456#
+  }
+
+  _buildTempoProva() {
+    if (widget.provaStore.tempoExecucaoStore == null) {
+      return [SizedBox.shrink()];
+    }
+
+    return [
+      Observer(builder: (_) {
+        return BarraProgresso(
+          progresso: widget.provaStore.tempoExecucaoStore?.porcentagem ?? 0,
+          tempoRestante: widget.provaStore.tempoExecucaoStore?.tempoRestante ?? Duration(),
+          variant: widget.provaStore.tempoExecucaoStore?.status,
+        );
+      }),
+      Observer(builder: (_) {
+        return Visibility(
+          visible: store.mostrarAlertaDeTempoAcabando,
+          child: Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: TemaUtil.laranja01,
+            ),
+            child: Center(
+              child: Texto(
+                'Atenção: ${formatDuration(widget.provaStore.tempoExecucaoStore!.tempoRestante)} restantes',
+                bold: true,
+                fontSize: 16,
+                color: TemaUtil.preto,
+              ),
+            ),
+          ),
+        );
+      }),
+    ];
+  }
+
+  Future<void> _iniciarRevisaoProva() async {
+    await SincronizarRespostasWorker().sincronizar();
+
+    int? posicaoDaQuestao = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResumoRespostasView(
+          provaStore: widget.provaStore,
+        ),
+      ),
+    );
+
+    if (posicaoDaQuestao != null) {
+      store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+
+      store.revisandoProva = true;
+
+      listaQuestoesController.jumpToPage(
+        store.posicaoQuestaoSendoRevisada,
+      );
+    }
   }
 }

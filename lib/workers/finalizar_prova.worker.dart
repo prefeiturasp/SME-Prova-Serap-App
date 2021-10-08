@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:appserap/utils/date.util.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/main.ioc.dart';
@@ -52,8 +53,8 @@ class FinalizarProvaWorker with Worker, Loggable {
 
     info('${provas.length} provas pendente de sincronização');
 
-    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
-    if (provas.isNotEmpty && resultado == ConnectivityResult.none) {
+    ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
+    if (provas.isNotEmpty && resultado == ConnectivityStatus.none) {
       info('Falha na sincronização. Sem Conexão....');
       return;
     }
@@ -64,6 +65,7 @@ class FinalizarProvaWorker with Worker, Loggable {
         await ServiceLocator.get<ApiService>().prova.setStatusProva(
               idProva: prova.id,
               status: EnumProvaStatus.FINALIZADA.index,
+              dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 
         // Sincroniza respostas
