@@ -62,14 +62,22 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   @override
   Widget builder(BuildContext context) {
     return Observer(builder: (context) {
-      return _buildProva();
+      return WillPopScope(
+        onWillPop: () async {
+          if (store.revisandoProva) {
+            return false;
+          }
+          return true;
+        },
+        child: _buildProva(),
+      );
     });
   }
 
   Widget _buildProva() {
     if (store.revisandoProva) {
       var questoes = store.questoesParaRevisar.toList();
-      store.totalDeQuestoesParaRevisar = questoes.length-1;
+      store.totalDeQuestoesParaRevisar = questoes.length - 1;
       return PageView.builder(
         physics: NeverScrollableScrollPhysics(),
         controller: listaQuestoesController,
