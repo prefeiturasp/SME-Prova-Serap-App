@@ -22,12 +22,6 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   @override
   void dispose() {
     _principalStore.dispose();
-
-    // if (store is Disposable) {
-    //   info('Executando Dispose');
-    //   (store as Disposable).onDispose();
-    // }
-
     super.dispose();
   }
 
