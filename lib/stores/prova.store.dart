@@ -166,8 +166,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       fine('Configurando controlador de tempo');
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
-        duracaoProva: Duration(seconds: prova.tempoExecucao ~/ 10),
-        duracaoTempoExtra: Duration(seconds: prova.tempoExtra ~/ 10),
+        duracaoProva: Duration(seconds: prova.tempoExecucao),
+        duracaoTempoExtra: Duration(seconds: prova.tempoExtra),
         duracaoTempoFinalizando: Duration(minutes: 5),
       );
     }
