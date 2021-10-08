@@ -99,6 +99,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction((_) => conexaoStream.value, onChangeConexao),
+      reaction((_) => tempoCorrendo, onChangeContadorQuestao),
     ];
   }
 

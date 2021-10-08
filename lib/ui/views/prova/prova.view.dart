@@ -110,7 +110,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   }
 
   Widget _buildQuestoes(Questao questao, int index) {
-    widget.provaStore.onChangeContadorQuestao(EnumTempoStatus.CORRENDO);
+    widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -436,7 +436,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               return BotaoSecundarioWidget(
                 textoBotao: 'Questão anterior',
                 onPressed: () async {
-                  widget.provaStore.onChangeContadorQuestao(EnumTempoStatus.PARADO);
+                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
                   await widget.provaStore.respostas.definirTempoResposta(
                     questao.id,
                     tempoQuestao: widget.provaStore.segundos,
@@ -456,7 +456,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
-                    widget.provaStore.onChangeContadorQuestao(EnumTempoStatus.PARADO);
+                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
 
                     if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
                       await widget.provaStore.respostas.definirResposta(
