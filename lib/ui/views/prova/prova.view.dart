@@ -126,14 +126,16 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       return Column(
         children: [
           ..._buildTempoProva(),
-          PageView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            controller: listaQuestoesController,
-            itemCount: questoes.length,
-            itemBuilder: (context, index) {
-              store.posicaoQuestaoSendoRevisada = index;
-              return _buildQuestoes(questoes[index], index);
-            },
+          Expanded(
+            child: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: listaQuestoesController,
+              itemCount: questoes.length,
+              itemBuilder: (context, index) {
+                store.posicaoQuestaoSendoRevisada = index;
+                return _buildQuestoes(questoes[index], index);
+              },
+            ),
           ),
         ],
       );

@@ -1,6 +1,9 @@
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -47,6 +50,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
   @override
+  double get defaultPadding => 0;
+
+  @override
   PreferredSizeWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
@@ -62,47 +68,52 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         return false;
       },
       child: SingleChildScrollView(
-        child: Container(
-          color: backgroundColor,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //
-              Text(
-                'Resumo das respostas',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
+        child: Column(
+          children: [
+            ..._buildTempoProva(),
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //
+                  Text(
+                    'Resumo das respostas',
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  //
+                  Observer(builder: (context) {
+                    return mensagemDeQuestoesSemRespostas();
+                  }),
+                  //
+                  Table(
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    columnWidths: {
+                      0: FractionColumnWidth(.65),
+                      1: FractionColumnWidth(.2),
+                      2: FractionColumnWidth(.15),
+                    },
+                    children: questoesTabela,
+                  ),
+                  SizedBox(height: 32),
+                  Center(
+                    child: BotaoDefaultWidget(
+                      textoBotao: 'FINALIZAR E ENVIAR',
+                      largura: 392,
+                      onPressed: () async {
+                        await finalizarProva();
+                      },
+                    ),
+                  )
+                ],
               ),
-              //
-              Observer(builder: (context) {
-                return mensagemDeQuestoesSemRespostas();
-              }),
-              //
-              Table(
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                columnWidths: {
-                  0: FractionColumnWidth(.65),
-                  1: FractionColumnWidth(.2),
-                  2: FractionColumnWidth(.15),
-                },
-                children: questoesTabela,
-              ),
-              SizedBox(height: 32),
-              Center(
-                child: BotaoDefaultWidget(
-                  textoBotao: 'FINALIZAR E ENVIAR',
-                  largura: 392,
-                  onPressed: () async {
-                    await finalizarProva();
-                  },
-                ),
-              )
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -337,5 +348,40 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     }
 
     return true;
+  }
+
+  _buildTempoProva() {
+    if (widget.provaStore.tempoExecucaoStore == null) {
+      return [SizedBox.shrink()];
+    }
+
+    return [
+      Observer(builder: (_) {
+        return BarraProgresso(
+          progresso: widget.provaStore.tempoExecucaoStore?.porcentagem ?? 0,
+          tempoRestante: widget.provaStore.tempoExecucaoStore?.tempoRestante ?? Duration(),
+          variant: widget.provaStore.tempoExecucaoStore?.status,
+        );
+      }),
+      Observer(builder: (_) {
+        return Visibility(
+          visible: store.mostrarAlertaDeTempoAcabando,
+          child: Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: TemaUtil.laranja01,
+            ),
+            child: Center(
+              child: Texto(
+                'Atenção: ${formatDuration(widget.provaStore.tempoExecucaoStore!.tempoRestante)} restantes',
+                bold: true,
+                fontSize: 16,
+                color: TemaUtil.preto,
+              ),
+            ),
+          ),
+        );
+      }),
+    ];
   }
 }
