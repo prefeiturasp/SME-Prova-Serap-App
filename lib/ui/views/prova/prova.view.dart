@@ -107,7 +107,15 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   @override
   Widget builder(BuildContext context) {
     return Observer(builder: (context) {
-      return _buildProva();
+      return WillPopScope(
+        onWillPop: () async {
+          if (store.revisandoProva) {
+            return false;
+          }
+          return true;
+        },
+        child: _buildProva(),
+      );
     });
   }
 
@@ -118,16 +126,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       return Column(
         children: [
           ..._buildTempoProva(),
-          Expanded(
-            child: PageView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              controller: listaQuestoesController,
-              itemCount: questoes.length,
-              itemBuilder: (context, index) {
-                store.posicaoQuestaoSendoRevisada = index;
-                return _buildQuestoes(questoes[index], index);
-              },
-            ),
+          PageView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            controller: listaQuestoesController,
+            itemCount: questoes.length,
+            itemBuilder: (context, index) {
+              store.posicaoQuestaoSendoRevisada = index;
+              return _buildQuestoes(questoes[index], index);
+            },
           ),
         ],
       );
