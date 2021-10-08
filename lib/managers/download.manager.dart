@@ -119,6 +119,8 @@ class GerenciadorDownload with Loggable {
   }
 
   Future<void> startDownload() async {
+    info('Iniciando Download');
+
     Prova prova = await getProva();
     downloadAtual = downloads.length - getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length;
 

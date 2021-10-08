@@ -69,7 +69,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   iniciarDownload() async {
-    info('Iniciando Download');
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
     await gerenciadorDownload.configure();

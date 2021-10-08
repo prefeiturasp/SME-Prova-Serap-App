@@ -115,14 +115,21 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     if (store.revisandoProva) {
       var questoes = store.questoesParaRevisar.toList();
       store.totalDeQuestoesParaRevisar = questoes.length - 1;
-      return PageView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        controller: listaQuestoesController,
-        itemCount: questoes.length,
-        itemBuilder: (context, index) {
-          store.posicaoQuestaoSendoRevisada = index;
-          return _buildQuestoes(questoes[index], index);
-        },
+      return Column(
+        children: [
+          ..._buildTempoProva(),
+          Expanded(
+            child: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: listaQuestoesController,
+              itemCount: questoes.length,
+              itemBuilder: (context, index) {
+                store.posicaoQuestaoSendoRevisada = index;
+                return _buildQuestoes(questoes[index], index);
+              },
+            ),
+          ),
+        ],
       );
     }
 
