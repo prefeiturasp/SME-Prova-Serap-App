@@ -42,7 +42,7 @@ class SincronizarRespostasWorker with Worker, Loggable {
     fine('Sincronizando respostas para o servidor');
 
     var respostasLocal = respostas ?? carregaRespostasCache();
-    fine('${respostasLocal.length} respostas salvas localmente');
+    finer('${respostasLocal.length} respostas salvas localmente');
 
     var respostasNaoSincronizadas = respostasLocal.where((element) => element.sincronizado == false);
     fine('${respostasNaoSincronizadas.length} respostas ainda não sincronizadas');

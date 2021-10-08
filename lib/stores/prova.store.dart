@@ -168,7 +168,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       tempoExecucaoStore = ProvaTempoExecucaoStore(
         duracaoProva: Duration(seconds: prova.tempoExecucao),
         duracaoTempoExtra: Duration(seconds: prova.tempoExtra),
-        duracaoTempoFinalizando: Duration(minutes: prova.tempoAlerta ?? 0),
+        duracaoTempoFinalizando: Duration(seconds: prova.tempoAlerta ?? 0),
       );
     }
   }
