@@ -102,9 +102,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       },
       itemCount: questoes.length,
       itemBuilder: (context, index) {
-        return Observer(builder: (_) {
-          return _buildQuestoes(questoes[index], index);
-        });
+        return _buildQuestoes(questoes[index], index);
       },
     );
   }
@@ -488,7 +486,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 onPressed: () async {
                   store.questaoAtual = 0;
                   try {
+                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                    await widget.provaStore.respostas.definirTempoResposta(
+                      questao.id,
+                      tempoQuestao: widget.provaStore.segundos,
+                    );
                     await SincronizarRespostasWorker().sincronizar();
+                    widget.provaStore.segundos = 0;
 
                     int posicaoDaQuestao = await Navigator.push(
                       context,

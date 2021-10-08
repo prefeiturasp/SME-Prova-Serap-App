@@ -104,7 +104,6 @@ abstract class _ProvaStoreBase with Store, Loggable {
   }
 
   dispose() {
-    // onChangeContadorQuestao(true);
     for (var _reaction in _reactions) {
       _reaction();
     }

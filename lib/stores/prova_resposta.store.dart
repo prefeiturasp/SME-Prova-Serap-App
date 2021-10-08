@@ -140,6 +140,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     var resposta = respostasLocal[questaoId];
 
     if (resposta != null) {
+      resposta.sincronizado = false;
       resposta.tempoRespostaAluno = tempoQuestao;
       salvarCache(resposta);
     } else {
