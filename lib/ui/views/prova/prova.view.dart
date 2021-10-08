@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -35,6 +36,8 @@ class ProvaView extends BaseStatefulWidget {
 class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Loggable {
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
+  int? _questaoId;
+  int? _alternativaId;
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
@@ -105,6 +108,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   }
 
   Widget _buildQuestoes(Questao questao, int index) {
+    widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -330,7 +334,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
         onChanged: (value) {
-          widget.provaStore.respostas.definirResposta(questaoId, alternativaId: value);
+          widget.provaStore.respostas.definirResposta(
+            questaoId,
+            alternativaId: value,
+            tempoQuestao: null,
+          );
         },
         toggleable: true,
         title: Row(children: [
@@ -426,6 +434,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               return BotaoSecundarioWidget(
                 textoBotao: 'Questão anterior',
                 onPressed: () async {
+                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                  await widget.provaStore.respostas.definirTempoResposta(
+                    questao.id,
+                    tempoQuestao: widget.provaStore.segundos,
+                  );
                   await SincronizarRespostasWorker().sincronizar();
                   listaQuestoesController.previousPage(
                     duration: Duration(milliseconds: 300),
@@ -441,11 +454,23 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
-                    await SincronizarRespostasWorker().sincronizar();
+                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+
                     if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
-                      await widget.provaStore.respostas
-                          .definirResposta(questao.id, textoResposta: await controller.getText());
+                      await widget.provaStore.respostas.definirResposta(
+                        questao.id,
+                        textoResposta: await controller.getText(),
+                        tempoQuestao: widget.provaStore.segundos,
+                      );
                     }
+                    if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
+                      await widget.provaStore.respostas.definirTempoResposta(
+                        questao.id,
+                        tempoQuestao: widget.provaStore.segundos,
+                      );
+                    }
+                    await SincronizarRespostasWorker().sincronizar();
+                    widget.provaStore.segundos = 0;
 
                     listaQuestoesController.nextPage(
                       duration: Duration(milliseconds: 300),
@@ -461,7 +486,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 onPressed: () async {
                   store.questaoAtual = 0;
                   try {
+                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                    await widget.provaStore.respostas.definirTempoResposta(
+                      questao.id,
+                      tempoQuestao: widget.provaStore.segundos,
+                    );
                     await SincronizarRespostasWorker().sincronizar();
+                    widget.provaStore.segundos = 0;
 
                     int posicaoDaQuestao = await Navigator.push(
                       context,

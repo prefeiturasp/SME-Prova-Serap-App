@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -50,6 +52,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
   EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
   @observable
+  EnumTempoStatus tempoCorrendo = EnumTempoStatus.PARADO;
+
+  @observable
   EnumProvaStatus status = EnumProvaStatus.NAO_INICIADA;
 
   @observable
@@ -60,6 +65,15 @@ abstract class _ProvaStoreBase with Store, Loggable {
 
   @observable
   String icone = AssetsUtil.iconeProva;
+
+  @observable
+  int segundos = 0;
+
+  @observable
+  DateTime inicioQuestao = DateTime.now();
+
+  @observable
+  DateTime fimQuestao = DateTime.now();
 
   @action
   iniciarDownload() async {
@@ -85,12 +99,31 @@ abstract class _ProvaStoreBase with Store, Loggable {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction((_) => conexaoStream.value, onChangeConexao),
+      reaction((_) => tempoCorrendo, onChangeContadorQuestao),
     ];
   }
 
   dispose() {
     for (var _reaction in _reactions) {
       _reaction();
+    }
+  }
+
+  @action
+  onChangeContadorQuestao(EnumTempoStatus finalizado) {
+    if (finalizado == EnumTempoStatus.CORRENDO) {
+      inicioQuestao = DateTime.now();
+      fine(' Inicio da Questão: $inicioQuestao');
+    } else if (finalizado == EnumTempoStatus.CONTINUAR) {
+      return;
+    } else {
+      DateTime fimQuestao = DateTime.now();
+
+      segundos = fimQuestao.difference(inicioQuestao).inSeconds;
+
+      fine(' Fim da Questão: $fimQuestao');
+
+      fine(' Segundos: $segundos');
     }
   }
 
