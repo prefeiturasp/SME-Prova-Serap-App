@@ -86,12 +86,14 @@ int getTicks(DateTime data) {
   return data.microsecondsSinceEpoch * 10 + _epochTicks;
 }
 
-// extension TicksOnDateTime on DateTime {
-//   int get ticks => ;
-// }
+extension TicksOnDateTime on DateTime {
+  int get ticks {
+    const _epochTicks = 621355968000000000;
+    return microsecondsSinceEpoch * 10 + _epochTicks;
+  }
+}
 
-/// Returns a formatted string for the given Duration [d] to be DD:HH:mm:ss
-/// and ignore if 0.
+/// Retorna uma string formatada com a Duration [d] e ignora caso for 0
 String formatDuration(Duration d) {
   var seconds = d.inSeconds;
   final days = seconds ~/ Duration.secondsPerDay;
