@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
@@ -15,6 +17,7 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
@@ -421,7 +424,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       ),
       largura: 256,
       onPressed: () async {
-
         mostrarDialogPrecisaDeSenha(
           context,
           Padding(
@@ -442,8 +444,25 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           ),
           BotaoDefaultWidget(
             onPressed: () {
-              Navigator.pop(context);
-              mostrarDialogSenhaErrada(context);
+              if (provaStore.prova.senha.isNotEmpty) {
+                showDialog(
+                  context: context,
+                  builder: (_) => Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+
+                String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
+
+                Navigator.pop(context);
+
+                if (provaStore.prova.senha == senhaCriptografada) {
+
+                } else {
+                  mostrarDialogSenhaErrada(context);
+                }
+
+              }
             },
             textoBotao: "ENVIAR CODIGO",
           ),

@@ -9,7 +9,6 @@ class ProvaDetalhesResponseDTO {
   List<int> arquivosId;
   List<int> alternativasId;
   int tamanhoTotalArquivos;
-  bool precisaDeSenha;
 
   ProvaDetalhesResponseDTO({
     required this.provaId,
@@ -17,7 +16,6 @@ class ProvaDetalhesResponseDTO {
     required this.arquivosId,
     required this.alternativasId,
     required this.tamanhoTotalArquivos,
-    this.precisaDeSenha = false,
   });
 
   static const fromJson = _$ProvaDetalhesResponseDTOFromJson;

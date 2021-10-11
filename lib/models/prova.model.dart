@@ -25,6 +25,8 @@ class Prova {
 
   EnumProvaStatus status;
 
+  String senha;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -35,6 +37,7 @@ class Prova {
     this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
     this.downloadProgresso = 0,
     this.status = EnumProvaStatus.NAO_INICIADA,
+    required this.senha,
   });
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);

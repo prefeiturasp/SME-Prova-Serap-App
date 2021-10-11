@@ -14,6 +14,8 @@ class ProvaResponseDTO {
   DateTime dataInicio;
   DateTime dataFim;
 
+  String senha;
+
   EnumProvaStatus status;
 
   ProvaResponseDTO({
@@ -23,6 +25,7 @@ class ProvaResponseDTO {
     required this.dataInicio,
     required this.dataFim,
     required this.status,
+    required this.senha,
   });
 
   static const fromJson = _$ProvaResponseDTOFromJson;
