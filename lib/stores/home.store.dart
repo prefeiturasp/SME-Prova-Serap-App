@@ -64,6 +64,7 @@ abstract class _HomeStoreBase with Store, Loggable {
                 descricao: provaResponse.descricao,
                 status: provaResponse.status,
                 questoes: [],
+                senha: provaResponse.senha,
               ),
               respostas: ProvaRespostaStore(idProva: provaResponse.id),
             );

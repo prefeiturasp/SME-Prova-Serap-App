@@ -25,7 +25,7 @@ class Prova {
 
   EnumProvaStatus status;
 
-  String senha;
+  String? senha;
 
   Prova({
     required this.id,

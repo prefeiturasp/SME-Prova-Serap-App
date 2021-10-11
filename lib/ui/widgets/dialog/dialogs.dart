@@ -211,46 +211,6 @@ mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
   );
 }
 
-mostrarDialogPrecisaDeSenha(BuildContext context, Widget corpo, Widget botao) {
-  String mensagemCabecalho = "Insira a senha informada para iniciar a prova";
-
-  showDialog(
-    context: context,
-    barrierColor: Colors.black87,
-    builder: (context) {
-      return DialogDefaultWidget(
-        cabecalho: Padding(
-          padding: const EdgeInsets.only(
-            top: 16,
-            left: 16,
-            right: 16,
-          ),
-          child: Text(
-            mensagemCabecalho,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
-        corpo: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-          ),
-          child: corpo
-        ),
-        botoes: [
-          BotaoDefaultWidget(
-            onPressed: () {},
-            textoBotao: "ENVIAR",
-          )
-        ],
-      );
-    },
-  );
-}
-
 mostrarDialogSenhaErrada(BuildContext context) {
   String mensagemCorpo = "O código está incorreto. Solicite o código para o professor.";
 

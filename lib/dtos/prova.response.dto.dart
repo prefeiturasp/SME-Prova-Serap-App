@@ -14,7 +14,7 @@ class ProvaResponseDTO {
   DateTime dataInicio;
   DateTime dataFim;
 
-  String senha;
+  String? senha;
 
   EnumProvaStatus status;
 
