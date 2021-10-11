@@ -1,6 +1,5 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/questao.model.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 part 'prova.view.store.g.dart';
@@ -26,6 +25,12 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   @observable
   bool revisandoProva = false;
 
+  @observable
+  bool mostrarAlertaDeTempoAcabando = false;
+
+  @observable
+  bool isLoading = true;
+
   setup() async {
     questoesParaRevisar = <Questao>[].asObservable();
     questaoAtual = 1;
@@ -33,6 +38,7 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
 
   void dispose() {
     quantidadeDeQuestoesSemRespostas = 0;
+    mostrarAlertaDeTempoAcabando = false;
     questoesParaRevisar = <Questao>[].asObservable();
     revisandoProva = false;
   }

@@ -14,7 +14,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       SharedPreferences prefs = GetIt.I.get();
 
       String? token = prefs.getString('token');
-      String? expiration = prefs.getString('token_expiration');
+      // String? expiration = prefs.getString('token_expiration');
 
       if (token == null) {
         fine('Token null - Redirecionando para o Login');

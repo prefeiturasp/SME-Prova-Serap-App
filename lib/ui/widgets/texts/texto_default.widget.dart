@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 enum Variant { primary, secondary }
 
-class TextoDefaultWidget extends StatelessWidget {
+class Texto extends StatelessWidget {
   final String text;
   final double fontSize;
   final bool bold;
@@ -16,7 +16,7 @@ class TextoDefaultWidget extends StatelessWidget {
   final Variant variant;
   final FontWeight? fontWeight;
 
-  const TextoDefaultWidget(
+  const Texto(
     this.text, {
     Key? key,
     this.fontSize = 10,

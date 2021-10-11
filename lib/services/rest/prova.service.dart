@@ -1,6 +1,5 @@
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
-import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:chopper/chopper.dart';
 
 part 'prova.service.chopper.dart';
@@ -26,5 +25,6 @@ abstract class ProvaService extends ChopperService {
   Future<Response<bool>> setStatusProva({
     @Path() required int idProva,
     @Field() required int status,
+    @Field() int? dataFim,
   });
 }

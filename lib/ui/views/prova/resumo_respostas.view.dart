@@ -1,4 +1,9 @@
+import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -45,6 +50,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
   @override
+  double get defaultPadding => 0;
+
+  @override
   PreferredSizeWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
@@ -60,51 +68,52 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         return false;
       },
       child: SingleChildScrollView(
-        child: Container(
-          color: backgroundColor,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //
-              Text(
-                'Resumo das respostas',
-                textAlign: TextAlign.start,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
+        child: Column(
+          children: [
+            ..._buildTempoProva(),
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //
+                  Text(
+                    'Resumo das respostas',
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  //
+                  Observer(builder: (context) {
+                    return mensagemDeQuestoesSemRespostas();
+                  }),
+                  //
+                  Table(
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    columnWidths: {
+                      0: FractionColumnWidth(.65),
+                      1: FractionColumnWidth(.2),
+                      2: FractionColumnWidth(.15),
+                    },
+                    children: questoesTabela,
+                  ),
+                  SizedBox(height: 32),
+                  Center(
+                    child: BotaoDefaultWidget(
+                      textoBotao: 'FINALIZAR E ENVIAR',
+                      largura: 392,
+                      onPressed: () async {
+                        await finalizarProva();
+                      },
+                    ),
+                  )
+                ],
               ),
-              //
-              Observer(builder: (context) {
-                return mensagemDeQuestoesSemRespostas();
-              }),
-              //
-              Table(
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                columnWidths: {
-                  0: FractionColumnWidth(.65),
-                  1: FractionColumnWidth(.2),
-                  2: FractionColumnWidth(.15),
-                },
-                children: questoesTabela,
-              ),
-              SizedBox(height: 32),
-              Center(
-                child: BotaoDefaultWidget(
-                  textoBotao: 'FINALIZAR E ENVIAR',
-                  largura: 392,
-                  onPressed: () async {
-                    await widget.provaStore.finalizarProva(context);
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => SplashScreenView()),
-                      (_) => false,
-                    );
-                  },
-                ),
-              )
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -118,6 +127,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   }
 
   void popularMapaDeQuestoes() {
+    store.quantidadeDeQuestoesSemRespostas = 0;
+    store.questoesParaRevisar.clear();
+
     for (Questao questao in widget.provaStore.prova.questoes) {
       ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questao.id);
 
@@ -138,13 +150,27 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           }
         }
 
+        bool podeAdicionarRespostaVazia =
+            (resposta!.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
+                (!widget.provaStore.tempoExecucaoStore!.isTempoExtendido != null ||
+                    !widget.provaStore.tempoExecucaoStore!.isTempoExtendido);
+
+        bool removeQuestaoQueNaoPodeRevisar =
+            (resposta.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
+                (widget.provaStore.tempoExecucaoStore!.isTempoExtendido != null ||
+                    widget.provaStore.tempoExecucaoStore!.isTempoExtendido);
+
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
           store.questoesParaRevisar.add(questao);
         } else if (resposta!.resposta != null && resposta.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
           store.questoesParaRevisar.add(questao);
-        } else if ((resposta.resposta == null || resposta.resposta!.isEmpty) || alternativaSelecionada.isEmpty) {
+        } else if (podeAdicionarRespostaVazia) {
+          store.questoesParaRevisar.add(questao);
+          store.quantidadeDeQuestoesSemRespostas++;
+        } else if (removeQuestaoQueNaoPodeRevisar) {
+          store.questoesParaRevisar.remove(questao);
           store.quantidadeDeQuestoesSemRespostas++;
         }
       } else {
@@ -263,8 +289,13 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                   Radius.circular(10),
                 ),
                 onTap: () {
-                  store.quantidadeDeQuestoesSemRespostas = 0;
-                  Navigator.of(context).pop(questao['questao_ordem']);
+                  if (!widget.provaStore.tempoExecucaoStore!.isTempoExtendido && questao['resposta'] == "") {
+                    store.quantidadeDeQuestoesSemRespostas = 0;
+                    Navigator.of(context).pop(questao['questao_ordem']);
+                  } else if (questao['resposta'] != "") {
+                    store.quantidadeDeQuestoesSemRespostas = 0;
+                    Navigator.of(context).pop(questao['questao_ordem']);
+                  }
                 },
                 child: SvgPicture.asset(
                   AssetsUtil.iconeRevisarQuestao,
@@ -308,5 +339,72 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     );
 
     return questoesTabela;
+  }
+
+  finalizarProva() async {
+    bool finalizar = true;
+
+    finalizar = await checarFinalizacaoComTempo();
+
+    if (finalizar) {
+      await widget.provaStore.finalizarProva(context);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => SplashScreenView()),
+        (_) => false,
+      );
+    }
+  }
+
+  Future<bool> checarFinalizacaoComTempo() async {
+    ProvaTempoExecucaoStore? tempoExecucaoStore = widget.provaStore.tempoExecucaoStore;
+    if (tempoExecucaoStore != null) {
+      bool possuiTempoNormalRestante =
+          tempoExecucaoStore.isTempoNormalEmExecucao && tempoExecucaoStore.possuiTempoRestante;
+
+      if (possuiTempoNormalRestante) {
+        return (await mostrarDialogAindaPossuiTempo(
+          context,
+          widget.provaStore.tempoExecucaoStore!.tempoRestante,
+        ))!;
+      }
+    }
+
+    return true;
+  }
+
+  _buildTempoProva() {
+    if (widget.provaStore.tempoExecucaoStore == null) {
+      return [SizedBox.shrink()];
+    }
+
+    return [
+      Observer(builder: (_) {
+        return BarraProgresso(
+          progresso: widget.provaStore.tempoExecucaoStore?.porcentagem ?? 0,
+          tempoRestante: widget.provaStore.tempoExecucaoStore?.tempoRestante ?? Duration(),
+          variant: widget.provaStore.tempoExecucaoStore?.status,
+          alerta: store.mostrarAlertaDeTempoAcabando,
+        );
+      }),
+      Observer(builder: (_) {
+        return Visibility(
+          visible: store.mostrarAlertaDeTempoAcabando,
+          child: Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: TemaUtil.laranja01,
+            ),
+            child: Center(
+              child: Texto(
+                'Atenção: ${formatDuration(widget.provaStore.tempoExecucaoStore!.tempoRestante)} restantes',
+                bold: true,
+                fontSize: 16,
+                color: TemaUtil.preto,
+              ),
+            ),
+          ),
+        );
+      }),
+    ];
   }
 }
