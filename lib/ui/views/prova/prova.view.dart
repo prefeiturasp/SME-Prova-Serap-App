@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
-import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
-import 'package:appserap/utils/date.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -12,22 +9,24 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
 import 'package:appserap/enums/tempo_status.enum.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 
@@ -44,8 +43,6 @@ class ProvaView extends BaseStatefulWidget {
 class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Loggable {
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
-  int? _questaoId;
-  int? _alternativaId;
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
@@ -55,13 +52,44 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   @override
   void initState() {
-    widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
+    store.isLoading = true;
+    widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova).then((_) async {
+      await _configureControlesTempoProva();
+      store.isLoading = false;
+    });
 
     store.setup();
     super.initState();
   }
 
-  _configureControlesTempoProva() {
+  @override
+  onAfterBuild(BuildContext context) {}
+
+  _configureControlesTempoProva() async {
+    _finalizarProva() async {
+      var confirm = await widget.provaStore.finalizarProva(context, true);
+      if (confirm) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => SplashScreenView()),
+          (_) => false,
+        );
+      }
+    }
+
+    if (widget.provaStore.tempoExecucaoStore != null) {
+      switch (widget.provaStore.tempoExecucaoStore!.status) {
+        case EnumProvaTempoEventType.EXTENDIDO:
+          await _iniciarRevisaoProva();
+          break;
+        case EnumProvaTempoEventType.FINALIZADO:
+          await _finalizarProva();
+          break;
+
+        default:
+          break;
+      }
+    }
+
     if (widget.provaStore.tempoExecucaoStore != null) {
       widget.provaStore.tempoExecucaoStore!.onFinalizandoProva(() {
         fine('Prova quase acabando');
@@ -74,17 +102,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         await _iniciarRevisaoProva();
       });
 
-      // Ao acabar o tempo, finalizar a prova e enviar respostas imediatamente
       widget.provaStore.tempoExecucaoStore!.onFinalizarlProva(() async {
         fine('Prova finalizada');
-
-        var confirm = await widget.provaStore.finalizarProva(context, true);
-        if (confirm) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => SplashScreenView()),
-            (_) => false,
-          );
-        }
+        await _finalizarProva();
       });
     }
   }
@@ -94,11 +114,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     widget.provaStore.onDispose();
     store.dispose();
     super.dispose();
-  }
-
-  @override
-  onAfterBuild(BuildContext context) {
-    _configureControlesTempoProva();
   }
 
   @override
@@ -112,6 +127,12 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   @override
   Widget builder(BuildContext context) {
     return Observer(builder: (context) {
+      if (store.isLoading) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
       return WillPopScope(
         onWillPop: () async {
           if (store.revisandoProva) {
@@ -225,7 +246,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             ),
           ),
           Observer(builder: (context) {
-            return _botoesProva(questao);
+            return _buildBotoes(questao);
           }),
         ],
       ),
@@ -425,7 +446,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     );
   }
 
-  Widget _botoesProva(Questao questao) {
+  Widget _buildBotoes(Questao questao) {
     if (store.revisandoProva) {
       return Padding(
         padding: const EdgeInsets.only(

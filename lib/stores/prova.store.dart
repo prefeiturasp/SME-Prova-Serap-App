@@ -104,6 +104,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     await gerenciadorDownload.startDownload();
 
+    await respostas.carregarRespostasServidor(prova);
+
     prova = await gerenciadorDownload.getProva();
   }
 

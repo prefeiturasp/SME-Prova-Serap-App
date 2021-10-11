@@ -28,6 +28,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   @observable
   bool mostrarAlertaDeTempoAcabando = false;
 
+  @observable
+  bool isLoading = true;
+
   setup() async {
     questoesParaRevisar = <Questao>[].asObservable();
     questaoAtual = 1;

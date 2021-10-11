@@ -91,8 +91,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               }
             }
 
-            await provaStore.respostas.carregarRespostasServidor(prova);
-
             provasStore[provaStore.id] = provaStore;
           }
 

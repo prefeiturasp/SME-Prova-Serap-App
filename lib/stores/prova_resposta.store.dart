@@ -33,7 +33,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   ObservableMap<int, ProvaResposta> respostasLocal = <int, ProvaResposta>{}.asObservable();
 
   @action
-  carregarRespostasServidor([Prova? prova]) async {
+  Future<void> carregarRespostasServidor([Prova? prova]) async {
     fine('[$idProva] - Carregando respostas da prova');
 
     List<int> idsQuestao = [];
@@ -45,6 +45,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     }
     for (var idQuestao in idsQuestao) {
       try {
+        fine('[$idProva] Carregando $idQuestao');
         var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
         if (respostaBanco.isSuccessful) {
           var body = respostaBanco.body!;
