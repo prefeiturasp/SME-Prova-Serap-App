@@ -1,3 +1,12 @@
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:mobx/mobx.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
@@ -12,14 +21,6 @@ import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:mobx/src/api/observable_collections.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
 class ProvaAtualTabView extends BaseStatefulWidget {
   @override
@@ -135,7 +136,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                           fontSize: 16,
                         ),
                       ),
-                      TextoDefaultWidget(
+                      Texto(
                         provaStore.prova.itensQuantidade.toString(),
                         fontSize: 16,
                         bold: true,
@@ -165,7 +166,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextoDefaultWidget(
+                          Texto(
                             "Data de aplicação:",
                             fontSize: 16,
                           ),
@@ -279,13 +280,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                TextoDefaultWidget(
+                Texto(
                   "Download não iniciado",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
                   bold: true,
                 ),
-                TextoDefaultWidget(
+                Texto(
                   " - Sem conexão com a internet",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
@@ -321,13 +322,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                TextoDefaultWidget(
+                Texto(
                   "Pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
                   bold: true,
                 ),
-                TextoDefaultWidget(
+                Texto(
                   " - Sem conexão com a internet",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
@@ -347,7 +348,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.download, color: Colors.white, size: 18),
-          TextoDefaultWidget(" BAIXAR PROVA", color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          Texto(" BAIXAR PROVA", color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
         ],
       ),
       largura: 256,
@@ -380,7 +381,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                TextoDefaultWidget(
+                Texto(
                   "Aguardando envio",
                   color: TemaUtil.laranja01,
                   fontSize: 12,
@@ -410,14 +411,16 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextoDefaultWidget('$texto ', color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          Texto('$texto ', color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
       largura: 256,
       onPressed: () async {
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
-          provaStore.iniciarProva();
+          await provaStore.iniciarProva();
+        } else {
+          await provaStore.continuarProva();
         }
 
         Navigator.push(
