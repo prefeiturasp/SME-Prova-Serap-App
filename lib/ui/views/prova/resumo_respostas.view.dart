@@ -150,18 +150,26 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           }
         }
 
+        bool podeAdicionarRespostaVazia =
+            (resposta!.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
+                (!widget.provaStore.tempoExecucaoStore!.isTempoExtendido != null ||
+                    !widget.provaStore.tempoExecucaoStore!.isTempoExtendido);
+
+        bool removeQuestaoQueNaoPodeRevisar =
+            (resposta.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
+                (widget.provaStore.tempoExecucaoStore!.isTempoExtendido != null ||
+                    widget.provaStore.tempoExecucaoStore!.isTempoExtendido);
+
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
           store.questoesParaRevisar.add(questao);
         } else if (resposta!.resposta != null && resposta.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
           store.questoesParaRevisar.add(questao);
-        } else if ((resposta.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
-            !widget.provaStore.tempoExecucaoStore!.isTempoExtendido) {
+        } else if (podeAdicionarRespostaVazia) {
           store.questoesParaRevisar.add(questao);
           store.quantidadeDeQuestoesSemRespostas++;
-        } else if ((resposta.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
-            widget.provaStore.tempoExecucaoStore!.isTempoExtendido) {
+        } else if (removeQuestaoQueNaoPodeRevisar) {
           store.questoesParaRevisar.remove(questao);
           store.quantidadeDeQuestoesSemRespostas++;
         }
@@ -187,7 +195,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
       popularTabelaComQuestoes();
     }
-
   }
 
   Widget mensagemDeQuestoesSemRespostas() {
