@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -8,7 +10,7 @@ import 'package:appserap/stores/prova_resposta.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -26,7 +28,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
   List<ReactionDisposer> _reactions = [];
 
   @observable
-  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   late DownloadManager downloadService;
 
@@ -50,6 +52,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
   EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
   @observable
+  EnumTempoStatus tempoCorrendo = EnumTempoStatus.PARADO;
+
+  @observable
   EnumProvaStatus status = EnumProvaStatus.NAO_INICIADA;
 
   @observable
@@ -63,6 +68,15 @@ abstract class _ProvaStoreBase with Store, Loggable {
 
   @observable
   String codigoIniciarProva = "";
+  
+  @observable
+  int segundos = 0;
+
+  @observable
+  DateTime inicioQuestao = DateTime.now();
+
+  @observable
+  DateTime fimQuestao = DateTime.now();
 
   @action
   iniciarDownload() async {
@@ -88,6 +102,7 @@ abstract class _ProvaStoreBase with Store, Loggable {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction((_) => conexaoStream.value, onChangeConexao),
+      reaction((_) => tempoCorrendo, onChangeContadorQuestao),
     ];
   }
 
@@ -98,13 +113,31 @@ abstract class _ProvaStoreBase with Store, Loggable {
   }
 
   @action
-  Future onChangeConexao(ConnectivityResult? resultado) async {
+  onChangeContadorQuestao(EnumTempoStatus finalizado) {
+    if (finalizado == EnumTempoStatus.CORRENDO) {
+      inicioQuestao = DateTime.now();
+      fine(' Inicio da Questão: $inicioQuestao');
+    } else if (finalizado == EnumTempoStatus.CONTINUAR) {
+      return;
+    } else {
+      DateTime fimQuestao = DateTime.now();
+
+      segundos = fimQuestao.difference(inicioQuestao).inSeconds;
+
+      fine(' Fim da Questão: $fimQuestao');
+
+      fine(' Segundos: $segundos');
+    }
+  }
+
+  @action
+  Future onChangeConexao(ConnectivityStatus? resultado) async {
     if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
-    if (resultado != ConnectivityResult.none) {
-      iniciarDownload();
+    if (resultado != ConnectivityStatus.none) {
+      await iniciarDownload();
     } else {
       downloadStatus = EnumDownloadStatus.PAUSADO;
       downloadService.pause();
@@ -152,9 +185,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
   @action
   Future<bool> finalizarProva(BuildContext context) async {
     try {
-      ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+      ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
 
-      if (resultado == ConnectivityResult.none) {
+      if (resultado == ConnectivityStatus.none) {
         // Se estiver sem internet alterar status para pendente (worker ira sincronizar)
 
         setStatusProva(EnumProvaStatus.PENDENTE);

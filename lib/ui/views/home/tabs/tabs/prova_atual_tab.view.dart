@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/ui/views/prova/prova.view.dart';
-import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
@@ -244,8 +244,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     }
 
     // Baixar prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
-        _principalStore.status != ConnectivityResult.none) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && _principalStore.temConexao) {
       return _buildBaixarProva(provaStore);
     }
 

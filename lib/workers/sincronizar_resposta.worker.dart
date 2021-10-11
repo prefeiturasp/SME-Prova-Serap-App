@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,8 +47,8 @@ class SincronizarRespostasWorker with Worker, Loggable {
     var respostasNaoSincronizadas = respostasLocal.where((element) => element.sincronizado == false);
     fine('${respostasNaoSincronizadas.length} respostas ainda não sincronizadas');
 
-    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
-    if (respostasNaoSincronizadas.isNotEmpty && resultado == ConnectivityResult.none) {
+    ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
+    if (respostasNaoSincronizadas.isNotEmpty && resultado == ConnectivityStatus.none) {
       info('Falha na sincronização. Sem Conexão....');
       return;
     }
@@ -70,6 +70,7 @@ class SincronizarRespostasWorker with Worker, Loggable {
         alternativaId: resposta.alternativaId,
         resposta: resposta.resposta,
         dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+        tempoRespostaAluno: resposta.tempoRespostaAluno,
       );
 
       if (response.isSuccessful) {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -35,6 +36,8 @@ class ProvaView extends BaseStatefulWidget {
 class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Loggable {
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
+  int? _questaoId;
+  int? _alternativaId;
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
@@ -61,6 +64,34 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   @override
   Widget builder(BuildContext context) {
+    return Observer(builder: (context) {
+      return WillPopScope(
+        onWillPop: () async {
+          if (store.revisandoProva) {
+            return false;
+          }
+          return true;
+        },
+        child: _buildProva(),
+      );
+    });
+  }
+
+  Widget _buildProva() {
+    if (store.revisandoProva) {
+      var questoes = store.questoesParaRevisar.toList();
+      store.totalDeQuestoesParaRevisar = questoes.length - 1;
+      return PageView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        controller: listaQuestoesController,
+        itemCount: questoes.length,
+        itemBuilder: (context, index) {
+          store.posicaoQuestaoSendoRevisada = index;
+          return _buildQuestoes(questoes[index], index);
+        },
+      );
+    }
+
     var questoes = widget.provaStore.prova.questoes;
 
     return PageView.builder(
@@ -77,6 +108,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   }
 
   Widget _buildQuestoes(Questao questao, int index) {
+    widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -88,7 +120,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 Row(
                   children: [
                     Text(
-                      'Questão ${index + 1} ',
+                      'Questão ${questao.ordem + 1} ',
                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                     ),
                     Text(
@@ -302,7 +334,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         value: idAlternativa,
         groupValue: resposta?.alternativaId,
         onChanged: (value) {
-          widget.provaStore.respostas.definirResposta(questaoId, alternativaId: value);
+          widget.provaStore.respostas.definirResposta(
+            questaoId,
+            alternativaId: value,
+            tempoQuestao: null,
+          );
         },
         toggleable: true,
         title: Row(children: [
@@ -339,23 +375,19 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           children: [
             Observer(
               builder: (context) {
-                if (store.questoesRevisao.isNotEmpty) {
-                  var proximoItem = store.questoesRevisao.entries
-                      .firstWhereOrNull((element) => element.value == false && element.key != questao.ordem);
-                  if (proximoItem != null) {
-                    return BotaoDefaultWidget(
-                      textoBotao: 'Proximo item da revisão',
-                      onPressed: () async {
-                        store.questoesRevisao[questao.ordem] = true;
-                        store.revisandoProva = true;
-                        listaQuestoesController.animateToPage(
-                          proximoItem.key,
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeIn,
-                        );
-                      },
-                    );
-                  }
+                if (store.posicaoQuestaoSendoRevisada != store.totalDeQuestoesParaRevisar) {
+                  return BotaoDefaultWidget(
+                    textoBotao: 'Proximo item da revisão',
+                    onPressed: () async {
+                      store.revisandoProva = true;
+                      store.posicaoQuestaoSendoRevisada++;
+                      listaQuestoesController.animateToPage(
+                        store.posicaoQuestaoSendoRevisada,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      );
+                    },
+                  );
                 }
                 return Container();
               },
@@ -373,13 +405,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                     ),
                   );
 
-                  if (!posicaoDaQuestao.isNaN) {
-                    store.revisandoProva = true;
-                    store.questaoAtual = posicaoDaQuestao;
-                    listaQuestoesController.jumpToPage(
-                      posicaoDaQuestao,
-                    );
-                  }
+                  store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+
+                  store.revisandoProva = true;
+                  store.questaoAtual = posicaoDaQuestao;
+                  listaQuestoesController.jumpToPage(
+                    posicaoDaQuestao,
+                  );
                 } catch (e) {
                   fine(e);
                 }
@@ -402,6 +434,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               return BotaoSecundarioWidget(
                 textoBotao: 'Questão anterior',
                 onPressed: () async {
+                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                  await widget.provaStore.respostas.definirTempoResposta(
+                    questao.id,
+                    tempoQuestao: widget.provaStore.segundos,
+                  );
                   await SincronizarRespostasWorker().sincronizar();
                   listaQuestoesController.previousPage(
                     duration: Duration(milliseconds: 300),
@@ -417,11 +454,23 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
-                    await SincronizarRespostasWorker().sincronizar();
+                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+
                     if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
-                      await widget.provaStore.respostas
-                          .definirResposta(questao.id, textoResposta: await controller.getText());
+                      await widget.provaStore.respostas.definirResposta(
+                        questao.id,
+                        textoResposta: await controller.getText(),
+                        tempoQuestao: widget.provaStore.segundos,
+                      );
                     }
+                    if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
+                      await widget.provaStore.respostas.definirTempoResposta(
+                        questao.id,
+                        tempoQuestao: widget.provaStore.segundos,
+                      );
+                    }
+                    await SincronizarRespostasWorker().sincronizar();
+                    widget.provaStore.segundos = 0;
 
                     listaQuestoesController.nextPage(
                       duration: Duration(milliseconds: 300),
@@ -437,7 +486,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 onPressed: () async {
                   store.questaoAtual = 0;
                   try {
+                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                    await widget.provaStore.respostas.definirTempoResposta(
+                      questao.id,
+                      tempoQuestao: widget.provaStore.segundos,
+                    );
                     await SincronizarRespostasWorker().sincronizar();
+                    widget.provaStore.segundos = 0;
 
                     int posicaoDaQuestao = await Navigator.push(
                       context,
@@ -448,12 +503,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       ),
                     );
 
-                    if (!posicaoDaQuestao.isNaN) {
-                      store.revisandoProva = true;
-                      listaQuestoesController.jumpToPage(
-                        posicaoDaQuestao,
-                      );
-                    }
+                    store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+
+                    store.revisandoProva = true;
+
+                    listaQuestoesController.jumpToPage(
+                      store.posicaoQuestaoSendoRevisada,
+                    );
                   } catch (e) {
                     fine(e);
                   }

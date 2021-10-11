@@ -33,7 +33,9 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       Map<String, String> updatedHeaders = Map.of(request.headers);
 
       updatedHeaders.update('Authorization', (value) => "Bearer $token", ifAbsent: () => "Bearer $token");
-
+      updatedHeaders.update('access-control-allow-origin', (value) => "*");
+      updatedHeaders.update('Access-Control-Allow-Methods',
+          (value) => "GET, PUT, POST, DELETE, HEAD, OPTIONS, PATCH, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK");
       return request.copyWith(headers: updatedHeaders);
     }
   }

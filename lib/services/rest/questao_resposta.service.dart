@@ -16,5 +16,6 @@ abstract class QuestaoRespostaService extends ChopperService {
     @Field() int? alternativaId,
     @Field() String? resposta,
     @Field() required int dataHoraRespostaTicks,
+    @Field() int? tempoRespostaAluno,
   });
 }
