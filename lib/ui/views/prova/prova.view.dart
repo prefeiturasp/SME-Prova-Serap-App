@@ -194,6 +194,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   Widget _buildQuestoes(Questao questao, int index) {
     widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
+    store.isBusy = false;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -482,7 +483,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               onPressed: () async {
                 try {
                   if (store.isBusy) return;
-                  fine("VERIFICANDO BOTÃO ${store.isBusy}");
 
                   store.isBusy = true;
                   widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
@@ -551,29 +551,37 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
                   onPressed: () async {
-                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                    try {
+                      if (store.isBusy) return;
+                      fine("TESTE${store.isBusy}");
+                      store.isBusy = true;
 
-                    if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
-                      await widget.provaStore.respostas.definirResposta(
-                        questao.id,
-                        textoResposta: await controller.getText(),
-                        tempoQuestao: widget.provaStore.segundos,
-                      );
-                    }
-                    if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
-                      await widget.provaStore.respostas.definirTempoResposta(
-                        questao.id,
-                        tempoQuestao: widget.provaStore.segundos,
-                      );
-                    }
-                    await SincronizarRespostasWorker().sincronizar();
-                    widget.provaStore.segundos = 0;
+                      widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
 
-                    listaQuestoesController.nextPage(
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeIn,
-                    );
-                    store.questaoAtual++;
+                      if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
+                        await widget.provaStore.respostas.definirResposta(
+                          questao.id,
+                          textoResposta: await controller.getText(),
+                          tempoQuestao: widget.provaStore.segundos,
+                        );
+                      }
+                      if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
+                        await widget.provaStore.respostas.definirTempoResposta(
+                          questao.id,
+                          tempoQuestao: widget.provaStore.segundos,
+                        );
+                      }
+                      await SincronizarRespostasWorker().sincronizar();
+                      widget.provaStore.segundos = 0;
+
+                      listaQuestoesController.nextPage(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      );
+                      store.questaoAtual++;
+                    } catch (e) {
+                      fine(e);
+                    }
                   },
                 );
               }
