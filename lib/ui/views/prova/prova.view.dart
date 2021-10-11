@@ -396,6 +396,12 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               textoBotao: 'Confirmar e voltar para o resumo',
               onPressed: () async {
                 try {
+                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                  await widget.provaStore.respostas.definirTempoResposta(
+                    questao.id,
+                    tempoQuestao: widget.provaStore.segundos,
+                  );
+                  await SincronizarRespostasWorker().sincronizar();
                   int posicaoDaQuestao = await Navigator.push(
                     context,
                     MaterialPageRoute(
