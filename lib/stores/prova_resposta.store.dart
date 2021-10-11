@@ -61,7 +61,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
           finer("[$idProva] - Resposta Banco Questao $idQuestao - ${body.alternativaId} | ${body.resposta}");
         }
       } catch (e) {
-        //severe(e);
+        severe(e);
       }
     }
 
