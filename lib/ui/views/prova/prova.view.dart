@@ -396,6 +396,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               textoBotao: 'Confirmar e voltar para o resumo',
               onPressed: () async {
                 try {
+                  if (store.isBusy) return;
+                  fine("VERIFICANDO BOTÃO ${store.isBusy}");
+
+                  store.isBusy = true;
                   widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
                   await widget.provaStore.respostas.definirTempoResposta(
                     questao.id,
@@ -420,6 +424,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   );
                 } catch (e) {
                   fine(e);
+                } finally {
+                  store.isBusy = false;
                 }
               },
             ),

@@ -26,6 +26,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   @observable
   bool revisandoProva = false;
 
+  @observable
+  bool isBusy = false;
+
   setup() async {
     questoesParaRevisar = <Questao>[].asObservable();
     questaoAtual = 1;
