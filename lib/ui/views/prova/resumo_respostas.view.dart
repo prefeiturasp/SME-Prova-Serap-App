@@ -116,6 +116,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   }
 
   void popularMapaDeQuestoes() {
+    store.quantidadeDeQuestoesSemRespostas = 0;
+    store.questoesParaRevisar.clear();
+
     for (Questao questao in widget.provaStore.prova.questoes) {
       ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questao.id);
 
@@ -142,7 +145,13 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         } else if (resposta!.resposta != null && resposta.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
           store.questoesParaRevisar.add(questao);
-        } else if ((resposta.resposta == null || resposta.resposta!.isEmpty) || alternativaSelecionada.isEmpty) {
+        } else if ((resposta.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
+            !widget.provaStore.tempoExecucaoStore!.isTempoExtendido) {
+          store.questoesParaRevisar.add(questao);
+          store.quantidadeDeQuestoesSemRespostas++;
+        } else if ((resposta.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
+            widget.provaStore.tempoExecucaoStore!.isTempoExtendido) {
+          store.questoesParaRevisar.remove(questao);
           store.quantidadeDeQuestoesSemRespostas++;
         }
       } else {
@@ -167,6 +176,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
       popularTabelaComQuestoes();
     }
+
   }
 
   Widget mensagemDeQuestoesSemRespostas() {
@@ -261,8 +271,13 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                   Radius.circular(10),
                 ),
                 onTap: () {
-                  store.quantidadeDeQuestoesSemRespostas = 0;
-                  Navigator.of(context).pop(questao['questao_ordem']);
+                  if (!widget.provaStore.tempoExecucaoStore!.isTempoExtendido && questao['resposta'] == "") {
+                    store.quantidadeDeQuestoesSemRespostas = 0;
+                    Navigator.of(context).pop(questao['questao_ordem']);
+                  } else if (questao['resposta'] != "") {
+                    store.quantidadeDeQuestoesSemRespostas = 0;
+                    Navigator.of(context).pop(questao['questao_ordem']);
+                  }
                 },
                 child: SvgPicture.asset(
                   AssetsUtil.iconeRevisarQuestao,
