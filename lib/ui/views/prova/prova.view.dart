@@ -628,6 +628,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   Future<void> _iniciarRevisaoProva() async {
     await SincronizarRespostasWorker().sincronizar();
 
+    store.revisandoProva = true;
+
     int? posicaoDaQuestao = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -639,9 +641,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
     if (posicaoDaQuestao != null) {
       store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
-
       store.revisandoProva = true;
-
       listaQuestoesController.jumpToPage(
         store.posicaoQuestaoSendoRevisada,
       );
