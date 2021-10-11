@@ -1,3 +1,4 @@
+import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -263,6 +264,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                   Radius.circular(10),
                 ),
                 onTap: () {
+                  widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
                   store.quantidadeDeQuestoesSemRespostas = 0;
                   Navigator.of(context).pop(questao['questao_ordem']);
                 },
