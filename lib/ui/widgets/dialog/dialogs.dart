@@ -53,7 +53,7 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
 Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) {
   String mensagem =
       "Sua prova foi finalizada, pois o tempo acabou. As questões com resposta foram enviadas com sucesso.";
-  String icone = AssetsUtil.semConexao;
+  String icone = AssetsUtil.check;
   String mensagemBotao = "ENTENDI";
 
   return showDialog(
