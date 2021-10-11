@@ -9,6 +9,7 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';

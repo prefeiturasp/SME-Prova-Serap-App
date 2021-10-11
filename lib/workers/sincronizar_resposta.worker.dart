@@ -70,6 +70,7 @@ class SincronizarRespostasWorker with Worker, Loggable {
         alternativaId: resposta.alternativaId,
         resposta: resposta.resposta,
         dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+        tempoRespostaAluno: resposta.tempoRespostaAluno,
       );
 
       if (response.isSuccessful) {

@@ -1,6 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:appserap/utils/date.util.dart';
+import 'package:appserap/enums/tempo_status.enum.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/prova_resposta.store.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -53,6 +63,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
 
   @observable
+  EnumTempoStatus tempoCorrendo = EnumTempoStatus.PARADO;
+
+  @observable
   EnumProvaStatus status = EnumProvaStatus.NAO_INICIADA;
 
   @observable
@@ -66,6 +79,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @observable
   ProvaTempoExecucaoStore? tempoExecucaoStore;
+  int segundos = 0;
+
+  @observable
+  DateTime inicioQuestao = DateTime.now();
+
+  @observable
+  DateTime fimQuestao = DateTime.now();
 
   @action
   iniciarDownload() async {
@@ -97,7 +117,26 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction((_) => conexaoStream.value, onChangeConexao),
+      reaction((_) => tempoCorrendo, onChangeContadorQuestao),
     ];
+  }
+
+  @action
+  onChangeContadorQuestao(EnumTempoStatus finalizado) {
+    if (finalizado == EnumTempoStatus.CORRENDO) {
+      inicioQuestao = DateTime.now();
+      fine(' Inicio da Questão: $inicioQuestao');
+    } else if (finalizado == EnumTempoStatus.CONTINUAR) {
+      return;
+    } else {
+      DateTime fimQuestao = DateTime.now();
+
+      segundos = fimQuestao.difference(inicioQuestao).inSeconds;
+
+      fine(' Fim da Questão: $fimQuestao');
+
+      fine(' Segundos: $segundos');
+    }
   }
 
   @action
