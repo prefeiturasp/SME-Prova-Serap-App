@@ -35,9 +35,11 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   @observable
   Duration tempoRestante = Duration(seconds: 0);
 
+  @observable
+  bool tempoAcabando = false;
+
   @computed
-  bool get isTempoNormalEmExecucao =>
-      status == EnumProvaTempoEventType.INICIADO || status == EnumProvaTempoEventType.ACABANDO;
+  bool get isTempoNormalEmExecucao => status == EnumProvaTempoEventType.INICIADO;
 
   @computed
   bool get isTempoExtendido => status == EnumProvaTempoEventType.EXTENDIDO;
@@ -65,18 +67,20 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   setupReactions() {
     _reactions = [
       reaction((_) => status, onStatusChange),
+      reaction((_) => tempoAcabando, onAlertaTempoChange),
     ];
+  }
+
+  onAlertaTempoChange(bool tempoAcabando) {
+    if (tempoAcabando) {
+      if (finalizandoProvaCallback != null) {
+        finalizandoProvaCallback!();
+      }
+    }
   }
 
   onStatusChange(EnumProvaTempoEventType status) {
     switch (status) {
-      case EnumProvaTempoEventType.ACABANDO:
-        if (finalizandoProvaCallback != null) {
-          finalizandoProvaCallback!();
-        }
-
-        break;
-
       case EnumProvaTempoEventType.EXTENDIDO:
         if (extenderProvaCallback != null) {
           extenderProvaCallback!();
@@ -110,6 +114,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
       status = changeData.eventType;
       porcentagem = changeData.porcentagemTotal;
       tempoRestante = changeData.tempoRestante;
+      tempoAcabando = changeData.tempoAcabando;
     });
   }
 

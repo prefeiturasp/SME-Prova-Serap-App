@@ -6,7 +6,7 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 
 typedef DuracaoChangeCallback = void Function(TempoChangeData changeData);
 
-enum EnumProvaTempoEventType { INICIADO, ACABANDO, EXTENDIDO, FINALIZADO }
+enum EnumProvaTempoEventType { INICIADO, EXTENDIDO, FINALIZADO }
 
 class GerenciadorTempo with Loggable, Disposable {
   late DateTime dataHoraInicioProva;
@@ -14,6 +14,8 @@ class GerenciadorTempo with Loggable, Disposable {
   late Duration duracaoProva;
   Duration? duracaoTempoExtra;
   late Duration duracaoTempoFinalizando;
+
+  bool tempoAcabando = false;
 
   EnumProvaTempoEventType estagioTempo = EnumProvaTempoEventType.INICIADO;
 
@@ -39,6 +41,7 @@ class GerenciadorTempo with Loggable, Disposable {
           eventType: EnumProvaTempoEventType.INICIADO,
           porcentagemTotal: 0,
           tempoRestante: duracaoProva,
+          tempoAcabando: tempoAcabando,
         ),
       );
     }
@@ -51,8 +54,10 @@ class GerenciadorTempo with Loggable, Disposable {
 
     var porcentagemDecorrida = ((tempoRestante.inMilliseconds / duracaoProva.inMilliseconds) - 1) * -1;
 
-    if (tempoRestante < duracaoTempoFinalizando || duracaoProva.inMinutes < 5 && porcentagemDecorrida > 0.85) {
-      estagioTempo = EnumProvaTempoEventType.ACABANDO;
+    if (tempoRestante < duracaoTempoFinalizando) {
+      tempoAcabando = true;
+    } else {
+      tempoAcabando = false;
     }
 
     if (porcentagemDecorrida > 1) {
@@ -73,7 +78,10 @@ class GerenciadorTempo with Loggable, Disposable {
         TempoChangeData(
           eventType: estagioTempo,
           porcentagemTotal: porcentagemDecorrida,
-          tempoRestante: Duration(seconds: tempoRestante.inSeconds),
+          tempoRestante: Duration(
+            seconds: tempoRestante.inSeconds,
+          ),
+          tempoAcabando: tempoAcabando,
         ),
       );
     }
@@ -88,6 +96,12 @@ class GerenciadorTempo with Loggable, Disposable {
 
     var porcentagemDecorrida = ((tempoRestante.inMilliseconds / duracaoTempoExtra!.inMilliseconds) - 1) * -1;
 
+    if (tempoRestante < duracaoTempoFinalizando) {
+      tempoAcabando = true;
+    } else {
+      tempoAcabando = false;
+    }
+
     if (porcentagemDecorrida > 1) {
       porcentagemDecorrida = 0;
       timerAdicional?.cancel();
@@ -101,6 +115,7 @@ class GerenciadorTempo with Loggable, Disposable {
           eventType: estagioTempo,
           porcentagemTotal: porcentagemDecorrida,
           tempoRestante: Duration(seconds: tempoRestante.inSeconds),
+          tempoAcabando: tempoAcabando,
         ),
       );
     }
@@ -121,10 +136,12 @@ class TempoChangeData {
   EnumProvaTempoEventType eventType;
   double porcentagemTotal;
   Duration tempoRestante;
+  bool tempoAcabando;
 
   TempoChangeData({
     required this.eventType,
     required this.porcentagemTotal,
     required this.tempoRestante,
+    required this.tempoAcabando,
   });
 }

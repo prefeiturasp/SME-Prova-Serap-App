@@ -361,6 +361,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           progresso: widget.provaStore.tempoExecucaoStore?.porcentagem ?? 0,
           tempoRestante: widget.provaStore.tempoExecucaoStore?.tempoRestante ?? Duration(),
           variant: widget.provaStore.tempoExecucaoStore?.status,
+          alerta: store.mostrarAlertaDeTempoAcabando,
         );
       }),
       Observer(builder: (_) {

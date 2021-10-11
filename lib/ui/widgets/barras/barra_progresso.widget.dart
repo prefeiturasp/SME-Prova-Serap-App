@@ -11,13 +11,15 @@ class BarraProgresso extends StatelessWidget {
   final double progresso;
   final Duration tempoRestante;
   final EnumProvaTempoEventType? variant;
+  final bool alerta;
 
-  const BarraProgresso(
-      {Key? key,
-      this.progresso = 0,
-      this.tempoRestante = const Duration(seconds: 0),
-      this.variant = EnumProvaTempoEventType.INICIADO})
-      : super(key: key);
+  const BarraProgresso({
+    Key? key,
+    this.progresso = 0,
+    this.tempoRestante = const Duration(seconds: 0),
+    this.variant = EnumProvaTempoEventType.INICIADO,
+    this.alerta = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +59,11 @@ class BarraProgresso extends StatelessWidget {
   }
 
   Color _getColor() {
+    if (alerta) {
+      return TemaUtil.vermelhoErro;
+    }
+
     switch (variant) {
-      case EnumProvaTempoEventType.ACABANDO:
-        return TemaUtil.vermelhoErro;
       case EnumProvaTempoEventType.EXTENDIDO:
         return TemaUtil.laranja04;
 
