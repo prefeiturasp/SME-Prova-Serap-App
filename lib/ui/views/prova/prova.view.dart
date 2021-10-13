@@ -550,9 +550,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
+                  desabilitado: store.isBusy,
                   onPressed: () async {
                     try {
-                      if (store.isBusy) return;
                       fine("TESTE${store.isBusy}");
                       store.isBusy = true;
 
@@ -581,6 +581,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       store.questaoAtual++;
                     } catch (e) {
                       fine(e);
+                    } finally {
+                      store.isBusy = false;
                     }
                   },
                 );
