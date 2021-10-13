@@ -8,7 +8,7 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/utils/provas.util.dart';
 
-class BaixarProvaJob with Loggable implements Job {
+class BaixarProvaJob with Job, Loggable {
   @override
   run() async {
     try {
