@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:appserap/utils/date.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/main.ioc.dart';
@@ -18,20 +19,22 @@ import 'package:workmanager/workmanager.dart';
 
 class FinalizarProvaWorker with Worker, Loggable {
   setup() async {
-    if (Platform.isAndroid) {
-      await Workmanager().registerPeriodicTask(
-        "1",
-        "FinalizarProvaWorker",
-        frequency: Duration(minutes: 15),
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-        ),
-      );
-    } else {
-      Timer.periodic(Duration(minutes: 1), (timer) {
-        sincronizar();
-      });
+    if (!kIsWeb) {
+      if (Platform.isAndroid) {
+        return await Workmanager().registerPeriodicTask(
+          "1",
+          "FinalizarProvaWorker",
+          frequency: Duration(minutes: 15),
+          constraints: Constraints(
+            networkType: NetworkType.connected,
+          ),
+        );
+      }
     }
+
+    Timer.periodic(Duration(minutes: 1), (timer) {
+      sincronizar();
+    });
   }
 
   @override
