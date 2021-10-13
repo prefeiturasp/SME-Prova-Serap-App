@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -11,12 +12,11 @@ import 'package:appserap/interfaces/worker.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:workmanager/workmanager.dart';
 
 class SincronizarRespostasWorker with Worker, Loggable {
   setup() async {
-    if (!kIsWeb) {
+    if (Platform.isAndroid) {
       await Workmanager().registerPeriodicTask(
         "2",
         "SincronizarRespostasWorker",

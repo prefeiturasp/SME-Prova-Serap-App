@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:appserap/utils/date.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/main.ioc.dart';
@@ -18,7 +18,7 @@ import 'package:workmanager/workmanager.dart';
 
 class FinalizarProvaWorker with Worker, Loggable {
   setup() async {
-    if (!kIsWeb) {
+    if (Platform.isAndroid) {
       await Workmanager().registerPeriodicTask(
         "1",
         "FinalizarProvaWorker",

@@ -53,17 +53,19 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   @override
   void initState() {
     store.isLoading = true;
-    widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova).then((_) async {
-      await _configureControlesTempoProva();
+
+    configure().then((_) async {
       store.isLoading = false;
     });
 
-    store.setup();
     super.initState();
   }
 
-  @override
-  onAfterBuild(BuildContext context) {}
+  configure() async {
+    await store.setup(widget.provaStore);
+    await widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
+    await _configureControlesTempoProva();
+  }
 
   _configureControlesTempoProva() async {
     _finalizarProva() async {
