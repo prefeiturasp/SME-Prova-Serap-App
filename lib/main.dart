@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:asuka/asuka.dart' as asuka;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,31 +12,22 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/workers/dispacher.dart';
+import 'package:appserap/workers/jobs/baixar_prova.job.dart';
+
+var logger = Logger('Main');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  setupDateFormating();
-  setupLogging();
-  registerFonts();
-
-  await setupAppConfig();
-
-  await DependenciasIoC().setup();
+  await configure();
 
   await Worker().setup();
 
-  try {
-    await Firebase.initializeApp();
-
-    //await FirebaseMessaging.instance.subscribeToTopic('1');
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  } catch (e) {
-    print('\n\nFalha ao inicializar Firebase\n\n');
-  }
+  await setupFirebase();
 
   // await SentryFlutter.init(
   //   (options) => options
@@ -48,6 +38,32 @@ Future<void> main() async {
   //   appRunner: () => runApp(MyApp()),
   // );
   runApp(MyApp());
+}
+
+Future<void> setupFirebase() async {
+  try {
+    await Firebase.initializeApp();
+    logger.config('[Firebase] Configurando Firebase');
+
+    String topico = '1';
+    await FirebaseMessaging.instance.subscribeToTopic(topico);
+    logger.config('[Firebase] Inscrevendo no topico $topico');
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    FirebaseMessaging.onMessage.listen(_firebaseMessagingBackgroundHandler);
+  } catch (e) {
+    logger.config('\n\nFalha ao inicializar Firebase\n\n');
+  }
+}
+
+configure() async {
+  setupDateFormating();
+  setupLogging();
+  registerFonts();
+
+  await setupAppConfig();
+
+  await DependenciasIoC().setup();
 }
 
 Future setupAppConfig() async {
@@ -62,6 +78,10 @@ Future setupAppConfig() async {
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('RECEBEU UMA MENSAGEM:');
+
+  await await configure();
+
+  await BaixarProvaJob().run();
 }
 
 void setupLogging() {
