@@ -194,7 +194,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   Widget _buildQuestoes(Questao questao, int index) {
     widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
-    store.isBusy = false;
+    store.botaoOcupado = false;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -482,9 +482,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               textoBotao: 'Confirmar e voltar para o resumo',
               onPressed: () async {
                 try {
-                  if (store.isBusy) return;
+                  if (store.botaoOcupado) return;
 
-                  store.isBusy = true;
+                  store.botaoOcupado = true;
                   widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
                   await widget.provaStore.respostas.definirTempoResposta(
                     questao.id,
@@ -510,7 +510,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 } catch (e) {
                   fine(e);
                 } finally {
-                  store.isBusy = false;
+                  store.botaoOcupado = false;
                 }
               },
             ),
@@ -550,11 +550,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
-                  desabilitado: store.isBusy,
+                  desabilitado: store.botaoOcupado,
                   onPressed: () async {
                     try {
-                      fine("TESTE${store.isBusy}");
-                      store.isBusy = true;
+                      store.botaoOcupado = true;
 
                       widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
 
@@ -582,7 +581,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                     } catch (e) {
                       fine(e);
                     } finally {
-                      store.isBusy = false;
+                      store.botaoOcupado = false;
                     }
                   },
                 );
