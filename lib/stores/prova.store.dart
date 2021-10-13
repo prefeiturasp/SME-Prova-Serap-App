@@ -67,6 +67,9 @@ abstract class _ProvaStoreBase with Store, Loggable {
   String icone = AssetsUtil.iconeProva;
 
   @observable
+  String codigoIniciarProva = "";
+  
+  @observable
   int segundos = 0;
 
   @observable
