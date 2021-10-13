@@ -89,7 +89,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       builder: asuka.builder,
       navigatorObservers: [asuka.asukaHeroController],
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: kDebugMode,
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
       ),

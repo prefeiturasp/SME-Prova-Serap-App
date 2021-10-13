@@ -227,10 +227,12 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   _buildBotao(ProvaStore provaStore) {
+    // Download não iniciado e sem conexão
     if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
     }
 
+    // Download prova pausado sem conexão
     if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
       return _buildPausado(provaStore);
     }
@@ -248,8 +250,10 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     // Prova baixada -- iniciar
     if (provaStore.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       if (provaStore.status == EnumProvaStatus.PENDENTE) {
+        // Prova finalizada - aguardando sincronização
         return _buildProvaPendente(provaStore);
       } else {
+        // Prova não finalizada
         return _buildIniciarProva(provaStore);
       }
     }
@@ -417,18 +421,10 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       ),
       largura: 256,
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
-          await provaStore.iniciarProva();
-        } else {
-          await provaStore.continuarProva();
-        }
-
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProvaView(
-              provaStore: provaStore,
-            ),
+            builder: (context) => ProvaView(provaStore: provaStore),
           ),
         );
       },
