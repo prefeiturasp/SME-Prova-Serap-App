@@ -141,7 +141,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     await Prova.salvaProvaCache(provaStore.prova);
 
     if (provaStore.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
-      //provaStore.iniciarDownload();
+      provaStore.iniciarDownload();
     }
   }
 

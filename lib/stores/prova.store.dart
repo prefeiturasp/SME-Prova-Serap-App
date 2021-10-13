@@ -140,7 +140,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     }
 
     if (resultado != ConnectivityStatus.none) {
-      //await iniciarDownload();
+      await iniciarDownload();
     } else {
       downloadStatus = EnumDownloadStatus.PAUSADO;
       gerenciadorDownload.pause();
