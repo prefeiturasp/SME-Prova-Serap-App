@@ -30,6 +30,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   bool revisandoProva = false;
 
   @observable
+  bool botaoOcupado = false;
+
+  @observable
   bool mostrarAlertaDeTempoAcabando = false;
 
   @observable

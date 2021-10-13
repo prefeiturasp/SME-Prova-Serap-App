@@ -196,6 +196,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   Widget _buildQuestoes(Questao questao, int index) {
     widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
+    store.botaoOcupado = false;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -483,6 +484,15 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               textoBotao: 'Confirmar e voltar para o resumo',
               onPressed: () async {
                 try {
+                  if (store.botaoOcupado) return;
+
+                  store.botaoOcupado = true;
+                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                  await widget.provaStore.respostas.definirTempoResposta(
+                    questao.id,
+                    tempoQuestao: widget.provaStore.segundos,
+                  );
+                  await SincronizarRespostasWorker().sincronizar();
                   int posicaoDaQuestao = await Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -501,6 +511,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   );
                 } catch (e) {
                   fine(e);
+                } finally {
+                  store.botaoOcupado = false;
                 }
               },
             ),
@@ -540,30 +552,39 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
+                  desabilitado: store.botaoOcupado,
                   onPressed: () async {
-                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                    try {
+                      store.botaoOcupado = true;
 
-                    if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
-                      await widget.provaStore.respostas.definirResposta(
-                        questao.id,
-                        textoResposta: await controller.getText(),
-                        tempoQuestao: widget.provaStore.segundos,
-                      );
-                    }
-                    if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
-                      await widget.provaStore.respostas.definirTempoResposta(
-                        questao.id,
-                        tempoQuestao: widget.provaStore.segundos,
-                      );
-                    }
-                    await SincronizarRespostasWorker().sincronizar();
-                    widget.provaStore.segundos = 0;
+                      widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
 
-                    listaQuestoesController.nextPage(
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeIn,
-                    );
-                    store.questaoAtual++;
+                      if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
+                        await widget.provaStore.respostas.definirResposta(
+                          questao.id,
+                          textoResposta: await controller.getText(),
+                          tempoQuestao: widget.provaStore.segundos,
+                        );
+                      }
+                      if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
+                        await widget.provaStore.respostas.definirTempoResposta(
+                          questao.id,
+                          tempoQuestao: widget.provaStore.segundos,
+                        );
+                      }
+                      await SincronizarRespostasWorker().sincronizar();
+                      widget.provaStore.segundos = 0;
+
+                      listaQuestoesController.nextPage(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      );
+                      store.questaoAtual++;
+                    } catch (e) {
+                      fine(e);
+                    } finally {
+                      store.botaoOcupado = false;
+                    }
                   },
                 );
               }
