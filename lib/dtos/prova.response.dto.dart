@@ -31,7 +31,7 @@ class ProvaResponseDTO {
     required this.dataInicio,
     required this.dataFim,
     required this.status,
-    required this.senha,
+    this.senha,
     required this.tempoExecucao,
     required this.tempoExtra,
     required this.tempoAlerta,
