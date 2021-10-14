@@ -8,6 +8,7 @@ abstract class TemaUtil {
   static const laranja01 = Color(0xFFFF7755);
   static const laranja02 = Color(0xFFF2945B);
   static const laranja03 = Color(0xFFE99312);
+  static const laranja04 = Color(0xFFF9A82F);
   static const vermelhoErro = Color(0xFFF92F57);
   static const branco = Colors.white;
   static const cinza = Colors.grey;

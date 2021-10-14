@@ -17,8 +17,6 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/workers/dispacher.dart';
 
-import 'main.route.dart';
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -91,7 +89,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       builder: asuka.builder,
       navigatorObservers: [asuka.asukaHeroController],
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: kDebugMode,
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
       ),

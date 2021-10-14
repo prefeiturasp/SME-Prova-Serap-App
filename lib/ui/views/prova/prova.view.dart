@@ -1,28 +1,35 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:appserap/enums/tempo_status.enum.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/enums/tipo_questao.enum.dart';
-import 'package:appserap/models/alternativa.model.dart';
-import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/questao.model.dart';
-import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/stores/prova.view.store.dart';
-import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
-import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
-import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:collection/collection.dart';
+
+import 'package:appserap/enums/tempo_status.enum.dart';
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/managers/tempo.manager.dart';
+import 'package:appserap/models/alternativa.model.dart';
+import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/stores/prova.view.store.dart';
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
+import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/date.util.dart';
+import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+
 import 'resumo_respostas.view.dart';
 
 class ProvaView extends BaseStatefulWidget {
@@ -36,21 +43,78 @@ class ProvaView extends BaseStatefulWidget {
 class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Loggable {
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
-  int? _questaoId;
-  int? _alternativaId;
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
   @override
+  double get defaultPadding => 0;
+
+  @override
   void initState() {
-    widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
-    store.setup();
+    store.isLoading = true;
+
+    configure().then((_) async {
+      store.isLoading = false;
+    });
+
     super.initState();
+  }
+
+  configure() async {
+    await store.setup(widget.provaStore);
+    await widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
+    await _configureControlesTempoProva();
+  }
+
+  _configureControlesTempoProva() async {
+    _finalizarProva() async {
+      var confirm = await widget.provaStore.finalizarProva(context, true);
+      if (confirm) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => SplashScreenView()),
+          (_) => false,
+        );
+      }
+    }
+
+    if (widget.provaStore.tempoExecucaoStore != null) {
+      switch (widget.provaStore.tempoExecucaoStore!.status) {
+        case EnumProvaTempoEventType.EXTENDIDO:
+          await _iniciarRevisaoProva();
+          break;
+        case EnumProvaTempoEventType.FINALIZADO:
+          await _finalizarProva();
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    if (widget.provaStore.tempoExecucaoStore != null) {
+      widget.provaStore.tempoExecucaoStore!.onFinalizandoProva(() {
+        fine('Prova quase acabando');
+        store.mostrarAlertaDeTempoAcabando = true;
+      });
+
+      widget.provaStore.tempoExecucaoStore!.onExtenderProva(() async {
+        fine('Prova extendida');
+        store.mostrarAlertaDeTempoAcabando = false;
+        await _iniciarRevisaoProva();
+      });
+
+      widget.provaStore.tempoExecucaoStore!.onFinalizarlProva(() async {
+        fine('Prova finalizada');
+        await _finalizarProva();
+      });
+    }
   }
 
   @override
   void dispose() {
+    widget.provaStore.onDispose();
+    store.dispose();
     super.dispose();
   }
 
@@ -65,6 +129,12 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   @override
   Widget builder(BuildContext context) {
     return Observer(builder: (context) {
+      if (store.isLoading) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
       return WillPopScope(
         onWillPop: () async {
           if (store.revisandoProva) {
@@ -81,34 +151,52 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     if (store.revisandoProva) {
       var questoes = store.questoesParaRevisar.toList();
       store.totalDeQuestoesParaRevisar = questoes.length - 1;
-      return PageView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        controller: listaQuestoesController,
-        itemCount: questoes.length,
-        itemBuilder: (context, index) {
-          store.posicaoQuestaoSendoRevisada = index;
-          return _buildQuestoes(questoes[index], index);
-        },
+      return Column(
+        children: [
+          ..._buildTempoProva(),
+          Expanded(
+            child: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: listaQuestoesController,
+              itemCount: questoes.length,
+              itemBuilder: (context, index) {
+                store.posicaoQuestaoSendoRevisada = index;
+                return _buildQuestoes(questoes[index], index);
+              },
+            ),
+          ),
+        ],
       );
     }
 
     var questoes = widget.provaStore.prova.questoes;
 
-    return PageView.builder(
-      physics: NeverScrollableScrollPhysics(),
-      controller: listaQuestoesController,
-      onPageChanged: (value) {
-        store.questaoAtual = value + 1;
-      },
-      itemCount: questoes.length,
-      itemBuilder: (context, index) {
-        return _buildQuestoes(questoes[index], index);
-      },
+    return Column(
+      children: [
+        ..._buildTempoProva(),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: PageView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              controller: listaQuestoesController,
+              onPageChanged: (value) {
+                store.questaoAtual = value + 1;
+              },
+              itemCount: questoes.length,
+              itemBuilder: (context, index) {
+                return _buildQuestoes(questoes[index], index);
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildQuestoes(Questao questao, int index) {
     widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
+    store.botaoOcupado = false;
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -161,7 +249,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             ),
           ),
           Observer(builder: (context) {
-            return _botoesProva(questao);
+            return _buildBotoes(questao);
           }),
         ],
       ),
@@ -361,7 +449,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     );
   }
 
-  Widget _botoesProva(Questao questao) {
+  Widget _buildBotoes(Questao questao) {
     if (store.revisandoProva) {
       return Padding(
         padding: const EdgeInsets.only(
@@ -396,6 +484,15 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               textoBotao: 'Confirmar e voltar para o resumo',
               onPressed: () async {
                 try {
+                  if (store.botaoOcupado) return;
+
+                  store.botaoOcupado = true;
+                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                  await widget.provaStore.respostas.definirTempoResposta(
+                    questao.id,
+                    tempoQuestao: widget.provaStore.segundos,
+                  );
+                  await SincronizarRespostasWorker().sincronizar();
                   int posicaoDaQuestao = await Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -414,6 +511,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   );
                 } catch (e) {
                   fine(e);
+                } finally {
+                  store.botaoOcupado = false;
                 }
               },
             ),
@@ -453,30 +552,39 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
                 return BotaoDefaultWidget(
                   textoBotao: 'Proxima questão',
+                  desabilitado: store.botaoOcupado,
                   onPressed: () async {
-                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                    try {
+                      store.botaoOcupado = true;
 
-                    if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
-                      await widget.provaStore.respostas.definirResposta(
-                        questao.id,
-                        textoResposta: await controller.getText(),
-                        tempoQuestao: widget.provaStore.segundos,
-                      );
-                    }
-                    if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
-                      await widget.provaStore.respostas.definirTempoResposta(
-                        questao.id,
-                        tempoQuestao: widget.provaStore.segundos,
-                      );
-                    }
-                    await SincronizarRespostasWorker().sincronizar();
-                    widget.provaStore.segundos = 0;
+                      widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
 
-                    listaQuestoesController.nextPage(
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeIn,
-                    );
-                    store.questaoAtual++;
+                      if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
+                        await widget.provaStore.respostas.definirResposta(
+                          questao.id,
+                          textoResposta: await controller.getText(),
+                          tempoQuestao: widget.provaStore.segundos,
+                        );
+                      }
+                      if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
+                        await widget.provaStore.respostas.definirTempoResposta(
+                          questao.id,
+                          tempoQuestao: widget.provaStore.segundos,
+                        );
+                      }
+                      await SincronizarRespostasWorker().sincronizar();
+                      widget.provaStore.segundos = 0;
+
+                      listaQuestoesController.nextPage(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      );
+                      store.questaoAtual++;
+                    } catch (e) {
+                      fine(e);
+                    } finally {
+                      store.botaoOcupado = false;
+                    }
                   },
                 );
               }
@@ -491,25 +599,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       questao.id,
                       tempoQuestao: widget.provaStore.segundos,
                     );
-                    await SincronizarRespostasWorker().sincronizar();
                     widget.provaStore.segundos = 0;
 
-                    int posicaoDaQuestao = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ResumoRespostasView(
-                          provaStore: widget.provaStore,
-                        ),
-                      ),
-                    );
-
-                    store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
-
-                    store.revisandoProva = true;
-
-                    listaQuestoesController.jumpToPage(
-                      store.posicaoQuestaoSendoRevisada,
-                    );
+                    await _iniciarRevisaoProva();
                   } catch (e) {
                     fine(e);
                   }
@@ -539,5 +631,64 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     }
     return texto;
     // #123456#
+  }
+
+  _buildTempoProva() {
+    if (widget.provaStore.tempoExecucaoStore == null) {
+      return [SizedBox.shrink()];
+    }
+
+    return [
+      Observer(builder: (_) {
+        return BarraProgresso(
+          progresso: widget.provaStore.tempoExecucaoStore?.porcentagem ?? 0,
+          tempoRestante: widget.provaStore.tempoExecucaoStore?.tempoRestante ?? Duration(),
+          variant: widget.provaStore.tempoExecucaoStore?.status,
+          alerta: store.mostrarAlertaDeTempoAcabando,
+        );
+      }),
+      Observer(builder: (_) {
+        return Visibility(
+          visible: store.mostrarAlertaDeTempoAcabando,
+          child: Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: TemaUtil.laranja01,
+            ),
+            child: Center(
+              child: Texto(
+                'Atenção: ${formatDuration(widget.provaStore.tempoExecucaoStore!.tempoRestante)} restantes',
+                bold: true,
+                fontSize: 16,
+                color: TemaUtil.preto,
+              ),
+            ),
+          ),
+        );
+      }),
+    ];
+  }
+
+  Future<void> _iniciarRevisaoProva() async {
+    await SincronizarRespostasWorker().sincronizar();
+
+    store.revisandoProva = true;
+
+    int? posicaoDaQuestao = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResumoRespostasView(
+          provaStore: widget.provaStore,
+        ),
+      ),
+    );
+
+    if (posicaoDaQuestao != null) {
+      store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+      store.revisandoProva = true;
+      listaQuestoesController.jumpToPage(
+        store.posicaoQuestaoSendoRevisada,
+      );
+    }
   }
 }

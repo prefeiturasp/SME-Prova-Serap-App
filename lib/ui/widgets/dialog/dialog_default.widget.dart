@@ -1,85 +1,83 @@
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class DialogDefaultWidget extends StatelessWidget {
   Widget? cabecalho;
-  Widget? corpo;
+  Widget corpo;
   List<Widget> botoes = <Widget>[];
   String? mensagemOpcionalBotao;
 
-  double? espacamentoHorizontal;
-  double? espacamentoVertical;
-  bool? dialogLargo;
-
   DialogDefaultWidget({
     this.cabecalho,
-    this.corpo,
+    required this.corpo,
     this.botoes = const [],
     this.mensagemOpcionalBotao = "",
-    this.espacamentoHorizontal = .2,
-    this.espacamentoVertical = .3,
-    this.dialogLargo = false,
-  }) {
-    if (kIsWeb && !dialogLargo!) {
-      espacamentoHorizontal = .35;
-      espacamentoVertical = .2;
-    }
-  }
+  });
 
   @override
   Widget build(BuildContext context) {
-    var posicaoBotao = MainAxisAlignment.center;
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      backgroundColor: Colors.transparent,
+      child: contentBox(context),
+    );
+  }
+
+  contentBox(context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 600.0),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: cabecalho!,
+            ),
+
+            // CORPO
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: corpo,
+            ),
+
+            // BOTOES
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: _buildButtons(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildButtons(context) {
     if (botoes.isEmpty) {
-      botoes = <Widget>[
+      return [
         BotaoDefaultWidget(
           largura: 170,
           onPressed: () {
             Navigator.pop(context);
           },
           textoBotao: mensagemOpcionalBotao,
-        ),
+        )
       ];
-    } else if (botoes.length > 1) {
-      posicaoBotao = MainAxisAlignment.end;
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double w = MediaQuery.of(context).size.width;
-        double h = MediaQuery.of(context).size.height;
-
-        return Dialog(
-          insetPadding: EdgeInsets.symmetric(
-            horizontal: w * espacamentoHorizontal!,
-            vertical: h * espacamentoVertical!,
-          ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-          elevation: 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // CABECALHO
-              Padding(
-                padding: const EdgeInsets.only(bottom: 25),
-                child: cabecalho!,
-              ),
-              // CORPO
-              corpo!,
-
-              // BOTOES
-              Padding(
-                padding: const EdgeInsets.only(top: 25),
-                child: Row(
-                  mainAxisAlignment: posicaoBotao,
-                  children: botoes,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+    return botoes;
   }
 }

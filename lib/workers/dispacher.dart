@@ -40,7 +40,7 @@ class Worker with Loggable {
     if (!kIsWeb) {
       await Workmanager().initialize(
         callbackDispatcher,
-        isInDebugMode: true,
+        isInDebugMode: kDebugMode,
       );
     }
 
