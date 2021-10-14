@@ -39,6 +39,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   @override
   void initState() {
     super.initState();
+    widget.provaStore.foraDaPaginaDeRevisao = false;
     popularMapaDeQuestoes();
   }
 

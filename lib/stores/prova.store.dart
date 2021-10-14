@@ -90,6 +90,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   DateTime fimQuestao = DateTime.now();
 
+  @observable
+  bool foraDaPaginaDeRevisao = true;
+
+
   @action
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
