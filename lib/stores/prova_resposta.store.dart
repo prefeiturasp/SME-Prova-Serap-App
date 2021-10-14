@@ -135,7 +135,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
   @action
   definirTempoResposta(int questaoId, {int? tempoQuestao}) {
-    var resposta = respostasLocal[questaoId];
+    var resposta = obterResposta(questaoId);
 
     if (resposta != null) {
       resposta.sincronizado = false;
