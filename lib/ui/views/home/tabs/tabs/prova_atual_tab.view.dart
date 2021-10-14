@@ -428,7 +428,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       largura: 256,
       onPressed: () async {
 
-        if (provaStore.prova.senha != null) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
           //
           showDialog(
             context: context,
@@ -508,7 +508,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           );
         }
 
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
           provaStore.iniciarProva();
           Navigator.push(
             context,
