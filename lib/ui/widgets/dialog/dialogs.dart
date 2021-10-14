@@ -263,7 +263,7 @@ mostrarDialogSenhaErrada(BuildContext context) {
           ),
           child: Text(
             mensagemCorpo,
-            textAlign: TextAlign.left,
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
