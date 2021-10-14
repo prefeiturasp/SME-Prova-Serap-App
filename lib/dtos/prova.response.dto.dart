@@ -14,6 +14,8 @@ class ProvaResponseDTO {
   DateTime dataInicio;
   DateTime dataFim;
 
+  String? senha;
+
   EnumProvaStatus status;
 
   int tempoExecucao;
@@ -29,6 +31,7 @@ class ProvaResponseDTO {
     required this.dataInicio,
     required this.dataFim,
     required this.status,
+    this.senha,
     required this.tempoExecucao,
     required this.tempoExtra,
     required this.tempoAlerta,
