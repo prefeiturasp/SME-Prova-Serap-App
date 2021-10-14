@@ -1,4 +1,5 @@
 import 'package:appserap/stores/home.store.dart';
+import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -38,6 +39,14 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
     isLoad = false;
     tabController.dispose();
     super.dispose();
+  }
+
+  @override
+  PreferredSizeWidget buildAppBar() {
+    return AppBarWidget(
+      popView: true,
+      mostrarBotaoVoltar: false,
+    );
   }
 
   @override
