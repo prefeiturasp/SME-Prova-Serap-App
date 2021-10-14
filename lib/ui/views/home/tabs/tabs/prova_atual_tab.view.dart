@@ -18,7 +18,6 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -425,7 +424,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       ),
       largura: 256,
       onPressed: () async {
-        print("SENHA: ${provaStore.prova.senha}");
 
         if (provaStore.prova.senha != null) {
           //
