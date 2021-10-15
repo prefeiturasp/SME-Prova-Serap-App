@@ -24,7 +24,7 @@ import 'package:appserap/services/api.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
 
-class DownloadManager with Loggable {
+class GerenciadorDownload with Loggable {
   int idProva;
   List<DownloadProva> downloads = [];
   late DateTime inicio;
@@ -35,7 +35,7 @@ class DownloadManager with Loggable {
 
   Timer? timer;
 
-  DownloadManager({
+  GerenciadorDownload({
     required this.idProva,
   });
 
@@ -119,6 +119,8 @@ class DownloadManager with Loggable {
   }
 
   Future<void> startDownload() async {
+    info('Iniciando Download');
+
     Prova prova = await getProva();
     downloadAtual = downloads.length - getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length;
 

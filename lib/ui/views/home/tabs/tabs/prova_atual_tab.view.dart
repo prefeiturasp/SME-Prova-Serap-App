@@ -1,3 +1,15 @@
+import 'dart:convert';
+
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:mobx/mobx.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
@@ -8,17 +20,11 @@ import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialog_default.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:mobx/src/api/observable_collections.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
 class ProvaAtualTabView extends BaseStatefulWidget {
   @override
@@ -27,6 +33,8 @@ class ProvaAtualTabView extends BaseStatefulWidget {
 
 class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
+
+  FocusNode _codigoProvaFocus = FocusNode();
 
   @override
   void onAfterBuild(BuildContext context) {
@@ -134,7 +142,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                           fontSize: 16,
                         ),
                       ),
-                      TextoDefaultWidget(
+                      Texto(
                         provaStore.prova.itensQuantidade.toString(),
                         fontSize: 16,
                         bold: true,
@@ -164,7 +172,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextoDefaultWidget(
+                          Texto(
                             "Data de aplicação:",
                             fontSize: 16,
                           ),
@@ -225,10 +233,12 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   _buildBotao(ProvaStore provaStore) {
+    // Download não iniciado e sem conexão
     if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
     }
 
+    // Download prova pausado sem conexão
     if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
       return _buildPausado(provaStore);
     }
@@ -246,8 +256,10 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     // Prova baixada -- iniciar
     if (provaStore.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       if (provaStore.status == EnumProvaStatus.PENDENTE) {
+        // Prova finalizada - aguardando sincronização
         return _buildProvaPendente(provaStore);
       } else {
+        // Prova não finalizada
         return _buildIniciarProva(provaStore);
       }
     }
@@ -278,13 +290,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                TextoDefaultWidget(
+                Texto(
                   "Download não iniciado",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
                   bold: true,
                 ),
-                TextoDefaultWidget(
+                Texto(
                   " - Sem conexão com a internet",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
@@ -320,13 +332,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                TextoDefaultWidget(
+                Texto(
                   "Pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
                   bold: true,
                 ),
-                TextoDefaultWidget(
+                Texto(
                   " - Sem conexão com a internet",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
@@ -346,7 +358,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.download, color: Colors.white, size: 18),
-          TextoDefaultWidget(" BAIXAR PROVA", color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          Texto(" BAIXAR PROVA", color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
         ],
       ),
       largura: 256,
@@ -379,7 +391,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                TextoDefaultWidget(
+                Texto(
                   "Aguardando envio",
                   color: TemaUtil.laranja01,
                   fontSize: 12,
@@ -409,24 +421,104 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextoDefaultWidget('$texto ', color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          Texto('$texto ', color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
       largura: 256,
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
-          provaStore.iniciarProva();
+
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
+          //
+          showDialog(
+            context: context,
+            barrierColor: Colors.black87,
+            builder: (context) {
+              return DialogDefaultWidget(
+                cabecalho: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 16,
+                    left: 16,
+                    right: 16,
+                  ),
+                  child: Text(
+                    "Insira a senha informada para iniciar a prova",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                corpo: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: TextField(
+                      focusNode: _codigoProvaFocus,
+                      onChanged: (value) => provaStore.codigoIniciarProva = value,
+                      maxLength: 10,
+                      decoration: InputDecoration(
+                        labelText: 'Digite o código para liberar a prova',
+                        labelStyle: TextStyle(
+                          color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                botoes: [
+                  BotaoDefaultWidget(
+                    onPressed: () {
+                      String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
+
+                      if (provaStore.prova.senha == senhaCriptografada) {
+                        Navigator.pop(context);
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProvaView(
+                              provaStore: provaStore,
+                            ),
+                          ),
+                        );
+                      } else {
+                        mostrarDialogSenhaErrada(context);
+                      }
+                    },
+                    textoBotao: "ENVIAR CODIGO",
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProvaView(
+                provaStore: provaStore,
+              ),
+            ),
+          );
         }
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProvaView(
-              provaStore: provaStore,
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
+          provaStore.iniciarProva();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProvaView(
+                provaStore: provaStore,
+              ),
             ),
-          ),
-        );
+          );
+        }
       },
     );
   }
@@ -460,4 +552,5 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       ),
     );
   }
+  //
 }

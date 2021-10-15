@@ -5,6 +5,7 @@ class BotaoDefaultWidget extends StatelessWidget {
   final String? textoBotao;
   final Widget? child;
   final double? largura;
+  final bool desabilitado;
   final Function()? onPressed;
 
   BotaoDefaultWidget({
@@ -12,12 +13,13 @@ class BotaoDefaultWidget extends StatelessWidget {
     this.largura,
     this.onPressed,
     this.child,
+    this.desabilitado = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: onPressed,
+      onPressed: desabilitado ? null : onPressed,
       child: Container(
         padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
         width: largura,

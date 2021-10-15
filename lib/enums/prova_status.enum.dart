@@ -12,4 +12,7 @@ enum EnumProvaStatus {
 
   @JsonValue(3)
   PENDENTE,
+
+  @JsonValue(4)
+  EM_REVISAO,
 }

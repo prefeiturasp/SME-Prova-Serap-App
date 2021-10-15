@@ -24,6 +24,7 @@ jobs:
           APP_CONFIG: ${{ secrets.APP_CONFIG }}
         run: |
           mkdir -p config && echo $APP_CONFIG > config/app_config.json
+          env
          
   flutter_conf_rel:
     runs-on: master

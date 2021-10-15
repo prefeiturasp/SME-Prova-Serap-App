@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/tempo_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:get_it/get_it.dart';
@@ -31,12 +32,8 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   @observable
   ObservableMap<int, ProvaResposta> respostasLocal = <int, ProvaResposta>{}.asObservable();
 
-  void dispose() {
-    respostasSalvas = <int, ProvaResposta>{}.asObservable();
-  }
-
   @action
-  carregarRespostasServidor([Prova? prova]) async {
+  Future<void> carregarRespostasServidor([Prova? prova]) async {
     fine('[$idProva] - Carregando respostas da prova');
 
     List<int> idsQuestao = [];
@@ -46,9 +43,9 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     if (prova != null) {
       idsQuestao = prova.questoes.map((e) => e.id).toList();
     }
-    fine('[$idProva] - Carregando resposta das questoes $idsQuestao');
     for (var idQuestao in idsQuestao) {
       try {
+        fine('[$idProva] Carregando $idQuestao');
         var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
         if (respostaBanco.isSuccessful) {
           var body = respostaBanco.body!;
@@ -67,6 +64,8 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
         severe(e);
       }
     }
+
+    fine('[$idProva] - ${respostasSalvas.length} respostas carregadas do banco de dados remoto');
   }
 
   ProvaResposta? obterResposta(int questaoId) {
@@ -101,6 +100,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
           alternativaId: resposta.alternativaId,
           resposta: resposta.resposta,
           dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+          tempoRespostaAluno: resposta.tempoRespostaAluno,
         );
 
         if (response.isSuccessful) {
@@ -118,18 +118,32 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  definirResposta(int questaoId, {int? alternativaId, String? textoResposta}) {
+  definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) {
     var resposta = ProvaResposta(
       questaoId: questaoId,
       alternativaId: alternativaId,
       resposta: textoResposta,
       sincronizado: false,
       dataHoraResposta: DateTime.now(),
+      tempoRespostaAluno: tempoQuestao,
     );
 
     respostasLocal[questaoId] = resposta;
 
     salvarCache(resposta);
+  }
+
+  @action
+  definirTempoResposta(int questaoId, {int? tempoQuestao}) {
+    var resposta = obterResposta(questaoId);
+
+    if (resposta != null) {
+      resposta.sincronizado = false;
+      resposta.tempoRespostaAluno = tempoQuestao;
+      salvarCache(resposta);
+    } else {
+      definirResposta(questaoId, tempoQuestao: tempoQuestao);
+    }
   }
 
   salvarAllCache() async {

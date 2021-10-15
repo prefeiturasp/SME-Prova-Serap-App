@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -11,25 +13,26 @@ import 'package:appserap/interfaces/worker.interface.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:workmanager/workmanager.dart';
 
 class SincronizarRespostasWorker with Worker, Loggable {
   setup() async {
     if (!kIsWeb) {
-      await Workmanager().registerPeriodicTask(
-        "2",
-        "SincronizarRespostasWorker",
-        frequency: Duration(minutes: 15),
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-        ),
-      );
-    } else {
-      Timer.periodic(Duration(minutes: 1), (timer) {
-        sincronizar();
-      });
+      if (Platform.isAndroid) {
+        return await Workmanager().registerPeriodicTask(
+          "2",
+          "SincronizarRespostasWorker",
+          frequency: Duration(minutes: 15),
+          constraints: Constraints(
+            networkType: NetworkType.connected,
+          ),
+        );
+      }
     }
+
+    Timer.periodic(Duration(minutes: 1), (timer) {
+      sincronizar();
+    });
   }
 
   @override
@@ -42,7 +45,7 @@ class SincronizarRespostasWorker with Worker, Loggable {
     fine('Sincronizando respostas para o servidor');
 
     var respostasLocal = respostas ?? carregaRespostasCache();
-    fine('${respostasLocal.length} respostas salvas localmente');
+    finer('${respostasLocal.length} respostas salvas localmente');
 
     var respostasNaoSincronizadas = respostasLocal.where((element) => element.sincronizado == false);
     fine('${respostasNaoSincronizadas.length} respostas ainda não sincronizadas');
@@ -70,6 +73,7 @@ class SincronizarRespostasWorker with Worker, Loggable {
         alternativaId: resposta.alternativaId,
         resposta: resposta.resposta,
         dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+        tempoRespostaAluno: resposta.tempoRespostaAluno,
       );
 
       if (response.isSuccessful) {

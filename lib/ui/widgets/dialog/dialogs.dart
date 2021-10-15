@@ -1,7 +1,7 @@
-import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
-import 'package:asuka/asuka.dart' as asuka;
+import 'package:appserap/utils/date.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -50,6 +50,40 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
   );
 }
 
+Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) {
+  String mensagem =
+      "Sua prova foi finalizada, pois o tempo acabou. As questões com resposta foram enviadas com sucesso.";
+  String icone = AssetsUtil.check;
+  String mensagemBotao = "ENTENDI";
+
+  return showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: SvgPicture.asset(icone),
+        corpo: Text(
+          mensagem,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () async {
+              Navigator.of(context).pop(true);
+            },
+            textoBotao: mensagemBotao,
+          )
+        ],
+      );
+    },
+  );
+}
+
 mostrarDialogProvaEnviada(BuildContext context) {
   String mensagem = "Sua prova foi enviada com sucesso!";
   String icone = AssetsUtil.check;
@@ -60,7 +94,6 @@ mostrarDialogProvaEnviada(BuildContext context) {
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
-        espacamentoVertical: .32,
         cabecalho: SvgPicture.asset(icone),
         corpo: Padding(
           padding: const EdgeInsets.symmetric(
@@ -101,7 +134,6 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
-        espacamentoVertical: .35,
         cabecalho: SvgPicture.asset(icone),
         corpo: Padding(
           padding: const EdgeInsets.symmetric(
@@ -132,18 +164,15 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
   );
 }
 
-mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
+Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
   String mensagemCorpo =
       "Se finalizar a prova agora, não poderá mais fazer alterações mesmo que o tempo não tenha se esgotado";
 
-  showDialog(
+  return showDialog<bool>(
     context: context,
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
-        espacamentoVertical: .35,
-        espacamentoHorizontal: .1,
-        dialogLargo: true,
         cabecalho: Padding(
           padding: const EdgeInsets.only(
             top: 16,
@@ -154,10 +183,14 @@ mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
             textAlign: TextAlign.left,
             text: TextSpan(
               text: "Você ainda tem ",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black87),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: Colors.black87,
+              ),
               children: [
                 TextSpan(
-                  text: "1 minuto",
+                  text: formatDuration(tempo),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -182,19 +215,67 @@ mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
           child: Text(
             mensagemCorpo,
             textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black.withOpacity(0.7)),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black.withOpacity(0.7),
+            ),
           ),
         ),
         botoes: [
           BotaoSecundarioWidget(
             textoBotao: "CANCELAR",
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, false);
             },
           ),
           BotaoDefaultWidget(
-            onPressed: () {},
             textoBotao: "FINALIZAR PROVA",
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+          )
+        ],
+      );
+    },
+  );
+}
+
+mostrarDialogSenhaErrada(BuildContext context) {
+  String mensagemCorpo = "O código está incorreto. Solicite o código para o professor.";
+
+  showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: SvgPicture.asset(AssetsUtil.erro),
+        ),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Text(
+            mensagemCorpo,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            textoBotao: "ENTENDI",
           )
         ],
       );
