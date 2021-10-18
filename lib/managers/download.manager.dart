@@ -244,8 +244,9 @@ class GerenciadorDownload with Loggable {
 
           await saveProva(prova);
           await saveDownloads();
-        } catch (e, stak) {
-          severe('ERRO: $e', stak);
+        } catch (e, stack) {
+          severe('ERRO: $e');
+          severe('Stack: $stack');
           download.downloadStatus = EnumDownloadStatus.ERRO;
           prova.downloadStatus = EnumDownloadStatus.ERRO;
           onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
