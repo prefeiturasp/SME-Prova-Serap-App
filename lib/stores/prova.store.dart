@@ -70,6 +70,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   String icone = AssetsUtil.iconeProva;
 
   @observable
+  String codigoIniciarProva = "";
+  
+  @observable
   ProvaTempoExecucaoStore? tempoExecucaoStore;
   int segundos = 0;
 
@@ -78,6 +81,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @observable
   DateTime fimQuestao = DateTime.now();
+
+  @observable
+  bool foraDaPaginaDeRevisao = true;
+
 
   @action
   iniciarDownload() async {

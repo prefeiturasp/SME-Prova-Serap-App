@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,7 +12,6 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';
@@ -18,6 +20,8 @@ import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialog_default.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -29,6 +33,8 @@ class ProvaAtualTabView extends BaseStatefulWidget {
 
 class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
+
+  FocusNode _codigoProvaFocus = FocusNode();
 
   @override
   void onAfterBuild(BuildContext context) {
@@ -421,12 +427,98 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       ),
       largura: 256,
       onPressed: () async {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProvaView(provaStore: provaStore),
-          ),
-        );
+
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
+          //
+          showDialog(
+            context: context,
+            barrierColor: Colors.black87,
+            builder: (context) {
+              return DialogDefaultWidget(
+                cabecalho: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 16,
+                    left: 16,
+                    right: 16,
+                  ),
+                  child: Text(
+                    "Insira a senha informada para iniciar a prova",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                corpo: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: TextField(
+                      focusNode: _codigoProvaFocus,
+                      onChanged: (value) => provaStore.codigoIniciarProva = value,
+                      maxLength: 10,
+                      decoration: InputDecoration(
+                        labelText: 'Digite o código para liberar a prova',
+                        labelStyle: TextStyle(
+                          color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                botoes: [
+                  BotaoDefaultWidget(
+                    onPressed: () {
+                      String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
+
+                      if (provaStore.prova.senha == senhaCriptografada) {
+                        Navigator.pop(context);
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProvaView(
+                              provaStore: provaStore,
+                            ),
+                          ),
+                        );
+                      } else {
+                        mostrarDialogSenhaErrada(context);
+                      }
+                    },
+                    textoBotao: "ENVIAR CODIGO",
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProvaView(
+                provaStore: provaStore,
+              ),
+            ),
+          );
+        }
+
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
+          provaStore.iniciarProva();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProvaView(
+                provaStore: provaStore,
+              ),
+            ),
+          );
+        }
       },
     );
   }
@@ -460,4 +552,5 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       ),
     );
   }
+  //
 }

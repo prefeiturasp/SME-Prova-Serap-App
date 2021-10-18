@@ -65,6 +65,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               tempoAlerta: provaResponse.tempoAlerta,
               dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
               questoes: [],
+              senha: provaResponse.senha,
             );
 
             var provaStore = ProvaStore(

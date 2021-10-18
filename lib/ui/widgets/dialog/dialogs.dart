@@ -183,7 +183,11 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
             textAlign: TextAlign.left,
             text: TextSpan(
               text: "Você ainda tem ",
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16, color: Colors.black87),
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: Colors.black87,
+              ),
               children: [
                 TextSpan(
                   text: formatDuration(tempo),
@@ -211,7 +215,11 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
           child: Text(
             mensagemCorpo,
             textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black.withOpacity(0.7)),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black.withOpacity(0.7),
+            ),
           ),
         ),
         botoes: [
@@ -226,6 +234,48 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
             onPressed: () {
               Navigator.pop(context, true);
             },
+          )
+        ],
+      );
+    },
+  );
+}
+
+mostrarDialogSenhaErrada(BuildContext context) {
+  String mensagemCorpo = "O código está incorreto. Solicite o código para o professor.";
+
+  showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: SvgPicture.asset(AssetsUtil.erro),
+        ),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Text(
+            mensagemCorpo,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            textoBotao: "ENTENDI",
           )
         ],
       );

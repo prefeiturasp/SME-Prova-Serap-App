@@ -58,6 +58,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       store.isLoading = false;
     });
 
+    widget.provaStore.foraDaPaginaDeRevisao = true;
+
     super.initState();
   }
 
@@ -674,21 +676,24 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
     store.revisandoProva = true;
 
-    int? posicaoDaQuestao = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ResumoRespostasView(
-          provaStore: widget.provaStore,
+    if (widget.provaStore.foraDaPaginaDeRevisao) {
+      widget.provaStore.foraDaPaginaDeRevisao = false;
+      int? posicaoDaQuestao = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResumoRespostasView(
+            provaStore: widget.provaStore,
+          ),
         ),
-      ),
-    );
-
-    if (posicaoDaQuestao != null) {
-      store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
-      store.revisandoProva = true;
-      listaQuestoesController.jumpToPage(
-        store.posicaoQuestaoSendoRevisada,
       );
+
+      if (posicaoDaQuestao != null) {
+        store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+        store.revisandoProva = true;
+        listaQuestoesController.jumpToPage(
+          store.posicaoQuestaoSendoRevisada,
+        );
+      }
     }
   }
 }

@@ -32,6 +32,8 @@ class Prova {
 
   EnumProvaStatus status;
 
+  String? senha;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -45,6 +47,7 @@ class Prova {
     this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
     this.downloadProgresso = 0,
     this.status = EnumProvaStatus.NAO_INICIADA,
+    this.senha,
     this.dataInicioProvaAluno,
     this.dataFimProvaAluno,
   });
