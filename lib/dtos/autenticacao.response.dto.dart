@@ -6,10 +6,12 @@ part 'autenticacao.response.dto.g.dart';
 class AutenticacaoResponseDTO {
   final String token;
   final DateTime dataHoraExpiracao;
+  final DateTime ultimoLogin;
 
   AutenticacaoResponseDTO({
     required this.token,
     required this.dataHoraExpiracao,
+    required this.ultimoLogin 
   });
 
   static const fromJson = _$AutenticacaoResponseDTOFromJson;
