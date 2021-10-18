@@ -221,7 +221,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 ),
                 SizedBox(height: 8),
                 Html(
-                  data: tratarArquivos(questao.titulo, questao.arquivos),
+                  data: tratarArquivos(questao.descricao, questao.arquivos),
                   style: {
                     '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
                   },
@@ -233,7 +233,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 ),
                 SizedBox(height: 8),
                 Html(
-                  data: tratarArquivos(questao.descricao, questao.arquivos),
+                  data: tratarArquivos(questao.titulo, questao.arquivos),
                   style: {
                     '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
                   },
@@ -621,18 +621,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       return '<div style="text-align: center">${match.group(0)}</div>';
     });
 
-    RegExp exp = RegExp(r"#(\d+)#", multiLine: true, caseSensitive: true);
-    var matches = exp.allMatches(texto).toList();
-
-    for (var i = 0; i < matches.length; i++) {
-      var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo = arquivos.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
+    for (var arquivo in arquivos) {
       var obterTipo = arquivo.caminho.split(".");
-
-      texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto =
+          texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
+
     return texto;
-    // #123456#
   }
 
   _buildTempoProva() {
