@@ -1,4 +1,5 @@
 import 'package:appserap/fluxo_inicial.dart';
+import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -13,6 +14,7 @@ class SplashScreenView extends StatefulWidget {
 
 class _SplashScreenViewState extends State<SplashScreenView> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
+  final _orientacaoStore = GetIt.I.get<OrientacaoInicialStore>();
 
   @override
   void initState() {
@@ -37,6 +39,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     await _principalStore.setup();
 
     await _principalStore.usuario.carregarUsuario();
+    await _orientacaoStore.popularListaDeOrientacoes();
 
     Navigator.pushReplacement(
       context,

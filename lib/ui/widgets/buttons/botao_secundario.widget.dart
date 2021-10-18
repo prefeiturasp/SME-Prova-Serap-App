@@ -5,8 +5,14 @@ class BotaoSecundarioWidget extends StatelessWidget {
   final String textoBotao;
   final double? largura;
   final Function()? onPressed;
+  final Color corDoTexto;
 
-  BotaoSecundarioWidget({required this.textoBotao, this.largura, this.onPressed});
+  BotaoSecundarioWidget({
+    required this.textoBotao,
+    this.largura,
+    this.onPressed,
+    this.corDoTexto = TemaUtil.pretoSemFoco,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +29,7 @@ class BotaoSecundarioWidget extends StatelessWidget {
           child: Text(
             textoBotao,
             textAlign: TextAlign.center,
-            style: TextStyle(color: TemaUtil.pretoSemFoco, fontWeight: FontWeight.bold, fontSize: 16),
+            style: TextStyle(color: corDoTexto, fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
       ),
