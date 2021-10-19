@@ -1,19 +1,17 @@
-import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:chopper/src/response.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
-
-import '../main.ioc.dart';
+import 'package:appserap/utils/provas.util.dart';
 
 part 'home.store.g.dart';
 
@@ -33,7 +31,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     Map<int, ProvaStore> provasStore = {};
 
     // Carrega provas do cache
-    List<int> ids = listProvasCache();
+    List<int> ids = getProvasCache();
 
     for (var id in ids) {
       var provaBanco = Prova.carregaProvaCache(id)!;
@@ -126,28 +124,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     provas = ObservableMap.of(provasStore);
 
     carregando = false;
-  }
-
-  removerProvaLocal(ProvaStore provaStore) async {
-    // Remove prova do cache
-    SharedPreferences prefs = ServiceLocator.get();
-    await prefs.remove('prova_${provaStore.prova.id}');
-
-    // Remove respostas da prova do cache
-    for (var questoes in provaStore.prova.questoes) {
-      await prefs.remove('resposta_${questoes.id}');
-    }
-  }
-
-  List<int> listProvasCache() {
-    SharedPreferences prefs = GetIt.I.get();
-
-    var ids = prefs.getKeys().toList().where((element) => element.startsWith('prova_'));
-
-    if (ids.isNotEmpty) {
-      return ids.map((e) => e.replaceAll('prova_', '')).map((e) => int.parse(e)).toList();
-    }
-    return [];
   }
 
   Future<void> carregaProva(int idProva, ProvaStore provaStore) async {
