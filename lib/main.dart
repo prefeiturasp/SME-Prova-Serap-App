@@ -65,7 +65,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void setupLogging() {
-  Logger.root.level = Level.FINE;
+  Logger.root.level = Level.FINER;
   Logger.root.onRecord.listen((rec) {
     print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
   });

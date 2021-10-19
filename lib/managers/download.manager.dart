@@ -140,6 +140,8 @@ class GerenciadorDownload with Loggable {
       var download = downloads[i];
 
       if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+        finer('[Prova $idProva] - Iniciando download TIPO: ${download.tipo} ID: ${download.id}');
+
         startTimer();
         try {
           prova = await getProva();
@@ -247,8 +249,10 @@ class GerenciadorDownload with Loggable {
           await saveProva(prova);
           await saveDownloads();
         } catch (e, stack) {
-          severe('ERRO: $e');
-          severe('Stack: $stack');
+          severe('[Prova $idProva] - ERRO: $e');
+          severe(download);
+          severe(stack);
+
           download.downloadStatus = EnumDownloadStatus.ERRO;
           prova.downloadStatus = EnumDownloadStatus.ERRO;
           onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
@@ -272,10 +276,10 @@ class GerenciadorDownload with Loggable {
 
         await deleteDownload();
 
-        fine('Download Concluido');
-        fine('Tempo total ${DateTime.now().difference(inicio).inSeconds}');
+        fine('[Prova $idProva] - Download Concluido');
+        fine('[Prova $idProva] - Tempo total ${DateTime.now().difference(inicio).inSeconds}');
       } catch (e) {
-        fine('Erro ao baixar prova');
+        fine('[Prova $idProva] - Erro ao baixar prova');
         severe(e);
         prova.downloadStatus = EnumDownloadStatus.ERRO;
       } finally {

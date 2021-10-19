@@ -34,7 +34,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
   @action
   Future<void> carregarRespostasServidor([Prova? prova]) async {
-    fine('[$idProva] - Carregando respostas da prova');
+    fine('[Prova $idProva] - Carregando respostas da prova');
 
     List<int> idsQuestao = [];
 
@@ -45,7 +45,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     }
     for (var idQuestao in idsQuestao) {
       try {
-        fine('[$idProva] Carregando $idQuestao');
+        fine('[Prova $idProva] - (Questão ID $idQuestao) Carregando resposta');
         var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
         if (respostaBanco.isSuccessful) {
           var body = respostaBanco.body!;
@@ -58,15 +58,22 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
             dataHoraResposta: body.dataHoraResposta.toLocal(),
           );
 
-          finer("[$idProva] - Resposta Banco Questao $idQuestao - ${body.alternativaId} | ${body.resposta}");
+          finer(
+            "[Prova $idProva] - (Questão ID $idQuestao) Resposta Banco Questao ${body.alternativaId} | ${body.resposta}",
+          );
         }
       } catch (e, stack) {
-        severe(e);
-        severe(stack);
+        if (!e.toString().contains("but got one of type 'String'") &&
+            !e.toString().contains("type 'String' is not a subtype of type")) {
+          severe(e);
+          severe(stack);
+        } else {
+          info('[Prova $idProva] - (Questão ID $idQuestao) Sem resposta salva');
+        }
       }
     }
 
-    fine('[$idProva] - ${respostasSalvas.length} respostas carregadas do banco de dados remoto');
+    fine('[Prova $idProva] - ${respostasSalvas.length} respostas carregadas do banco de dados remoto');
   }
 
   ProvaResposta? obterResposta(int questaoId) {
