@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:asuka/asuka.dart' as asuka;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,31 +12,24 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/workers/dispacher.dart';
+import 'package:appserap/workers/jobs/baixar_prova.job.dart';
+
+import 'utils/firebase.util.dart';
+
+var logger = Logger('Main');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  setupDateFormating();
-  setupLogging();
-  registerFonts();
-
-  await setupAppConfig();
-
-  await DependenciasIoC().setup();
+  await configure();
 
   await Worker().setup();
 
-  try {
-    await Firebase.initializeApp();
-
-    //await FirebaseMessaging.instance.subscribeToTopic('1');
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  } catch (e) {
-    print('\n\nFalha ao inicializar Firebase\n\n');
-  }
+  await setupFirebase();
 
   // await SentryFlutter.init(
   //   (options) => options
@@ -50,6 +42,16 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
+configure() async {
+  setupDateFormating();
+  setupLogging();
+  registerFonts();
+
+  await setupAppConfig();
+
+  await DependenciasIoC().setup();
+}
+
 Future setupAppConfig() async {
   try {
     await AppConfigReader.initialize();
@@ -58,10 +60,6 @@ Future setupAppConfig() async {
     print("Verifique se seu projeto possui o arquivo config/app_config.json");
     print('$error');
   }
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('RECEBEU UMA MENSAGEM:');
 }
 
 void setupLogging() {

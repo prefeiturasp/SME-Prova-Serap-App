@@ -25,6 +25,7 @@ import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
+typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
 
 class GerenciadorDownload with Loggable {
   int idProva;
@@ -32,8 +33,8 @@ class GerenciadorDownload with Loggable {
   late DateTime inicio;
   late int downloadAtual;
 
-  late StatusChangeCallback onChangeStatusCallback;
-  late void Function(double tempoPrevisto) onTempoPrevistoChangeCallback;
+  StatusChangeCallback? onChangeStatusCallback;
+  TempoPrevistoChangeCallback? onTempoPrevistoChangeCallback;
 
   Timer? timer;
 
@@ -112,7 +113,9 @@ class GerenciadorDownload with Loggable {
 
   startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      onTempoPrevistoChangeCallback(getTempoPrevisto());
+      if (onTempoPrevistoChangeCallback != null) {
+        onTempoPrevistoChangeCallback!(getTempoPrevisto());
+      }
     });
   }
 
@@ -145,8 +148,12 @@ class GerenciadorDownload with Loggable {
           prova = await getProva();
           prova.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-          onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
-          onTempoPrevistoChangeCallback(getTempoPrevisto());
+          if (onChangeStatusCallback != null) {
+            onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
+          }
+          if (onTempoPrevistoChangeCallback != null) {
+            onTempoPrevistoChangeCallback!(getTempoPrevisto());
+          }
 
           switch (download.tipo) {
             case EnumDownloadTipo.QUESTAO:
@@ -247,12 +254,20 @@ class GerenciadorDownload with Loggable {
           await saveProva(prova);
           await saveDownloads();
         } catch (e, stack) {
-          severe('ERRO: $e');
-          severe('Stack: $stack');
+          severe('[Prova $idProva] ERRO: $e');
+          severe(download);
+          severe(stack);
+
           download.downloadStatus = EnumDownloadStatus.ERRO;
           prova.downloadStatus = EnumDownloadStatus.ERRO;
-          onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
-          onTempoPrevistoChangeCallback(getTempoPrevisto());
+
+          if (onChangeStatusCallback != null) {
+            onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
+          }
+
+          if (onTempoPrevistoChangeCallback != null) {
+            onTempoPrevistoChangeCallback!(getTempoPrevisto());
+          }
         }
       }
     }
@@ -272,15 +287,20 @@ class GerenciadorDownload with Loggable {
 
         await deleteDownload();
 
-        fine('Download Concluido');
-        fine('Tempo total ${DateTime.now().difference(inicio).inSeconds}');
+        fine('[Prova $idProva] Download Concluido');
+        fine('[Prova $idProva] Tempo total ${DateTime.now().difference(inicio).inSeconds}');
       } catch (e) {
-        fine('Erro ao baixar prova');
+        fine('[Prova $idProva] Erro ao baixar prova');
         severe(e);
         prova.downloadStatus = EnumDownloadStatus.ERRO;
       } finally {
-        onTempoPrevistoChangeCallback(getTempoPrevisto());
-        onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
+        if (onChangeStatusCallback != null) {
+          onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
+        }
+
+        if (onTempoPrevistoChangeCallback != null) {
+          onTempoPrevistoChangeCallback!(getTempoPrevisto());
+        }
 
         await saveProva(prova);
       }

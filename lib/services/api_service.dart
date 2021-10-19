@@ -45,9 +45,9 @@ class ApiService {
         QuestaoRespostaService.create(),
       ],
       interceptors: [
-        // CurlInterceptor(),
-        // HttpLoggingInterceptor(),
         CustomAuthInterceptor(),
+        CurlInterceptor(),
+        // HttpLoggingInterceptor(),
       ],
     ));
     return client;
