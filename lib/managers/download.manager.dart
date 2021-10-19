@@ -242,10 +242,6 @@ class GerenciadorDownload with Loggable {
               }
 
               break;
-            case EnumDownloadTipo.RESPOSTA:
-              // TODO: Handle this case.
-
-              break;
           }
 
           download.downloadStatus = EnumDownloadStatus.CONCLUIDO;

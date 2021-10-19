@@ -108,8 +108,6 @@ abstract class _LoginStoreBase with Store, Loggable {
               usuarioDados.ano,
               usuarioDados.tipoTurno,
             );
-
-            // TODO registar no topico do ano
           }
         }
       } else {

@@ -1,8 +1,6 @@
 // ignore_for_file: avoid_print
 
 import 'package:asuka/asuka.dart' as asuka;
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +14,6 @@ import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/workers/dispacher.dart';
-import 'package:appserap/workers/jobs/baixar_prova.job.dart';
 
 import 'utils/firebase.util.dart';
 
