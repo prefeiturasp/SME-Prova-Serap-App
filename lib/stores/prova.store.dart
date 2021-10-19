@@ -71,7 +71,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @observable
   String codigoIniciarProva = "";
-  
+
   @observable
   ProvaTempoExecucaoStore? tempoExecucaoStore;
   int segundos = 0;
@@ -84,7 +84,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @observable
   bool foraDaPaginaDeRevisao = true;
-
 
   @action
   iniciarDownload() async {

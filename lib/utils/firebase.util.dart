@@ -16,7 +16,7 @@ setupFirebase() async {
 
 inscreverTurmaFirebase(String ano) async {
   try {
-    await FirebaseMessaging.instance.subscribeToTopic(ano);
+    await FirebaseMessaging.instance.subscribeToTopic('ano-$ano');
     logger.config('[Firebase] Inscrevendo no topico do ano $ano');
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -29,7 +29,7 @@ inscreverTurmaFirebase(String ano) async {
 
 desinscreverTurmaFirebase(String ano) async {
   try {
-    await FirebaseMessaging.instance.unsubscribeFromTopic(ano);
+    await FirebaseMessaging.instance.unsubscribeFromTopic('ano-$ano');
     logger.config('[Firebase] Desinscrevendo no topico do ano $ano');
   } catch (e) {
     logger.severe('[Firebase] Falha ao desinscrever no tópico do ano $ano do aluno');

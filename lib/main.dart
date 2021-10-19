@@ -18,6 +18,8 @@ import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/workers/dispacher.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
 
+import 'utils/firebase.util.dart';
+
 var logger = Logger('Main');
 
 Future<void> main() async {
@@ -40,22 +42,6 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-Future<void> setupFirebase() async {
-  try {
-    await Firebase.initializeApp();
-    logger.config('[Firebase] Configurando Firebase');
-
-    String topico = '1';
-    await FirebaseMessaging.instance.subscribeToTopic(topico);
-    logger.config('[Firebase] Inscrevendo no topico $topico');
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    FirebaseMessaging.onMessage.listen(_firebaseMessagingBackgroundHandler);
-  } catch (e) {
-    logger.config('\n\nFalha ao inicializar Firebase\n\n');
-  }
-}
-
 configure() async {
   setupDateFormating();
   setupLogging();
@@ -74,14 +60,6 @@ Future setupAppConfig() async {
     print("Verifique se seu projeto possui o arquivo config/app_config.json");
     print('$error');
   }
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('RECEBEU UMA MENSAGEM:');
-
-  await await configure();
-
-  await BaixarProvaJob().run();
 }
 
 void setupLogging() {
