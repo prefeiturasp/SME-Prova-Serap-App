@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
-import 'package:appserap/models/tempo_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:get_it/get_it.dart';

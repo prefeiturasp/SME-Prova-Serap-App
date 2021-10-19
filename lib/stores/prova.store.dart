@@ -254,6 +254,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
             );
 
         if (response.isSuccessful) {
+          // ignore: prefer_typing_uninitialized_variables
           var retorno;
 
           if (automaticamente) {

@@ -1,4 +1,3 @@
-import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
 import 'package:firebase_core/firebase_core.dart' as fb;
@@ -38,9 +37,7 @@ desinscreverTurmaFirebase(String ano) async {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('RECEBEU UMA MENSAGEM:');
-
+  logger.info('RECEBEU UMA MENSAGEM:');
   await await configure();
-
   await BaixarProvaJob().run();
 }
