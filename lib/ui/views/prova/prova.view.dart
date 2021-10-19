@@ -618,7 +618,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {
     texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-      return '<div style="text-align: center">${match.group(0)}</div>';
+      return '<div style="text-align: center; position:relative">${match.group(0)}<p>Toque na imagem para ampliar</p></div>';
     });
 
     for (var arquivo in arquivos) {

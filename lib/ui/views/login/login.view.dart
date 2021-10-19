@@ -76,6 +76,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                       padding: EdgeInsets.only(left: 15, right: 15, top: 5),
                       child: Observer(
                         builder: (_) => TextField(
+                          keyboardType: TextInputType.number,
                           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                           focusNode: _codigoEOLFocus,
                           onChanged: (value) => store.codigoEOL = value,

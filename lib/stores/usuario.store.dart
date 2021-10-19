@@ -1,3 +1,4 @@
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +28,10 @@ abstract class _UsuarioStoreBase with Store {
 
   @action
   void dispose() {
+    if (ano != null && ano!.isNotEmpty) {
+      desinscreverTurmaFirebase(ano!);
+    }
+
     nome = null;
     token = null;
     codigoEOL = null;
@@ -41,6 +46,10 @@ abstract class _UsuarioStoreBase with Store {
     codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
     ano = prefs.getString("serapUsuarioAno");
     tipoTurno = prefs.getString("serapUsuarioTipoTurno");
+
+    if (ano != null && ano!.isNotEmpty) {
+      await inscreverTurmaFirebase(ano!);
+    }
   }
 
   @action
@@ -57,5 +66,7 @@ abstract class _UsuarioStoreBase with Store {
     await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
     await prefs.setString('serapUsuarioAno', ano);
     await prefs.setString('serapUsuarioTipoTurno', tipoTurno);
+
+    await inscreverTurmaFirebase(ano);
   }
 }
