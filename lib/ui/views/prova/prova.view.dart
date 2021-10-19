@@ -211,11 +211,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   children: [
                     Text(
                       'Questão ${questao.ordem + 1} ',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      style: TemaUtil.temaTextoNumeroQuestoes,
                     ),
                     Text(
                       'de ${widget.provaStore.prova.questoes.length}',
-                      style: TextStyle(fontSize: 20, color: Colors.grey),
+                      style: TemaUtil.temaTextoNumeroQuestoesTotal,
                     ),
                   ],
                 ),
@@ -223,7 +223,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 Html(
                   data: tratarArquivos(questao.titulo, questao.arquivos),
                   style: {
-                    '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
+                    '*': Style.fromTextStyle(TemaUtil.temaTextoHtmlPadrao),
                   },
                   onImageTap: (url, _, attributes, element) {
                     Uint8List imagem = base64.decode(url!.split(',').last);
@@ -235,7 +235,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 Html(
                   data: tratarArquivos(questao.descricao, questao.arquivos),
                   style: {
-                    '*': Style.fromTextStyle(GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500)),
+                    '*': Style.fromTextStyle(TemaUtil.temaTextoHtmlPadrao),
                   },
                   onImageTap: (url, _, attributes, element) {
                     Uint8List imagem = base64.decode(url!.split(',').last);
@@ -292,17 +292,13 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Icon(Icons.close, color: TemaUtil.laranja02),
+                        Icon(Icons.close, color: TemaUtil.branco),
                         SizedBox(
                           width: 8,
                         ),
                         Text(
                           'Fechar',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: TemaUtil.laranja02,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TemaUtil.temaTextoFecharImagem,
                         ),
                       ],
                     ),
@@ -434,14 +430,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         title: Row(children: [
           Text(
             "$numeracao ",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: TemaUtil.temaTextoNumeracao,
           ),
           Expanded(
             child: Html(
               data: descricao,
               style: {
                 '*': Style.fromTextStyle(
-                  GoogleFonts.poppins(fontSize: 16),
+                  TemaUtil.temaTextoPadrao,
                 )
               },
             ),

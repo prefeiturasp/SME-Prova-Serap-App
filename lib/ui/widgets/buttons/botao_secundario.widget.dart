@@ -10,20 +10,27 @@ class BotaoSecundarioWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onPressed,
-      child: Container(
-        padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-        width: largura,
-        height: 50,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+    return SizedBox(
+      height: 50,
+      width: largura,
+      child: TextButton(
+        onPressed: onPressed,
+        style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          // backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+          padding: MaterialStateProperty.all(
+            EdgeInsets.fromLTRB(20, 0, 20, 0),
+          ),
         ),
         child: Center(
           child: Text(
             textoBotao,
             textAlign: TextAlign.center,
-            style: TextStyle(color: TemaUtil.pretoSemFoco, fontWeight: FontWeight.bold, fontSize: 16),
+            style: TemaUtil.temaTextoBotaoSecundario,
           ),
         ),
       ),

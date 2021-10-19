@@ -144,4 +144,24 @@ fonts:
         weight: 800
       - asset: google_fonts/Poppins-ExtraBold.ttf
         weight: 900   
+  - family: Dyslexic
+    fonts:
+      - asset: google_fonts/OpenDyslexicAlta-Regular.otf 
+        weight: 100
+      - asset: google_fonts/OpenDyslexicAlta-Regular.otf
+        weight: 200
+      - asset: google_fonts/OpenDyslexicAlta-Regular.otf 
+        weight: 300          
+      - asset: google_fonts/OpenDyslexicAlta-Regular.otf         
+        weight: 400
+      - asset: google_fonts/OpenDyslexicAlta-Regular.otf           
+        weight: 500
+      - asset: google_fonts/OpenDyslexicAlta-Bold.otf          
+        weight: 600
+      - asset: google_fonts/OpenDyslexicAlta-Bold.otf
+        weight: 700
+      - asset: google_fonts/OpenDyslexicAlta-Bold.otf
+        weight: 800
+      - asset: google_fonts/OpenDyslexicAlta-Bold.otf
+        weight: 900   
 

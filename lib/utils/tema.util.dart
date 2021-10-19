@@ -23,4 +23,140 @@ abstract class TemaUtil {
   static dynamic textoPrincipal(BuildContext context) {
     return GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme);
   }
+
+  //TEMA TEXTO PADRÃO
+  static const temaTextoPadrao = TextStyle(
+    color: TemaUtil.preto,
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+  );
+  static const temaTextoPadraoNegrito = TextStyle(
+    color: TemaUtil.preto,
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+  );
+
+  //TEMA TEXTO ERRO
+  static const temaTextoErro = TextStyle(
+    color: TemaUtil.vermelhoErro,
+    fontSize: 12,
+    fontWeight: FontWeight.normal,
+  );
+  static const temaTextoErroNegrito = TextStyle(
+    color: TemaUtil.vermelhoErro,
+    fontSize: 12,
+    fontWeight: FontWeight.bold,
+  );
+
+  //TEMA TEXTO BOTÃO
+  static const temaTextoBotao = TextStyle(
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+  );
+
+  //TEMA TEXTO AGUARDANDO ENVIO
+  static const temaTextoAguardandoEnvio = TextStyle(
+    color: TemaUtil.laranja01,
+    fontSize: 12,
+    fontWeight: FontWeight.bold,
+  );
+
+  //TEMA TEXTO BEM VINDO
+  static const temaTextoBemVindo = TextStyle(
+    color: TemaUtil.preto,
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
+
+  //TEMA TEXTO BEM VINDO
+  static const temaTextoHtmlPadrao = TextStyle(
+    color: TemaUtil.preto,
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+  );
+
+  //TEMA TEXTO NUMERO QUESTÕES
+  static const temaTextoNumeroQuestoes = TextStyle(
+    color: TemaUtil.preto,
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+  );
+
+  //TEMA TEXTO NUMERO TOTAL QUESTÕES
+  static const temaTextoNumeroQuestoesTotal = TextStyle(
+    fontSize: 20,
+    color: Colors.grey,
+  );
+
+  //TEMA TEXTO NUMERACAO
+  static const temaTextoNumeracao = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
+
+  //TEMA TEXTO FECHAR IMAGEM
+  static const temaTextoFecharImagem = TextStyle(
+    fontSize: 18,
+    color: TemaUtil.branco,
+    fontWeight: FontWeight.bold,
+  );
+
+  //TEMA TEXTO INSERIR SENHA
+  static const temaTextoInserirSenha = TextStyle(
+    color: TemaUtil.preto,
+    fontSize: 18,
+    fontWeight: FontWeight.w800,
+  );
+
+  //TEMA QUESTAO SEM RESPOSTA
+  static const temaTextoQuestaoSemResposta = TextStyle(
+    color: TemaUtil.laranja03,
+    fontSize: 14,
+  );
+
+  //TEMA TABELA RESUMO
+  static const temaTextoTabelaResumo = TextStyle(
+    fontSize: 14,
+    color: TemaUtil.appBar,
+  );
+
+  //TEMA TEXTO APPBAR
+  static const temaTextoAppBar = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+  );
+
+  //TEMA TEXTO BOTAO SECUNDARIO
+  static const temaTextoBotaoSecundario = TextStyle(
+    color: TemaUtil.pretoSemFoco,
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+  );
+
+  //TEMA TEXTO MENSAGEM DIALOG
+  static const temaTextoMensagemDialog = TextStyle(
+    color: Colors.black87,
+    fontSize: 20,
+    fontWeight: FontWeight.w700,
+  );
+
+  //TEMA TEXTO TEMPO DIALOG
+  static const temaTextoTempoDialog = TextStyle(
+    fontWeight: FontWeight.w500,
+    fontSize: 16,
+    color: Colors.black87,
+  );
+
+  //TEMA TEXTO DURACAO DIALOG
+  static const temaTextoDuracaoDialog = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w800,
+  );
+
+  //TEMA TEXTO DURACAO DIALOG
+  static const temaTextoMensagemCorpo = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+  );
 }

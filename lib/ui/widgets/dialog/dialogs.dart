@@ -2,6 +2,7 @@ import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
@@ -25,15 +26,7 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
           padding: const EdgeInsets.symmetric(
             horizontal: 70,
           ),
-          child: Text(
-            mensagem,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black87,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          child: Text(mensagem, textAlign: TextAlign.center, style: TemaUtil.temaTextoMensagemDialog),
         ),
         botoes: [
           BotaoDefaultWidget(
@@ -62,15 +55,7 @@ Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) 
     builder: (context) {
       return DialogDefaultWidget(
         cabecalho: SvgPicture.asset(icone),
-        corpo: Text(
-          mensagem,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.black87,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        corpo: Text(mensagem, textAlign: TextAlign.center, style: TemaUtil.temaTextoMensagemDialog),
         botoes: [
           BotaoDefaultWidget(
             onPressed: () async {
@@ -99,15 +84,7 @@ mostrarDialogProvaEnviada(BuildContext context) {
           padding: const EdgeInsets.symmetric(
             horizontal: 70,
           ),
-          child: Text(
-            mensagem,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black87,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          child: Text(mensagem, textAlign: TextAlign.center, style: TemaUtil.temaTextoMensagemDialog),
         ),
         botoes: [
           BotaoDefaultWidget(
@@ -139,15 +116,7 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
           padding: const EdgeInsets.symmetric(
             horizontal: 70,
           ),
-          child: Text(
-            mensagem,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.black87,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          child: Text(mensagem, textAlign: TextAlign.center, style: TemaUtil.temaTextoMensagemDialog),
         ),
         botoes: [
           BotaoDefaultWidget(
@@ -183,18 +152,11 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
             textAlign: TextAlign.left,
             text: TextSpan(
               text: "Você ainda tem ",
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: Colors.black87,
-              ),
+              style: TemaUtil.temaTextoTempoDialog,
               children: [
                 TextSpan(
                   text: formatDuration(tempo),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: TemaUtil.temaTextoDuracaoDialog,
                   children: [
                     TextSpan(
                       text: " para fazer a prova, tem certeza que quer finalizar agora?",
@@ -212,15 +174,7 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
           ),
-          child: Text(
-            mensagemCorpo,
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black.withOpacity(0.7),
-            ),
-          ),
+          child: Text(mensagemCorpo, textAlign: TextAlign.left, style: TemaUtil.temaTextoMensagemCorpo),
         ),
         botoes: [
           BotaoSecundarioWidget(
@@ -264,10 +218,7 @@ mostrarDialogSenhaErrada(BuildContext context) {
           child: Text(
             mensagemCorpo,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+            style: TemaUtil.temaTextoMensagemCorpo,
           ),
         ),
         botoes: [

@@ -51,10 +51,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
           ),
           Text(
             "Bem-vindo",
-            style: GoogleFonts.poppins(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TemaUtil.temaTextoBemVindo,
           ),
           SizedBox(
             height: 24,
@@ -136,32 +133,32 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                       );
                     }
 
-                    return TextButton(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                        child: Container(
-                          constraints: BoxConstraints(maxWidth: 392),
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: TemaUtil.laranja01,
-                          ),
-                          child: Center(
-                            child: Text(
-                              "ENTRAR",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: TemaUtil.branco,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
+                    return Container(
+                      height: 50,
+                      constraints: BoxConstraints(maxWidth: 392),
+                      child: TextButton(
+                        onPressed: () async {
+                          fazerLogin();
+                        },
+                        style: ButtonStyle(
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
+                          ),
+                          // backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+                          padding: MaterialStateProperty.all(
+                            EdgeInsets.fromLTRB(20, 0, 20, 0),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "ENTRAR",
+                            textAlign: TextAlign.center,
+                            style: TemaUtil.temaTextoBotao,
                           ),
                         ),
                       ),
-                      onPressed: () async {
-                        fazerLogin();
-                      },
                     );
                   },
                 ),
