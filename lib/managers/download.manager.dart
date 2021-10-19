@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
@@ -122,7 +124,7 @@ class GerenciadorDownload with Loggable {
   }
 
   Future<void> startDownload() async {
-    info('Iniciando Download');
+    info('Iniciando download da prova ID $idProva');
 
     Prova prova = await getProva();
     downloadAtual = downloads.length - getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length;
@@ -251,8 +253,11 @@ class GerenciadorDownload with Loggable {
 
           await saveProva(prova);
           await saveDownloads();
-        } catch (e, stak) {
-          severe('ERRO: $e', stak);
+        } catch (e, stack) {
+          severe('[Prova $idProva] ERRO: $e');
+          severe(download);
+          severe(stack);
+
           download.downloadStatus = EnumDownloadStatus.ERRO;
           prova.downloadStatus = EnumDownloadStatus.ERRO;
 
@@ -269,26 +274,36 @@ class GerenciadorDownload with Loggable {
 
     // Baixou todos os dados
     if (getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length == downloads.length) {
-      prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+      try {
+        prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
 
-      if (onChangeStatusCallback != null) {
-        onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
+        await validarProva();
+
+        prova.questoes.sort(
+          (questao1, questao2) {
+            return questao1.ordem.compareTo(questao2.ordem);
+          },
+        );
+
+        await deleteDownload();
+
+        fine('[Prova $idProva] Download Concluido');
+        fine('[Prova $idProva] Tempo total ${DateTime.now().difference(inicio).inSeconds}');
+      } catch (e) {
+        fine('[Prova $idProva] Erro ao baixar prova');
+        severe(e);
+        prova.downloadStatus = EnumDownloadStatus.ERRO;
+      } finally {
+        if (onChangeStatusCallback != null) {
+          onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
+        }
+
+        if (onTempoPrevistoChangeCallback != null) {
+          onTempoPrevistoChangeCallback!(getTempoPrevisto());
+        }
+
+        await saveProva(prova);
       }
-      if (onTempoPrevistoChangeCallback != null) {
-        onTempoPrevistoChangeCallback!(getTempoPrevisto());
-      }
-
-      prova.questoes.sort(
-        (questao1, questao2) {
-          return questao1.ordem.compareTo(questao2.ordem);
-        },
-      );
-
-      await saveProva(prova);
-      await deleteDownload();
-
-      fine('Download Concluido');
-      fine('Tempo total ${DateTime.now().difference(inicio).inSeconds}');
     }
 
     cancelTimer();
@@ -362,5 +377,43 @@ class GerenciadorDownload with Loggable {
 
     await saveProva(prova);
     await saveDownloads();
+  }
+
+  validarProva() async {
+    Prova prova = await getProva();
+
+    for (var questao in prova.questoes) {
+      switch (questao.tipo) {
+        case EnumTipoQuestao.MULTIPLA_ESCOLHA_4:
+          if (questao.alternativas.length != 4) {
+            throw ProvaDownloadException(
+              prova.id,
+              'Questão ${questao.id} deve conter 4 alternatias, mas contem ${questao.alternativas.length} alternativas',
+            );
+          }
+
+          break;
+        case EnumTipoQuestao.MULTIPLA_ESCOLHA_5:
+          if (questao.alternativas.length != 5) {
+            throw ProvaDownloadException(
+              prova.id,
+              'Questão ${questao.id} deve conter 5 alternatias, mas contem ${questao.alternativas.length} alternativas',
+            );
+          }
+
+          break;
+        case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
+          if (questao.alternativas.isNotEmpty) {
+            throw ProvaDownloadException(
+              prova.id,
+              'Questão ${questao.id} não deve conter nenhuma alternativa',
+            );
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
   }
 }
