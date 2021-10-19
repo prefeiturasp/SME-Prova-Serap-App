@@ -116,7 +116,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   _setupReactions() {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
-      reaction((_) => conexaoStream.value, onChangeConexao),
+      reaction(
+        (_) => conexaoStream.value,
+        onChangeConexao,
+        fireImmediately: false,
+      ),
       reaction((_) => tempoCorrendo, onChangeContadorQuestao),
     ];
   }
@@ -145,7 +149,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       return;
     }
 
-    if (resultado != ConnectivityStatus.none) {
+    if (resultado != ConnectivityStatus.none && downloadStatus != EnumDownloadStatus.BAIXANDO) {
       await iniciarDownload();
     } else {
       downloadStatus = EnumDownloadStatus.PAUSADO;
