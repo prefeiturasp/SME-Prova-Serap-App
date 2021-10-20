@@ -55,6 +55,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   double get defaultPadding => 0;
 
   @override
+  bool get willPop => false;
+
+  @override
   PreferredSizeWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
@@ -65,58 +68,53 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
   @override
   Widget builder(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return false;
-      },
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            ..._buildTempoProva(),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //
-                  Text(
-                    'Resumo das respostas',
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          ..._buildTempoProva(),
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //
+                Text(
+                  'Resumo das respostas',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
                   ),
-                  //
-                  Observer(builder: (context) {
-                    return mensagemDeQuestoesSemRespostas();
-                  }),
-                  //
-                  Table(
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    columnWidths: {
-                      0: FractionColumnWidth(.65),
-                      1: FractionColumnWidth(.2),
-                      2: FractionColumnWidth(.15),
+                ),
+                //
+                Observer(builder: (context) {
+                  return mensagemDeQuestoesSemRespostas();
+                }),
+                //
+                Table(
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  columnWidths: {
+                    0: FractionColumnWidth(.65),
+                    1: FractionColumnWidth(.2),
+                    2: FractionColumnWidth(.15),
+                  },
+                  children: questoesTabela,
+                ),
+                SizedBox(height: 32),
+                Center(
+                  child: BotaoDefaultWidget(
+                    textoBotao: 'FINALIZAR E ENVIAR',
+                    largura: 392,
+                    onPressed: () async {
+                      await finalizarProva();
                     },
-                    children: questoesTabela,
                   ),
-                  SizedBox(height: 32),
-                  Center(
-                    child: BotaoDefaultWidget(
-                      textoBotao: 'FINALIZAR E ENVIAR',
-                      largura: 392,
-                      onPressed: () async {
-                        await finalizarProva();
-                      },
-                    ),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

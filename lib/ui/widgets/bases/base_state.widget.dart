@@ -38,6 +38,8 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   double defaultPadding = 16.0;
   double? defaultPaddingTop;
 
+  bool willPop = true;
+
   bool? resizeToAvoidBottomInset;
 
   onAfterBuild(BuildContext context) {}
@@ -58,14 +60,19 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: Container(
-                padding: EdgeInsets.only(
-                  left: defaultPadding,
-                  right: defaultPadding,
-                  top: defaultPaddingTop ?? defaultPadding,
-                  bottom: showBottomNaviationBar ? 0 : defaultPadding,
+              child: WillPopScope(
+                onWillPop: () async {
+                  return willPop;
+                },
+                child: Container(
+                  padding: EdgeInsets.only(
+                    left: defaultPadding,
+                    right: defaultPadding,
+                    top: defaultPaddingTop ?? defaultPadding,
+                    bottom: showBottomNaviationBar ? 0 : defaultPadding,
+                  ),
+                  child: builder(context),
                 ),
-                child: builder(context),
               ),
             ),
           ],
