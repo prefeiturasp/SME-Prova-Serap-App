@@ -237,7 +237,173 @@ mostrarDialogSenhaErrada(BuildContext context) {
 
 mostrarDialogMudancaTema(BuildContext context) {
   double _currentSliderValue = 16;
-  showDialog(
+  showGeneralDialog(
+    barrierLabel: "Barrier",
+    barrierDismissible: true,
+    barrierColor: Colors.black.withOpacity(0.5),
+    transitionDuration: Duration(milliseconds: 700),
+    context: context,
+    pageBuilder: (_, __, ___) {
+      return Material(
+        color: Colors.transparent,
+        child: Align(
+          alignment: Alignment.topRight,
+          child: Container(
+            height: 500,
+            width: 300,
+            margin: EdgeInsets.only(top: 65, right: 60),
+            padding: EdgeInsets.all(16),
+            child: Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    "Tipo de letra",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      decoration: TextDecoration.none,
+                      color: Colors.black87,
+                      fontFamily: "Poppins",
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      child: Column(
+                        children: [
+                          TextButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
+                              backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                              // fixedSize: MaterialStateProperty.all<Size>(
+                              //   Size(85, 70),
+                              // ),
+                            ),
+                            child: Text(
+                              "Aa",
+                              style: TextStyle(
+                                fontSize: 48,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Padrão",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 24),
+                    SizedBox(
+                      child: Column(
+                        children: [
+                          TextButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                              ),
+                              backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                            ),
+                            child: Text(
+                              "Aa",
+                              style: TextStyle(
+                                fontSize: 48,
+                                color: Colors.black,
+                                fontFamily: 'Dyslexic',
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Para dislexia",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Divider(color: Colors.black87),
+                SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    "Tamanho da letra",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "A",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      Slider(
+                        value: _currentSliderValue,
+                        min: 8,
+                        max: 24,
+                        divisions: 2,
+                        label: _currentSliderValue.round().toString(),
+                        onChanged: (double value) {},
+                      ),
+                      Text(
+                        "A",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+        ),
+      );
+    },
+    transitionBuilder: (_, anim, __, child) {
+      return SlideTransition(
+        position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+        child: child,
+      );
+    },
+  );
+}
+/*showDialog(
     context: context,
     builder: (_) {
       return DialogDefaultWidget(
@@ -376,5 +542,4 @@ mostrarDialogMudancaTema(BuildContext context) {
         botoes: [Container()],
       );
     },
-  );
-}
+  ); */

@@ -98,7 +98,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
           ),
         ),
-        // textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
       ),
       locale: Locale('pt', 'BR'),
       home: SplashScreenView(),
