@@ -244,16 +244,16 @@ mostrarDialogMudancaTema(BuildContext context) {
     transitionDuration: Duration(milliseconds: 700),
     context: context,
     pageBuilder: (_, __, ___) {
-      return Material(
-        color: Colors.transparent,
-        child: Align(
-          alignment: Alignment.topRight,
-          child: Container(
-            height: 500,
-            width: 300,
-            margin: EdgeInsets.only(top: 65, right: 60),
-            padding: EdgeInsets.all(16),
+      return Align(
+        alignment: Alignment.topRight,
+        child: Container(
+          height: 300,
+          width: 300,
+          margin: EdgeInsets.only(right: 60),
+          padding: EdgeInsets.all(16),
+          child: Material(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
                   width: double.infinity,
@@ -288,6 +288,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                               style: TextStyle(
                                 fontSize: 48,
                                 color: Colors.black,
+                                fontFamily: "Poppins",
                               ),
                             ),
                           ),
@@ -298,6 +299,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                               fontSize: 14,
                               color: Colors.black,
                               decoration: TextDecoration.none,
+                              fontFamily: "Poppins",
                             ),
                           ),
                         ],
@@ -311,7 +313,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                             onPressed: () {},
                             style: ButtonStyle(
                               padding: MaterialStateProperty.all<EdgeInsets>(
-                                EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                                EdgeInsets.all(0),
                               ),
                               backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
                             ),
@@ -332,6 +334,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                               fontSize: 14,
                               color: Colors.black,
                               decoration: TextDecoration.none,
+                              fontFamily: "Poppins",
                             ),
                           ),
                         ],
@@ -350,6 +353,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
+                      fontFamily: "Poppins",
                     ),
                   ),
                 ),
@@ -363,15 +367,25 @@ mostrarDialogMudancaTema(BuildContext context) {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
+                          fontFamily: "Poppins",
                         ),
                       ),
-                      Slider(
-                        value: _currentSliderValue,
-                        min: 8,
-                        max: 24,
-                        divisions: 2,
-                        label: _currentSliderValue.round().toString(),
-                        onChanged: (double value) {},
+                      Expanded(
+                        child: SliderTheme(
+                          data: SliderThemeData(
+                            trackHeight: 8,
+                          ),
+                          child: Slider(
+                            value: _currentSliderValue,
+                            min: 8,
+                            max: 24,
+                            divisions: 16,
+                            label: _currentSliderValue.round().toString(),
+                            activeColor: TemaUtil.azul2,
+                            inactiveColor: Colors.grey[350],
+                            onChanged: (double value) {},
+                          ),
+                        ),
                       ),
                       Text(
                         "A",
@@ -379,6 +393,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w400,
+                          fontFamily: "Poppins",
                         ),
                       ),
                     ],
@@ -386,18 +401,18 @@ mostrarDialogMudancaTema(BuildContext context) {
                 )
               ],
             ),
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
+          ),
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
           ),
         ),
       );
     },
     transitionBuilder: (_, anim, __, child) {
       return SlideTransition(
-        position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(anim),
+        position: Tween(begin: Offset(0, 0), end: Offset(0, 0.07)).animate(anim),
         child: child,
       );
     },

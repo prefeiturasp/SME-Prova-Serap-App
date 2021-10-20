@@ -149,21 +149,5 @@ fonts:
   - family: Dyslexic
     fonts:
       - asset: fonts/OpenDyslexic-Regular.ttf 
-        weight: 100
-      - asset: fonts/OpenDyslexic-Regular.ttf
-        weight: 200
-      - asset: fonts/OpenDyslexic-Regular.ttf 
-        weight: 300          
-      - asset: fonts/OpenDyslexic-Regular.ttf         
-        weight: 400
-      - asset: fonts/OpenDyslexic-Regular.ttf           
-        weight: 500
-      - asset: fonts/OpenDyslexic-Bold.ttf          
-        weight: 600
-      - asset: fonts/OpenDyslexic-Bold.ttf
-        weight: 700
-      - asset: fonts/OpenDyslexic-Bold.ttf
-        weight: 800
-      - asset: fonts/OpenDyslexic-Bold.ttf
-        weight: 900   
+        
 

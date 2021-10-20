@@ -51,6 +51,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             style: TextStyle(
               color: TemaUtil.laranja02,
               fontSize: 20,
+              // fontFamily: 'Poppins',
             ),
           ),
         ),
