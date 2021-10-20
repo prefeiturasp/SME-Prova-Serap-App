@@ -21,11 +21,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (mostrarBotaoVoltar) {
-      return _buildAppbarNavegacao(context);
-    } else {
-      return _buildAppbarCompleta(context);
-    }
+    return _buildAppbarCompleta(context);
   }
 
   Widget _buildAppbarCompleta(BuildContext context) {
@@ -45,6 +41,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           );
         },
       ),
+      automaticallyImplyLeading: false,
       actions: [
         TextButton(
           onPressed: () async {
@@ -70,74 +67,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildAppbarNavegacao(BuildContext context) {
-    return AppBar(
-      backgroundColor: TemaUtil.appBar,
-      title: Observer(
-        builder: (_) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              _buildSubtitulo(),
-            ],
-          );
-        },
-      ),
-      leading: _buildBotaoVoltar(context),
-      actions: [
-        TextButton(
-          onPressed: () async {
-            await _principalStore.sair();
-
-            if (popView) {
-              var prova = GetIt.I.get<ProvaViewStore>();
-              prova.dispose();
-
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => SplashScreenView()),
-                (_) => false,
-              );
-            }
-          },
-          child: Row(
-            children: [
-              Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
-              SizedBox(width: 5),
-              Text("Sair", style: GoogleFonts.poppins(color: TemaUtil.laranja02)),
-              SizedBox(width: 5),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBotaoVoltar(BuildContext context) {
-    return Observer(
-      builder: (_) {
-        var prova = GetIt.I.get<ProvaViewStore>();
-        if (prova.revisandoProva) {
-          return Container();
-        }
-        return IconButton(
-          onPressed: () {
-            if (!prova.revisandoProva) {
-              Navigator.of(context).pop();
-            }
-            prova.dispose();
-          },
-          icon: Icon(
-            Icons.arrow_back,
-          ),
-        );
-      },
     );
   }
 
