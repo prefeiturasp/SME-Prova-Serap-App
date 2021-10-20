@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends BaseStatefulWidget {
   const LoginView({Key? key}) : super(key: key);

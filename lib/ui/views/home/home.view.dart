@@ -4,7 +4,6 @@ import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'tabs/tabs/prova_atual_tab.view.dart';
 
@@ -57,7 +56,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
           alignment: Alignment.centerLeft,
           child: TabBar(
             controller: tabController,
-            labelStyle: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w600),
+            labelStyle: TextStyle(fontSize: 20, fontFamily: 'Poppins', fontWeight: FontWeight.w600),
             indicatorSize: TabBarIndicatorSize.label,
             labelColor: TemaUtil.preto,
             unselectedLabelColor: TemaUtil.pretoSemFoco,

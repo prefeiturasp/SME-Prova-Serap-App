@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 abstract class TemaUtil {
   //! CORES
@@ -21,9 +20,9 @@ abstract class TemaUtil {
   static const verde02 = Color(0xff62C153);
 
   //* TEMA DE TEXTOS
-  static dynamic textoPrincipal(BuildContext context) {
-    return GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme);
-  }
+  // static dynamic textoPrincipal(BuildContext context) {
+  //   return GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme);
+  // }
 
   //TEMA TEXTO PADRÃO
   static const temaTextoPadrao = TextStyle(

@@ -8,7 +8,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -74,8 +73,8 @@ void setupLogging() {
 
 void registerFonts() {
   LicenseRegistry.addLicense(() async* {
-    final license = await rootBundle.loadString('google_fonts/OFL.txt');
-    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+    final license = await rootBundle.loadString('fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['fonts'], license);
   });
 }
 
@@ -98,7 +97,6 @@ class MyApp extends StatelessWidget {
             backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
           ),
         ),
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
       ),
       locale: Locale('pt', 'BR'),
       home: SplashScreenView(),

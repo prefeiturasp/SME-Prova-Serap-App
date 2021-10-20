@@ -6,7 +6,6 @@ import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
@@ -85,7 +84,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               Observer(builder: (_) {
                 return Text(
                   "Sair",
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
                     fontSize: temaStore.tTexto12,
                     color: TemaUtil.laranja02,
                   ),
