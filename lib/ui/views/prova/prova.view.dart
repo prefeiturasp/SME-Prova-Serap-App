@@ -51,6 +51,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   double get defaultPadding => 0;
 
   @override
+  bool get willPop => false;
+
+  @override
   void initState() {
     store.isLoading = true;
 
