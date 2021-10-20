@@ -375,10 +375,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 ],
               ),
               htmlEditorOptions: HtmlEditorOptions(
+                autoAdjustHeight: false,
                 hint: "Digite sua resposta aqui...",
               ),
               otherOptions: OtherOptions(
-                height: 328,
+                height: 400,
               ),
             ),
           ),
@@ -388,7 +389,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           padding: EdgeInsets.symmetric(vertical: 15),
           width: MediaQuery.of(context).size.width,
           child: Text(
-            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').length}',
+            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length}',
             textAlign: TextAlign.end,
           ),
         ),
