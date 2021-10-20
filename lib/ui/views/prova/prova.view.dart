@@ -285,6 +285,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 Align(
                   alignment: Alignment.topRight,
                   child: TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                    ),
                     onPressed: () {
                       Navigator.of(context, rootNavigator: true).pop('dialog');
                     },
@@ -292,7 +295,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Icon(Icons.close, color: TemaUtil.branco),
+                        Icon(Icons.close, color: TemaUtil.laranja02),
                         SizedBox(
                           width: 8,
                         ),

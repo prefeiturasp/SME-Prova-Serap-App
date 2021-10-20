@@ -64,7 +64,7 @@ abstract class TemaUtil {
 
   //TEMA TEXTO BEM VINDO
   static const temaTextoBemVindo = TextStyle(
-    color: TemaUtil.preto,
+    color: Colors.black87,
     fontSize: 24,
     fontWeight: FontWeight.bold,
   );
@@ -98,7 +98,7 @@ abstract class TemaUtil {
   //TEMA TEXTO FECHAR IMAGEM
   static const temaTextoFecharImagem = TextStyle(
     fontSize: 18,
-    color: TemaUtil.branco,
+    color: TemaUtil.laranja02,
     fontWeight: FontWeight.bold,
   );
 

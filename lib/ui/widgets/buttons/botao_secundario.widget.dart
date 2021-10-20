@@ -21,7 +21,7 @@ class BotaoSecundarioWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          // backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
           padding: MaterialStateProperty.all(
             EdgeInsets.fromLTRB(20, 0, 20, 0),
           ),
