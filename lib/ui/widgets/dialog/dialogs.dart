@@ -8,6 +8,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'dialog_default.widget.dart';
 
@@ -229,6 +230,150 @@ mostrarDialogSenhaErrada(BuildContext context) {
             textoBotao: "ENTENDI",
           )
         ],
+      );
+    },
+  );
+}
+
+mostrarDialogMudancaTema(BuildContext context) {
+  double _currentSliderValue = 16;
+  showDialog(
+    context: context,
+    builder: (_) {
+      return DialogDefaultWidget(
+        maxWidth: 400,
+        cabecalho: Container(),
+        corpo: Column(
+          children: [
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                "Tipo de letra",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  child: Column(
+                    children: [
+                      TextButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                          padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                          // fixedSize: MaterialStateProperty.all<Size>(
+                          //   Size(85, 70),
+                          // ),
+                        ),
+                        child: Text(
+                          "Aa",
+                          style: TextStyle(
+                            fontSize: 48,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Padrão",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 24),
+                SizedBox(
+                  child: Column(
+                    children: [
+                      TextButton(
+                        onPressed: () {},
+                        style: ButtonStyle(
+                          padding: MaterialStateProperty.all<EdgeInsets>(
+                            EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                          ),
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                        ),
+                        child: Text(
+                          "Oa",
+                          style: TextStyle(
+                            fontSize: 48,
+                            color: Colors.black,
+                            fontFamily: 'Dyslexic',
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Para dislexia",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            Divider(color: Colors.black87),
+            SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: Text(
+                "Tamanho da letra",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            SizedBox(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "A",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  Expanded(
+                    child: Slider(
+                      value: _currentSliderValue,
+                      min: 8,
+                      max: 24,
+                      divisions: 2,
+                      label: _currentSliderValue.round().toString(),
+                      onChanged: (double value) {},
+                    ),
+                  ),
+                  Text(
+                    "A",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+        botoes: [Container()],
       );
     },
   );

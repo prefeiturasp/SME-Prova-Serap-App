@@ -114,6 +114,7 @@ flutter:
     - assets/images/
     - google_fonts/
     - config/app_config.json
+    - fonts/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -144,24 +145,25 @@ fonts:
         weight: 800
       - asset: google_fonts/Poppins-ExtraBold.ttf
         weight: 900   
+        
   - family: Dyslexic
     fonts:
-      - asset: google_fonts/OpenDyslexicAlta-Regular.otf 
+      - asset: fonts/OpenDyslexic-Regular.ttf 
         weight: 100
-      - asset: google_fonts/OpenDyslexicAlta-Regular.otf
+      - asset: fonts/OpenDyslexic-Regular.ttf
         weight: 200
-      - asset: google_fonts/OpenDyslexicAlta-Regular.otf 
+      - asset: fonts/OpenDyslexic-Regular.ttf 
         weight: 300          
-      - asset: google_fonts/OpenDyslexicAlta-Regular.otf         
+      - asset: fonts/OpenDyslexic-Regular.ttf         
         weight: 400
-      - asset: google_fonts/OpenDyslexicAlta-Regular.otf           
+      - asset: fonts/OpenDyslexic-Regular.ttf           
         weight: 500
-      - asset: google_fonts/OpenDyslexicAlta-Bold.otf          
+      - asset: fonts/OpenDyslexic-Bold.ttf          
         weight: 600
-      - asset: google_fonts/OpenDyslexicAlta-Bold.otf
+      - asset: fonts/OpenDyslexic-Bold.ttf
         weight: 700
-      - asset: google_fonts/OpenDyslexicAlta-Bold.otf
+      - asset: fonts/OpenDyslexic-Bold.ttf
         weight: 800
-      - asset: google_fonts/OpenDyslexicAlta-Bold.otf
+      - asset: fonts/OpenDyslexic-Bold.ttf
         weight: 900   
 

@@ -92,13 +92,14 @@ class MyApp extends StatelessWidget {
       navigatorObservers: [asuka.asukaHeroController],
       debugShowCheckedModeBanner: kDebugMode,
       theme: ThemeData.light().copyWith(
-          appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
-          textButtonTheme: TextButtonThemeData(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
-            ),
+        appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
+        textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
           ),
-          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)),
+        ),
+        // textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+      ),
       locale: Locale('pt', 'BR'),
       home: SplashScreenView(),
       scaffoldMessengerKey: NotificacaoUtil.messengerKey,

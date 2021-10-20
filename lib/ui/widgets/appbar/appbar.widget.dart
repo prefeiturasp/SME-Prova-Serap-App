@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
@@ -38,6 +39,21 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       ),
       leading: _buildBotaoVoltar(context),
       actions: [
+        TextButton(
+          onPressed: () {
+            mostrarDialogMudancaTema(context);
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.appBar),
+          ),
+          child: Text(
+            "Aa",
+            style: TextStyle(
+              color: TemaUtil.laranja02,
+              fontSize: 20,
+            ),
+          ),
+        ),
         TextButton(
           onPressed: () async {
             await _principalStore.sair();
