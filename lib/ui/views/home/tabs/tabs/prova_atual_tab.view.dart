@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:appserap/stores/tema.store.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,8 @@ class ProvaAtualTabView extends BaseStatefulWidget {
 
 class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
+
+  final temaStore = GetIt.I<TemaStore>();
 
   FocusNode _codigoProvaFocus = FocusNode();
 
@@ -112,10 +115,16 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Titulo
-                  AutoSizeText(
-                    provaStore.prova.descricao,
-                    style: TemaUtil.temaTextoPadraoNegrito,
-                    maxLines: 2,
+                  Observer(
+                    builder: (_) {
+                      return AutoSizeText(
+                        provaStore.prova.descricao,
+                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                          fontSize: temaStore.tTexto16,
+                        ),
+                        maxLines: 2,
+                      );
+                    },
                   ),
                   SizedBox(height: 10),
                   // Quantidade de itens
@@ -136,15 +145,26 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       SizedBox(
                         width: 5,
                       ),
-                      Text(
-                        "Quantidade de itens: ",
-                        style: TemaUtil.temaTextoPadrao,
+                      Observer(
+                        builder: (_) {
+                          return Text(
+                            "Quantidade de itens: ",
+                            style: TemaUtil.temaTextoPadrao.copyWith(
+                              fontSize: temaStore.tTexto16,
+                            ),
+                          );
+                        },
                       ),
-                      Texto(
-                        provaStore.prova.itensQuantidade.toString(),
-                        fontSize: 16,
-                        bold: true,
-                        texStyle: TemaUtil.temaTextoPadraoNegrito,
+                      Observer(
+                        builder: (_) {
+                          return Texto(
+                            provaStore.prova.itensQuantidade.toString(),
+                            bold: true,
+                            texStyle: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                              fontSize: temaStore.tTexto16,
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -171,10 +191,15 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Texto(
-                            "Data de aplicação:",
-                            fontSize: 16,
-                            texStyle: TemaUtil.temaTextoPadrao,
+                          Observer(
+                            builder: (_) {
+                              return Texto(
+                                "Data de aplicação:",
+                                texStyle: TemaUtil.temaTextoPadrao.copyWith(
+                                  fontSize: temaStore.tTexto16,
+                                ),
+                              );
+                            },
                           ),
                           SizedBox(
                             width: 350,
@@ -200,33 +225,47 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
   Widget _formataDataAplicacao(Prova prova) {
     if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
-      return AutoSizeText(
-        formatEddMMyyyy(prova.dataInicio),
-        maxLines: 2,
-        style: TemaUtil.temaTextoPadraoNegrito,
+      return Observer(
+        builder: (_) {
+          return AutoSizeText(
+            formatEddMMyyyy(prova.dataInicio),
+            maxLines: 2,
+            style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+              fontSize: temaStore.tTexto16,
+            ),
+          );
+        },
       );
     }
 
     if (prova.dataInicio != prova.dataFim) {
-      return Row(
-        children: [
-          AutoSizeText(
-            formatEddMMyyyy(prova.dataInicio),
-            maxLines: 2,
-            style: TemaUtil.temaTextoPadraoNegrito,
-          ),
-          AutoSizeText(
-            " à ",
-            maxLines: 2,
-            style: TemaUtil.temaTextoPadrao,
-          ),
-          AutoSizeText(
-            formatEddMMyyyy(prova.dataFim!),
-            maxLines: 2,
-            style: TemaUtil.temaTextoPadraoNegrito,
-          ),
-        ],
-      );
+      return Observer(builder: (_) {
+        return Row(
+          children: [
+            AutoSizeText(
+              formatEddMMyyyy(prova.dataInicio),
+              maxLines: 2,
+              style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                fontSize: temaStore.tTexto16,
+              ),
+            ),
+            AutoSizeText(
+              " à ",
+              maxLines: 2,
+              style: TemaUtil.temaTextoPadrao.copyWith(
+                fontSize: temaStore.tTexto16,
+              ),
+            ),
+            AutoSizeText(
+              formatEddMMyyyy(prova.dataFim!),
+              maxLines: 2,
+              style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                fontSize: temaStore.tTexto16,
+              ),
+            ),
+          ],
+        );
+      });
     }
 
     return SizedBox();
@@ -288,22 +327,24 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Row(
-              children: [
-                Texto(
-                  "Download não iniciado",
-                  color: TemaUtil.vermelhoErro,
-                  fontSize: 12,
-                  bold: true,
-                  texStyle: TemaUtil.temaTextoErroNegrito,
-                ),
-                Texto(
-                  " - Sem conexão com a internet",
-                  color: TemaUtil.vermelhoErro,
-                  fontSize: 12,
-                  texStyle: TemaUtil.temaTextoErro,
-                ),
-              ],
+            child: Observer(
+              builder: (_) {
+                return Row(
+                  children: [
+                    Texto(
+                      "Download não iniciado",
+                      color: TemaUtil.vermelhoErro,
+                      bold: true,
+                      texStyle: TemaUtil.temaTextoErroNegrito.copyWith(fontSize: temaStore.tTexto12),
+                    ),
+                    Texto(
+                      " - Sem conexão com a internet",
+                      color: TemaUtil.vermelhoErro,
+                      texStyle: TemaUtil.temaTextoErro.copyWith(fontSize: temaStore.tTexto12),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -332,22 +373,24 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Row(
-              children: [
-                Texto(
-                  "Pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
-                  color: TemaUtil.vermelhoErro,
-                  fontSize: 12,
-                  bold: true,
-                  texStyle: TemaUtil.temaTextoErroNegrito,
-                ),
-                Texto(
-                  " - Sem conexão com a internet",
-                  color: TemaUtil.vermelhoErro,
-                  fontSize: 12,
-                  texStyle: TemaUtil.temaTextoErro,
-                ),
-              ],
+            child: Observer(
+              builder: (context) {
+                return Row(
+                  children: [
+                    Texto(
+                      "Pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
+                      color: TemaUtil.vermelhoErro,
+                      bold: true,
+                      texStyle: TemaUtil.temaTextoErroNegrito.copyWith(fontSize: temaStore.tTexto12),
+                    ),
+                    Texto(
+                      " - Sem conexão com a internet",
+                      color: TemaUtil.vermelhoErro,
+                      texStyle: TemaUtil.temaTextoErro.copyWith(fontSize: temaStore.tTexto12),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -362,12 +405,17 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.download, color: Colors.white, size: 18),
-          Texto(
-            " BAIXAR PROVA",
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            texStyle: TemaUtil.temaTextoBotao,
+          Observer(
+            builder: (_) {
+              return Texto(
+                " BAIXAR PROVA",
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                texStyle: TemaUtil.temaTextoBotao.copyWith(
+                  fontSize: temaStore.tTexto16,
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -401,12 +449,17 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                Texto(
-                  "Aguardando envio",
-                  color: TemaUtil.laranja01,
-                  fontSize: 12,
-                  bold: true,
-                  texStyle: TemaUtil.temaTextoAguardandoEnvio,
+                Observer(
+                  builder: (_) {
+                    return Texto(
+                      "Aguardando envio",
+                      color: TemaUtil.laranja01,
+                      bold: true,
+                      texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
+                        fontSize: temaStore.tTexto12,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -432,12 +485,17 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Texto(
-            '$texto ',
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-            texStyle: TemaUtil.temaTextoBotao,
+          Observer(
+            builder: (_) {
+              return Texto(
+                '$texto ',
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                texStyle: TemaUtil.temaTextoBotao.copyWith(
+                  fontSize: temaStore.tTexto16,
+                ),
+              );
+            },
           ),
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
@@ -457,11 +515,15 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                     left: 16,
                     right: 16,
                   ),
-                  child: Text(
-                    "Insira a senha informada para iniciar a prova",
-                    textAlign: TextAlign.center,
-                    style: TemaUtil.temaTextoInserirSenha,
-                  ),
+                  child: Observer(builder: (_) {
+                    return Text(
+                      "Insira a senha informada para iniciar a prova",
+                      textAlign: TextAlign.center,
+                      style: TemaUtil.temaTextoInserirSenha.copyWith(
+                        fontSize: temaStore.tTexto18,
+                      ),
+                    );
+                  }),
                 ),
                 corpo: Padding(
                   padding: const EdgeInsets.symmetric(
