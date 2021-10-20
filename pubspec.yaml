@@ -146,7 +146,7 @@ fonts:
       - asset: google_fonts/Poppins-ExtraBold.ttf
         weight: 900   
         
-  - family: Dyslexic
+  - family: OpenDyslexic
     fonts:
       - asset: fonts/OpenDyslexic-Regular.ttf 
         weight: 100

@@ -1,3 +1,4 @@
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
@@ -7,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'dialog_default.widget.dart';
@@ -16,6 +19,8 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
   String mensagem = "Sua prova será enviada quando houver conexão com a internet.";
   String icone = AssetsUtil.semConexao;
   String mensagemBotao = "ENTENDI";
+
+  final temaStore = GetIt.I.get<TemaStore>();
 
   showDialog(
     context: context,
@@ -27,7 +32,17 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
           padding: const EdgeInsets.symmetric(
             horizontal: 70,
           ),
-          child: Text(mensagem, textAlign: TextAlign.center, style: TemaUtil.temaTextoMensagemDialog),
+          child: Observer(
+            builder: (_) {
+              return Text(
+                mensagem,
+                textAlign: TextAlign.center,
+                style: TemaUtil.temaTextoMensagemDialog.copyWith(
+                  fontSize: temaStore.tTexto20,
+                ),
+              );
+            },
+          ),
         ),
         botoes: [
           BotaoDefaultWidget(
@@ -45,6 +60,8 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
 }
 
 Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
   String mensagem =
       "Sua prova foi finalizada, pois o tempo acabou. As questões com resposta foram enviadas com sucesso.";
   String icone = AssetsUtil.check;
@@ -56,7 +73,17 @@ Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) 
     builder: (context) {
       return DialogDefaultWidget(
         cabecalho: SvgPicture.asset(icone),
-        corpo: Text(mensagem, textAlign: TextAlign.center, style: TemaUtil.temaTextoMensagemDialog),
+        corpo: Observer(
+          builder: (_) {
+            return Text(
+              mensagem,
+              textAlign: TextAlign.center,
+              style: TemaUtil.temaTextoMensagemDialog.copyWith(
+                fontSize: temaStore.tTexto20,
+              ),
+            );
+          },
+        ),
         botoes: [
           BotaoDefaultWidget(
             onPressed: () async {
@@ -71,6 +98,8 @@ Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) 
 }
 
 mostrarDialogProvaEnviada(BuildContext context) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
   String mensagem = "Sua prova foi enviada com sucesso!";
   String icone = AssetsUtil.check;
   String mensagemBotao = "OK";
@@ -85,7 +114,17 @@ mostrarDialogProvaEnviada(BuildContext context) {
           padding: const EdgeInsets.symmetric(
             horizontal: 70,
           ),
-          child: Text(mensagem, textAlign: TextAlign.center, style: TemaUtil.temaTextoMensagemDialog),
+          child: Observer(
+            builder: (_) {
+              return Text(
+                mensagem,
+                textAlign: TextAlign.center,
+                style: TemaUtil.temaTextoMensagemDialog.copyWith(
+                  fontSize: temaStore.tTexto20,
+                ),
+              );
+            },
+          ),
         ),
         botoes: [
           BotaoDefaultWidget(
@@ -103,6 +142,8 @@ mostrarDialogProvaEnviada(BuildContext context) {
 }
 
 mostrarDialogProvaJaEnviada(BuildContext context) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
   String mensagem = "Esta prova já foi finalizada";
   String icone = AssetsUtil.erro;
   String mensagemBotao = "OK";
@@ -117,7 +158,17 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
           padding: const EdgeInsets.symmetric(
             horizontal: 70,
           ),
-          child: Text(mensagem, textAlign: TextAlign.center, style: TemaUtil.temaTextoMensagemDialog),
+          child: Observer(
+            builder: (_) {
+              return Text(
+                mensagem,
+                textAlign: TextAlign.center,
+                style: TemaUtil.temaTextoMensagemDialog.copyWith(
+                  fontSize: temaStore.tTexto20,
+                ),
+              );
+            },
+          ),
         ),
         botoes: [
           BotaoDefaultWidget(
@@ -135,6 +186,8 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
 }
 
 Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
   String mensagemCorpo =
       "Se finalizar a prova agora, não poderá mais fazer alterações mesmo que o tempo não tenha se esgotado";
 
@@ -149,26 +202,34 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
             left: 16,
             right: 16,
           ),
-          child: RichText(
-            textAlign: TextAlign.left,
-            text: TextSpan(
-              text: "Você ainda tem ",
-              style: TemaUtil.temaTextoTempoDialog,
-              children: [
-                TextSpan(
-                  text: formatDuration(tempo),
-                  style: TemaUtil.temaTextoDuracaoDialog,
+          child: Observer(
+            builder: (_) {
+              return RichText(
+                textAlign: TextAlign.left,
+                text: TextSpan(
+                  text: "Você ainda tem ",
+                  style: TemaUtil.temaTextoTempoDialog.copyWith(
+                    fontSize: temaStore.tTexto16,
+                  ),
                   children: [
                     TextSpan(
-                      text: " para fazer a prova, tem certeza que quer finalizar agora?",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
+                      text: formatDuration(tempo),
+                      style: TemaUtil.temaTextoDuracaoDialog.copyWith(
+                        fontSize: temaStore.tTexto16,
                       ),
+                      children: [
+                        TextSpan(
+                          text: " para fazer a prova, tem certeza que quer finalizar agora?",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
+                      ],
                     )
                   ],
-                )
-              ],
-            ),
+                ),
+              );
+            },
           ),
         ),
         corpo: Padding(

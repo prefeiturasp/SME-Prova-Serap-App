@@ -1,5 +1,8 @@
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 
 class BotaoDefaultWidget extends StatelessWidget {
   final String? textoBotao;
@@ -8,6 +11,8 @@ class BotaoDefaultWidget extends StatelessWidget {
   final bool desabilitado;
   final Function()? onPressed;
   // final BuildContext context;
+
+  final temaStore = GetIt.I.get<TemaStore>();
 
   BotaoDefaultWidget({
     this.textoBotao,
@@ -44,10 +49,16 @@ class BotaoDefaultWidget extends StatelessWidget {
 
   _buildChild() {
     if (textoBotao != null) {
-      return Text(
-        textoBotao!,
-        textAlign: TextAlign.center,
-        style: TemaUtil.temaTextoBotao,
+      return Observer(
+        builder: (_) {
+          return Text(
+            textoBotao!,
+            textAlign: TextAlign.center,
+            style: TemaUtil.temaTextoBotao.copyWith(
+              fontSize: temaStore.tTexto16,
+            ),
+          );
+        },
       );
     }
 

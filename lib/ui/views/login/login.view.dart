@@ -1,4 +1,5 @@
 import 'package:appserap/stores/login.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends BaseStatefulWidget {
@@ -19,6 +21,8 @@ class LoginView extends BaseStatefulWidget {
 class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
   FocusNode _codigoEOLFocus = FocusNode();
   FocusNode _senhaFocus = FocusNode();
+
+  final temaStore = GetIt.I.get<TemaStore>();
 
   @override
   void initState() {
@@ -49,9 +53,15 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
           SizedBox(
             height: 48,
           ),
-          Text(
-            "Bem-vindo",
-            style: TemaUtil.temaTextoBemVindo,
+          Observer(
+            builder: (_) {
+              return Text(
+                "Bem-vindo",
+                style: TemaUtil.temaTextoBemVindo.copyWith(
+                  fontSize: temaStore.tTexto24,
+                ),
+              );
+            },
           ),
           SizedBox(
             height: 24,
@@ -152,10 +162,16 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                           ),
                         ),
                         child: Center(
-                          child: Text(
-                            "ENTRAR",
-                            textAlign: TextAlign.center,
-                            style: TemaUtil.temaTextoBotao,
+                          child: Observer(
+                            builder: (_) {
+                              return Text(
+                                "ENTRAR",
+                                textAlign: TextAlign.center,
+                                style: TemaUtil.temaTextoBotao.copyWith(
+                                  fontSize: temaStore.tTexto16,
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),

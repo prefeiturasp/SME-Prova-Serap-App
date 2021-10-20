@@ -1,5 +1,6 @@
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
@@ -21,6 +22,7 @@ import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:get_it/get_it.dart';
 
 class ResumoRespostasView extends BaseStatefulWidget {
   const ResumoRespostasView({
@@ -35,6 +37,8 @@ class ResumoRespostasView extends BaseStatefulWidget {
 class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, ProvaViewStore> with Loggable {
   List<Map<String, dynamic>> mapaDeQuestoes = [];
   List<TableRow> questoesTabela = [];
+
+  final temaStore = GetIt.I.get<TemaStore>();
 
   @override
   void initState() {
@@ -213,11 +217,13 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
             store.quantidadeDeQuestoesSemRespostas > 1
                 ? Text(
                     "${store.quantidadeDeQuestoesSemRespostas} Questões sem resposta",
-                    style: TemaUtil.temaTextoQuestaoSemResposta,
+                    style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(
+                      fontSize: temaStore.tTexto14,
+                    ),
                   )
                 : Text(
                     "${store.quantidadeDeQuestoesSemRespostas} Questão sem resposta",
-                    style: TemaUtil.temaTextoQuestaoSemResposta,
+                    style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(fontSize: temaStore.tTexto14),
                   )
           ],
         ),
@@ -236,12 +242,17 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
       Widget resposta;
       if (questao['resposta'] != "") {
         resposta = Center(
-          child: Text(
-            questao['resposta'].replaceAll(")", ""),
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+          child: Observer(
+            builder: (context) {
+              return Text(
+                questao['resposta'].replaceAll(")", ""),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: temaStore.tTexto14,
+                ),
+              );
+            },
           ),
         );
       } else {
@@ -262,14 +273,18 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           ),
           children: [
             //
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                questao['questao'],
-                style: TextStyle(
-                  fontSize: 12,
-                ),
-              ),
+            Observer(
+              builder: (_) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    questao['questao'],
+                    style: TextStyle(
+                      fontSize: temaStore.tTexto12,
+                    ),
+                  ),
+                );
+              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
@@ -318,15 +333,21 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           //
           Text(
             "Questão",
-            style: TemaUtil.temaTextoTabelaResumo,
+            style: TemaUtil.temaTextoTabelaResumo.copyWith(
+              fontSize: temaStore.tTexto14,
+            ),
           ),
           Text(
             "Alternativa selecionada",
-            style: TemaUtil.temaTextoTabelaResumo,
+            style: TemaUtil.temaTextoTabelaResumo.copyWith(
+              fontSize: temaStore.tTexto14,
+            ),
           ),
           Text(
             "Revisar",
-            style: TemaUtil.temaTextoTabelaResumo,
+            style: TemaUtil.temaTextoTabelaResumo.copyWith(
+              fontSize: temaStore.tTexto14,
+            ),
           ),
         ],
       ),
@@ -389,12 +410,14 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
               color: TemaUtil.laranja01,
             ),
             child: Center(
-              child: Texto(
-                'Atenção: ${formatDuration(widget.provaStore.tempoExecucaoStore!.tempoRestante)} restantes',
-                bold: true,
-                fontSize: 16,
-                color: TemaUtil.preto,
-              ),
+              child: Observer(builder: (_) {
+                return Texto(
+                  'Atenção: ${formatDuration(widget.provaStore.tempoExecucaoStore!.tempoRestante)} restantes',
+                  bold: true,
+                  fontSize: temaStore.tTexto16,
+                  color: TemaUtil.preto,
+                );
+              }),
             ),
           ),
         );
