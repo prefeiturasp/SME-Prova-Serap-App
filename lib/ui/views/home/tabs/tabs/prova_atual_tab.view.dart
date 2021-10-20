@@ -114,7 +114,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   // Titulo
                   AutoSizeText(
                     provaStore.prova.descricao,
-                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TemaUtil.temaTextoPadraoNegrito,
                     maxLines: 2,
                   ),
                   SizedBox(height: 10),
@@ -138,14 +138,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       ),
                       Text(
                         "Quantidade de itens: ",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                        ),
+                        style: TemaUtil.temaTextoPadrao,
                       ),
                       Texto(
                         provaStore.prova.itensQuantidade.toString(),
                         fontSize: 16,
                         bold: true,
+                        texStyle: TemaUtil.temaTextoPadraoNegrito,
                       ),
                     ],
                   ),
@@ -175,6 +174,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                           Texto(
                             "Data de aplicação:",
                             fontSize: 16,
+                            texStyle: TemaUtil.temaTextoPadrao,
                           ),
                           SizedBox(
                             width: 350,
@@ -203,7 +203,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       return AutoSizeText(
         formatEddMMyyyy(prova.dataInicio),
         maxLines: 2,
-        style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+        style: TemaUtil.temaTextoPadraoNegrito,
       );
     }
 
@@ -213,17 +213,17 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           AutoSizeText(
             formatEddMMyyyy(prova.dataInicio),
             maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TemaUtil.temaTextoPadraoNegrito,
           ),
           AutoSizeText(
             " à ",
             maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16),
+            style: TemaUtil.temaTextoPadrao,
           ),
           AutoSizeText(
             formatEddMMyyyy(prova.dataFim!),
             maxLines: 2,
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TemaUtil.temaTextoPadraoNegrito,
           ),
         ],
       );
@@ -295,11 +295,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
                   bold: true,
+                  texStyle: TemaUtil.temaTextoErroNegrito,
                 ),
                 Texto(
                   " - Sem conexão com a internet",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
+                  texStyle: TemaUtil.temaTextoErro,
                 ),
               ],
             ),
@@ -337,11 +339,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
                   bold: true,
+                  texStyle: TemaUtil.temaTextoErroNegrito,
                 ),
                 Texto(
                   " - Sem conexão com a internet",
                   color: TemaUtil.vermelhoErro,
                   fontSize: 12,
+                  texStyle: TemaUtil.temaTextoErro,
                 ),
               ],
             ),
@@ -358,7 +362,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.download, color: Colors.white, size: 18),
-          Texto(" BAIXAR PROVA", color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          Texto(
+            " BAIXAR PROVA",
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+            texStyle: TemaUtil.temaTextoBotao,
+          ),
         ],
       ),
       largura: 256,
@@ -396,6 +406,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   color: TemaUtil.laranja01,
                   fontSize: 12,
                   bold: true,
+                  texStyle: TemaUtil.temaTextoAguardandoEnvio,
                 ),
               ],
             ),
@@ -421,13 +432,18 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Texto('$texto ', color: Colors.white, fontWeight: FontWeight.w500, fontSize: 16),
+          Texto(
+            '$texto ',
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+            texStyle: TemaUtil.temaTextoBotao,
+          ),
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
       largura: 256,
       onPressed: () async {
-
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
           //
           showDialog(
@@ -444,10 +460,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   child: Text(
                     "Insira a senha informada para iniciar a prova",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: TemaUtil.temaTextoInserirSenha,
                   ),
                 ),
                 corpo: Padding(

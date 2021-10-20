@@ -1,5 +1,4 @@
 import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -7,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:html_editor_enhanced/utils/utils.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
@@ -24,7 +22,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: TemaUtil.appBar,
       title: Observer(
         builder: (_) {
           return Column(
@@ -32,7 +29,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Text(
                 "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: TemaUtil.temaTextoAppBar,
               ),
               _buildSubtitulo(),
             ],
@@ -55,11 +52,19 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               );
             }
           },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.appBar),
+          ),
           child: Row(
             children: [
               Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
               SizedBox(width: 5),
-              Text("Sair", style: GoogleFonts.poppins(color: TemaUtil.laranja02)),
+              Text(
+                "Sair",
+                style: GoogleFonts.poppins(
+                  color: TemaUtil.laranja02,
+                ),
+              ),
               SizedBox(width: 5),
             ],
           ),

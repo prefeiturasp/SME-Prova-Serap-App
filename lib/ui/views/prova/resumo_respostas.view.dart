@@ -83,10 +83,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                   Text(
                     'Resumo das respostas',
                     textAlign: TextAlign.start,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TemaUtil.temaTextoNumeroQuestoes,
                   ),
                   //
                   Observer(builder: (context) {
@@ -216,17 +213,11 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
             store.quantidadeDeQuestoesSemRespostas > 1
                 ? Text(
                     "${store.quantidadeDeQuestoesSemRespostas} Questões sem resposta",
-                    style: TextStyle(
-                      color: TemaUtil.laranja03,
-                      fontSize: 14,
-                    ),
+                    style: TemaUtil.temaTextoQuestaoSemResposta,
                   )
                 : Text(
                     "${store.quantidadeDeQuestoesSemRespostas} Questão sem resposta",
-                    style: TextStyle(
-                      color: TemaUtil.laranja03,
-                      fontSize: 14,
-                    ),
+                    style: TemaUtil.temaTextoQuestaoSemResposta,
                   )
           ],
         ),
@@ -327,15 +318,15 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           //
           Text(
             "Questão",
-            style: TextStyle(fontSize: 14, color: TemaUtil.appBar),
+            style: TemaUtil.temaTextoTabelaResumo,
           ),
           Text(
             "Alternativa selecionada",
-            style: TextStyle(fontSize: 14, color: TemaUtil.appBar),
+            style: TemaUtil.temaTextoTabelaResumo,
           ),
           Text(
             "Revisar",
-            style: TextStyle(fontSize: 14, color: TemaUtil.appBar),
+            style: TemaUtil.temaTextoTabelaResumo,
           ),
         ],
       ),

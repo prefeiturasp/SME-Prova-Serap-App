@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/utils/tema.util.dart';
 import 'package:asuka/asuka.dart' as asuka;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -90,9 +91,14 @@ class MyApp extends StatelessWidget {
       builder: asuka.builder,
       navigatorObservers: [asuka.asukaHeroController],
       debugShowCheckedModeBanner: kDebugMode,
-      theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
-      ),
+      theme: ThemeData.light().copyWith(
+          appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
+          textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+            ),
+          ),
+          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)),
       locale: Locale('pt', 'BR'),
       home: SplashScreenView(),
       scaffoldMessengerKey: NotificacaoUtil.messengerKey,
