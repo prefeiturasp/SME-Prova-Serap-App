@@ -297,183 +297,192 @@ mostrarDialogSenhaErrada(BuildContext context) {
 }
 
 mostrarDialogMudancaTema(BuildContext context) {
-  double _currentSliderValue = 16;
+  final temaStore = GetIt.I.get<TemaStore>();
+
   showGeneralDialog(
     barrierLabel: "Barrier",
     barrierDismissible: true,
     barrierColor: Colors.black.withOpacity(0.5),
-    transitionDuration: Duration(milliseconds: 700),
+    transitionDuration: Duration(microseconds: 1),
     context: context,
     pageBuilder: (_, __, ___) {
       return Align(
         alignment: Alignment.topRight,
-        child: Container(
-          height: 300,
-          width: 300,
-          margin: EdgeInsets.only(right: 60),
-          padding: EdgeInsets.all(16),
-          child: Material(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    "Tipo de letra",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      decoration: TextDecoration.none,
-                      color: Colors.black87,
-                      fontFamily: "Poppins",
-                    ),
-                  ),
-                ),
-                Row(
+        child: Observer(
+          builder: (_) {
+            return Container(
+              height: 300,
+              width: 300,
+              margin: EdgeInsets.only(right: 60),
+              padding: EdgeInsets.all(16),
+              child: Material(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      child: Column(
-                        children: [
-                          TextButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                              // fixedSize: MaterialStateProperty.all<Size>(
-                              //   Size(85, 70),
-                              // ),
-                            ),
-                            child: Text(
-                              "Aa",
-                              style: TextStyle(
-                                fontSize: 48,
-                                color: Colors.black,
-                                fontFamily: "Poppins",
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "Padrão",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                              decoration: TextDecoration.none,
-                              fontFamily: "Poppins",
-                            ),
-                          ),
-                        ],
+                      width: double.infinity,
+                      child: Text(
+                        "Tipo de letra",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: temaStore.tTexto16,
+                          fontWeight: FontWeight.w500,
+                          decoration: TextDecoration.none,
+                          color: Colors.black87,
+                          fontFamily: "Poppins",
+                        ),
                       ),
                     ),
-                    SizedBox(width: 24),
+                    Row(
+                      children: [
+                        SizedBox(
+                          child: Column(
+                            children: [
+                              TextButton(
+                                onPressed: () {},
+                                style: ButtonStyle(
+                                  padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
+                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                                  // fixedSize: MaterialStateProperty.all<Size>(
+                                  //   Size(85, 70),
+                                  // ),
+                                ),
+                                child: Text(
+                                  "Aa",
+                                  style: TextStyle(
+                                    fontSize: 48,
+                                    color: Colors.black,
+                                    fontFamily: "Poppins",
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Padrão",
+                                style: TextStyle(
+                                  fontSize: temaStore.tTexto14,
+                                  color: Colors.black,
+                                  decoration: TextDecoration.none,
+                                  fontFamily: "Poppins",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 24),
+                        SizedBox(
+                          child: Column(
+                            children: [
+                              TextButton(
+                                onPressed: () {},
+                                style: ButtonStyle(
+                                  padding: MaterialStateProperty.all<EdgeInsets>(
+                                    EdgeInsets.all(0),
+                                  ),
+                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                                ),
+                                child: Text(
+                                  "Aa",
+                                  style: TextStyle(
+                                    fontSize: 48,
+                                    color: Colors.black,
+                                    fontFamily: 'Dyslexic',
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Para dislexia",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: temaStore.tTexto14,
+                                  color: Colors.black,
+                                  decoration: TextDecoration.none,
+                                  fontFamily: "Poppins",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    Divider(color: Colors.black87),
+                    SizedBox(height: 16),
                     SizedBox(
-                      child: Column(
+                      width: double.infinity,
+                      child: Text(
+                        "Tamanho da letra",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: temaStore.tTexto16,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: "Poppins",
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          TextButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              padding: MaterialStateProperty.all<EdgeInsets>(
-                                EdgeInsets.all(0),
-                              ),
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                          Text(
+                            "A",
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: temaStore.tTexto14,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: "Poppins",
                             ),
-                            child: Text(
-                              "Aa",
-                              style: TextStyle(
-                                fontSize: 48,
-                                color: Colors.black,
-                                fontFamily: 'Dyslexic',
+                          ),
+                          Expanded(
+                            child: SliderTheme(
+                              data: SliderThemeData(
+                                trackHeight: 8,
+                              ),
+                              child: Slider(
+                                value: temaStore.incrementador,
+                                min: 8,
+                                max: 24,
+                                divisions: 8,
+                                label: temaStore.incrementador.round().toString(),
+                                activeColor: TemaUtil.azul2,
+                                inactiveColor: Colors.grey[350],
+                                onChanged: (double valor) {
+                                  if (valor >= 16 && valor <= 24) {
+                                    temaStore.fachadaAlterarTamanhoDoTexto(valor);
+                                  }
+                                },
                               ),
                             ),
                           ),
-                          SizedBox(height: 10),
                           Text(
-                            "Para dislexia",
-                            textAlign: TextAlign.center,
+                            "A",
+                            textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                              decoration: TextDecoration.none,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w400,
                               fontFamily: "Poppins",
                             ),
                           ),
                         ],
                       ),
-                    ),
+                    )
                   ],
                 ),
-                SizedBox(height: 16),
-                Divider(color: Colors.black87),
-                SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    "Tamanho da letra",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: "Poppins",
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "A",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: "Poppins",
-                        ),
-                      ),
-                      Expanded(
-                        child: SliderTheme(
-                          data: SliderThemeData(
-                            trackHeight: 8,
-                          ),
-                          child: Slider(
-                            value: _currentSliderValue,
-                            min: 8,
-                            max: 24,
-                            divisions: 16,
-                            label: _currentSliderValue.round().toString(),
-                            activeColor: TemaUtil.azul2,
-                            inactiveColor: Colors.grey[350],
-                            onChanged: (double value) {},
-                          ),
-                        ),
-                      ),
-                      Text(
-                        "A",
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w400,
-                          fontFamily: "Poppins",
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle,
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
+              ),
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+            );
+          },
         ),
       );
     },
     transitionBuilder: (_, anim, __, child) {
       return SlideTransition(
-        position: Tween(begin: Offset(0, 0), end: Offset(0, 0.07)).animate(anim),
+        position: Tween(begin: Offset(0, 0), end: Offset(0, 0.08)).animate(anim),
         child: child,
       );
     },

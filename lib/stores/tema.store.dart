@@ -44,14 +44,5 @@ abstract class _TemaStoreBase with Store {
     tTexto18 = 6 + (incrementador - 4);
     tTexto20 + 8 + (incrementador - 4);
     tTexto24 = 10 + (incrementador - 4);
-
-    print('I $incrementador');
-    print('T12 $tTexto12');
-    print('T14 $tTexto14');
-    print('T16 $tTexto16');
-    print('T18 $tTexto18');
-    print('T20 $tTexto20');
-    print('T24 $tTexto24');
-    
   }
 }
