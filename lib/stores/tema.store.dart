@@ -7,10 +7,6 @@ part 'tema.store.g.dart';
 class TemaStore = _TemaStoreBase with _$TemaStore;
 
 abstract class _TemaStoreBase with Store {
-  final aditivoTamanhoFonte = 2;
-  final tamanhoMinimoFixo = 12;
-  final tamanhoMaximoFixo = 24;
-
   /// Prefixo `t` se refere ao `tamanho`
 
   @observable
@@ -44,5 +40,18 @@ abstract class _TemaStoreBase with Store {
     tTexto18 = 6 + (incrementador - 4);
     tTexto20 + 8 + (incrementador - 4);
     tTexto24 = 10 + (incrementador - 4);
+  }
+
+  @observable
+  String fonteDoTexto = 'Poppins';
+
+  @action
+  void mudarParaFonteNormal() {
+    fonteDoTexto = 'Poppins';
+  }
+
+  @action
+  void mudarParaFonteParaDislexia() {
+    fonteDoTexto = 'OpenDyslexic';
   }
 }

@@ -38,6 +38,7 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
                 textAlign: TextAlign.center,
                 style: TemaUtil.temaTextoMensagemDialog.copyWith(
                   fontSize: temaStore.tTexto20,
+                  fontFamily: temaStore.fonteDoTexto,
                 ),
               );
             },
@@ -79,6 +80,7 @@ Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) 
               textAlign: TextAlign.center,
               style: TemaUtil.temaTextoMensagemDialog.copyWith(
                 fontSize: temaStore.tTexto20,
+                fontFamily: temaStore.fonteDoTexto,
               ),
             );
           },
@@ -120,6 +122,7 @@ mostrarDialogProvaEnviada(BuildContext context) {
                 textAlign: TextAlign.center,
                 style: TemaUtil.temaTextoMensagemDialog.copyWith(
                   fontSize: temaStore.tTexto20,
+                  fontFamily: temaStore.fonteDoTexto,
                 ),
               );
             },
@@ -164,6 +167,7 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
                 textAlign: TextAlign.center,
                 style: TemaUtil.temaTextoMensagemDialog.copyWith(
                   fontSize: temaStore.tTexto20,
+                  fontFamily: temaStore.fonteDoTexto,
                 ),
               );
             },
@@ -209,17 +213,21 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
                   text: "Você ainda tem ",
                   style: TemaUtil.temaTextoTempoDialog.copyWith(
                     fontSize: temaStore.tTexto16,
+                    fontFamily: temaStore.fonteDoTexto,
                   ),
                   children: [
                     TextSpan(
                       text: formatDuration(tempo),
                       style: TemaUtil.temaTextoDuracaoDialog.copyWith(
                         fontSize: temaStore.tTexto16,
+                        fontFamily: temaStore.fonteDoTexto,
                       ),
                       children: [
                         TextSpan(
                           text: " para fazer a prova, tem certeza que quer finalizar agora?",
                           style: TextStyle(
+                            fontSize: temaStore.tTexto16,
+                            fontFamily: temaStore.fonteDoTexto,
                             fontWeight: FontWeight.w500,
                           ),
                         )
@@ -257,40 +265,47 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
 }
 
 mostrarDialogSenhaErrada(BuildContext context) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
   String mensagemCorpo = "O código está incorreto. Solicite o código para o professor.";
 
   showDialog(
     context: context,
     barrierColor: Colors.black87,
     builder: (context) {
-      return DialogDefaultWidget(
-        cabecalho: Padding(
-          padding: const EdgeInsets.only(
-            top: 16,
-            left: 16,
-            right: 16,
+      return Observer(builder: (_) {
+        return DialogDefaultWidget(
+          cabecalho: Padding(
+            padding: const EdgeInsets.only(
+              top: 16,
+              left: 16,
+              right: 16,
+            ),
+            child: SvgPicture.asset(AssetsUtil.erro),
           ),
-          child: SvgPicture.asset(AssetsUtil.erro),
-        ),
-        corpo: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
+          corpo: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: Text(
+              mensagemCorpo,
+              textAlign: TextAlign.center,
+              style: TemaUtil.temaTextoMensagemCorpo.copyWith(
+                fontSize: temaStore.tTexto14,
+                fontFamily: temaStore.fonteDoTexto,
+              ),
+            ),
           ),
-          child: Text(
-            mensagemCorpo,
-            textAlign: TextAlign.center,
-            style: TemaUtil.temaTextoMensagemCorpo,
-          ),
-        ),
-        botoes: [
-          BotaoDefaultWidget(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            textoBotao: "ENTENDI",
-          )
-        ],
-      );
+          botoes: [
+            BotaoDefaultWidget(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              textoBotao: "ENTENDI",
+            )
+          ],
+        );
+      });
     },
   );
 }
@@ -328,7 +343,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                           fontWeight: FontWeight.w500,
                           decoration: TextDecoration.none,
                           color: Colors.black87,
-                          fontFamily: "Poppins",
+                          fontFamily: temaStore.fonteDoTexto,
                         ),
                       ),
                     ),
@@ -338,7 +353,9 @@ mostrarDialogMudancaTema(BuildContext context) {
                           child: Column(
                             children: [
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  temaStore.mudarParaFonteNormal();
+                                },
                                 style: ButtonStyle(
                                   padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
                                   backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
@@ -373,7 +390,9 @@ mostrarDialogMudancaTema(BuildContext context) {
                           child: Column(
                             children: [
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  temaStore.mudarParaFonteParaDislexia();
+                                },
                                 style: ButtonStyle(
                                   padding: MaterialStateProperty.all<EdgeInsets>(
                                     EdgeInsets.all(0),
@@ -385,7 +404,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                                   style: TextStyle(
                                     fontSize: 48,
                                     color: Colors.black,
-                                    fontFamily: 'Dyslexic',
+                                    fontFamily: 'OpenDyslexic',
                                   ),
                                 ),
                               ),
@@ -397,7 +416,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                                   fontSize: temaStore.tTexto14,
                                   color: Colors.black,
                                   decoration: TextDecoration.none,
-                                  fontFamily: "Poppins",
+                                  fontFamily: "OpenDyslexic",
                                 ),
                               ),
                             ],
@@ -414,10 +433,9 @@ mostrarDialogMudancaTema(BuildContext context) {
                         "Tamanho da letra",
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: temaStore.tTexto16,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: "Poppins",
-                        ),
+                            fontSize: temaStore.tTexto16,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: temaStore.fonteDoTexto),
                       ),
                     ),
                     SizedBox(
@@ -428,9 +446,9 @@ mostrarDialogMudancaTema(BuildContext context) {
                             "A",
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontSize: temaStore.tTexto14,
+                              fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              fontFamily: "Poppins",
+                              fontFamily: temaStore.fonteDoTexto,
                             ),
                           ),
                           Expanded(
@@ -460,7 +478,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w400,
-                              fontFamily: "Poppins",
+                              fontFamily: temaStore.fonteDoTexto,
                             ),
                           ),
                         ],
@@ -487,143 +505,3 @@ mostrarDialogMudancaTema(BuildContext context) {
     },
   );
 }
-/*showDialog(
-    context: context,
-    builder: (_) {
-      return DialogDefaultWidget(
-        maxWidth: 400,
-        cabecalho: Container(),
-        corpo: Column(
-          children: [
-            SizedBox(
-              width: double.infinity,
-              child: Text(
-                "Tipo de letra",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  child: Column(
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                          // fixedSize: MaterialStateProperty.all<Size>(
-                          //   Size(85, 70),
-                          // ),
-                        ),
-                        child: Text(
-                          "Aa",
-                          style: TextStyle(
-                            fontSize: 48,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Padrão",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 24),
-                SizedBox(
-                  child: Column(
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsets>(
-                            EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                          ),
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                        ),
-                        child: Text(
-                          "Oa",
-                          style: TextStyle(
-                            fontSize: 48,
-                            color: Colors.black,
-                            fontFamily: 'Dyslexic',
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "Para dislexia",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-            Divider(color: Colors.black87),
-            SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: Text(
-                "Tamanho da letra",
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            SizedBox(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "A",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                  Expanded(
-                    child: Slider(
-                      value: _currentSliderValue,
-                      min: 8,
-                      max: 24,
-                      divisions: 2,
-                      label: _currentSliderValue.round().toString(),
-                      onChanged: (double value) {},
-                    ),
-                  ),
-                  Text(
-                    "A",
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-        botoes: [Container()],
-      );
-    },
-  ); */

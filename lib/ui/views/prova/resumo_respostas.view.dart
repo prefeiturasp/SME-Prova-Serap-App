@@ -74,49 +74,62 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         return false;
       },
       child: SingleChildScrollView(
-        child: Column(
-          children: [
-            ..._buildTempoProva(),
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //
-                  Text(
-                    'Resumo das respostas',
-                    textAlign: TextAlign.start,
-                    style: TemaUtil.temaTextoNumeroQuestoes,
+        child: Observer(
+          builder: (_) {
+            return Column(
+              children: [
+                ..._buildTempoProva(),
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //
+                      Observer(
+                        builder: (_) {
+                          return Text(
+                            'Resumo das respostas',
+                            textAlign: TextAlign.start,
+                            style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                              fontSize: temaStore.tTexto20,
+                              fontFamily: temaStore.fonteDoTexto,
+                            ),
+                          );
+                        },
+                      ),
+                      //
+                      Observer(
+                        builder: (context) {
+                          return mensagemDeQuestoesSemRespostas();
+                        },
+                      ),
+                      //
+                      Table(
+                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                        columnWidths: {
+                          0: FractionColumnWidth(.65),
+                          1: FractionColumnWidth(.2),
+                          2: FractionColumnWidth(.15),
+                        },
+                        children: questoesTabela,
+                      ),
+                      SizedBox(height: 32),
+                      Center(
+                        child: BotaoDefaultWidget(
+                          textoBotao: 'FINALIZAR E ENVIAR',
+                          largura: 392,
+                          onPressed: () async {
+                            await finalizarProva();
+                          },
+                        ),
+                      )
+                    ],
                   ),
-                  //
-                  Observer(builder: (context) {
-                    return mensagemDeQuestoesSemRespostas();
-                  }),
-                  //
-                  Table(
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    columnWidths: {
-                      0: FractionColumnWidth(.65),
-                      1: FractionColumnWidth(.2),
-                      2: FractionColumnWidth(.15),
-                    },
-                    children: questoesTabela,
-                  ),
-                  SizedBox(height: 32),
-                  Center(
-                    child: BotaoDefaultWidget(
-                      textoBotao: 'FINALIZAR E ENVIAR',
-                      largura: 392,
-                      onPressed: () async {
-                        await finalizarProva();
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -204,28 +217,36 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     if (store.quantidadeDeQuestoesSemRespostas > 0) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 20),
-        child: Row(
-          children: [
-            //
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: SvgPicture.asset(
-                AssetsUtil.iconeQuestaoNaoRespondida,
-              ),
-            ),
-            //
-            store.quantidadeDeQuestoesSemRespostas > 1
-                ? Text(
-                    "${store.quantidadeDeQuestoesSemRespostas} Questões sem resposta",
-                    style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(
-                      fontSize: temaStore.tTexto14,
-                    ),
-                  )
-                : Text(
-                    "${store.quantidadeDeQuestoesSemRespostas} Questão sem resposta",
-                    style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(fontSize: temaStore.tTexto14),
-                  )
-          ],
+        child: Observer(
+          builder: (_) {
+            return Row(
+              children: [
+                //
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: SvgPicture.asset(
+                    AssetsUtil.iconeQuestaoNaoRespondida,
+                  ),
+                ),
+                //
+                store.quantidadeDeQuestoesSemRespostas > 1
+                    ? Text(
+                        "${store.quantidadeDeQuestoesSemRespostas} Questões sem resposta",
+                        style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(
+                          fontSize: temaStore.tTexto14,
+                          fontFamily: temaStore.fonteDoTexto,
+                        ),
+                      )
+                    : Text(
+                        "${store.quantidadeDeQuestoesSemRespostas} Questão sem resposta",
+                        style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(
+                          fontSize: temaStore.tTexto14,
+                          fontFamily: temaStore.fonteDoTexto,
+                        ),
+                      )
+              ],
+            );
+          },
         ),
       );
     } else {
@@ -250,6 +271,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: temaStore.tTexto14,
+                  fontFamily: temaStore.fonteDoTexto,
                 ),
               );
             },
@@ -281,6 +303,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                     questao['questao'],
                     style: TextStyle(
                       fontSize: temaStore.tTexto12,
+                      fontFamily: temaStore.fonteDoTexto,
                     ),
                   ),
                 );
@@ -331,23 +354,38 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         ),
         children: [
           //
-          Text(
-            "Questão",
-            style: TemaUtil.temaTextoTabelaResumo.copyWith(
-              fontSize: temaStore.tTexto14,
-            ),
+          Observer(
+            builder: (_) {
+              return Text(
+                "Questão",
+                style: TemaUtil.temaTextoTabelaResumo.copyWith(
+                  fontSize: temaStore.tTexto14,
+                  fontFamily: temaStore.fonteDoTexto,
+                ),
+              );
+            },
           ),
-          Text(
-            "Alternativa selecionada",
-            style: TemaUtil.temaTextoTabelaResumo.copyWith(
-              fontSize: temaStore.tTexto14,
-            ),
+          Observer(
+            builder: (_) {
+              return Text(
+                "Alternativa selecionada",
+                style: TemaUtil.temaTextoTabelaResumo.copyWith(
+                  fontSize: temaStore.tTexto14,
+                  fontFamily: temaStore.fonteDoTexto,
+                ),
+              );
+            },
           ),
-          Text(
-            "Revisar",
-            style: TemaUtil.temaTextoTabelaResumo.copyWith(
-              fontSize: temaStore.tTexto14,
-            ),
+          Observer(
+            builder: (_) {
+              return Text(
+                "Revisar",
+                style: TemaUtil.temaTextoTabelaResumo.copyWith(
+                  fontSize: temaStore.tTexto14,
+                  fontFamily: temaStore.fonteDoTexto,
+                ),
+              );
+            },
           ),
         ],
       ),

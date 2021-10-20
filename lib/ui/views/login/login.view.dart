@@ -58,6 +58,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                 "Bem-vindo",
                 style: TemaUtil.temaTextoBemVindo.copyWith(
                   fontSize: temaStore.tTexto24,
+                  fontFamily: temaStore.fonteDoTexto,
                 ),
               );
             },
@@ -168,6 +169,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                                 textAlign: TextAlign.center,
                                 style: TemaUtil.temaTextoBotao.copyWith(
                                   fontSize: temaStore.tTexto16,
+                                  fontFamily: temaStore.fonteDoTexto,
                                 ),
                               );
                             },

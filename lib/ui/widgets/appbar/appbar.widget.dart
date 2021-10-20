@@ -34,6 +34,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
                 style: TemaUtil.temaTextoAppBar.copyWith(
                   fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto,
                 ),
               ),
               _buildSubtitulo(),

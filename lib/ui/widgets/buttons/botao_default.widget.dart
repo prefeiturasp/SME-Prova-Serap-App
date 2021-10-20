@@ -56,6 +56,7 @@ class BotaoDefaultWidget extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TemaUtil.temaTextoBotao.copyWith(
               fontSize: temaStore.tTexto16,
+              fontFamily: temaStore.fonteDoTexto,
             ),
           );
         },

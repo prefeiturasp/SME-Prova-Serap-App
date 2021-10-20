@@ -39,6 +39,7 @@ class BotaoSecundarioWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TemaUtil.temaTextoBotaoSecundario.copyWith(
                   fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto,
                 ),
               );
             },
