@@ -22,6 +22,51 @@
       "src": "icons/logo-serap.svg",
       "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
       "type": "image/svg"
+    },
+    {
+      "src": "icons/check.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg"
+    },
+    {
+      "src": "icons/erro.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg"
+    },
+    {
+      "src": "icons/icone_questao_nao_respondida.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg"
+    },
+    {
+      "src": "icons/icone_revisao.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg"
+    },
+    {
+      "src": "icons/no-wifi.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg"
+    },
+    {
+      "src": "icons/prova_download.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg"
+    },
+    {
+      "src": "icons/prova_erro_download.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg"
+    },
+    {
+      "src": "icons/prova.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg"
+    },
+    {
+      "src": "icons/sem_prova.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "type": "image/svg"
     }
   ],
   "start_url": ".",

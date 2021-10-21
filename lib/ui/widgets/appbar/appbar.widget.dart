@@ -1,5 +1,4 @@
 import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -7,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:html_editor_enhanced/utils/utils.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
@@ -23,6 +21,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _buildAppbarCompleta(context);
+  }
+
+  Widget _buildAppbarCompleta(BuildContext context) {
     return AppBar(
       backgroundColor: TemaUtil.appBar,
       title: Observer(
@@ -39,7 +41,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           );
         },
       ),
-      leading: _buildBotaoVoltar(context),
+      automaticallyImplyLeading: false,
       actions: [
         TextButton(
           onPressed: () async {
@@ -66,32 +68,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
     );
-  }
-
-  Widget _buildBotaoVoltar(BuildContext context) {
-    if (mostrarBotaoVoltar) {
-      return Observer(
-        builder: (_) {
-          var prova = GetIt.I.get<ProvaViewStore>();
-          if (prova.revisandoProva) {
-            return Container();
-          }
-          return IconButton(
-            onPressed: () {
-              if (!prova.revisandoProva) {
-                Navigator.of(context).pop();
-              }
-              prova.dispose();
-            },
-            icon: Icon(
-              Icons.arrow_back,
-            ),
-          );
-        },
-      );
-    } else {
-      return Container();
-    }
   }
 
   _buildSubtitulo() {

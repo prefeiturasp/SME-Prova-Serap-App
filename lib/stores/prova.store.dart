@@ -1,16 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:appserap/utils/date.util.dart';
-import 'package:appserap/enums/tempo_status.enum.dart';
-import 'package:appserap/main.ioc.dart';
-import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/services/api.dart';
-import 'package:appserap/stores/prova_resposta.store.dart';
-import 'package:appserap/ui/widgets/dialog/dialogs.dart';
-import 'package:appserap/utils/assets.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -19,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/managers/download.manager.dart';
@@ -28,6 +19,7 @@ import 'package:appserap/stores/prova_resposta.store.dart';
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 
 part 'prova.store.g.dart';
@@ -79,7 +71,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @observable
   String codigoIniciarProva = "";
-  
+
   @observable
   ProvaTempoExecucaoStore? tempoExecucaoStore;
   int segundos = 0;
@@ -92,7 +84,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @observable
   bool foraDaPaginaDeRevisao = true;
-
 
   @action
   iniciarDownload() async {
@@ -125,7 +116,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   _setupReactions() {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
-      reaction((_) => conexaoStream.value, onChangeConexao),
+      reaction(
+        (_) => conexaoStream.value,
+        onChangeConexao,
+        fireImmediately: false,
+      ),
       reaction((_) => tempoCorrendo, onChangeContadorQuestao),
     ];
   }
@@ -154,7 +149,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       return;
     }
 
-    if (resultado != ConnectivityStatus.none) {
+    if (resultado != ConnectivityStatus.none && downloadStatus != EnumDownloadStatus.BAIXANDO) {
       await iniciarDownload();
     } else {
       downloadStatus = EnumDownloadStatus.PAUSADO;
@@ -263,6 +258,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
             );
 
         if (response.isSuccessful) {
+          // ignore: prefer_typing_uninitialized_variables
           var retorno;
 
           if (automaticamente) {
