@@ -14,7 +14,7 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   var store = GetIt.I.get<TBind>();
   var _principalStore = GetIt.I.get<PrincipalStore>();
 
-  final temaStore = GetIt.I.get<TemaStore>();
+  TemaStore temaStore = GetIt.I.get<TemaStore>();
 
   @override
   void initState() {

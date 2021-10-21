@@ -30,6 +30,9 @@ abstract class _TemaStoreBase with Store {
   @observable
   double tTexto24 = 24;
 
+  @observable
+  String fonteDoTexto = 'Poppins';
+
   @action
   void fachadaAlterarTamanhoDoTexto(double valor) {
     incrementador = valor;
@@ -38,12 +41,9 @@ abstract class _TemaStoreBase with Store {
     tTexto14 = 2 + (incrementador - 4);
     tTexto16 = 4 + (incrementador - 4);
     tTexto18 = 6 + (incrementador - 4);
-    tTexto20 + 8 + (incrementador - 4);
+    tTexto20 = 8 + (incrementador - 4);
     tTexto24 = 10 + (incrementador - 4);
   }
-
-  @observable
-  String fonteDoTexto = 'Poppins';
 
   @action
   void mudarParaFonteNormal() {

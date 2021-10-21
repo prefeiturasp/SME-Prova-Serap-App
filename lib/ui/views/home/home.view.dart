@@ -54,8 +54,6 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
 
   @override
   Widget builder(BuildContext context) {
-    final temaStore = GetIt.I.get<TemaStore>();
-
     return Observer(builder: (_) {
       return Column(
         children: [

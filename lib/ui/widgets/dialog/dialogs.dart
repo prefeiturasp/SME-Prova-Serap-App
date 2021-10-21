@@ -339,7 +339,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                         "Tipo de letra",
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: temaStore.tTexto16,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                           decoration: TextDecoration.none,
                           color: Colors.black87,
@@ -376,7 +376,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                               Text(
                                 "Padrão",
                                 style: TextStyle(
-                                  fontSize: temaStore.tTexto14,
+                                  fontSize: 14,
                                   color: Colors.black,
                                   decoration: TextDecoration.none,
                                   fontFamily: "Poppins",
@@ -413,7 +413,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                                 "Para dislexia",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontSize: temaStore.tTexto14,
+                                  fontSize: 14,
                                   color: Colors.black,
                                   decoration: TextDecoration.none,
                                   fontFamily: "OpenDyslexic",
@@ -433,9 +433,10 @@ mostrarDialogMudancaTema(BuildContext context) {
                         "Tamanho da letra",
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                            fontSize: temaStore.tTexto16,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: temaStore.fonteDoTexto),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: temaStore.fonteDoTexto,
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -458,9 +459,9 @@ mostrarDialogMudancaTema(BuildContext context) {
                               ),
                               child: Slider(
                                 value: temaStore.incrementador,
-                                min: 8,
+                                min: 16,
                                 max: 24,
-                                divisions: 8,
+                                divisions: 4,
                                 label: temaStore.incrementador.round().toString(),
                                 activeColor: TemaUtil.azul2,
                                 inactiveColor: Colors.grey[350],
