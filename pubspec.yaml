@@ -90,6 +90,7 @@ dev_dependencies:
   json_annotation: ^4.1.0
   json_serializable: ^4.1.4
   mobx_codegen: ^2.0.0
+  mockito: ^5.0.15
 
 scripts:
   clean: flutter clean flutter pub get
