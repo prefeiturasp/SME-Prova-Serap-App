@@ -59,6 +59,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   double get defaultPadding => 0;
 
   @override
+  bool get willPop => false;
+
+  @override
   PreferredSizeWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
@@ -187,6 +190,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           store.quantidadeDeQuestoesSemRespostas++;
         } else if (removeQuestaoQueNaoPodeRevisar) {
           store.questoesParaRevisar.remove(questao);
+          store.quantidadeDeQuestoesSemRespostas++;
+        } else if (widget.provaStore.tempoExecucaoStore == null) {
+          store.questoesParaRevisar.add(questao);
           store.quantidadeDeQuestoesSemRespostas++;
         }
       } else {
@@ -321,10 +327,15 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 ),
                 onTap: () {
                   widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
-                  if (!widget.provaStore.tempoExecucaoStore!.isTempoExtendido && questao['resposta'] == "") {
+                  if ((widget.provaStore.tempoExecucaoStore != null &&
+                          !widget.provaStore.tempoExecucaoStore!.isTempoExtendido) &&
+                      questao['resposta'] == "") {
                     store.quantidadeDeQuestoesSemRespostas = 0;
                     Navigator.of(context).pop(questao['questao_ordem']);
                   } else if (questao['resposta'] != "") {
+                    store.quantidadeDeQuestoesSemRespostas = 0;
+                    Navigator.of(context).pop(questao['questao_ordem']);
+                  } else if (widget.provaStore.tempoExecucaoStore == null && questao['resposta'] == "") {
                     store.quantidadeDeQuestoesSemRespostas = 0;
                     Navigator.of(context).pop(questao['questao_ordem']);
                   }

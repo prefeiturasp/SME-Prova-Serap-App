@@ -24,6 +24,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _buildAppbarCompleta(context);
+  }
+
+  Widget _buildAppbarCompleta(BuildContext context) {
     return AppBar(
       title: Observer(
         builder: (_) {
@@ -42,7 +46,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           );
         },
       ),
-      leading: _buildBotaoVoltar(context),
+      automaticallyImplyLeading: false,
       actions: [
         TextButton(
           onPressed: () {
@@ -98,32 +102,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
     );
-  }
-
-  Widget _buildBotaoVoltar(BuildContext context) {
-    if (mostrarBotaoVoltar) {
-      return Observer(
-        builder: (_) {
-          var prova = GetIt.I.get<ProvaViewStore>();
-          if (prova.revisandoProva) {
-            return Container();
-          }
-          return IconButton(
-            onPressed: () {
-              if (!prova.revisandoProva) {
-                Navigator.of(context).pop();
-              }
-              prova.dispose();
-            },
-            icon: Icon(
-              Icons.arrow_back,
-            ),
-          );
-        },
-      );
-    } else {
-      return Container();
-    }
   }
 
   _buildSubtitulo() {

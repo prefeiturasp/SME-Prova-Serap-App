@@ -54,6 +54,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   double get defaultPadding => 0;
 
   @override
+  bool get willPop => false;
+
+  @override
   void initState() {
     store.isLoading = true;
 
@@ -402,10 +405,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 ],
               ),
               htmlEditorOptions: HtmlEditorOptions(
+                autoAdjustHeight: false,
                 hint: "Digite sua resposta aqui...",
               ),
               otherOptions: OtherOptions(
-                height: 328,
+                height: 400,
               ),
             ),
           ),
@@ -415,7 +419,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           padding: EdgeInsets.symmetric(vertical: 15),
           width: MediaQuery.of(context).size.width,
           child: Text(
-            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').length}',
+            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length}',
             textAlign: TextAlign.end,
           ),
         ),
@@ -655,21 +659,16 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {
     texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-      return '<div style="text-align: center">${match.group(0)}</div>';
+      return '<div style="text-align: center; position:relative">${match.group(0)}<p>Toque na imagem para ampliar</p></div>';
     });
 
-    RegExp exp = RegExp(r"#(\d+)#", multiLine: true, caseSensitive: true);
-    var matches = exp.allMatches(texto).toList();
-
-    for (var i = 0; i < matches.length; i++) {
-      var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo = arquivos.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
+    for (var arquivo in arquivos) {
       var obterTipo = arquivo.caminho.split(".");
-
-      texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto =
+          texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
+
     return texto;
-    // #123456#
   }
 
   _buildTempoProva() {
