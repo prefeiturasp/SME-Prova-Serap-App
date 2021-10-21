@@ -78,12 +78,7 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
               ),
             );
           }
-
-          print(listaPaginasOrientacoes);
-
-          print(listaPaginasOrientacoes);
         }
-        print(listaPaginasOrientacoes);
       }
     } catch (e) {
       severe(e);
