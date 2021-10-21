@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:appserap/stores/tema.store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:get_it/get_it.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -44,11 +45,16 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
 
+  final temaStore = GetIt.I.get<TemaStore>();
+
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
   @override
   double get defaultPadding => 0;
+
+  @override
+  bool get willPop => false;
 
   @override
   void initState() {
@@ -202,54 +208,72 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     return SingleChildScrollView(
       child: Column(
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'Questão ${questao.ordem + 1} ',
-                      style: TemaUtil.temaTextoNumeroQuestoes,
-                    ),
-                    Text(
-                      'de ${widget.provaStore.prova.questoes.length}',
-                      style: TemaUtil.temaTextoNumeroQuestoesTotal,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8),
-                Html(
-                  data: tratarArquivos(questao.titulo, questao.arquivos),
-                  style: {
-                    '*': Style.fromTextStyle(TemaUtil.temaTextoHtmlPadrao),
-                  },
-                  onImageTap: (url, _, attributes, element) {
-                    Uint8List imagem = base64.decode(url!.split(',').last);
+          Observer(builder: (_) {
+            return Container(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Questão ${questao.ordem + 1} ',
+                        style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                          fontSize: temaStore.tTexto20,
+                          fontFamily: temaStore.fonteDoTexto,
+                        ),
+                      ),
+                      Text(
+                        'de ${widget.provaStore.prova.questoes.length}',
+                        style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                          fontSize: temaStore.tTexto20,
+                          fontFamily: temaStore.fonteDoTexto,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Html(
+                    data: tratarArquivos(questao.titulo, questao.arquivos),
+                    style: {
+                      '*': Style.fromTextStyle(
+                        TemaUtil.temaTextoHtmlPadrao.copyWith(
+                          fontSize: temaStore.tTexto16,
+                          fontFamily: temaStore.fonteDoTexto,
+                        ),
+                      ),
+                    },
+                    onImageTap: (url, _, attributes, element) {
+                      Uint8List imagem = base64.decode(url!.split(',').last);
 
-                    _exibirImagem(context, imagem);
-                  },
-                ),
-                SizedBox(height: 8),
-                Html(
-                  data: tratarArquivos(questao.descricao, questao.arquivos),
-                  style: {
-                    '*': Style.fromTextStyle(TemaUtil.temaTextoHtmlPadrao),
-                  },
-                  onImageTap: (url, _, attributes, element) {
-                    Uint8List imagem = base64.decode(url!.split(',').last);
+                      _exibirImagem(context, imagem);
+                    },
+                  ),
+                  SizedBox(height: 8),
+                  Html(
+                    data: tratarArquivos(questao.descricao, questao.arquivos),
+                    style: {
+                      '*': Style.fromTextStyle(
+                        TemaUtil.temaTextoHtmlPadrao.copyWith(
+                          fontSize: temaStore.tTexto16,
+                          fontFamily: temaStore.fonteDoTexto,
+                        ),
+                      ),
+                    },
+                    onImageTap: (url, _, attributes, element) {
+                      Uint8List imagem = base64.decode(url!.split(',').last);
 
-                    _exibirImagem(context, imagem);
-                  },
-                ),
-                SizedBox(height: 16),
-                Observer(builder: (_) {
-                  return _buildResposta(questao);
-                }),
-              ],
-            ),
-          ),
+                      _exibirImagem(context, imagem);
+                    },
+                  ),
+                  SizedBox(height: 16),
+                  Observer(builder: (_) {
+                    return _buildResposta(questao);
+                  }),
+                ],
+              ),
+            );
+          }),
           Observer(builder: (context) {
             return _buildBotoes(questao);
           }),
@@ -299,9 +323,16 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                         SizedBox(
                           width: 8,
                         ),
-                        Text(
-                          'Fechar',
-                          style: TemaUtil.temaTextoFecharImagem,
+                        Observer(
+                          builder: (_) {
+                            return Text(
+                              'Fechar',
+                              style: TemaUtil.temaTextoFecharImagem.copyWith(
+                                fontSize: temaStore.tTexto18,
+                                fontFamily: temaStore.fonteDoTexto,
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -374,10 +405,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 ],
               ),
               htmlEditorOptions: HtmlEditorOptions(
+                autoAdjustHeight: false,
                 hint: "Digite sua resposta aqui...",
               ),
               otherOptions: OtherOptions(
-                height: 328,
+                height: 400,
               ),
             ),
           ),
@@ -387,7 +419,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
           padding: EdgeInsets.symmetric(vertical: 15),
           width: MediaQuery.of(context).size.width,
           child: Text(
-            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').length}',
+            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length}',
             textAlign: TextAlign.end,
           ),
         ),
@@ -407,46 +439,56 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   Widget _buildAlternativa(int idAlternativa, String numeracao, int questaoId, String descricao) {
     ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questaoId);
 
-    return Container(
-      padding: EdgeInsets.all(8),
-      margin: EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: Colors.black.withOpacity(0.34),
-        ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(12),
-        ),
-      ),
-      child: RadioListTile<int>(
-        value: idAlternativa,
-        groupValue: resposta?.alternativaId,
-        onChanged: (value) {
-          widget.provaStore.respostas.definirResposta(
-            questaoId,
-            alternativaId: value,
-            tempoQuestao: null,
-          );
-        },
-        toggleable: true,
-        title: Row(children: [
-          Text(
-            "$numeracao ",
-            style: TemaUtil.temaTextoNumeracao,
-          ),
-          Expanded(
-            child: Html(
-              data: descricao,
-              style: {
-                '*': Style.fromTextStyle(
-                  TemaUtil.temaTextoPadrao,
-                )
-              },
+    return Observer(
+      builder: (_) {
+        return Container(
+          padding: EdgeInsets.all(8),
+          margin: EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.black.withOpacity(0.34),
+            ),
+            borderRadius: BorderRadius.all(
+              Radius.circular(12),
             ),
           ),
-        ]),
-      ),
+          child: RadioListTile<int>(
+            value: idAlternativa,
+            groupValue: resposta?.alternativaId,
+            onChanged: (value) {
+              widget.provaStore.respostas.definirResposta(
+                questaoId,
+                alternativaId: value,
+                tempoQuestao: null,
+              );
+            },
+            toggleable: true,
+            title: Row(children: [
+              Text(
+                "$numeracao ",
+                style: TemaUtil.temaTextoNumeracao.copyWith(
+                  fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto,
+                ),
+              ),
+              Expanded(
+                child: Html(
+                  data: descricao,
+                  style: {
+                    '*': Style.fromTextStyle(
+                      TemaUtil.temaTextoPadrao.copyWith(
+                        fontSize: temaStore.tTexto16,
+                        fontFamily: temaStore.fonteDoTexto,
+                      ),
+                    )
+                  },
+                ),
+              ),
+            ]),
+          ),
+        );
+      },
     );
   }
 
@@ -617,21 +659,16 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {
     texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-      return '<div style="text-align: center">${match.group(0)}</div>';
+      return '<div style="text-align: center; position:relative">${match.group(0)}<p>Toque na imagem para ampliar</p></div>';
     });
 
-    RegExp exp = RegExp(r"#(\d+)#", multiLine: true, caseSensitive: true);
-    var matches = exp.allMatches(texto).toList();
-
-    for (var i = 0; i < matches.length; i++) {
-      var arquivoId = texto.substring(matches[i].start, matches[i].end);
-      var arquivo = arquivos.where((arq) => arq.id == int.parse(arquivoId.split("#")[1])).first;
+    for (var arquivo in arquivos) {
       var obterTipo = arquivo.caminho.split(".");
-
-      texto = texto.replaceAll(arquivoId, "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto =
+          texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
+
     return texto;
-    // #123456#
   }
 
   _buildTempoProva() {

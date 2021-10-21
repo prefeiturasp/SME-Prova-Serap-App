@@ -1,10 +1,15 @@
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 
 class BotaoSecundarioWidget extends StatelessWidget {
   final String textoBotao;
   final double? largura;
   final Function()? onPressed;
+
+  final temaStore = GetIt.I.get<TemaStore>();
 
   BotaoSecundarioWidget({required this.textoBotao, this.largura, this.onPressed});
 
@@ -27,10 +32,17 @@ class BotaoSecundarioWidget extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Text(
-            textoBotao,
-            textAlign: TextAlign.center,
-            style: TemaUtil.temaTextoBotaoSecundario,
+          child: Observer(
+            builder: (_) {
+              return Text(
+                textoBotao,
+                textAlign: TextAlign.center,
+                style: TemaUtil.temaTextoBotaoSecundario.copyWith(
+                  fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto,
+                ),
+              );
+            },
           ),
         ),
       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 abstract class TemaUtil {
   //! CORES
@@ -16,13 +15,14 @@ abstract class TemaUtil {
   static const pretoSemFoco = Colors.black54;
   static const pretoSemFoco2 = Colors.black38;
   static const azul = Colors.blue;
+  static const azul2 = Color(0xFF10A1C1);
   static const verde01 = Colors.green;
   static const verde02 = Color(0xff62C153);
 
   //* TEMA DE TEXTOS
-  static dynamic textoPrincipal(BuildContext context) {
-    return GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme);
-  }
+  // static dynamic textoPrincipal(BuildContext context) {
+  //   return GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme);
+  // }
 
   //TEMA TEXTO PADRÃO
   static const temaTextoPadrao = TextStyle(

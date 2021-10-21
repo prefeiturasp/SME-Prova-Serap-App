@@ -1,5 +1,6 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,8 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
     with Loggable {
   var store = GetIt.I.get<TBind>();
   var _principalStore = GetIt.I.get<PrincipalStore>();
+
+  TemaStore temaStore = GetIt.I.get<TemaStore>();
 
   @override
   void initState() {
@@ -38,6 +41,8 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   double defaultPadding = 16.0;
   double? defaultPaddingTop;
 
+  bool willPop = true;
+
   bool? resizeToAvoidBottomInset;
 
   onAfterBuild(BuildContext context) {}
@@ -58,14 +63,19 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: Container(
-                padding: EdgeInsets.only(
-                  left: defaultPadding,
-                  right: defaultPadding,
-                  top: defaultPaddingTop ?? defaultPadding,
-                  bottom: showBottomNaviationBar ? 0 : defaultPadding,
+              child: WillPopScope(
+                onWillPop: () async {
+                  return willPop;
+                },
+                child: Container(
+                  padding: EdgeInsets.only(
+                    left: defaultPadding,
+                    right: defaultPadding,
+                    top: defaultPaddingTop ?? defaultPadding,
+                    bottom: showBottomNaviationBar ? 0 : defaultPadding,
+                  ),
+                  child: builder(context),
                 ),
-                child: builder(context),
               ),
             ),
           ],
@@ -109,7 +119,11 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
 
             return Text(
               _principalStore.versao,
-              style: TextStyle(color: cor),
+              style: TextStyle(
+                color: cor,
+                fontSize: temaStore.tTexto14,
+                fontFamily: temaStore.fonteDoTexto,
+              ),
             );
           },
         ),

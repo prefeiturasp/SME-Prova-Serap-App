@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
@@ -23,6 +25,7 @@ import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
+typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
 
 class GerenciadorDownload with Loggable {
   int idProva;
@@ -30,8 +33,8 @@ class GerenciadorDownload with Loggable {
   late DateTime inicio;
   late int downloadAtual;
 
-  late StatusChangeCallback onChangeStatusCallback;
-  late void Function(double tempoPrevisto) onTempoPrevistoChangeCallback;
+  StatusChangeCallback? onChangeStatusCallback;
+  TempoPrevistoChangeCallback? onTempoPrevistoChangeCallback;
 
   Timer? timer;
 
@@ -110,7 +113,9 @@ class GerenciadorDownload with Loggable {
 
   startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      onTempoPrevistoChangeCallback(getTempoPrevisto());
+      if (onTempoPrevistoChangeCallback != null) {
+        onTempoPrevistoChangeCallback!(getTempoPrevisto());
+      }
     });
   }
 
@@ -119,7 +124,7 @@ class GerenciadorDownload with Loggable {
   }
 
   Future<void> startDownload() async {
-    info('Iniciando Download');
+    info('Iniciando download da prova ID $idProva');
 
     Prova prova = await getProva();
     downloadAtual = downloads.length - getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length;
@@ -138,13 +143,19 @@ class GerenciadorDownload with Loggable {
       var download = downloads[i];
 
       if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+        finer('[Prova $idProva] - Iniciando download TIPO: ${download.tipo} ID: ${download.id}');
+
         startTimer();
         try {
           prova = await getProva();
           prova.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-          onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
-          onTempoPrevistoChangeCallback(getTempoPrevisto());
+          if (onChangeStatusCallback != null) {
+            onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
+          }
+          if (onTempoPrevistoChangeCallback != null) {
+            onTempoPrevistoChangeCallback!(getTempoPrevisto());
+          }
 
           switch (download.tipo) {
             case EnumDownloadTipo.QUESTAO:
@@ -231,10 +242,6 @@ class GerenciadorDownload with Loggable {
               }
 
               break;
-            case EnumDownloadTipo.RESPOSTA:
-              // TODO: Handle this case.
-
-              break;
           }
 
           download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
@@ -244,34 +251,57 @@ class GerenciadorDownload with Loggable {
 
           await saveProva(prova);
           await saveDownloads();
-        } catch (e, stak) {
-          severe('ERRO: $e', stak);
+        } catch (e, stack) {
+          severe('[Prova $idProva] - ERRO: $e');
+          severe(download);
+          severe(stack);
+
           download.downloadStatus = EnumDownloadStatus.ERRO;
           prova.downloadStatus = EnumDownloadStatus.ERRO;
-          onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
-          onTempoPrevistoChangeCallback(getTempoPrevisto());
+
+          if (onChangeStatusCallback != null) {
+            onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
+          }
+
+          if (onTempoPrevistoChangeCallback != null) {
+            onTempoPrevistoChangeCallback!(getTempoPrevisto());
+          }
         }
       }
     }
 
     // Baixou todos os dados
     if (getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length == downloads.length) {
-      prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+      try {
+        prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
 
-      onChangeStatusCallback(prova.downloadStatus, getPorcentagem());
-      onTempoPrevistoChangeCallback(getTempoPrevisto());
+        await validarProva();
 
-      prova.questoes.sort(
-        (questao1, questao2) {
-          return questao1.ordem.compareTo(questao2.ordem);
-        },
-      );
+        prova.questoes.sort(
+          (questao1, questao2) {
+            return questao1.ordem.compareTo(questao2.ordem);
+          },
+        );
 
-      await saveProva(prova);
-      await deleteDownload();
+        await deleteDownload();
 
-      fine('Download Concluido');
-      fine('Tempo total ${DateTime.now().difference(inicio).inSeconds}');
+        fine('[Prova $idProva] - Download Concluido');
+        fine('[Prova $idProva] - Tempo total ${DateTime.now().difference(inicio).inSeconds}');
+      } catch (e) {
+        fine('[Prova $idProva] - Erro ao baixar prova');
+        severe(e);
+        prova.downloadStatus = EnumDownloadStatus.ERRO;
+      } finally {
+        if (onChangeStatusCallback != null) {
+          onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
+        }
+
+        if (onTempoPrevistoChangeCallback != null) {
+          onTempoPrevistoChangeCallback!(getTempoPrevisto());
+        }
+
+        await saveProva(prova);
+      }
     }
 
     cancelTimer();
@@ -345,5 +375,43 @@ class GerenciadorDownload with Loggable {
 
     await saveProva(prova);
     await saveDownloads();
+  }
+
+  validarProva() async {
+    Prova prova = await getProva();
+
+    for (var questao in prova.questoes) {
+      switch (questao.tipo) {
+        case EnumTipoQuestao.MULTIPLA_ESCOLHA_4:
+          if (questao.alternativas.length != 4) {
+            throw ProvaDownloadException(
+              prova.id,
+              'Questão ${questao.id} deve conter 4 alternatias, mas contem ${questao.alternativas.length} alternativas',
+            );
+          }
+
+          break;
+        case EnumTipoQuestao.MULTIPLA_ESCOLHA_5:
+          if (questao.alternativas.length != 5) {
+            throw ProvaDownloadException(
+              prova.id,
+              'Questão ${questao.id} deve conter 5 alternatias, mas contem ${questao.alternativas.length} alternativas',
+            );
+          }
+
+          break;
+        case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
+          if (questao.alternativas.isNotEmpty) {
+            throw ProvaDownloadException(
+              prova.id,
+              'Questão ${questao.id} não deve conter nenhuma alternativa',
+            );
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
   }
 }

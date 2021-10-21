@@ -7,12 +7,14 @@ class DialogDefaultWidget extends StatelessWidget {
   Widget corpo;
   List<Widget> botoes = <Widget>[];
   String? mensagemOpcionalBotao;
+  double? maxWidth;
 
   DialogDefaultWidget({
     this.cabecalho,
     required this.corpo,
     this.botoes = const [],
     this.mensagemOpcionalBotao = "",
+    this.maxWidth = 600.0,
   });
 
   @override
@@ -28,7 +30,7 @@ class DialogDefaultWidget extends StatelessWidget {
 
   contentBox(context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 600.0),
+      constraints: BoxConstraints(maxWidth: maxWidth!),
       child: Container(
         padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
