@@ -325,7 +325,7 @@ mostrarDialogMudancaTema(BuildContext context) {
         child: Observer(
           builder: (_) {
             return Container(
-              height: 300,
+              height: temaStore.fonteDoTexto == 'OpenDyslexic' ? 305 : 300,
               width: 300,
               margin: EdgeInsets.only(right: 60),
               padding: EdgeInsets.all(16),

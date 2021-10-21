@@ -558,7 +558,11 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
-      largura: temaStore.tTexto16 >= 20 ? 300 : 256,
+      largura: (temaStore.tTexto16 == 24 && temaStore.fonteDoTexto == 'OpenDyslexic')
+          ? 312
+          : temaStore.tTexto16 >= 20
+              ? 300
+              : 256,
       onPressed: () async {
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
           //
