@@ -3,6 +3,7 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'principal.store.g.dart';
@@ -20,6 +21,7 @@ abstract class _PrincipalStoreBase with Store {
 
   setup() async {
     _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
+    obterVersaoDoApp();
   }
 
   void dispose() {
@@ -45,11 +47,8 @@ abstract class _PrincipalStoreBase with Store {
 
   @action
   Future<void> obterVersaoDoApp() async {
-    var versaoAtual = await _versaoService.getVersao();
-
-    //var prefs = await SharedPreferences.getInstance();
-    versaoApp = versaoAtual.body!;
-    // prefs.getString('versaoApp');
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    versaoApp = "Versão ${packageInfo.version}";
   }
 
   @action
