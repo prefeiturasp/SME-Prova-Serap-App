@@ -2,7 +2,9 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:mobx/mobx.dart';
 
@@ -31,25 +33,51 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
         body!.sort((dica1, dica2) => dica1.ordem!.compareTo(dica2.ordem!));
 
         for (var dica in body) {
-          listaPaginasOrientacoes.add(
-            PageViewModel(
-              title: dica.titulo,
-              body: dica.descricao,
-              image: Center(
-                child: Image.network(
-                  dica.imagem!,
-                  height: 175.0,
+          if (dica.imagem == null && dica.titulo == null) {
+            listaPaginasOrientacoes.add(
+              PageViewModel(
+                title: '',
+                bodyWidget: Html(
+                  data: dica.descricao,
+                  style: {
+                    '*': Style.fromTextStyle(
+                      GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  },
+                ),
+                decoration: PageDecoration(
+                  titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
+                  bodyTextStyle: TextStyle(fontSize: 19.0),
+                  descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+                  pageColor: Colors.white,
+                  imagePadding: EdgeInsets.zero,
                 ),
               ),
-              decoration: PageDecoration(
-                titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
-                bodyTextStyle: TextStyle(fontSize: 19.0),
-                descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-                pageColor: Colors.white,
-                imagePadding: EdgeInsets.zero,
+            );
+          } else {
+            listaPaginasOrientacoes.add(
+              PageViewModel(
+                title: dica.titulo,
+                body: dica.descricao,
+                image: Center(
+                  child: Image.network(
+                    dica.imagem!,
+                    height: 175.0,
+                  ),
+                ),
+                decoration: PageDecoration(
+                  titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
+                  bodyTextStyle: TextStyle(fontSize: 19.0),
+                  descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+                  pageColor: Colors.white,
+                  imagePadding: EdgeInsets.zero,
+                ),
               ),
-            ),
-          );
+            );
+          }
         }
       }
     } catch (e) {
