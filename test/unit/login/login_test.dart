@@ -1,11 +1,5 @@
-import 'dart:convert';
-
-import 'package:appserap/converters/error_converter.dart';
-import 'package:appserap/converters/json_conveter.dart';
-import 'package:appserap/interceptors/autenticacao.interceptor.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/services/rest/auth.service.dart';
-import 'package:chopper/chopper.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mockito/annotations.dart';
@@ -13,12 +7,10 @@ import 'package:mockito/mockito.dart';
 
 import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../fixtures/user/http.fixture.dart';
 import '../../fixtures/user/locator.fixture.dart';
 import '../../fixtures/user/user.fixture.dart';
-import 'login.test.mocks.dart';
 
 @GenerateMocks([
   ApiService,
