@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -7,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:mobx/mobx.dart';
+import 'package:photo_view/photo_view.dart';
 
 part 'orientacao_inicial.store.g.dart';
 
@@ -39,14 +42,6 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
                 title: '',
                 bodyWidget: Html(
                   data: dica.descricao,
-                  style: {
-                    '*': Style.fromTextStyle(
-                      GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  },
                 ),
                 decoration: PageDecoration(
                   titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
@@ -58,13 +53,18 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
               ),
             );
           } else {
+            //String base64Imagem = base64Encode(dica.imagem!.codeUnits);
+            String urlImagem = dica.imagem!;
+            print(urlImagem);
+            //Uint8List imagem = base64.decode(base64Imagem.split(',').last);
+
             listaPaginasOrientacoes.add(
               PageViewModel(
                 title: dica.titulo,
                 body: dica.descricao,
                 image: Center(
                   child: Image.network(
-                    dica.imagem!,
+                    urlImagem,
                     height: 175.0,
                   ),
                 ),
@@ -83,5 +83,10 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
     } catch (e) {
       severe(e);
     }
+  }
+
+  void dispose() {
+    pagina = 0;
+    listaPaginasOrientacoes = <PageViewModel>[].asObservable();
   }
 }

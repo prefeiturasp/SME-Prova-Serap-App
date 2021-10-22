@@ -60,18 +60,7 @@ class _OrientacaoInicialViewState extends BaseStateWidget<OrientacaoInicialView,
           ),
         ],
       );
-    } else if (store.usuario.ultimoLogin != null && ehUltimaDica) {
-      return Column(
-        children: [
-          BotaoDefaultWidget(
-            textoBotao: 'IR PARA A PÁGINA INICIAL',
-            onPressed: () {
-              _irParaTelaInicial(context);
-            },
-          ),
-        ],
-      );
-    } else if (store.usuario.ultimoLogin == null && ehUltimaDica) {
+    } else if ((store.usuario.ultimoLogin != null || store.usuario.ultimoLogin == null)&& ehUltimaDica) {
       return Column(
         children: [
           BotaoDefaultWidget(

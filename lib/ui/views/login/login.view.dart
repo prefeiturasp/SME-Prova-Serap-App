@@ -1,4 +1,5 @@
 import 'package:appserap/stores/login.store.dart';
+import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends BaseStatefulWidget {
@@ -19,6 +21,8 @@ class LoginView extends BaseStatefulWidget {
 class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
   FocusNode _codigoEOLFocus = FocusNode();
   FocusNode _senhaFocus = FocusNode();
+
+  final _orientacaoStore = GetIt.I.get<OrientacaoInicialStore>();
 
   @override
   void initState() {
@@ -181,5 +185,6 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
     if (!store.autenticacaoErroStore.possuiErros) {
       await store.autenticar();
     }
+    await _orientacaoStore.popularListaDeOrientacoes();
   }
 }
