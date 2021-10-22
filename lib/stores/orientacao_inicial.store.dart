@@ -53,10 +53,7 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
               ),
             );
           } else {
-            //String base64Imagem = base64Encode(dica.imagem!.codeUnits);
             String urlImagem = dica.imagem!;
-            print(urlImagem);
-            //Uint8List imagem = base64.decode(base64Imagem.split(',').last);
 
             listaPaginasOrientacoes.add(
               PageViewModel(
