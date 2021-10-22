@@ -1,3 +1,4 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -122,7 +123,7 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
               style: TextStyle(
                 color: cor,
                 fontSize: temaStore.tTexto14,
-                fontFamily: temaStore.fonteDoTexto,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
               ),
             );
           },

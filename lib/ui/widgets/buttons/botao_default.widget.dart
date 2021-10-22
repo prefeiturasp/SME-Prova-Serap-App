@@ -1,3 +1,4 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,7 @@ class BotaoDefaultWidget extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TemaUtil.temaTextoBotao.copyWith(
               fontSize: temaStore.tTexto16,
-              fontFamily: temaStore.fonteDoTexto,
+              fontFamily: temaStore.fonteDoTexto.nomeFonte,
             ),
           );
         },

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -220,14 +221,14 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                         'Questão ${questao.ordem + 1} ',
                         style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
                           fontSize: temaStore.tTexto20,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
                       Text(
                         'de ${widget.provaStore.prova.questoes.length}',
                         style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
                           fontSize: temaStore.tTexto20,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
                     ],
@@ -239,7 +240,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       '*': Style.fromTextStyle(
                         TemaUtil.temaTextoHtmlPadrao.copyWith(
                           fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
                     },
@@ -256,7 +257,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       '*': Style.fromTextStyle(
                         TemaUtil.temaTextoHtmlPadrao.copyWith(
                           fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
                     },
@@ -329,7 +330,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                               'Fechar',
                               style: TemaUtil.temaTextoFecharImagem.copyWith(
                                 fontSize: temaStore.tTexto18,
-                                fontFamily: temaStore.fonteDoTexto,
+                                fontFamily: temaStore.fonteDoTexto.nomeFonte,
                               ),
                             );
                           },
@@ -469,7 +470,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 "$numeracao ",
                 style: TemaUtil.temaTextoNumeracao.copyWith(
                   fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               ),
               Expanded(
@@ -479,7 +480,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                     '*': Style.fromTextStyle(
                       TemaUtil.temaTextoPadrao.copyWith(
                         fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                     )
                   },

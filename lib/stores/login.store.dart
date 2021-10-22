@@ -107,6 +107,8 @@ abstract class _LoginStoreBase with Store, Loggable {
               body.token,
               usuarioDados.ano,
               usuarioDados.tipoTurno,
+              usuarioDados.tamanhoFonte,
+              usuarioDados.familiaFonte,
             );
           }
         }
@@ -122,7 +124,8 @@ abstract class _LoginStoreBase with Store, Loggable {
       }
     } catch (e, stack) {
       AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
-      severe(e, stack);
+      severe(e);
+      severe(stack);
     }
     carregando = false;
   }

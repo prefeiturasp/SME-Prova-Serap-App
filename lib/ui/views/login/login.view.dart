@@ -1,3 +1,4 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
@@ -58,7 +59,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                 "Bem-vindo",
                 style: TemaUtil.temaTextoBemVindo.copyWith(
                   fontSize: temaStore.tTexto24,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },
@@ -170,7 +171,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                                 textAlign: TextAlign.center,
                                 style: TemaUtil.temaTextoBotao.copyWith(
                                   fontSize: temaStore.tTexto16,
-                                  fontFamily: temaStore.fonteDoTexto,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                 ),
                               );
                             },

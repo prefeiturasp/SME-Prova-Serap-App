@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
@@ -45,53 +46,49 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
   @override
   Widget builder(BuildContext context) {
-    return Observer(
-      builder: (_) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
-          child: Observer(
-            builder: (_) {
-              ObservableMap<int, ProvaStore> provas = store.provas;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
+      child: Observer(
+        builder: (_) {
+          ObservableMap<int, ProvaStore> provas = store.provas;
 
-              if (store.carregando) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+          if (store.carregando) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-              if (provas.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height - 400,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset('assets/images/sem_prova.svg'),
-                      ],
-                    ),
-                  ),
-                );
-              }
-
-              return RefreshIndicator(
-                onRefresh: () async {
-                  await store.carregarProvas();
-                },
-                child: ListView.builder(
-                  itemCount: provas.length,
-                  itemBuilder: (_, index) {
-                    var keys = provas.keys.toList();
-                    var prova = provas[keys[index]]!;
-                    return _buildProva(prova);
-                  },
+          if (provas.isEmpty) {
+            return Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height - 400,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset('assets/images/sem_prova.svg'),
+                  ],
                 ),
-              );
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async {
+              await store.carregarProvas();
             },
-          ),
-        );
-      },
+            child: ListView.builder(
+              itemCount: provas.length,
+              itemBuilder: (_, index) {
+                var keys = provas.keys.toList();
+                var prova = provas[keys[index]]!;
+                return _buildProva(prova);
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -124,7 +121,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         provaStore.prova.descricao,
                         style: TemaUtil.temaTextoPadraoNegrito.copyWith(
                           fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                         maxLines: 2,
                       );
@@ -155,7 +152,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                             "Quantidade de itens: ",
                             style: TemaUtil.temaTextoPadrao.copyWith(
                               fontSize: temaStore.tTexto16,
-                              fontFamily: temaStore.fonteDoTexto,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
                             ),
                           );
                         },
@@ -167,7 +164,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                             bold: true,
                             texStyle: TemaUtil.temaTextoPadraoNegrito.copyWith(
                               fontSize: temaStore.tTexto16,
-                              fontFamily: temaStore.fonteDoTexto,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
                             ),
                           );
                         },
@@ -204,7 +201,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                                   "Data de aplicação:",
                                   texStyle: TemaUtil.temaTextoPadrao.copyWith(
                                     fontSize: temaStore.tTexto16,
-                                    fontFamily: temaStore.fonteDoTexto,
+                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                   ),
                                 );
                               },
@@ -238,10 +235,10 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         builder: (_) {
           return AutoSizeText(
             formatEddMMyyyy(prova.dataInicio),
-            maxLines: 2,
+            maxLines: 4,
             style: TemaUtil.temaTextoPadraoNegrito.copyWith(
               fontSize: temaStore.tTexto16,
-              fontFamily: temaStore.fonteDoTexto,
+              fontFamily: temaStore.fonteDoTexto.nomeFonte,
             ),
           );
         },
@@ -260,7 +257,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       maxLines: 2,
                       style: TemaUtil.temaTextoPadraoNegrito.copyWith(
                         fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                     ),
                     SizedBox(
@@ -271,7 +268,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         textAlign: TextAlign.center,
                         style: TemaUtil.temaTextoPadrao.copyWith(
                           fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
                     ),
@@ -281,7 +278,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       overflow: TextOverflow.ellipsis,
                       style: TemaUtil.temaTextoPadraoNegrito.copyWith(
                         fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                     ),
                   ],
@@ -293,7 +290,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       maxLines: 2,
                       style: TemaUtil.temaTextoPadraoNegrito.copyWith(
                         fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                     ),
                     AutoSizeText(
@@ -301,7 +298,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       maxLines: 2,
                       style: TemaUtil.temaTextoPadrao.copyWith(
                         fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                     ),
                     AutoSizeText(
@@ -310,7 +307,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       overflow: TextOverflow.ellipsis,
                       style: TemaUtil.temaTextoPadraoNegrito.copyWith(
                         fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                     ),
                   ],
@@ -386,7 +383,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   bold: true,
                   texStyle: TemaUtil.temaTextoErroNegrito.copyWith(
                     fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
                   ),
                 ),
                 Texto(
@@ -394,7 +391,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   color: TemaUtil.vermelhoErro,
                   texStyle: TemaUtil.temaTextoErro.copyWith(
                     fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
                   ),
                 ),
               ],
@@ -434,7 +431,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   bold: true,
                   texStyle: TemaUtil.temaTextoErroNegrito.copyWith(
                     fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
                   ),
                 ),
                 Texto(
@@ -442,7 +439,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   color: TemaUtil.vermelhoErro,
                   texStyle: TemaUtil.temaTextoErro.copyWith(
                     fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
                   ),
                 ),
               ],
@@ -468,7 +465,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 fontWeight: FontWeight.w500,
                 texStyle: TemaUtil.temaTextoBotao.copyWith(
                   fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },
@@ -513,7 +510,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       bold: true,
                       texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
                         fontSize: temaStore.tTexto12,
-                        fontFamily: temaStore.fonteDoTexto,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                     );
                   },
@@ -550,7 +547,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 fontWeight: FontWeight.w500,
                 texStyle: TemaUtil.temaTextoBotao.copyWith(
                   fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },
@@ -558,7 +555,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
-      largura: (temaStore.tTexto16 == 24 && temaStore.fonteDoTexto == 'OpenDyslexic')
+      largura: (temaStore.tTexto16 == 24 && temaStore.fonteDoTexto.nomeFonte == 'OpenDyslexic')
           ? 312
           : temaStore.tTexto16 >= 20
               ? 300
@@ -583,7 +580,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       textAlign: TextAlign.center,
                       style: TemaUtil.temaTextoInserirSenha.copyWith(
                         fontSize: temaStore.tTexto18,
-                        fontFamily: temaStore.fonteDoTexto,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                     );
                   }),
@@ -684,7 +681,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Text("Download em progresso ${(prova.progressoDownload * 100).toStringAsFixed(2)}% $tempoRestante"),
+            child: Text(
+              "Download em progresso ${(prova.progressoDownload * 100).toStringAsFixed(2)}% $tempoRestante",
+              style: TextStyle(
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                fontSize: temaStore.tTexto14,
+              ),
+            ),
           ),
         ],
       ),
