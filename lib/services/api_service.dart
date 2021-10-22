@@ -47,9 +47,9 @@ class ApiService {
         OrientacaoInicialService.create(),
       ],
       interceptors: [
+        CustomAuthInterceptor(),
         // CurlInterceptor(),
         // HttpLoggingInterceptor(),
-        CustomAuthInterceptor(),
       ],
     ));
     return client;

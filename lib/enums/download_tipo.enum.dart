@@ -1,1 +1,1 @@
-enum EnumDownloadTipo { QUESTAO, ARQUIVO, ALTERNATIVA, RESPOSTA }
+enum EnumDownloadTipo { QUESTAO, ARQUIVO, ALTERNATIVA }

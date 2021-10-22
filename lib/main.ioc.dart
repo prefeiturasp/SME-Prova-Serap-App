@@ -10,6 +10,7 @@ import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: non_constant_identifier_names
@@ -48,14 +49,16 @@ class DependenciasIoC with Loggable {
     bool? signalsReady,
     FutureOr<dynamic> Function(T)? dispose,
   }) {
-    fine('[SingletonAsync] Registrando ${T.toString()}');
-    ServiceLocator.registerSingletonAsync<T>(
-      factoryFunc,
-      instanceName: instanceName,
-      dependsOn: dependsOn,
-      signalsReady: signalsReady,
-      dispose: dispose,
-    );
+    if (!ServiceLocator.isRegistered<T>()) {
+      fine('[SingletonAsync] Registrando ${T.toString()}');
+      ServiceLocator.registerSingletonAsync<T>(
+        factoryFunc,
+        instanceName: instanceName,
+        dependsOn: dependsOn,
+        signalsReady: signalsReady,
+        dispose: dispose,
+      );
+    }
   }
 
   void registerSingleton<T extends Object>(
@@ -64,12 +67,14 @@ class DependenciasIoC with Loggable {
     bool? signalsReady,
     FutureOr<dynamic> Function(T)? dispose,
   }) {
-    fine('[Singleton] Registrando ${T.toString()}');
-    ServiceLocator.registerSingleton<T>(
-      instance,
-      instanceName: instanceName,
-      signalsReady: signalsReady,
-      dispose: dispose,
-    );
+    if (!ServiceLocator.isRegistered<T>()) {
+      fine('[Singleton] Registrando ${T.toString()}');
+      ServiceLocator.registerSingleton<T>(
+        instance,
+        instanceName: instanceName,
+        signalsReady: signalsReady,
+        dispose: dispose,
+      );
+    }
   }
 }
