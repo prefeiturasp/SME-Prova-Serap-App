@@ -15,6 +15,9 @@ abstract class _UsuarioStoreBase with Store {
   DateTime? tokenDataHoraExpiracao;
 
   @observable
+  DateTime? ultimoLogin;
+
+  @observable
   String? nome;
 
   @observable
@@ -47,18 +50,23 @@ abstract class _UsuarioStoreBase with Store {
     ano = prefs.getString("serapUsuarioAno");
     tipoTurno = prefs.getString("serapUsuarioTipoTurno");
 
+    if (prefs.getString("ultimoLogin") != null) {
+      ultimoLogin = DateTime.tryParse(prefs.getString("ultimoLogin")!);
+      
     if (ano != null && ano!.isNotEmpty) {
       await inscreverTurmaFirebase(ano!);
     }
   }
 
   @action
-  atualizarDados(String nome, String codigoEOL, String token, String ano, String tipoTurno) async {
+  atualizarDados(
+      String nome, String codigoEOL, String token, String ano, String tipoTurno, DateTime? ultimoLogin) async {
     this.nome = nome;
     this.token = token;
     this.codigoEOL = codigoEOL;
     this.ano = ano;
     this.tipoTurno = tipoTurno;
+    this.ultimoLogin = ultimoLogin;
 
     SharedPreferences prefs = GetIt.I.get();
     await prefs.setString('serapUsuarioNome', nome);
@@ -66,6 +74,10 @@ abstract class _UsuarioStoreBase with Store {
     await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
     await prefs.setString('serapUsuarioAno', ano);
     await prefs.setString('serapUsuarioTipoTurno', tipoTurno);
+    
+    if (this.ultimoLogin != null) {
+      await prefs.setString('ultimoLogin', ultimoLogin.toString());
+    }
 
     await inscreverTurmaFirebase(ano);
   }
