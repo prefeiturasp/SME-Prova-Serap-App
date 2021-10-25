@@ -36,7 +36,12 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
         body!.sort((dica1, dica2) => dica1.ordem!.compareTo(dica2.ordem!));
 
         for (var dica in body) {
-          if (dica.imagem == null && dica.titulo == null) {
+
+          bool mostrarHtml = (
+            (dica.imagem == null || dica.imagem!.isEmpty) && (dica.titulo == null || dica.titulo!.isEmpty)
+          );
+
+          if (mostrarHtml) {
             listaPaginasOrientacoes.add(
               PageViewModel(
                 title: '',
