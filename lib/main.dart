@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/workers/dispacher.dart';

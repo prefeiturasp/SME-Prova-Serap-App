@@ -102,13 +102,13 @@ abstract class _LoginStoreBase with Store, Loggable {
           var usuarioDados = responseMeusDados.body!;
           if (usuarioDados.nome != "") {
             _usuarioStore.atualizarDados(
-              usuarioDados.nome,
-              codigoEOL,
-              body.token,
-              usuarioDados.ano,
-              usuarioDados.tipoTurno,
-              usuarioDados.tamanhoFonte,
-              usuarioDados.familiaFonte,
+              codigoEOL: codigoEOL,
+              token: body.token,
+              nome: usuarioDados.nome,
+              ano: usuarioDados.ano,
+              tipoTurno: usuarioDados.tipoTurno,
+              tamanhoFonte: usuarioDados.tamanhoFonte,
+              familiaFonte: usuarioDados.familiaFonte,
             );
           }
         }

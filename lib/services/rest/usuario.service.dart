@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:chopper/chopper.dart';
 
 part 'usuario.service.chopper.dart';
@@ -9,9 +8,8 @@ abstract class UsuarioService extends ChopperService {
   static UsuarioService create([ChopperClient? client]) => _$UsuarioService(client);
 
   @Post(path: '/preferencias')
-  Future<Response<AutenticacaoResponseDTO>> atualizarPreferencias({
-    @Field() required double tamanhoFonte,
+  Future<Response<bool>> atualizarPreferencias({
+    @Field() required int tamanhoFonte,
     @Field() required int familiaFonte,
   });
-
 }

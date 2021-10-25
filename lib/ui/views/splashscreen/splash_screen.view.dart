@@ -1,5 +1,5 @@
-import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/fluxo_inicial.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:flutter/material.dart';
@@ -41,8 +41,25 @@ class _SplashScreenViewState extends State<SplashScreenView> {
 
     await _principalStore.usuario.carregarUsuario();
 
+    if (_principalStore.temConexao && _principalStore.usuario.isLogado) {
+      var responseMeusDados = await GetIt.I.get<ApiService>().auth.meusDados();
+
+      if (responseMeusDados.isSuccessful) {
+        var usuarioDados = responseMeusDados.body!;
+        if (usuarioDados.nome != "") {
+          _principalStore.usuario.atualizarDados(
+            nome: usuarioDados.nome,
+            ano: usuarioDados.ano,
+            tipoTurno: usuarioDados.tipoTurno,
+            tamanhoFonte: usuarioDados.tamanhoFonte,
+            familiaFonte: usuarioDados.familiaFonte,
+          );
+        }
+      }
+    }
+
     _temaStore.fonteDoTexto = _principalStore.usuario.familiaFonte!;
-    _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!);
+    _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!, update: false);
 
     Navigator.pushReplacement(
       context,

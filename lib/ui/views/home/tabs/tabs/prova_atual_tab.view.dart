@@ -40,7 +40,8 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   FocusNode _codigoProvaFocus = FocusNode();
 
   @override
-  void onAfterBuild(BuildContext context) {
+  void initState() {
+    super.initState();
     store.carregarProvas();
   }
 
@@ -173,47 +174,45 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   ),
                   SizedBox(height: 10),
                   // Data aplicacao
-                  Container(
-                    child: Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: TemaUtil.verde02.withOpacity(0.1),
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: TemaUtil.verde02.withOpacity(0.1),
+                        ),
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.insert_invitation,
+                          color: TemaUtil.verde02,
+                          size: 24,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Observer(
+                            builder: (_) {
+                              return Texto(
+                                "Data de aplicação:",
+                                texStyle: TemaUtil.temaTextoPadrao.copyWith(
+                                  fontSize: temaStore.tTexto16,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                ),
+                              );
+                            },
                           ),
-                          padding: EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.insert_invitation,
-                            color: TemaUtil.verde02,
-                            size: 24,
+                          Container(
+                            width: 350,
+                            child: _formataDataAplicacao(provaStore.prova),
                           ),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Observer(
-                              builder: (_) {
-                                return Texto(
-                                  "Data de aplicação:",
-                                  texStyle: TemaUtil.temaTextoPadrao.copyWith(
-                                    fontSize: temaStore.tTexto16,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
-                                );
-                              },
-                            ),
-                            Container(
-                              width: 350,
-                              child: _formataDataAplicacao(provaStore.prova),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
                   ),
                   SizedBox(height: 10),
                   // Botao
@@ -614,7 +613,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       if (provaStore.prova.senha == senhaCriptografada) {
                         Navigator.pop(context);
 
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => ProvaView(
@@ -633,7 +632,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             },
           );
         } else {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => ProvaView(
@@ -645,7 +644,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
           provaStore.iniciarProva();
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => ProvaView(

@@ -1,6 +1,5 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/home.store.dart';
-import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -8,7 +7,6 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
 
 import 'tabs/tabs/prova_atual_tab.view.dart';
 
@@ -101,7 +99,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
             child: TabBarView(
               controller: tabController,
               children: [
-                ProvaAtualTabView()
+                ProvaAtualTabView(),
                 // Container(),
               ],
             ),

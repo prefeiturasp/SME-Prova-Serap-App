@@ -33,6 +33,9 @@ abstract class _UsuarioStoreBase with Store {
   @observable
   FonteTipoEnum? familiaFonte = FonteTipoEnum.POPPINS;
 
+  @computed
+  bool get isLogado => codigoEOL != null;
+
   @action
   void dispose() {
     if (ano != null && ano!.isNotEmpty) {
@@ -70,15 +73,15 @@ abstract class _UsuarioStoreBase with Store {
   }
 
   @action
-  atualizarDados(
-    String nome,
-    String codigoEOL,
-    String token,
-    String ano,
-    String tipoTurno,
-    double tamanhoFonte,
-    FonteTipoEnum familiaFonte,
-  ) async {
+  atualizarDados({
+    required String nome,
+    String? codigoEOL,
+    String? token,
+    required String ano,
+    required String tipoTurno,
+    required double tamanhoFonte,
+    required FonteTipoEnum familiaFonte,
+  }) async {
     this.nome = nome;
     this.token = token;
     this.codigoEOL = codigoEOL;
@@ -89,8 +92,15 @@ abstract class _UsuarioStoreBase with Store {
 
     SharedPreferences prefs = GetIt.I.get();
     await prefs.setString('serapUsuarioNome', nome);
-    await prefs.setString('serapUsuarioToken', token);
-    await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
+
+    if (token != null && token.isNotEmpty) {
+      await prefs.setString('serapUsuarioToken', token);
+    }
+
+    if (codigoEOL != null && codigoEOL.isNotEmpty) {
+      await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
+    }
+
     await prefs.setString('serapUsuarioAno', ano);
     await prefs.setString('serapUsuarioTipoTurno', tipoTurno);
     await prefs.setDouble('tamanhoFonte', tamanhoFonte);

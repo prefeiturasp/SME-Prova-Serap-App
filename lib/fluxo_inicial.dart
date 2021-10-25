@@ -12,7 +12,7 @@ class FluxoInicial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
-      return _usuarioStore.codigoEOL != null ? HomeView() : LoginView();
+      return _usuarioStore.isLogado ? HomeView() : LoginView();
     });
   }
 }

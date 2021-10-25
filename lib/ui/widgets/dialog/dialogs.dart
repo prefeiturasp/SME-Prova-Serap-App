@@ -265,6 +265,55 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
   );
 }
 
+_buildFontButton({
+  required String texto,
+  required String fontFamily,
+  required bool ativo,
+  required void Function()? onPressed,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(right: 24),
+    child: InkWell(
+      onTap: onPressed,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 75,
+            child: Text(
+              "Aa",
+              style: TextStyle(
+                fontSize: 48,
+                color: ativo ? TemaUtil.azul2 : Colors.black,
+                fontFamily: fontFamily,
+              ),
+            ),
+          ),
+          Container(
+            height: 4,
+            width: 72,
+            padding: EdgeInsets.only(top: 4, bottom: 4),
+            decoration: BoxDecoration(
+              color: ativo ? TemaUtil.azul2 : Colors.black,
+            ),
+          ),
+          SizedBox(
+            height: 18,
+            child: Text(
+              texto,
+              style: TextStyle(
+                fontSize: 14,
+                color: ativo ? TemaUtil.azul2 : Colors.black,
+                decoration: TextDecoration.none,
+                fontFamily: fontFamily,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 mostrarDialogSenhaErrada(BuildContext context) {
   final temaStore = GetIt.I.get<TemaStore>();
 
@@ -317,7 +366,6 @@ mostrarDialogMudancaTema(BuildContext context) {
   showGeneralDialog(
     barrierLabel: "Barrier",
     barrierDismissible: true,
-    barrierColor: Colors.black.withOpacity(0.5),
     transitionDuration: Duration(microseconds: 1),
     context: context,
     pageBuilder: (_, __, ___) {
@@ -326,8 +374,8 @@ mostrarDialogMudancaTema(BuildContext context) {
         child: Observer(
           builder: (_) {
             return Container(
-              height: 305,
-              width: 300,
+              height: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC ? 305 : 300,
+              width: 360,
               margin: EdgeInsets.only(right: 60),
               padding: EdgeInsets.all(16),
               child: Material(
@@ -349,73 +397,23 @@ mostrarDialogMudancaTema(BuildContext context) {
                       ),
                     ),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Container(
-                          height: 105,
-                          child: TextButton(
-                            onPressed: () {
-                              temaStore.mudarFonte(FonteTipoEnum.POPPINS);
-                            },
-                            style: ButtonStyle(
-                              padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                            ),
-                            child: RichText(
-                              text: TextSpan(
-                                text: 'Aa\n',
-                                style: TextStyle(
-                                  fontSize: 48,
-                                  color: Colors.black,
-                                  fontFamily: "Poppins",
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text: "Padrão",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black,
-                                      decoration: TextDecoration.none,
-                                      fontFamily: "Poppins",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        _buildFontButton(
+                          texto: "Padrão",
+                          fontFamily: "Poppins",
+                          ativo: temaStore.fonteDoTexto == FonteTipoEnum.POPPINS,
+                          onPressed: () {
+                            temaStore.mudarFonte(FonteTipoEnum.POPPINS);
+                          },
                         ),
-                        SizedBox(width: 24),
-                        Container(
-                          height: 105,
-                          child: TextButton(
-                            onPressed: () {
-                              temaStore.mudarFonte(FonteTipoEnum.POPPINS);
-                            },
-                            style: ButtonStyle(
-                              padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                            ),
-                            child: RichText(
-                              text: TextSpan(
-                                text: 'Aa',
-                                style: TextStyle(
-                                  fontSize: 48,
-                                  color: Colors.black,
-                                  fontFamily: "OpenDyslexic",
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text: "\nPara dislexia",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black,
-                                      decoration: TextDecoration.none,
-                                      fontFamily: "OpenDyslexic",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        _buildFontButton(
+                          texto: "Para dislexia",
+                          fontFamily: "OpenDyslexic",
+                          ativo: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC,
+                          onPressed: () {
+                            temaStore.mudarFonte(FonteTipoEnum.OPEN_DYSLEXIC);
+                          },
                         ),
                       ],
                     ),
@@ -458,20 +456,18 @@ mostrarDialogMudancaTema(BuildContext context) {
                               data: SliderThemeData(
                                 trackHeight: 8,
                               ),
-                              child: Observer(
-                                builder: (_) {
-                                  return Slider(
-                                    value: temaStore.incrementador,
-                                    min: 16,
-                                    max: 24,
-                                    divisions: 4,
-                                    label: temaStore.incrementador.toInt().toString(),
-                                    activeColor: TemaUtil.azul2,
-                                    inactiveColor: Colors.grey[350],
-                                    onChanged: (double valor) {
-                                      temaStore.fachadaAlterarTamanhoDoTexto(valor);
-                                    },
-                                  );
+                              child: Slider(
+                                value: temaStore.incrementador,
+                                min: 10,
+                                max: 24,
+                                divisions: 7,
+                                label: temaStore.incrementador.round().toString(),
+                                activeColor: TemaUtil.azul2,
+                                inactiveColor: Colors.grey[350],
+                                onChanged: (double valor) {
+                                  if (valor >= 16 && valor <= 24) {
+                                    temaStore.fachadaAlterarTamanhoDoTexto(valor);
+                                  }
                                 },
                               ),
                             ),

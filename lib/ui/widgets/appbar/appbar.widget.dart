@@ -92,7 +92,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   "Sair",
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: temaStore.tTexto12,
+                    fontSize: temaStore.tTexto16,
                     color: TemaUtil.laranja02,
                   ),
                 );
