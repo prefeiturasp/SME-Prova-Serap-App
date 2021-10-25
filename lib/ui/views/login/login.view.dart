@@ -92,6 +92,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                             labelText: 'Digite o código EOL',
                             labelStyle: TextStyle(
                               color: _codigoEOLFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
                             ),
                             prefixText: "RA-",
                             errorText: store.autenticacaoErroStore.codigoEOL,
@@ -127,6 +128,10 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                               },
                             ),
                             labelText: 'Digite a senha',
+                            labelStyle: TextStyle(
+                              color: _senhaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                            ),
                             errorText: store.autenticacaoErroStore.senha,
                           ),
                           onSubmitted: (value) => fazerLogin(),
