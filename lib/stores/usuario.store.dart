@@ -52,15 +52,22 @@ abstract class _UsuarioStoreBase with Store {
 
     if (prefs.getString("ultimoLogin") != null) {
       ultimoLogin = DateTime.tryParse(prefs.getString("ultimoLogin")!);
-      
-    if (ano != null && ano!.isNotEmpty) {
-      await inscreverTurmaFirebase(ano!);
+
+      if (ano != null && ano!.isNotEmpty) {
+        await inscreverTurmaFirebase(ano!);
+      }
     }
   }
 
   @action
-  atualizarDados(
-      String nome, String codigoEOL, String token, String ano, String tipoTurno, DateTime? ultimoLogin) async {
+  Future<void> atualizarDados(
+    String nome,
+    String codigoEOL,
+    String token,
+    String ano,
+    String tipoTurno,
+    DateTime? ultimoLogin,
+  ) async {
     this.nome = nome;
     this.token = token;
     this.codigoEOL = codigoEOL;
@@ -74,7 +81,7 @@ abstract class _UsuarioStoreBase with Store {
     await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
     await prefs.setString('serapUsuarioAno', ano);
     await prefs.setString('serapUsuarioTipoTurno', tipoTurno);
-    
+
     if (this.ultimoLogin != null) {
       await prefs.setString('ultimoLogin', ultimoLogin.toString());
     }
