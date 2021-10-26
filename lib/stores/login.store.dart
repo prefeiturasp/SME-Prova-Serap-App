@@ -102,11 +102,13 @@ abstract class _LoginStoreBase with Store, Loggable {
           var usuarioDados = responseMeusDados.body!;
           if (usuarioDados.nome != "") {
             _usuarioStore.atualizarDados(
-              usuarioDados.nome,
-              codigoEOL,
-              body.token,
-              usuarioDados.ano,
-              usuarioDados.tipoTurno,
+              codigoEOL: codigoEOL,
+              token: body.token,
+              nome: usuarioDados.nome,
+              ano: usuarioDados.ano,
+              tipoTurno: usuarioDados.tipoTurno,
+              tamanhoFonte: usuarioDados.tamanhoFonte,
+              familiaFonte: usuarioDados.familiaFonte,
             );
           }
         }
@@ -122,7 +124,8 @@ abstract class _LoginStoreBase with Store, Loggable {
       }
     } catch (e, stack) {
       AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
-      severe(e, stack);
+      severe(e);
+      severe(stack);
     }
     carregando = false;
   }

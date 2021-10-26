@@ -1,3 +1,4 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -96,7 +97,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                             textAlign: TextAlign.start,
                             style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
                               fontSize: temaStore.tTexto20,
-                              fontFamily: temaStore.fonteDoTexto,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
                             ),
                           );
                         },
@@ -240,14 +241,14 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                         "${store.quantidadeDeQuestoesSemRespostas} Questões sem resposta",
                         style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(
                           fontSize: temaStore.tTexto14,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       )
                     : Text(
                         "${store.quantidadeDeQuestoesSemRespostas} Questão sem resposta",
                         style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(
                           fontSize: temaStore.tTexto14,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       )
               ],
@@ -277,7 +278,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: temaStore.tTexto14,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },
@@ -309,7 +310,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                     questao['questao'],
                     style: TextStyle(
                       fontSize: temaStore.tTexto12,
-                      fontFamily: temaStore.fonteDoTexto,
+                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
                     ),
                   ),
                 );
@@ -371,7 +372,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 "Questão",
                 style: TemaUtil.temaTextoTabelaResumo.copyWith(
                   fontSize: temaStore.tTexto14,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },
@@ -382,7 +383,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 "Alternativa selecionada",
                 style: TemaUtil.temaTextoTabelaResumo.copyWith(
                   fontSize: temaStore.tTexto14,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },
@@ -393,7 +394,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                 "Revisar",
                 style: TemaUtil.temaTextoTabelaResumo.copyWith(
                   fontSize: temaStore.tTexto14,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },

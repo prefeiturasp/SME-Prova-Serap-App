@@ -4,6 +4,7 @@ import 'package:appserap/converters/error_converter.dart';
 import 'package:appserap/converters/json_conveter.dart';
 import 'package:appserap/interceptors/autenticacao.interceptor.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/services/rest/usuario.service.dart';
 import 'package:appserap/services/rest/versao.service.dart';
 import 'package:chopper/chopper.dart';
 import 'package:http/io_client.dart' as httpio;
@@ -43,10 +44,11 @@ class ApiService {
         ArquivoService.create(),
         VersaoService.create(),
         QuestaoRespostaService.create(),
+        UsuarioService.create(),
       ],
       interceptors: [
         CustomAuthInterceptor(),
-        // CurlInterceptor(),
+        CurlInterceptor(),
         // HttpLoggingInterceptor(),
       ],
     ));
@@ -61,4 +63,5 @@ class ApiService {
   ArquivoService get arquivo => chopper.getService<ArquivoService>();
   VersaoService get versao => chopper.getService<VersaoService>();
   QuestaoRespostaService get questaoResposta => chopper.getService<QuestaoRespostaService>();
+  UsuarioService get usuario => chopper.getService<UsuarioService>();
 }

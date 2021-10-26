@@ -147,5 +147,7 @@ flutter:
     - family: OpenDyslexic
       fonts:
         - asset: fonts/OpenDyslexic-Regular.ttf 
+        - asset: fonts/OpenDyslexic-Bold.ttf
+          weight: 700
         
 

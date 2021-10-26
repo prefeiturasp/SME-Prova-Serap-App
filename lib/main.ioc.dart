@@ -10,7 +10,6 @@ import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: non_constant_identifier_names

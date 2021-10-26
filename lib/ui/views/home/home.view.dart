@@ -1,5 +1,5 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/home.store.dart';
-import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -7,7 +7,6 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
 
 import 'tabs/tabs/prova_atual_tab.view.dart';
 
@@ -63,7 +62,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
               controller: tabController,
               labelStyle: TextStyle(
                 fontSize: temaStore.tTexto20,
-                fontFamily: temaStore.fonteDoTexto,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 fontWeight: FontWeight.w600,
               ),
               indicatorSize: TabBarIndicatorSize.label,
@@ -83,7 +82,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
                       return Texto(
                         'Prova atual',
                         texStyle: TemaUtil.temaTextoNumeracao.copyWith(
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                           fontSize: temaStore.tTexto20,
                         ),
                       );
@@ -100,11 +99,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
             child: TabBarView(
               controller: tabController,
               children: [
-                Observer(
-                  builder: (_) {
-                    return ProvaAtualTabView();
-                  },
-                ),
+                ProvaAtualTabView(),
                 // Container(),
               ],
             ),

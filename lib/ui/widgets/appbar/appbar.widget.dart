@@ -1,3 +1,4 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -38,7 +39,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
                 style: TemaUtil.temaTextoAppBar.copyWith(
                   fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               ),
               _buildSubtitulo(),
@@ -91,7 +92,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                   "Sair",
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: temaStore.tTexto12,
+                    fontSize: temaStore.tTexto16,
                     color: TemaUtil.laranja02,
                   ),
                 );

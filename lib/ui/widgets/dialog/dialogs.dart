@@ -1,3 +1,4 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
@@ -38,7 +39,7 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
                 textAlign: TextAlign.center,
                 style: TemaUtil.temaTextoMensagemDialog.copyWith(
                   fontSize: temaStore.tTexto20,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },
@@ -80,7 +81,7 @@ Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) 
               textAlign: TextAlign.center,
               style: TemaUtil.temaTextoMensagemDialog.copyWith(
                 fontSize: temaStore.tTexto20,
-                fontFamily: temaStore.fonteDoTexto,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
               ),
             );
           },
@@ -122,7 +123,7 @@ mostrarDialogProvaEnviada(BuildContext context) {
                 textAlign: TextAlign.center,
                 style: TemaUtil.temaTextoMensagemDialog.copyWith(
                   fontSize: temaStore.tTexto20,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },
@@ -167,7 +168,7 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
                 textAlign: TextAlign.center,
                 style: TemaUtil.temaTextoMensagemDialog.copyWith(
                   fontSize: temaStore.tTexto20,
-                  fontFamily: temaStore.fonteDoTexto,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
             },
@@ -213,21 +214,21 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
                   text: "Você ainda tem ",
                   style: TemaUtil.temaTextoTempoDialog.copyWith(
                     fontSize: temaStore.tTexto16,
-                    fontFamily: temaStore.fonteDoTexto,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
                   ),
                   children: [
                     TextSpan(
                       text: formatDuration(tempo),
                       style: TemaUtil.temaTextoDuracaoDialog.copyWith(
                         fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                       children: [
                         TextSpan(
                           text: " para fazer a prova, tem certeza que quer finalizar agora?",
                           style: TextStyle(
                             fontSize: temaStore.tTexto16,
-                            fontFamily: temaStore.fonteDoTexto,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
                             fontWeight: FontWeight.w500,
                           ),
                         )
@@ -264,6 +265,55 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
   );
 }
 
+_buildFontButton({
+  required String texto,
+  required String fontFamily,
+  required bool ativo,
+  required void Function()? onPressed,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(right: 24),
+    child: InkWell(
+      onTap: onPressed,
+      child: Column(
+        children: [
+          SizedBox(
+            height: 75,
+            child: Text(
+              "Aa",
+              style: TextStyle(
+                fontSize: 48,
+                color: ativo ? TemaUtil.azul2 : Colors.black,
+                fontFamily: fontFamily,
+              ),
+            ),
+          ),
+          Container(
+            height: 4,
+            width: 72,
+            padding: EdgeInsets.only(top: 4, bottom: 4),
+            decoration: BoxDecoration(
+              color: ativo ? TemaUtil.azul2 : Colors.black,
+            ),
+          ),
+          SizedBox(
+            height: 18,
+            child: Text(
+              texto,
+              style: TextStyle(
+                fontSize: 14,
+                color: ativo ? TemaUtil.azul2 : Colors.black,
+                decoration: TextDecoration.none,
+                fontFamily: fontFamily,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 mostrarDialogSenhaErrada(BuildContext context) {
   final temaStore = GetIt.I.get<TemaStore>();
 
@@ -292,7 +342,7 @@ mostrarDialogSenhaErrada(BuildContext context) {
               textAlign: TextAlign.center,
               style: TemaUtil.temaTextoMensagemCorpo.copyWith(
                 fontSize: temaStore.tTexto14,
-                fontFamily: temaStore.fonteDoTexto,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
               ),
             ),
           ),
@@ -316,7 +366,6 @@ mostrarDialogMudancaTema(BuildContext context) {
   showGeneralDialog(
     barrierLabel: "Barrier",
     barrierDismissible: true,
-    barrierColor: Colors.black.withOpacity(0.5),
     transitionDuration: Duration(microseconds: 1),
     context: context,
     pageBuilder: (_, __, ___) {
@@ -325,8 +374,8 @@ mostrarDialogMudancaTema(BuildContext context) {
         child: Observer(
           builder: (_) {
             return Container(
-              height: temaStore.fonteDoTexto == 'OpenDyslexic' ? 305 : 300,
-              width: 300,
+              height: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC ? 305 : 300,
+              width: 360,
               margin: EdgeInsets.only(right: 60),
               padding: EdgeInsets.all(16),
               child: Material(
@@ -343,90 +392,40 @@ mostrarDialogMudancaTema(BuildContext context) {
                           fontWeight: FontWeight.w500,
                           decoration: TextDecoration.none,
                           color: Colors.black87,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
                     ),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        SizedBox(
-                          child: Column(
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  temaStore.mudarParaFonteNormal();
-                                },
-                                style: ButtonStyle(
-                                  padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(0)),
-                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                                  // fixedSize: MaterialStateProperty.all<Size>(
-                                  //   Size(85, 70),
-                                  // ),
-                                ),
-                                child: Text(
-                                  "Aa",
-                                  style: TextStyle(
-                                    fontSize: 48,
-                                    color: Colors.black,
-                                    fontFamily: "Poppins",
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                "Padrão",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  decoration: TextDecoration.none,
-                                  fontFamily: "Poppins",
-                                ),
-                              ),
-                            ],
-                          ),
+                        _buildFontButton(
+                          texto: "Padrão",
+                          fontFamily: "Poppins",
+                          ativo: temaStore.fonteDoTexto == FonteTipoEnum.POPPINS,
+                          onPressed: () {
+                            temaStore.mudarFonte(FonteTipoEnum.POPPINS);
+                          },
                         ),
-                        SizedBox(width: 24),
-                        SizedBox(
-                          child: Column(
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  temaStore.mudarParaFonteParaDislexia();
-                                },
-                                style: ButtonStyle(
-                                  padding: MaterialStateProperty.all<EdgeInsets>(
-                                    EdgeInsets.all(0),
-                                  ),
-                                  backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                                ),
-                                child: Text(
-                                  "Aa",
-                                  style: TextStyle(
-                                    fontSize: 48,
-                                    color: Colors.black,
-                                    fontFamily: 'OpenDyslexic',
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                "Para dislexia",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  decoration: TextDecoration.none,
-                                  fontFamily: "OpenDyslexic",
-                                ),
-                              ),
-                            ],
-                          ),
+                        _buildFontButton(
+                          texto: "Para dislexia",
+                          fontFamily: "OpenDyslexic",
+                          ativo: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC,
+                          onPressed: () {
+                            temaStore.mudarFonte(FonteTipoEnum.OPEN_DYSLEXIC);
+                          },
                         ),
                       ],
                     ),
-                    SizedBox(height: 16),
-                    Divider(color: Colors.black87),
-                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                      ),
+                      child: Divider(
+                        color: Colors.black87,
+                        height: 16,
+                      ),
+                    ),
                     SizedBox(
                       width: double.infinity,
                       child: Text(
@@ -435,7 +434,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          fontFamily: temaStore.fonteDoTexto,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
                     ),
@@ -449,7 +448,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              fontFamily: temaStore.fonteDoTexto,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
                             ),
                           ),
                           Expanded(
@@ -459,9 +458,9 @@ mostrarDialogMudancaTema(BuildContext context) {
                               ),
                               child: Slider(
                                 value: temaStore.incrementador,
-                                min: 16,
+                                min: 10,
                                 max: 24,
-                                divisions: 4,
+                                divisions: 7,
                                 label: temaStore.incrementador.round().toString(),
                                 activeColor: TemaUtil.azul2,
                                 inactiveColor: Colors.grey[350],
@@ -479,7 +478,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w400,
-                              fontFamily: temaStore.fonteDoTexto,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
                             ),
                           ),
                         ],
