@@ -286,7 +286,7 @@ _buildFontButton({
               "Aa",
               style: TextStyle(
                 fontSize: tamanhoFonte,
-                color: ativo ? TemaUtil.azul2 : Colors.black,
+                color: ativo ? TemaUtil.azulScroll : Colors.black,
                 fontFamily: fontFamily.nomeFonte,
               ),
             ),
@@ -296,7 +296,7 @@ _buildFontButton({
             width: 72,
             padding: EdgeInsets.only(top: 4, bottom: 4),
             decoration: BoxDecoration(
-              color: ativo ? TemaUtil.azul2 : Colors.transparent,
+              color: ativo ? TemaUtil.azulScroll : Colors.transparent,
             ),
           ),
           SizedBox(
@@ -304,7 +304,7 @@ _buildFontButton({
               texto,
               style: TextStyle(
                 fontSize: 14,
-                color: ativo ? TemaUtil.azul2 : Colors.black,
+                color: ativo ? TemaUtil.azulScroll : Colors.black,
                 decoration: TextDecoration.none,
                 fontFamily: temaStore.fonteDoTexto.nomeFonte,
               ),
@@ -465,7 +465,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                                 max: 24,
                                 divisions: 7,
                                 label: temaStore.incrementador.round().toString(),
-                                activeColor: TemaUtil.azul2,
+                                activeColor: TemaUtil.azulScroll,
                                 inactiveColor: Colors.grey[350],
                                 onChanged: (double valor) {
                                   if (valor >= 16 && valor <= 24) {
