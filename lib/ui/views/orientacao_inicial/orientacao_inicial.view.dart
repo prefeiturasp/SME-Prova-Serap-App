@@ -119,7 +119,6 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
     if (ehHTML) {
       return corpoHTML;
     }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
