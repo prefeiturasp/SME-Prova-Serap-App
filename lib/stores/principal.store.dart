@@ -1,4 +1,3 @@
-import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -11,7 +10,6 @@ part 'principal.store.g.dart';
 class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
 abstract class _PrincipalStoreBase with Store {
-  final _versaoService = GetIt.I.get<ApiService>().versao;
   final usuario = GetIt.I.get<UsuarioStore>();
 
   @observable

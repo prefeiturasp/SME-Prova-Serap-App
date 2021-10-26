@@ -1,5 +1,6 @@
 import 'package:appserap/main.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:firebase_core/firebase_core.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
 
@@ -15,6 +16,10 @@ setupFirebase() async {
 
 inscreverTurmaFirebase(String ano) async {
   try {
+    if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
+      return;
+    }
+
     await FirebaseMessaging.instance.subscribeToTopic('ano-$ano');
     logger.config('[Firebase] Inscrevendo no topico do ano $ano');
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -28,6 +33,10 @@ inscreverTurmaFirebase(String ano) async {
 
 desinscreverTurmaFirebase(String ano) async {
   try {
+    if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
+      return;
+    }
+
     await FirebaseMessaging.instance.unsubscribeFromTopic('ano-$ano');
     logger.config('[Firebase] Desinscrevendo no topico do ano $ano');
   } catch (e) {

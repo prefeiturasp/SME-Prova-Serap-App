@@ -1,5 +1,7 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,8 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
     with Loggable {
   var store = GetIt.I.get<TBind>();
   var _principalStore = GetIt.I.get<PrincipalStore>();
+
+  TemaStore temaStore = GetIt.I.get<TemaStore>();
 
   @override
   void initState() {
@@ -116,7 +120,11 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
 
             return Text(
               _principalStore.versao,
-              style: TextStyle(color: cor),
+              style: TextStyle(
+                color: cor,
+                fontSize: temaStore.tTexto14,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              ),
             );
           },
         ),
