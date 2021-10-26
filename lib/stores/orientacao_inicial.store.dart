@@ -6,7 +6,6 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:mobx/mobx.dart';
 import 'package:photo_view/photo_view.dart';

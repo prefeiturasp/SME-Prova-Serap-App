@@ -1,4 +1,6 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/login.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -9,7 +11,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends BaseStatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -53,12 +54,16 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
           SizedBox(
             height: 48,
           ),
-          Text(
-            "Bem-vindo",
-            style: GoogleFonts.poppins(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+          Observer(
+            builder: (_) {
+              return Text(
+                "Bem-vindo",
+                style: TemaUtil.temaTextoBemVindo.copyWith(
+                  fontSize: temaStore.tTexto24,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                ),
+              );
+            },
           ),
           SizedBox(
             height: 24,
@@ -88,6 +93,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                             labelText: 'Digite o código EOL',
                             labelStyle: TextStyle(
                               color: _codigoEOLFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
                             ),
                             prefixText: "RA-",
                             errorText: store.autenticacaoErroStore.codigoEOL,
@@ -123,6 +129,10 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                               },
                             ),
                             labelText: 'Digite a senha',
+                            labelStyle: TextStyle(
+                              color: _senhaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                            ),
                             errorText: store.autenticacaoErroStore.senha,
                           ),
                           onSubmitted: (value) => fazerLogin(),
@@ -141,32 +151,39 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                       );
                     }
 
-                    return TextButton(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(20, 10, 20, 20),
-                        child: Container(
-                          constraints: BoxConstraints(maxWidth: 392),
-                          height: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: TemaUtil.laranja01,
-                          ),
-                          child: Center(
-                            child: Text(
-                              "ENTRAR",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: TemaUtil.branco,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
+                    return Container(
+                      height: 50,
+                      constraints: BoxConstraints(maxWidth: 392),
+                      child: TextButton(
+                        onPressed: () async {
+                          fazerLogin();
+                        },
+                        style: ButtonStyle(
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
+                          ),
+                          // backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+                          padding: MaterialStateProperty.all(
+                            EdgeInsets.fromLTRB(20, 0, 20, 0),
+                          ),
+                        ),
+                        child: Center(
+                          child: Observer(
+                            builder: (_) {
+                              return Text(
+                                "ENTRAR",
+                                textAlign: TextAlign.center,
+                                style: TemaUtil.temaTextoBotao.copyWith(
+                                  fontSize: temaStore.tTexto16,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),
-                      onPressed: () async {
-                        fazerLogin();
-                      },
                     );
                   },
                 ),

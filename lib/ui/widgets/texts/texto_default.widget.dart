@@ -1,6 +1,4 @@
-import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 enum Variant { primary, secondary }
 
@@ -15,6 +13,7 @@ class Texto extends StatelessWidget {
   final bool center;
   final Variant variant;
   final FontWeight? fontWeight;
+  final TextStyle? texStyle;
 
   const Texto(
     this.text, {
@@ -28,18 +27,20 @@ class Texto extends StatelessWidget {
     this.center = false,
     this.variant = Variant.primary,
     this.fontWeight,
+    this.texStyle,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.poppins(
-        fontSize: fontSize,
-        fontWeight: fontWeight ?? (bold ? FontWeight.bold : FontWeight.normal),
-        color: color ?? (variant == Variant.primary ? TemaUtil.preto : TemaUtil.pretoSemFoco),
-        fontStyle: italic ? FontStyle.italic : null,
-      ),
+      style: texStyle,
+      // GoogleFonts.poppins(
+      //   fontSize: fontSize,
+      //   fontWeight: fontWeight ?? (bold ? FontWeight.bold : FontWeight.normal),
+      //   color: color ?? (variant == Variant.primary ? TemaUtil.preto : TemaUtil.pretoSemFoco),
+      //   fontStyle: italic ? FontStyle.italic : null,
+      // ),
       textAlign: _getTextAlign(),
       maxLines: maxLines,
       overflow: textOverflow,

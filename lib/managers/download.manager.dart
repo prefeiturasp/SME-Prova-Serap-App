@@ -275,7 +275,7 @@ class GerenciadorDownload with Loggable {
       try {
         prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
 
-        await validarProva();
+        //await validarProva();
 
         prova.questoes.sort(
           (questao1, questao2) {
