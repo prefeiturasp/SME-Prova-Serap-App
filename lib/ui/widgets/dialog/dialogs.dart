@@ -267,10 +267,13 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
 
 _buildFontButton({
   required String texto,
-  required String fontFamily,
+  required FonteTipoEnum fontFamily,
+  double tamanhoFonte = 48,
   required bool ativo,
   required void Function()? onPressed,
 }) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
   return Padding(
     padding: const EdgeInsets.only(right: 24),
     child: InkWell(
@@ -282,9 +285,9 @@ _buildFontButton({
             child: Text(
               "Aa",
               style: TextStyle(
-                fontSize: 48,
+                fontSize: tamanhoFonte,
                 color: ativo ? TemaUtil.azul2 : Colors.black,
-                fontFamily: fontFamily,
+                fontFamily: fontFamily.nomeFonte,
               ),
             ),
           ),
@@ -293,18 +296,17 @@ _buildFontButton({
             width: 72,
             padding: EdgeInsets.only(top: 4, bottom: 4),
             decoration: BoxDecoration(
-              color: ativo ? TemaUtil.azul2 : Colors.black,
+              color: ativo ? TemaUtil.azul2 : Colors.transparent,
             ),
           ),
           SizedBox(
-            height: 18,
             child: Text(
               texto,
               style: TextStyle(
                 fontSize: 14,
                 color: ativo ? TemaUtil.azul2 : Colors.black,
                 decoration: TextDecoration.none,
-                fontFamily: fontFamily,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
               ),
             ),
           ),
@@ -401,7 +403,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                       children: [
                         _buildFontButton(
                           texto: "Padrão",
-                          fontFamily: "Poppins",
+                          fontFamily: FonteTipoEnum.POPPINS,
                           ativo: temaStore.fonteDoTexto == FonteTipoEnum.POPPINS,
                           onPressed: () {
                             temaStore.mudarFonte(FonteTipoEnum.POPPINS);
@@ -409,7 +411,8 @@ mostrarDialogMudancaTema(BuildContext context) {
                         ),
                         _buildFontButton(
                           texto: "Para dislexia",
-                          fontFamily: "OpenDyslexic",
+                          fontFamily: FonteTipoEnum.OPEN_DYSLEXIC,
+                          tamanhoFonte: 44,
                           ativo: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC,
                           onPressed: () {
                             temaStore.mudarFonte(FonteTipoEnum.OPEN_DYSLEXIC);

@@ -1,6 +1,9 @@
+import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
 import 'package:appserap/dtos/error.response.dto.dart';
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:get_it/get_it.dart';
@@ -79,6 +82,19 @@ abstract class _LoginStoreBase with Store, Loggable {
   }
 
   @action
+  onPostLogin(AutenticacaoDadosResponseDTO usuarioDados) async {
+    defineFonte(usuarioDados.familiaFonte, usuarioDados.tamanhoFonte);
+  }
+
+  @action
+  defineFonte(FonteTipoEnum familiaFonte, double tamanhoFonte) {
+    final _temaStore = GetIt.I.get<TemaStore>();
+
+    _temaStore.fonteDoTexto = familiaFonte;
+    _temaStore.fachadaAlterarTamanhoDoTexto(tamanhoFonte, update: false);
+  }
+
+  @action
   Future<void> autenticar() async {
     carregando = true;
     try {
@@ -110,6 +126,8 @@ abstract class _LoginStoreBase with Store, Loggable {
               tamanhoFonte: usuarioDados.tamanhoFonte,
               familiaFonte: usuarioDados.familiaFonte,
             );
+
+            await onPostLogin(usuarioDados);
           }
         }
       } else {

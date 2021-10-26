@@ -1,4 +1,5 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -83,8 +84,6 @@ abstract class _UsuarioStoreBase with Store {
     required FonteTipoEnum familiaFonte,
   }) async {
     this.nome = nome;
-    this.token = token;
-    this.codigoEOL = codigoEOL;
     this.ano = ano;
     this.tipoTurno = tipoTurno;
     this.tamanhoFonte = tamanhoFonte;
@@ -94,10 +93,12 @@ abstract class _UsuarioStoreBase with Store {
     await prefs.setString('serapUsuarioNome', nome);
 
     if (token != null && token.isNotEmpty) {
+      this.token = token;
       await prefs.setString('serapUsuarioToken', token);
     }
 
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
+      this.codigoEOL = codigoEOL;
       await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
     }
 

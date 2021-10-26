@@ -62,6 +62,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               style: TextStyle(
                 color: TemaUtil.laranja02,
                 fontSize: temaStore.tTexto20,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
               ),
             );
           }),
@@ -91,7 +92,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                 return Text(
                   "Sair",
                   style: TextStyle(
-                    fontFamily: 'Poppins',
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
                     fontSize: temaStore.tTexto16,
                     color: TemaUtil.laranja02,
                   ),
@@ -110,7 +111,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       return Observer(builder: (_) {
         return Text(
           subtitulo!,
-          style: TextStyle(fontSize: temaStore.tTexto12),
+          style: TextStyle(
+            fontSize: temaStore.tTexto12,
+            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+          ),
         );
       });
     }
