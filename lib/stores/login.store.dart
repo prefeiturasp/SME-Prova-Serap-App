@@ -108,6 +108,7 @@ abstract class _LoginStoreBase with Store, Loggable {
 
         _usuarioStore.token = body.token;
         _usuarioStore.tokenDataHoraExpiracao = body.dataHoraExpiracao;
+        _usuarioStore.ultimoLogin = body.ultimoLogin;
 
         SharedPreferences prefs = GetIt.I.get();
         await prefs.setString('token', body.token);
@@ -123,6 +124,7 @@ abstract class _LoginStoreBase with Store, Loggable {
               nome: usuarioDados.nome,
               ano: usuarioDados.ano,
               tipoTurno: usuarioDados.tipoTurno,
+              ultimoLogin: body.ultimoLogin,
               tamanhoFonte: usuarioDados.tamanhoFonte,
               familiaFonte: usuarioDados.familiaFonte,
             );

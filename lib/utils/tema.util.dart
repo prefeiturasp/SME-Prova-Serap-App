@@ -15,7 +15,7 @@ abstract class TemaUtil {
   static const pretoSemFoco = Colors.black54;
   static const pretoSemFoco2 = Colors.black38;
   static const azul = Colors.blue;
-  static const azul2 = Color(0xFF10A1C1);
+  static const azulScroll = Color(0xff10A1C1);
   static const verde01 = Colors.green;
   static const verde02 = Color(0xff62C153);
 

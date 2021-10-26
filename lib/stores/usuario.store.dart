@@ -17,6 +17,9 @@ abstract class _UsuarioStoreBase with Store {
   DateTime? tokenDataHoraExpiracao;
 
   @observable
+  DateTime? ultimoLogin;
+
+  @observable
   String? nome;
 
   @observable
@@ -60,6 +63,10 @@ abstract class _UsuarioStoreBase with Store {
     ano = prefs.getString("serapUsuarioAno");
     tipoTurno = prefs.getString("serapUsuarioTipoTurno");
 
+    if (prefs.getString("ultimoLogin") != null) {
+      ultimoLogin = DateTime.tryParse(prefs.getString("ultimoLogin")!);
+    }
+
     if (prefs.containsKey('familiaFonte')) {
       familiaFonte = FonteTipoEnum.values[prefs.getInt("familiaFonte")!];
     }
@@ -80,12 +87,14 @@ abstract class _UsuarioStoreBase with Store {
     String? token,
     required String ano,
     required String tipoTurno,
+    DateTime? ultimoLogin,
     required double tamanhoFonte,
     required FonteTipoEnum familiaFonte,
   }) async {
     this.nome = nome;
     this.ano = ano;
     this.tipoTurno = tipoTurno;
+    this.ultimoLogin = ultimoLogin;
     this.tamanhoFonte = tamanhoFonte;
     this.familiaFonte = familiaFonte;
 
@@ -104,6 +113,11 @@ abstract class _UsuarioStoreBase with Store {
 
     await prefs.setString('serapUsuarioAno', ano);
     await prefs.setString('serapUsuarioTipoTurno', tipoTurno);
+
+    if (this.ultimoLogin != null) {
+      await prefs.setString('ultimoLogin', ultimoLogin.toString());
+    }
+
     await prefs.setDouble('tamanhoFonte', tamanhoFonte);
     await prefs.setInt('familiaFonte', familiaFonte.index);
 

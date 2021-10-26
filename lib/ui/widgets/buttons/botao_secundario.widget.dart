@@ -9,10 +9,16 @@ class BotaoSecundarioWidget extends StatelessWidget {
   final String textoBotao;
   final double? largura;
   final Function()? onPressed;
+  final Color corDoTexto;
 
   final temaStore = GetIt.I.get<TemaStore>();
 
-  BotaoSecundarioWidget({required this.textoBotao, this.largura, this.onPressed});
+  BotaoSecundarioWidget({
+    required this.textoBotao,
+    this.largura,
+    this.onPressed,
+    this.corDoTexto = TemaUtil.pretoSemFoco,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +45,7 @@ class BotaoSecundarioWidget extends StatelessWidget {
                 textoBotao,
                 textAlign: TextAlign.center,
                 style: TemaUtil.temaTextoBotaoSecundario.copyWith(
+                  color: corDoTexto,
                   fontSize: temaStore.tTexto16,
                   fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
