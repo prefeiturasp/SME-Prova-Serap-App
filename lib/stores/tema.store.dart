@@ -33,6 +33,29 @@ abstract class _TemaStoreBase with Store {
   @observable
   double tTexto24 = 24;
 
+  double size(double size) {
+    if (size == 12) {
+      return tTexto12;
+    }
+    if (size == 14) {
+      return tTexto14;
+    }
+    if (size == 16) {
+      return tTexto16;
+    }
+    if (size == 18) {
+      return tTexto18;
+    }
+    if (size == 20) {
+      return tTexto20;
+    }
+    if (size == 24) {
+      return tTexto24;
+    }
+
+    return size;
+  }
+
   @observable
   FonteTipoEnum fonteDoTexto = FonteTipoEnum.POPPINS;
 

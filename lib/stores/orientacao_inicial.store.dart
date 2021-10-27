@@ -1,6 +1,9 @@
 import 'package:appserap/dtos/orientacao_inicial.response.dto.dart';
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/views/orientacao_inicial/widget_orientacao_inicial/orientacao_inicial.model.dart';
 import 'package:chopper/chopper.dart';
@@ -44,6 +47,14 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
               imagem: CircularProgressIndicator(),
               corpoPersonalizado: Html(
                 data: dica.descricao,
+                style: {
+                  '*': Style.fromTextStyle(
+                    TextStyle(
+                      fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+                      fontSize: ServiceLocator.get<TemaStore>().size(16),
+                    ),
+                  )
+                },
               ),
               ehHTML: true,
             ));
@@ -60,7 +71,7 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
                     height: 175.0,
                   ),
                 ),
-                corpoPersonalizado: SizedBox()
+                corpoPersonalizado: SizedBox(),
               ),
             );
           }
