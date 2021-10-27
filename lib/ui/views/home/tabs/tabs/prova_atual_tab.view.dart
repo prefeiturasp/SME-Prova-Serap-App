@@ -245,74 +245,77 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     }
 
     if (prova.dataInicio != prova.dataFim) {
-      return Observer(builder: (_) {
-        return Container(
-          child: temaStore.tTexto16 >= 20
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AutoSizeText(
-                      formatEddMMyyyy(prova.dataInicio),
-                      maxLines: 2,
-                      style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                        fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 170,
-                      child: AutoSizeText(
-                        " à ",
+      return Observer(
+        builder: (_) {
+          return Container(
+            child: temaStore.tTexto16 >= 18
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AutoSizeText(
+                        formatEddMMyyyy(prova.dataInicio),
                         maxLines: 2,
-                        textAlign: TextAlign.center,
+                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                          fontSize: temaStore.tTexto16,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 170,
+                        child: AutoSizeText(
+                          " à ",
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          style: TemaUtil.temaTextoPadrao.copyWith(
+                            fontSize: temaStore.tTexto16,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                          ),
+                        ),
+                      ),
+                      AutoSizeText(
+                        formatEddMMyyyy(prova.dataFim!),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                          fontSize: temaStore.tTexto16,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      AutoSizeText(
+                        formatEddMMyyyy(prova.dataInicio),
+                        maxLines: 4,
+                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                          fontSize: temaStore.tTexto16,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        ),
+                      ),
+                      AutoSizeText(
+                        " à ",
+                        maxLines: 4,
                         style: TemaUtil.temaTextoPadrao.copyWith(
                           fontSize: temaStore.tTexto16,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
-                    ),
-                    AutoSizeText(
-                      formatEddMMyyyy(prova.dataFim!),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                        fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                      AutoSizeText(
+                        formatEddMMyyyy(prova.dataFim!),
+                        maxLines: 4,
+                        minFontSize: 16,
+                        overflow: TextOverflow.ellipsis,
+                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                          fontSize: temaStore.tTexto16,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        ),
                       ),
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    AutoSizeText(
-                      formatEddMMyyyy(prova.dataInicio),
-                      maxLines: 2,
-                      style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                        fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    ),
-                    AutoSizeText(
-                      " à ",
-                      maxLines: 2,
-                      style: TemaUtil.temaTextoPadrao.copyWith(
-                        fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    ),
-                    AutoSizeText(
-                      formatEddMMyyyy(prova.dataFim!),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                        fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    ),
-                  ],
-                ),
-        );
-      });
+                    ],
+                  ),
+          );
+        },
+      );
     }
 
     return SizedBox();

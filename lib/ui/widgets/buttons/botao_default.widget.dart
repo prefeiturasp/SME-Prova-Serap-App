@@ -1,8 +1,7 @@
-import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
 class BotaoDefaultWidget extends StatelessWidget {
@@ -50,17 +49,10 @@ class BotaoDefaultWidget extends StatelessWidget {
 
   _buildChild() {
     if (textoBotao != null) {
-      return Observer(
-        builder: (_) {
-          return Text(
-            textoBotao!,
-            textAlign: TextAlign.center,
-            style: TemaUtil.temaTextoBotao.copyWith(
-              fontSize: temaStore.tTexto16,
-              fontFamily: temaStore.fonteDoTexto.nomeFonte,
-            ),
-          );
-        },
+      return Texto(
+        textoBotao!,
+        center: true,
+        texStyle: TemaUtil.temaTextoBotao,
       );
     }
 
