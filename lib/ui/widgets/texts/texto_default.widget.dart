@@ -1,4 +1,9 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 
 enum Variant { primary, secondary }
 
@@ -15,7 +20,9 @@ class Texto extends StatelessWidget {
   final FontWeight? fontWeight;
   final TextStyle? texStyle;
 
-  const Texto(
+  final _temaStore = GetIt.I.get<TemaStore>();
+
+  Texto(
     this.text, {
     Key? key,
     this.fontSize = 10,
@@ -32,19 +39,27 @@ class Texto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: texStyle,
-      // GoogleFonts.poppins(
-      //   fontSize: fontSize,
-      //   fontWeight: fontWeight ?? (bold ? FontWeight.bold : FontWeight.normal),
-      //   color: color ?? (variant == Variant.primary ? TemaUtil.preto : TemaUtil.pretoSemFoco),
-      //   fontStyle: italic ? FontStyle.italic : null,
-      // ),
-      textAlign: _getTextAlign(),
-      maxLines: maxLines,
-      overflow: textOverflow,
-    );
+    return Observer(builder: (_) {
+      TextStyle? style = texStyle;
+
+      style ??= TextStyle(fontSize: fontSize, color: color);
+
+      style = style.copyWith(
+        fontSize: _temaStore.size(style.fontSize ?? fontSize),
+        fontFamily: _temaStore.fonteDoTexto.nomeFonte,
+        fontWeight: style.fontWeight ?? (fontWeight ?? (bold ? FontWeight.bold : FontWeight.normal)),
+        color: style.color ?? (color ?? (variant == Variant.primary ? TemaUtil.preto : TemaUtil.pretoSemFoco)),
+        fontStyle: style.fontStyle ?? (italic ? FontStyle.italic : null),
+      );
+
+      return Text(
+        text,
+        style: style,
+        textAlign: _getTextAlign(),
+        maxLines: maxLines,
+        overflow: textOverflow,
+      );
+    });
   }
 
   TextAlign? _getTextAlign() {

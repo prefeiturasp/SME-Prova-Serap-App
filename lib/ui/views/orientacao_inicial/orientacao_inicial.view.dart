@@ -1,5 +1,7 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
@@ -51,9 +53,10 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
               cor = TemaUtil.vermelhoErro;
             }
 
-            return Text(
+            return Texto(
               _principalStore.versao,
-              style: TextStyle(color: cor),
+              color: cor,
+              fontSize: 14,
             );
           },
         ),
@@ -88,7 +91,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
                 ),
                 //
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * .015,
+                  height: MediaQuery.of(context).size.height * .010,
                   child: _buildPaginacao(),
                 ),
                 //
