@@ -31,8 +31,16 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
     );
   }
 
+  onAfterBuild(BuildContext context) {
+    if (!_principalStore.temConexao) {
+      _irParaTelaInicial(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: TemaUtil.corDeFundo,
