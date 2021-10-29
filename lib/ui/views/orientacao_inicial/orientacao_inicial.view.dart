@@ -31,8 +31,16 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
     );
   }
 
+  onAfterBuild(BuildContext context) {
+    if (!_principalStore.temConexao) {
+      _irParaTelaInicial(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: TemaUtil.corDeFundo,
@@ -91,7 +99,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
                 ),
                 //
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * .010,
+                  height: MediaQuery.of(context).size.height * .01,
                   child: _buildPaginacao(),
                 ),
                 //
@@ -101,15 +109,16 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
                       padding: const EdgeInsets.only(
                         left: 64,
                         right: 64,
-                        top: 60,
+                        top: 50,
                       ),
                       child: SizedBox(
-                        height: MediaQuery.of(context).size.height * .15,
+                        height: MediaQuery.of(context).size.height * .12,
                         child: _buildBotoesNavegacao(),
                       ),
                     );
                   },
                 ),
+                //
               ],
             );
           },
