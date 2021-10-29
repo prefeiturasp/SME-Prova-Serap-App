@@ -99,7 +99,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
                 ),
                 //
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * .010,
+                  height: MediaQuery.of(context).size.height * .01,
                   child: _buildPaginacao(),
                 ),
                 //
@@ -109,15 +109,16 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
                       padding: const EdgeInsets.only(
                         left: 64,
                         right: 64,
-                        top: 60,
+                        top: 50,
                       ),
                       child: SizedBox(
-                        height: MediaQuery.of(context).size.height * .15,
+                        height: MediaQuery.of(context).size.height * .12,
                         child: _buildBotoesNavegacao(),
                       ),
                     );
                   },
                 ),
+                //
               ],
             );
           },
