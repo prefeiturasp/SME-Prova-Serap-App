@@ -381,6 +381,7 @@ mostrarDialogMudancaTema(BuildContext context) {
               margin: EdgeInsets.only(right: 60),
               padding: EdgeInsets.all(16),
               child: Material(
+                color: Colors.white,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -502,7 +503,7 @@ mostrarDialogMudancaTema(BuildContext context) {
     },
     transitionBuilder: (_, anim, __, child) {
       return SlideTransition(
-        position: Tween(begin: Offset(0, 0), end: Offset(0, 0.08)).animate(anim),
+        position: Tween(begin: Offset(0, 0), end: Offset(0, 0.078)).animate(anim),
         child: child,
       );
     },
