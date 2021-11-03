@@ -1,4 +1,5 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -6,6 +7,7 @@ import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +26,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
 
   final store = GetIt.I.get<OrientacaoInicialStore>();
   final _principalStore = GetIt.I.get<PrincipalStore>();
+  final _temaStore = GetIt.I.get<TemaStore>();
 
   void _irParaTelaInicial(context) {
     Navigator.of(context).pushReplacement(
@@ -88,8 +91,8 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * .7,
-                  child: _builderPaginaOrientacao(
+                  height: MediaQuery.of(context).size.height * .65,
+                  child: _buildPaginaOrientacaoAdaptativa(
                     store.listaPaginasOrientacoes[index].ehHTML,
                     store.listaPaginasOrientacoes[index].titulo!,
                     store.listaPaginasOrientacoes[index].descricao!,
@@ -103,21 +106,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
                   child: _buildPaginacao(),
                 ),
                 //
-                Observer(
-                  builder: (context) {
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                        left: 64,
-                        right: 64,
-                        top: 50,
-                      ),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * .12,
-                        child: _buildBotoesNavegacao(),
-                      ),
-                    );
-                  },
-                ),
+                _buildBotaoNavegacaoAdaptativo(),
                 //
               ],
             );
@@ -127,13 +116,115 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
     );
   }
 
+  Widget _buildPaginaOrientacaoAdaptativa(
+    bool ehHTML,
+    String titulo,
+    String descricao,
+    Widget imagem,
+    Widget corpoHTML,
+  ) {
+
+    if (kDeviceType == EnumTipoDispositivo.mobile) {
+      if (ehHTML) {
+        return ListView(
+          children: [corpoHTML],
+        );
+      }
+      return ListView(
+        children: [
+          Container(
+            padding: EdgeInsets.only(top: 18),
+            height: 150,
+            child: imagem,
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 24,
+              bottom: 16,
+              left: 32,
+              right: 32,
+            ),
+            child: Texto(
+              titulo,
+              fontSize: 18,
+              bold: true,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+              maxLines: 3,
+              center: true,
+            ),
+          ),
+          //
+          Container(
+            padding: const EdgeInsets.only(
+              left: 32,
+              right: 32,
+              bottom: 32,
+            ),
+            child: Texto(
+              descricao,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+              center: true,
+              maxLines: 10,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return _builderPaginaOrientacao(ehHTML, titulo, descricao, imagem, corpoHTML);
+  }
+
+  Widget _buildBotaoNavegacaoAdaptativo() {
+
+    if (kDeviceType == EnumTipoDispositivo.mobile) {
+      return Observer(
+        builder: (context) {
+          return Container(
+            padding: const EdgeInsets.only(
+              left: 12,
+              right: 12,
+              top: 14,
+            ),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * .18,
+              child: _buildBotoesNavegacao(),
+            ),
+          );
+        },
+      );
+    }
+
+    return Observer(
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.only(
+            left: 64,
+            right: 64,
+            top: 50,
+          ),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * .12,
+            child: _buildBotoesNavegacao(),
+          ),
+        );
+      },
+    );
+  }
+
   _builderPaginaOrientacao(bool ehHTML, String titulo, String descricao, Widget imagem, Widget corpoHTML) {
     if (ehHTML) {
-      return corpoHTML;
+      return SizedBox(
+        height: MediaQuery.of(context).size.height * .65,
+        child: ListView(
+          children: [corpoHTML],
+        ),
+      );
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
+    return ListView(
       children: [
         imagem,
 
@@ -146,6 +237,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
             titulo,
             fontSize: 24,
             bold: true,
+            center: true,
             fontWeight: FontWeight.w600,
             color: Colors.black,
           ),
@@ -226,6 +318,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
       return Column(
         children: [
           BotaoDefaultWidget(
+            largura: 400,
             textoBotao: 'PRÓXIMA DICA',
             onPressed: () {
               _controllerDicas.animateToPage(
@@ -237,6 +330,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
             },
           ),
           BotaoSecundarioWidget(
+            largura: 400,
             textoBotao: 'IR PARA A PÁGINA INICIAL',
             corDoTexto: TemaUtil.laranja01,
             onPressed: () {
@@ -249,6 +343,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
       return Column(
         children: [
           BotaoDefaultWidget(
+            largura: 400,
             textoBotao: 'IR PARA A PÁGINA INICIAL',
             onPressed: () {
               _irParaTelaInicial(context);
@@ -260,6 +355,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
       return Column(
         children: [
           BotaoDefaultWidget(
+            largura: 400,
             textoBotao: 'PRÓXIMA DICA',
             onPressed: () {
               _controllerDicas.animateToPage(

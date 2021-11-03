@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_print
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/foundation.dart';
@@ -48,6 +50,8 @@ configure() async {
   await setupAppConfig();
 
   await DependenciasIoC().setup();
+
+  TelaAdaptativaUtil().setup();
 }
 
 Future setupAppConfig() async {
@@ -82,13 +86,10 @@ setupDateFormating() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
-    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-
     return ScreenUtilInit(
       designSize: Size(
-        tela.size.width,
-        tela.size.height,
+        960,
+        600,
       ),
       builder: () {
         return MaterialApp(
