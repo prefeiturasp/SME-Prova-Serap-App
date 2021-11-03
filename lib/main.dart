@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_print
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
