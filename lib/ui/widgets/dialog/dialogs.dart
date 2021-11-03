@@ -468,9 +468,14 @@ mostrarDialogMudancaTema(BuildContext context) {
                                 label: temaStore.incrementador.round().toString(),
                                 activeColor: TemaUtil.azulScroll,
                                 inactiveColor: Colors.grey[350],
+                                onChangeEnd: (_) {
+                                  temaStore.enviarPreferencias();
+                                },
                                 onChanged: (double valor) {
-                                  if (valor >= 16 && valor <= 24) {
-                                    temaStore.fachadaAlterarTamanhoDoTexto(valor);
+                                  var min = 10;
+
+                                  if (valor >= min && valor <= 24) {
+                                    temaStore.fachadaAlterarTamanhoDoTexto(valor, update: false);
                                   }
                                 },
                               ),
