@@ -6,6 +6,7 @@ import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
 
   final store = GetIt.I.get<OrientacaoInicialStore>();
   final _principalStore = GetIt.I.get<PrincipalStore>();
+  final _temaStore = GetIt.I.get<TemaStore>();
 
   void _irParaTelaInicial(context) {
     Navigator.of(context).pushReplacement(
@@ -85,17 +87,14 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
           itemBuilder: (context, index) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * .7,
-                  child: _builderPaginaOrientacao(
-                    store.listaPaginasOrientacoes[index].ehHTML,
-                    store.listaPaginasOrientacoes[index].titulo!,
-                    store.listaPaginasOrientacoes[index].descricao!,
-                    store.listaPaginasOrientacoes[index].imagem!,
-                    store.listaPaginasOrientacoes[index].corpoPersonalizado!,
-                  ),
+                _buildPaginaOrientacaoAdaptativa(
+                  store.listaPaginasOrientacoes[index].ehHTML,
+                  store.listaPaginasOrientacoes[index].titulo!,
+                  store.listaPaginasOrientacoes[index].descricao!,
+                  store.listaPaginasOrientacoes[index].imagem!,
+                  store.listaPaginasOrientacoes[index].corpoPersonalizado!,
                 ),
                 //
                 SizedBox(
@@ -103,25 +102,117 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
                   child: _buildPaginacao(),
                 ),
                 //
-                Observer(
-                  builder: (context) {
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                        left: 64,
-                        right: 64,
-                        top: 50,
-                      ),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * .12,
-                        child: _buildBotoesNavegacao(),
-                      ),
-                    );
-                  },
-                ),
+                _buildBotaoNavegacaoAdaptativo(),
                 //
               ],
             );
           },
+        );
+      },
+    );
+  }
+
+  Widget _buildPaginaOrientacaoAdaptativa(
+    bool ehHTML,
+    String titulo,
+    String descricao,
+    Widget imagem,
+    Widget corpoHTML,
+  ) {
+    var tela = TelaAdaptativaUtil();
+
+    if (tela.dispositivo == TipoDispositivo.mobile) {
+      if (ehHTML) {
+        return SingleChildScrollView(
+          child: corpoHTML,
+        );
+      }
+      return SizedBox(
+        height: MediaQuery.of(context).size.height * .65,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              padding: EdgeInsets.only(top: 18),
+              height: 150,
+              child: imagem,
+            ),
+
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 24,
+                bottom: 16,
+              ),
+              child: Texto(
+                titulo,
+                fontSize: _temaStore.tTexto18,
+                bold: true,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+            ),
+
+            //
+            Container(
+              padding: const EdgeInsets.only(
+                left: 32,
+                right: 32,
+                bottom: 32,
+              ),
+              child: Texto(
+                descricao,
+                fontSize: _temaStore.tTexto14,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+                center: true,
+                maxLines: 10,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * .7,
+      child: _builderPaginaOrientacao(ehHTML, titulo, descricao, imagem, corpoHTML),
+    );
+  }
+
+  Widget _buildBotaoNavegacaoAdaptativo() {
+    var tela = TelaAdaptativaUtil();
+
+    if (tela.dispositivo == TipoDispositivo.mobile) {
+      return Observer(
+        builder: (context) {
+          return Container(
+            padding: const EdgeInsets.only(
+              left: 64,
+              right: 64,
+              top: 24,
+            ),
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * .18,
+              child: _buildBotoesNavegacao(),
+            ),
+          );
+        },
+      );
+    }
+
+    return Observer(
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.only(
+            left: 64,
+            right: 64,
+            top: 50,
+          ),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * .12,
+            child: _buildBotoesNavegacao(),
+          ),
         );
       },
     );
@@ -144,7 +235,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
           ),
           child: Texto(
             titulo,
-            fontSize: 24,
+            fontSize: _temaStore.tTexto24,
             bold: true,
             fontWeight: FontWeight.w600,
             color: Colors.black,
@@ -156,7 +247,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
           padding: const EdgeInsets.symmetric(horizontal: 64),
           child: Texto(
             descricao,
-            fontSize: 16,
+            fontSize: _temaStore.tTexto16,
             fontWeight: FontWeight.w500,
             color: Colors.black,
             center: true,
