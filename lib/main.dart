@@ -7,6 +7,7 @@ import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -84,8 +85,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(
-        ScreenUtil.defaultSize.width,
-        ScreenUtil.defaultSize.height,
+        960,
+        600,
       ),
       builder: () {
         return MaterialApp(
