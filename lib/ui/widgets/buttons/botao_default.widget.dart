@@ -37,7 +37,7 @@ class BotaoDefaultWidget extends StatelessWidget {
           ),
           // backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
           padding: MaterialStateProperty.all(
-            EdgeInsets.fromLTRB(20, 0, 20, 0),
+            EdgeInsets.fromLTRB(16, 0, 16, 0),
           ),
         ),
         child: Center(
