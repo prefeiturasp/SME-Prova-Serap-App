@@ -190,7 +190,6 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                     ),
                   );
                 }
-
                 return Container(
                   height: 50,
                   padding: EdgeInsets.symmetric(horizontal: 32),
