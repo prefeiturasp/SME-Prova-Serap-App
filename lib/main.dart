@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_print
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -81,21 +82,29 @@ setupDateFormating() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: asuka.builder,
-      navigatorObservers: [asuka.asukaHeroController],
-      debugShowCheckedModeBanner: kDebugMode,
-      theme: ThemeData.light().copyWith(
-        appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
-        textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
-          ),
-        ),
+    return ScreenUtilInit(
+      designSize: Size(
+        ScreenUtil.defaultSize.width,
+        ScreenUtil.defaultSize.height,
       ),
-      locale: Locale('pt', 'BR'),
-      home: SplashScreenView(),
-      scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+      builder: () {
+        return MaterialApp(
+          builder: asuka.builder,
+          navigatorObservers: [asuka.asukaHeroController],
+          debugShowCheckedModeBanner: kDebugMode,
+          theme: ThemeData.light().copyWith(
+            appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
+            textButtonTheme: TextButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+              ),
+            ),
+          ),
+          locale: Locale('pt', 'BR'),
+          home: SplashScreenView(),
+          scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+        );
+      },
     );
   }
 }

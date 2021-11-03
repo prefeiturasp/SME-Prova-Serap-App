@@ -77,6 +77,9 @@ dependencies:
   # criptografia da senha da prova
   crypto: ^3.0.1
 
+  # adaptacao de tela
+  flutter_screenutil: ^5.0.0+2
+
 dependency_overrides:
   flutter_colorpicker: ^0.6.0
 
