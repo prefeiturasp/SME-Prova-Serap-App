@@ -495,192 +495,106 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     );
   }
 
+  Widget _buildBotaoVoltar(Questao questao) {
+    if (store.questaoAtual == 1) {
+      return SizedBox.shrink();
+    }
+
+    return BotaoSecundarioWidget(
+      textoBotao: 'Questão anterior',
+      onPressed: () async {
+        widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+        await widget.provaStore.respostas.definirTempoResposta(
+          questao.id,
+          tempoQuestao: widget.provaStore.segundos,
+        );
+        await SincronizarRespostasWorker().sincronizar();
+        listaQuestoesController.previousPage(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeIn,
+        );
+      },
+    );
+  }
+
+  Widget _buildBotaoProximo(Questao questao) {
+    if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
+      return BotaoDefaultWidget(
+        textoBotao: 'Proxima questão',
+        desabilitado: store.botaoOcupado,
+        onPressed: () async {
+          try {
+            store.botaoOcupado = true;
+
+            widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+
+            if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
+              await widget.provaStore.respostas.definirResposta(
+                questao.id,
+                textoResposta: await controller.getText(),
+                tempoQuestao: widget.provaStore.segundos,
+              );
+            }
+            if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
+              await widget.provaStore.respostas.definirTempoResposta(
+                questao.id,
+                tempoQuestao: widget.provaStore.segundos,
+              );
+            }
+            await SincronizarRespostasWorker().sincronizar();
+            widget.provaStore.segundos = 0;
+
+            listaQuestoesController.nextPage(
+              duration: Duration(milliseconds: 300),
+              curve: Curves.easeIn,
+            );
+            store.questaoAtual++;
+          } catch (e) {
+            fine(e);
+          } finally {
+            store.botaoOcupado = false;
+          }
+        },
+      );
+    }
+
+    return BotaoDefaultWidget(
+      textoBotao: 'Finalizar prova',
+      onPressed: () async {
+        store.questaoAtual = 0;
+        try {
+          widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+          await widget.provaStore.respostas.definirTempoResposta(
+            questao.id,
+            tempoQuestao: widget.provaStore.segundos,
+          );
+          widget.provaStore.segundos = 0;
+
+          await _iniciarRevisaoProva();
+        } catch (e) {
+          fine(e);
+        }
+      },
+    );
+  }
+
   Widget _buildBotoes(Questao questao) {
-    
     Widget botoesRespondendoProva = Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Observer(
-          builder: (context) {
-            if (store.questaoAtual == 1) {
-              return SizedBox.shrink();
-            }
-
-            return BotaoSecundarioWidget(
-              textoBotao: 'Questão anterior',
-              onPressed: () async {
-                widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                await widget.provaStore.respostas.definirTempoResposta(
-                  questao.id,
-                  tempoQuestao: widget.provaStore.segundos,
-                );
-                await SincronizarRespostasWorker().sincronizar();
-                listaQuestoesController.previousPage(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeIn,
-                );
-              },
-            );
-          },
-        ),
-        Observer(
-          builder: (context) {
-            if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
-              return BotaoDefaultWidget(
-                textoBotao: 'Proxima questão',
-                desabilitado: store.botaoOcupado,
-                onPressed: () async {
-                  try {
-                    store.botaoOcupado = true;
-
-                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-
-                    if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
-                      await widget.provaStore.respostas.definirResposta(
-                        questao.id,
-                        textoResposta: await controller.getText(),
-                        tempoQuestao: widget.provaStore.segundos,
-                      );
-                    }
-                    if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
-                      await widget.provaStore.respostas.definirTempoResposta(
-                        questao.id,
-                        tempoQuestao: widget.provaStore.segundos,
-                      );
-                    }
-                    await SincronizarRespostasWorker().sincronizar();
-                    widget.provaStore.segundos = 0;
-
-                    listaQuestoesController.nextPage(
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeIn,
-                    );
-                    store.questaoAtual++;
-                  } catch (e) {
-                    fine(e);
-                  } finally {
-                    store.botaoOcupado = false;
-                  }
-                },
-              );
-            }
-
-            return BotaoDefaultWidget(
-              textoBotao: 'Finalizar prova',
-              onPressed: () async {
-                store.questaoAtual = 0;
-                try {
-                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                  await widget.provaStore.respostas.definirTempoResposta(
-                    questao.id,
-                    tempoQuestao: widget.provaStore.segundos,
-                  );
-                  widget.provaStore.segundos = 0;
-
-                  await _iniciarRevisaoProva();
-                } catch (e) {
-                  fine(e);
-                }
-              },
-            );
-          },
-        ),
+        _buildBotaoVoltar(questao),
+        _buildBotaoProximo(questao),
       ],
     );
 
-    var tela = TelaAdaptativaUtil();
-
-    if (tela.dispositivo == EnumTipoDispositivo.mobile) {
+    if (kDeviceType == EnumTipoDispositivo.mobile) {
       botoesRespondendoProva = Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Observer(
-            builder: (context) {
-              if (store.questaoAtual == 1) {
-                return SizedBox.shrink();
-              }
-
-              return BotaoSecundarioWidget(
-                textoBotao: 'Questão anterior',
-                onPressed: () async {
-                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                  await widget.provaStore.respostas.definirTempoResposta(
-                    questao.id,
-                    tempoQuestao: widget.provaStore.segundos,
-                  );
-                  await SincronizarRespostasWorker().sincronizar();
-                  listaQuestoesController.previousPage(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeIn,
-                  );
-                },
-              );
-            },
-          ),
-          Observer(
-            builder: (context) {
-              if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
-                return BotaoDefaultWidget(
-                  textoBotao: 'Proxima questão',
-                  desabilitado: store.botaoOcupado,
-                  onPressed: () async {
-                    try {
-                      store.botaoOcupado = true;
-
-                      widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-
-                      if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
-                        await widget.provaStore.respostas.definirResposta(
-                          questao.id,
-                          textoResposta: await controller.getText(),
-                          tempoQuestao: widget.provaStore.segundos,
-                        );
-                      }
-                      if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
-                        await widget.provaStore.respostas.definirTempoResposta(
-                          questao.id,
-                          tempoQuestao: widget.provaStore.segundos,
-                        );
-                      }
-                      await SincronizarRespostasWorker().sincronizar();
-                      widget.provaStore.segundos = 0;
-
-                      listaQuestoesController.nextPage(
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeIn,
-                      );
-                      store.questaoAtual++;
-                    } catch (e) {
-                      fine(e);
-                    } finally {
-                      store.botaoOcupado = false;
-                    }
-                  },
-                );
-              }
-
-              return BotaoDefaultWidget(
-                textoBotao: 'Finalizar prova',
-                onPressed: () async {
-                  store.questaoAtual = 0;
-                  try {
-                    widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                    await widget.provaStore.respostas.definirTempoResposta(
-                      questao.id,
-                      tempoQuestao: widget.provaStore.segundos,
-                    );
-                    widget.provaStore.segundos = 0;
-
-                    await _iniciarRevisaoProva();
-                  } catch (e) {
-                    fine(e);
-                  }
-                },
-              );
-            },
-          ),
+          _buildBotaoVoltar(questao),
+          _buildBotaoProximo(questao),
         ],
       );
     }
@@ -714,6 +628,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 }
                 return Container();
               },
+            ),
+            SizedBox(
+              height: 8,
             ),
             BotaoDefaultWidget(
               textoBotao: 'Confirmar e voltar para o resumo',
