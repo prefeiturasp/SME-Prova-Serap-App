@@ -82,10 +82,13 @@ setupDateFormating() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+
     return ScreenUtilInit(
       designSize: Size(
-        ScreenUtil.defaultSize.width,
-        ScreenUtil.defaultSize.height,
+        tela.size.width,
+        tela.size.height,
       ),
       builder: () {
         return MaterialApp(

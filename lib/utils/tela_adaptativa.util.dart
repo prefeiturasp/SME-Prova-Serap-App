@@ -9,16 +9,13 @@ enum TipoDispositivo { mobile, tablet, web }
 class TelaAdaptativaUtil {
   TipoDispositivo dispositivo = TipoDispositivo.tablet;
 
-  TelaAdaptativaUtil(){
+  TelaAdaptativaUtil() {
+    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+
     if (kIsWeb) {
       dispositivo = TipoDispositivo.web;
     } else if (Platform.isAndroid || Platform.isIOS) {
-      if ((ScreenUtil().orientation == Orientation.portrait && ScreenUtil.defaultSize.width < 600) ||
-          (ScreenUtil().orientation == Orientation.landscape && ScreenUtil.defaultSize.height < 600)) {
-        dispositivo = TipoDispositivo.mobile;
-      } else {
-        dispositivo = TipoDispositivo.tablet;
-      }
-    } 
+      dispositivo = tela.size.shortestSide < 600 ? TipoDispositivo.mobile : TipoDispositivo.tablet;
+    }
   }
 }
