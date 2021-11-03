@@ -4,6 +4,7 @@ import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -74,7 +75,6 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
   }
 
   Widget _builderLogo() {
-
     if (kDeviceType == EnumTipoDispositivo.mobile) {
       return Column(
         children: [
@@ -212,13 +212,12 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                     child: Center(
                       child: Observer(
                         builder: (_) {
-                          return Text(
+                          return Texto(
                             "ENTRAR",
-                            textAlign: TextAlign.center,
-                            style: TemaUtil.temaTextoBotao.copyWith(
-                              fontSize: temaStore.tTexto16,
-                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                            ),
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            center: true,
                           );
                         },
                       ),
@@ -335,13 +334,12 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                   child: Center(
                     child: Observer(
                       builder: (_) {
-                        return Text(
+                        return Texto(
                           "ENTRAR",
-                          textAlign: TextAlign.center,
-                          style: TemaUtil.temaTextoBotao.copyWith(
-                            fontSize: temaStore.tTexto16,
-                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                          ),
+                          color: Colors.white,
+                          fontSize: 16,
+                          center: true,
+                          fontWeight: FontWeight.w500,
                         );
                       },
                     ),
