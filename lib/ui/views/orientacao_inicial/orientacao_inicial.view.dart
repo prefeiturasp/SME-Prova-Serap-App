@@ -122,6 +122,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
     Widget imagem,
     Widget corpoHTML,
   ) {
+    
     var tela = TelaAdaptativaUtil();
 
     if (tela.dispositivo == TipoDispositivo.mobile) {
