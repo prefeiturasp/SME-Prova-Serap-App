@@ -6,6 +6,7 @@ import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -81,21 +82,29 @@ setupDateFormating() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: asuka.builder,
-      navigatorObservers: [asuka.asukaHeroController],
-      debugShowCheckedModeBanner: kDebugMode,
-      theme: ThemeData.light().copyWith(
-        appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
-        textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
-          ),
-        ),
+    return ScreenUtilInit(
+      designSize: Size(
+        ScreenUtil.defaultSize.width,
+        ScreenUtil.defaultSize.height,
       ),
-      locale: Locale('pt', 'BR'),
-      home: SplashScreenView(),
-      scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+      builder: () {
+        return MaterialApp(
+          builder: asuka.builder,
+          navigatorObservers: [asuka.asukaHeroController],
+          debugShowCheckedModeBanner: kDebugMode,
+          theme: ThemeData.light().copyWith(
+            appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
+            textButtonTheme: TextButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+              ),
+            ),
+          ),
+          locale: Locale('pt', 'BR'),
+          home: SplashScreenView(),
+          scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+        );
+      },
     );
   }
 }
