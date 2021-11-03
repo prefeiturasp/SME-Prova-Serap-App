@@ -1,4 +1,5 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -122,10 +123,8 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
     Widget imagem,
     Widget corpoHTML,
   ) {
-    
-    var tela = TelaAdaptativaUtil();
 
-    if (tela.dispositivo == TipoDispositivo.mobile) {
+    if (kDeviceType == EnumTipoDispositivo.mobile) {
       if (ehHTML) {
         return ListView(
           children: [corpoHTML],
@@ -148,7 +147,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
             ),
             child: Texto(
               titulo,
-              fontSize: _temaStore.tTexto18,
+              fontSize: 18,
               bold: true,
               fontWeight: FontWeight.w600,
               color: Colors.black,
@@ -165,7 +164,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
             ),
             child: Texto(
               descricao,
-              fontSize: _temaStore.tTexto14,
+              fontSize: 14,
               fontWeight: FontWeight.w500,
               color: Colors.black,
               center: true,
@@ -180,10 +179,8 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
   }
 
   Widget _buildBotaoNavegacaoAdaptativo() {
-    var tela = TelaAdaptativaUtil();
 
-    if (tela.dispositivo == TipoDispositivo.mobile) {
-      print("BATENDO AQUI");
+    if (kDeviceType == EnumTipoDispositivo.mobile) {
       return Observer(
         builder: (context) {
           return Container(
@@ -238,7 +235,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
           ),
           child: Texto(
             titulo,
-            fontSize: _temaStore.tTexto24,
+            fontSize: 24,
             bold: true,
             center: true,
             fontWeight: FontWeight.w600,
@@ -251,7 +248,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
           padding: const EdgeInsets.symmetric(horizontal: 64),
           child: Texto(
             descricao,
-            fontSize: _temaStore.tTexto16,
+            fontSize: 16,
             fontWeight: FontWeight.w500,
             color: Colors.black,
             center: true,
