@@ -62,7 +62,7 @@ class _ProvaAtualTabViewState
             );
           }
 
-          if (provas.isNotEmpty) {
+          if (provas.isEmpty) {
             return Padding(
               padding: const EdgeInsets.all(10.0),
               child: SizedBox(
@@ -294,8 +294,6 @@ class _ProvaAtualTabViewState
     if (prova.dataInicio != prova.dataFim) {
       return Observer(
         builder: (_) {
-          print('TF: $tamanhoFonte');
-          print("TS: ${temaStore.tTexto16}");
 
           if (kDeviceType == EnumTipoDispositivo.mobile) {
             tamanhoFonte = temaStore.tTexto16;
@@ -603,11 +601,11 @@ class _ProvaAtualTabViewState
         texto = "INICIAR PROVA";
     }
 
-    var tamanhoFonte = temaStore.tTexto16;
+    var tamanhoFonte = 18.0;
     if (kDeviceType == EnumTipoDispositivo.mobile) {
-      tamanhoFonte = temaStore.tTexto14;
+      tamanhoFonte = 14.0;
       if (temaStore.incrementador == 22) {
-        tamanhoFonte = temaStore.tTexto12;
+        tamanhoFonte = 12.0;
       }
     }
 
@@ -650,13 +648,10 @@ class _ProvaAtualTabViewState
                     right: 16,
                   ),
                   child: Observer(builder: (_) {
-                    return Text(
+                    return Texto(
                       "Insira a senha informada para iniciar a prova",
-                      textAlign: TextAlign.center,
-                      style: TemaUtil.temaTextoInserirSenha.copyWith(
-                        fontSize: tamanhoFonte,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
+                      center: true,
+                      fontSize: tamanhoFonte,
                     );
                   }),
                 ),
