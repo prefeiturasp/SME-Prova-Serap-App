@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/foundation.dart';
@@ -47,12 +48,13 @@ class FinalizarProvaWorker with Worker, Loggable {
   }
 
   sincronizar() async {
+    AppDatabase db = ServiceLocator.get();
+
     fine('Sincronizando provas para o servidor');
 
-    List<Prova> provas = listProvasCache()
-        .map((e) => Prova.carregaProvaCache(e)!)
-        .where((e) => e.status == EnumProvaStatus.PENDENTE)
-        .toList();
+    List<ProvaDb> provasDb = await db.obterProvasPendentes();
+
+    List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
 
     info('${provas.length} provas pendente de sincronização');
 

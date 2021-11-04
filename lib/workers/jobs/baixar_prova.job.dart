@@ -29,7 +29,7 @@ class BaixarProvaJob with Job, Loggable {
       List<int> idsParaVerificar = idsProvasLocal.toSet().difference(idsToDownload.toSet()).toList();
 
       for (var idProva in idsParaVerificar) {
-        var prova = Prova.carregaProvaCache(idProva);
+        var prova = await Prova.carregaProvaCache(idProva);
 
         if (prova == null) {
           continue;
