@@ -59,21 +59,10 @@ class Prova {
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
   Map<String, dynamic> toJson() => _$ProvaToJson(this);
 
-  // static Prova? carregaProvaCache(int idProva) {
-  //   var _pref = GetIt.I.get<SharedPreferences>();
-
-  //   String? provaJson = _pref.getString('prova_$idProva');
-
-  //   if (provaJson != null) {
-  //     return Prova.fromJson(jsonDecode(provaJson));
-  //   }
-  // }
-
   static Future<Prova?> carregaProvaCache(int idProva) async {
     AppDatabase db = GetIt.I.get();
 
     ProvaDb? provaDb = await db.obterProvaPorIdNull(idProva);
-    //String? provaJson = _pref.getString('prova_$idProva');
 
     if (provaDb != null) {
       var prova = Prova(
