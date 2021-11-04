@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +34,8 @@ class ProvaAtualTabView extends BaseStatefulWidget {
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
+class _ProvaAtualTabViewState
+    extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
   final temaStore = GetIt.I<TemaStore>();
@@ -106,9 +109,16 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Observer(builder: (_) {
-              return SvgPicture.asset(provaStore.icone);
-            }),
+            Observer(
+              builder: (_) {
+                print(kDeviceType);
+                if (kDeviceType == EnumTipoDispositivo.mobile) {
+                  print("ENTROU AQUI");
+                  return SizedBox();
+                }
+                return SvgPicture.asset(provaStore.icone);
+              },
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 24),
               child: Column(
@@ -206,7 +216,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                               );
                             },
                           ),
-                          Container(
+                          SizedBox(
                             width: 350,
                             child: _formataDataAplicacao(provaStore.prova),
                           ),
@@ -323,22 +333,26 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
   _buildBotao(ProvaStore provaStore) {
     // Download não iniciado e sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
+        !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
     }
 
     // Download prova pausado sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO &&
+        !_principalStore.temConexao) {
       return _buildPausado(provaStore);
     }
 
     // Baixar prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
+        _principalStore.temConexao) {
       return _buildBaixarProva(provaStore);
     }
 
     // Baixando prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO && _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO &&
+        _principalStore.temConexao) {
       return _buildDownloadProgresso(provaStore);
     }
 
@@ -559,7 +573,8 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       ),
       largura: temaStore.tTexto16 >= 18 ? 400 : 312,
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA &&
+            provaStore.prova.senha != null) {
           //
           showDialog(
             context: context,
@@ -593,12 +608,15 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                     ),
                     child: TextField(
                       focusNode: _codigoProvaFocus,
-                      onChanged: (value) => provaStore.codigoIniciarProva = value,
+                      onChanged: (value) =>
+                          provaStore.codigoIniciarProva = value,
                       maxLength: 10,
                       decoration: InputDecoration(
                         labelText: 'Digite o código para liberar a prova',
                         labelStyle: TextStyle(
-                          color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                          color: _codigoProvaFocus.hasFocus
+                              ? TemaUtil.laranja01
+                              : TemaUtil.preto,
                         ),
                       ),
                     ),
@@ -607,7 +625,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 botoes: [
                   BotaoDefaultWidget(
                     onPressed: () {
-                      String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
+                      String senhaCriptografada = md5
+                          .convert(utf8.encode(provaStore.codigoIniciarProva))
+                          .toString();
 
                       if (provaStore.prova.senha == senhaCriptografada) {
                         Navigator.pop(context);
@@ -641,7 +661,8 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           );
         }
 
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA &&
+            provaStore.prova.senha == null) {
           provaStore.iniciarProva();
           Navigator.pushReplacement(
             context,
@@ -657,8 +678,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {
-    var tempoRestante =
-        prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes" : "";
+    var tempoRestante = prova.tempoPrevisto > 0
+        ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes"
+        : "";
 
     return SizedBox(
       width: 350,
