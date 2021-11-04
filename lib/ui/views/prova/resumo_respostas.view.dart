@@ -25,7 +25,6 @@ import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:get_it/get_it.dart';
 
 class ResumoRespostasView extends BaseStatefulWidget {
   const ResumoRespostasView({
@@ -110,40 +109,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                       //
                       Column(
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: kDeviceType == EnumTipoDispositivo.mobile ? 8 : 18,
-                                child: Texto(
-                                  "Questão",
-                                  fontSize: 14,
-                                  color: TemaUtil.appBar,
-                                ),
-                              ),
-                              Flexible(
-                                flex: 4,
-                                child: Center(
-                                  child: Texto(
-                                    "Alternativa selecionada",
-                                    fontSize: 14,
-                                    maxLines: 2,
-                                    center: true,
-                                    color: TemaUtil.appBar,
-                                  ),
-                                ),
-                              ),
-                              Flexible(
-                                flex: 3,
-                                child: Center(
-                                  child: Texto(
-                                    "Revisar",
-                                    fontSize: 14,
-                                    color: TemaUtil.appBar,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          _buildCabecalho(),
                           divider(),
                           ..._buildListaRespostas(),
                         ],
@@ -168,6 +134,65 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         ),
       ),
     );
+  }
+
+  _buildCabecalho() {
+    List<Widget> rows = [];
+
+    int flexQuestao = 18;
+    bool exibirRevisar = true;
+
+    if (kIsMobile) {
+      if (temaStore.incrementador > 16) {
+        flexQuestao = 5;
+        exibirRevisar = false;
+      } else {
+        flexQuestao = 8;
+      }
+    }
+
+    rows.add(
+      Expanded(
+        flex: flexQuestao,
+        child: Texto(
+          "Questão",
+          fontSize: 14,
+          color: TemaUtil.appBar,
+        ),
+      ),
+    );
+
+    rows.add(
+      Flexible(
+        flex: 4,
+        child: Center(
+          child: Texto(
+            "Alternativa selecionada",
+            fontSize: 14,
+            maxLines: 2,
+            center: true,
+            color: TemaUtil.appBar,
+          ),
+        ),
+      ),
+    );
+
+    if (exibirRevisar) {
+      rows.add(
+        Flexible(
+          flex: 3,
+          child: Center(
+            child: Texto(
+              "Revisar",
+              fontSize: 14,
+              color: TemaUtil.appBar,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Row(children: rows);
   }
 
   Widget divider() {
@@ -287,10 +312,16 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   }
 
   _buildAlternativas(String titulo, String resposta, int questaoOrdem) {
+    if (kIsMobile) {
+      if (temaStore.incrementador > 20) {
+        titulo = titulo.substring(0, 3);
+      }
+    }
+
     return Row(
       children: [
         Expanded(
-          flex: kDeviceType == EnumTipoDispositivo.mobile ? 8 : 18,
+          flex: kIsMobile ? 8 : 18,
           child: Texto(
             titulo,
             maxLines: 1,
@@ -355,38 +386,35 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
   Widget mensagemDeQuestoesSemRespostas() {
     if (store.quantidadeDeQuestoesSemRespostas > 0) {
+      String texto;
+
+      if (store.quantidadeDeQuestoesSemRespostas > 1) {
+        texto = "${store.quantidadeDeQuestoesSemRespostas} Questões sem resposta";
+      } else {
+        texto = "${store.quantidadeDeQuestoesSemRespostas} Questão sem resposta";
+      }
+
       return Padding(
         padding: const EdgeInsets.only(bottom: 20),
-        child: Observer(
-          builder: (_) {
-            return Row(
-              children: [
-                //
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: SvgPicture.asset(
-                    AssetsUtil.iconeQuestaoNaoRespondida,
-                  ),
-                ),
-                //
-                store.quantidadeDeQuestoesSemRespostas > 1
-                    ? Text(
-                        "${store.quantidadeDeQuestoesSemRespostas} Questões sem resposta",
-                        style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(
-                          fontSize: temaStore.tTexto14,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      )
-                    : Text(
-                        "${store.quantidadeDeQuestoesSemRespostas} Questão sem resposta",
-                        style: TemaUtil.temaTextoQuestaoSemResposta.copyWith(
-                          fontSize: temaStore.tTexto14,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      )
-              ],
-            );
-          },
+        child: Row(
+          children: [
+            //
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: SvgPicture.asset(
+                AssetsUtil.iconeQuestaoNaoRespondida,
+              ),
+            ),
+            //
+            Expanded(
+              child: Texto(
+                texto,
+                color: TemaUtil.laranja03,
+                fontSize: 14,
+                maxLines: 2,
+              ),
+            ),
+          ],
         ),
       );
     } else {

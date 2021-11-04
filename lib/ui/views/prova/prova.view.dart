@@ -48,8 +48,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
 
-  final temaStore = GetIt.I.get<TemaStore>();
-
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
@@ -434,8 +432,18 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     List<Alternativa> alternativasQuestoes = questao.alternativas;
 
     alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
-    return Column(
-      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, questao.id, e.descricao)).toList(),
+    return ListTileTheme.merge(
+      horizontalTitleGap: 0,
+      child: Column(
+        children: alternativasQuestoes
+            .map((e) => _buildAlternativa(
+                  e.id,
+                  e.numeracao,
+                  questao.id,
+                  e.descricao,
+                ))
+            .toList(),
+      ),
     );
   }
 
@@ -445,7 +453,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     return Observer(
       builder: (_) {
         return Container(
-          padding: EdgeInsets.all(8),
           margin: EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -457,6 +464,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             ),
           ),
           child: RadioListTile<int>(
+            contentPadding: EdgeInsets.all(0),
+            toggleable: true,
+            dense: true,
             value: idAlternativa,
             groupValue: resposta?.alternativaId,
             onChanged: (value) {
@@ -466,29 +476,30 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 tempoQuestao: null,
               );
             },
-            toggleable: true,
-            title: Row(children: [
-              Text(
-                "$numeracao ",
-                style: TemaUtil.temaTextoNumeracao.copyWith(
-                  fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+            title: Row(
+              children: [
+                Text(
+                  "$numeracao ",
+                  style: TemaUtil.temaTextoNumeracao.copyWith(
+                    fontSize: temaStore.tTexto16,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Html(
-                  data: descricao,
-                  style: {
-                    '*': Style.fromTextStyle(
-                      TemaUtil.temaTextoPadrao.copyWith(
-                        fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    )
-                  },
+                Expanded(
+                  child: Html(
+                    data: descricao,
+                    style: {
+                      '*': Style.fromTextStyle(
+                        TemaUtil.temaTextoPadrao.copyWith(
+                          fontSize: temaStore.tTexto16,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        ),
+                      )
+                    },
+                  ),
                 ),
-              ),
-            ]),
+              ],
+            ),
           ),
         );
       },
@@ -633,7 +644,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               height: 8,
             ),
             BotaoDefaultWidget(
-              textoBotao: 'Confirmar e voltar para o resumo',
+              textoBotao: 'Voltar para o resumo',
               onPressed: () async {
                 try {
                   if (store.botaoOcupado) return;
