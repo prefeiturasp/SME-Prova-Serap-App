@@ -243,6 +243,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
+                      'span': Style.fromTextStyle(
+                        TextStyle(color: TemaUtil.pretoSemFoco3),
+                      ),
                     },
                     onImageTap: (url, _, attributes, element) {
                       Uint8List imagem = base64.decode(url!.split(',').last);
@@ -258,6 +261,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                         TemaUtil.temaTextoHtmlPadrao.copyWith(
                           fontSize: temaStore.tTexto16,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        ),
+                      ),
+                      'span': Style.fromTextStyle(
+                        TextStyle(
+                          color: TemaUtil.pretoSemFoco3,
                         ),
                       ),
                     },
@@ -689,7 +697,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {
     texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-      return '<div style="text-align: center; position:relative">${match.group(0)}<p>Toque na imagem para ampliar</p></div>';
+      return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
     });
 
     for (var arquivo in arquivos) {
