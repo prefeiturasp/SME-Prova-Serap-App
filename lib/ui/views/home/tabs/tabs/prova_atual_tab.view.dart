@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +34,8 @@ class ProvaAtualTabView extends BaseStatefulWidget {
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
+class _ProvaAtualTabViewState
+    extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
   final temaStore = GetIt.I<TemaStore>();
@@ -68,7 +71,22 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset('assets/images/sem_prova.svg'),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 28),
+                      child: SvgPicture.asset(
+                        'assets/images/sem_prova.svg',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: Texto(
+                        "Você não tem novas\nprovas para fazer.",
+                        fontSize: 18,
+                        center: true,
+                        fontWeight: FontWeight.w600,
+                        color: TemaUtil.pretoSemFoco3,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -94,6 +112,12 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   _buildProva(ProvaStore provaStore) {
+    var espacamentoInterno = 24.0;
+
+    if (kDeviceType == EnumTipoDispositivo.mobile) {
+      espacamentoInterno = 8.0;
+    }
+
     return Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
       decoration: BoxDecoration(
@@ -102,15 +126,20 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         border: Border.all(color: TemaUtil.cinza),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(espacamentoInterno),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Observer(builder: (_) {
-              return SvgPicture.asset(provaStore.icone);
-            }),
+            Observer(
+              builder: (_) {
+                if (kDeviceType == EnumTipoDispositivo.mobile) {
+                  return SizedBox();
+                }
+                return SvgPicture.asset(provaStore.icone);
+              },
+            ),
             Padding(
-              padding: const EdgeInsets.only(left: 24),
+              padding: EdgeInsets.only(left: espacamentoInterno),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,10 +147,15 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                   // Titulo
                   Observer(
                     builder: (_) {
+                      var tamanhoFonte = temaStore.tTexto16;
+                      if (kDeviceType == EnumTipoDispositivo.mobile) {
+                        tamanhoFonte = temaStore.tTexto14;
+                      }
+
                       return AutoSizeText(
                         provaStore.prova.descricao,
                         style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: temaStore.tTexto16,
+                          fontSize: tamanhoFonte,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                         maxLines: 2,
@@ -147,25 +181,33 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       SizedBox(
                         width: 5,
                       ),
+                      //
                       Observer(
-                        builder: (_) {
-                          return Text(
-                            "Quantidade de itens: ",
-                            style: TemaUtil.temaTextoPadrao.copyWith(
-                              fontSize: temaStore.tTexto16,
-                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                            ),
-                          );
-                        },
-                      ),
-                      Observer(
-                        builder: (_) {
-                          return Texto(
-                            provaStore.prova.itensQuantidade.toString(),
-                            bold: true,
-                            texStyle: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                              fontSize: temaStore.tTexto16,
-                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        builder: (context) {
+                          var tamanhoFonte = temaStore.tTexto16;
+                          if (kDeviceType == EnumTipoDispositivo.mobile) {
+                            tamanhoFonte = temaStore.tTexto14;
+                          }
+                          return RichText(
+                            text: TextSpan(
+                              text: "Quantidade de itens: ",
+                              style: TemaUtil.temaTextoPadrao.copyWith(
+                                fontSize: tamanhoFonte,
+                                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                              ),
+                              children: [
+                                TextSpan(
+                                    style: TemaUtil.temaTextoPadrao.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: tamanhoFonte,
+                                      fontFamily:
+                                          temaStore.fonteDoTexto.nomeFonte,
+                                    ),
+                                    text: tamanhoFonte >= 22
+                                        ? '\n${provaStore.prova.itensQuantidade.toString()}'
+                                        : provaStore.prova.itensQuantidade
+                                            .toString())
+                              ],
                             ),
                           );
                         },
@@ -197,17 +239,20 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         children: [
                           Observer(
                             builder: (_) {
+                              var tamanhoFonte = 16.0;
+                              if (kDeviceType == EnumTipoDispositivo.mobile) {
+                                tamanhoFonte = 14.0;
+                              }
                               return Texto(
                                 "Data de aplicação:",
-                                texStyle: TemaUtil.temaTextoPadrao.copyWith(
-                                  fontSize: temaStore.tTexto16,
-                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                ),
+                                fontSize: tamanhoFonte,
                               );
                             },
                           ),
-                          Container(
-                            width: 350,
+                          SizedBox(
+                            width: kDeviceType == EnumTipoDispositivo.mobile
+                                ? 250
+                                : 350,
                             child: _formataDataAplicacao(provaStore.prova),
                           ),
                         ],
@@ -229,6 +274,8 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   Widget _formataDataAplicacao(Prova prova) {
+    var tamanhoFonte = temaStore.tTexto18;
+
     if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
       return Observer(
         builder: (_) {
@@ -236,7 +283,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             formatEddMMyyyy(prova.dataInicio),
             maxLines: 4,
             style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-              fontSize: temaStore.tTexto16,
+              fontSize: tamanhoFonte,
               fontFamily: temaStore.fonteDoTexto.nomeFonte,
             ),
           );
@@ -247,8 +294,17 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     if (prova.dataInicio != prova.dataFim) {
       return Observer(
         builder: (_) {
+
+          if (kDeviceType == EnumTipoDispositivo.mobile) {
+            tamanhoFonte = temaStore.tTexto16;
+
+            if (temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC) {
+              tamanhoFonte = temaStore.tTexto14;
+            }
+          }
+
           return Container(
-            child: temaStore.tTexto16 >= 18
+            child: tamanhoFonte >= tamanhoFonte
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -256,7 +312,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         formatEddMMyyyy(prova.dataInicio),
                         maxLines: 2,
                         style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: temaStore.tTexto16,
+                          fontSize: tamanhoFonte,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
@@ -267,7 +323,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                           maxLines: 2,
                           textAlign: TextAlign.center,
                           style: TemaUtil.temaTextoPadrao.copyWith(
-                            fontSize: temaStore.tTexto16,
+                            fontSize: tamanhoFonte,
                             fontFamily: temaStore.fonteDoTexto.nomeFonte,
                           ),
                         ),
@@ -277,7 +333,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: temaStore.tTexto16,
+                          fontSize: tamanhoFonte,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
@@ -289,7 +345,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         formatEddMMyyyy(prova.dataInicio),
                         maxLines: 4,
                         style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: temaStore.tTexto16,
+                          fontSize: tamanhoFonte,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
@@ -297,7 +353,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         " à ",
                         maxLines: 4,
                         style: TemaUtil.temaTextoPadrao.copyWith(
-                          fontSize: temaStore.tTexto16,
+                          fontSize: tamanhoFonte,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
@@ -307,7 +363,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         minFontSize: 16,
                         overflow: TextOverflow.ellipsis,
                         style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: temaStore.tTexto16,
+                          fontSize: tamanhoFonte,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
@@ -323,22 +379,26 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
   _buildBotao(ProvaStore provaStore) {
     // Download não iniciado e sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
+        !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
     }
 
     // Download prova pausado sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO &&
+        !_principalStore.temConexao) {
       return _buildPausado(provaStore);
     }
 
     // Baixar prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
+        _principalStore.temConexao) {
       return _buildBaixarProva(provaStore);
     }
 
     // Baixando prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO && _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO &&
+        _principalStore.temConexao) {
       return _buildDownloadProgresso(provaStore);
     }
 
@@ -453,6 +513,11 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   Widget _buildBaixarProva(ProvaStore provaStore) {
+    var tamanhoFonte = temaStore.tTexto16;
+    if (kDeviceType == EnumTipoDispositivo.mobile) {
+      tamanhoFonte = temaStore.tTexto14;
+    }
+
     return BotaoDefaultWidget(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -466,7 +531,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
                 texStyle: TemaUtil.temaTextoBotao.copyWith(
-                  fontSize: temaStore.tTexto16,
+                  fontSize: tamanhoFonte,
                   fontFamily: temaStore.fonteDoTexto.nomeFonte,
                 ),
               );
@@ -536,6 +601,14 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         texto = "INICIAR PROVA";
     }
 
+    var tamanhoFonte = 18.0;
+    if (kDeviceType == EnumTipoDispositivo.mobile) {
+      tamanhoFonte = 14.0;
+      if (temaStore.incrementador == 22) {
+        tamanhoFonte = 12.0;
+      }
+    }
+
     return BotaoDefaultWidget(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -547,19 +620,21 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 '$texto ',
                 color: Colors.white,
                 fontWeight: FontWeight.w500,
-                texStyle: TemaUtil.temaTextoBotao.copyWith(
-                  fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                ),
+                fontSize: tamanhoFonte,
               );
             },
           ),
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
-      largura: temaStore.tTexto16 >= 18 ? 400 : 312,
+      largura: kDeviceType == EnumTipoDispositivo.mobile
+          ? 320
+          : tamanhoFonte >= 18
+              ? 400
+              : 312,
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA &&
+            provaStore.prova.senha != null) {
           //
           showDialog(
             context: context,
@@ -573,13 +648,10 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                     right: 16,
                   ),
                   child: Observer(builder: (_) {
-                    return Text(
+                    return Texto(
                       "Insira a senha informada para iniciar a prova",
-                      textAlign: TextAlign.center,
-                      style: TemaUtil.temaTextoInserirSenha.copyWith(
-                        fontSize: temaStore.tTexto18,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
+                      center: true,
+                      fontSize: tamanhoFonte,
                     );
                   }),
                 ),
@@ -593,12 +665,15 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                     ),
                     child: TextField(
                       focusNode: _codigoProvaFocus,
-                      onChanged: (value) => provaStore.codigoIniciarProva = value,
+                      onChanged: (value) =>
+                          provaStore.codigoIniciarProva = value,
                       maxLength: 10,
                       decoration: InputDecoration(
                         labelText: 'Digite o código para liberar a prova',
                         labelStyle: TextStyle(
-                          color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                          color: _codigoProvaFocus.hasFocus
+                              ? TemaUtil.laranja01
+                              : TemaUtil.preto,
                         ),
                       ),
                     ),
@@ -607,7 +682,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 botoes: [
                   BotaoDefaultWidget(
                     onPressed: () {
-                      String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
+                      String senhaCriptografada = md5
+                          .convert(utf8.encode(provaStore.codigoIniciarProva))
+                          .toString();
 
                       if (provaStore.prova.senha == senhaCriptografada) {
                         Navigator.pop(context);
@@ -641,7 +718,8 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           );
         }
 
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA &&
+            provaStore.prova.senha == null) {
           provaStore.iniciarProva();
           Navigator.pushReplacement(
             context,
@@ -657,8 +735,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {
-    var tempoRestante =
-        prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes" : "";
+    var tempoRestante = prova.tempoPrevisto > 0
+        ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes"
+        : "";
 
     return SizedBox(
       width: 350,
