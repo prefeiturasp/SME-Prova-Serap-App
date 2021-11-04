@@ -62,7 +62,7 @@ class _ProvaAtualTabViewState
             );
           }
 
-          if (provas.isEmpty) {
+          if (provas.isNotEmpty) {
             return Padding(
               padding: const EdgeInsets.all(10.0),
               child: SizedBox(
@@ -71,7 +71,22 @@ class _ProvaAtualTabViewState
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset('assets/images/sem_prova.svg'),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 28),
+                      child: SvgPicture.asset(
+                        'assets/images/sem_prova.svg',
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: Texto(
+                        "Você não tem novas\nprovas para fazer.",
+                        fontSize: 18,
+                        center: true,
+                        fontWeight: FontWeight.w600,
+                        color: TemaUtil.pretoSemFoco3,
+                      ),
+                    ),
                   ],
                 ),
               ),
