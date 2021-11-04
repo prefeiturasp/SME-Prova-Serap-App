@@ -235,7 +235,9 @@ class _ProvaAtualTabViewState
                             },
                           ),
                           SizedBox(
-                            width: 350,
+                            width: kDeviceType == EnumTipoDispositivo.mobile
+                                ? 250
+                                : 350,
                             child: _formataDataAplicacao(provaStore.prova),
                           ),
                         ],
@@ -257,10 +259,7 @@ class _ProvaAtualTabViewState
   }
 
   Widget _formataDataAplicacao(Prova prova) {
-    var tamanhoFonte = temaStore.tTexto16;
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
-      tamanhoFonte = temaStore.tTexto14;
-    }
+    var tamanhoFonte = temaStore.tTexto18;
 
     if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
       return Observer(
@@ -280,8 +279,19 @@ class _ProvaAtualTabViewState
     if (prova.dataInicio != prova.dataFim) {
       return Observer(
         builder: (_) {
+          print('TF: $tamanhoFonte');
+          print("TS: ${temaStore.tTexto16}");
+
+          if (kDeviceType == EnumTipoDispositivo.mobile) {
+            tamanhoFonte = temaStore.tTexto16;
+
+            if (temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC) {
+              tamanhoFonte = temaStore.tTexto14;
+            }
+          }
+
           return Container(
-            child: temaStore.tTexto16 >= 18
+            child: tamanhoFonte >= tamanhoFonte
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -581,6 +591,9 @@ class _ProvaAtualTabViewState
     var tamanhoFonte = temaStore.tTexto16;
     if (kDeviceType == EnumTipoDispositivo.mobile) {
       tamanhoFonte = temaStore.tTexto14;
+      if (temaStore.incrementador == 22) {
+        tamanhoFonte = temaStore.tTexto12;
+      }
     }
 
     return BotaoDefaultWidget(
@@ -602,7 +615,7 @@ class _ProvaAtualTabViewState
         ],
       ),
       largura: kDeviceType == EnumTipoDispositivo.mobile
-          ? 300
+          ? 320
           : tamanhoFonte >= 18
               ? 400
               : 312,
