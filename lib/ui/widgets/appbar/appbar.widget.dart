@@ -22,7 +22,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
   @override
-  Size get preferredSize => Size.fromHeight(64);
+  Size get preferredSize => Size.fromHeight(68);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildAppbarCompleta(BuildContext context) {
     return AppBar(
-      toolbarHeight: 120,
       title: Observer(
         builder: (_) {
           return Column(
