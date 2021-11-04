@@ -123,7 +123,6 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
     Widget imagem,
     Widget corpoHTML,
   ) {
-
     if (kDeviceType == EnumTipoDispositivo.mobile) {
       if (ehHTML) {
         return ListView(
@@ -179,7 +178,6 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
   }
 
   Widget _buildBotaoNavegacaoAdaptativo() {
-
     if (kDeviceType == EnumTipoDispositivo.mobile) {
       return Observer(
         builder: (context) {

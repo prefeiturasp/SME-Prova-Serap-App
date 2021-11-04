@@ -133,7 +133,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
                                 ),
                               ),
                               Flexible(
-                                flex: 2,
+                                flex: 3,
                                 child: Center(
                                   child: Texto(
                                     "Revisar",
@@ -304,7 +304,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           ),
         ),
         Flexible(
-          flex: 2,
+          flex: 3,
           child: Center(
             child: _buildRespostaRevisar(resposta, questaoOrdem),
           ),

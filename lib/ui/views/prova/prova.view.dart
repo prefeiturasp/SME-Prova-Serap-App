@@ -520,7 +520,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   Widget _buildBotaoProximo(Questao questao) {
     if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
       return BotaoDefaultWidget(
-        textoBotao: 'Proxima questão',
+        textoBotao: 'Próxima questão',
         desabilitado: store.botaoOcupado,
         onPressed: () async {
           try {

@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 
 var kDeviceType = EnumTipoDispositivo.tablet;
 
+var kIsMobile = kDeviceType == EnumTipoDispositivo.mobile;
+var kIsTablet = kDeviceType == EnumTipoDispositivo.tablet;
+
 class TelaAdaptativaUtil {
   setup() {
     final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
