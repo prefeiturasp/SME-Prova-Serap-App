@@ -607,7 +607,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       ],
     );
 
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       botoesRespondendoProva = Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,

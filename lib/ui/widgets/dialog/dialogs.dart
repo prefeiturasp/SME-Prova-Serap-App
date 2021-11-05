@@ -474,7 +474,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                                   temaStore.enviarPreferencias();
                                 },
                                 onChanged: (double valor) {
-                                  var min = kDeviceType == EnumTipoDispositivo.tablet ? 16 : 14;
+                                  var min = kIsTablet ? 16 : 14;
 
                                   if (valor >= min && valor <= 24) {
                                     temaStore.fachadaAlterarTamanhoDoTexto(valor, update: false);

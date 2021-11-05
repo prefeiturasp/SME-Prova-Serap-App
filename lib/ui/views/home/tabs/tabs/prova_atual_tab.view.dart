@@ -34,8 +34,7 @@ class ProvaAtualTabView extends BaseStatefulWidget {
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState
-    extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
+class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
   final temaStore = GetIt.I<TemaStore>();
@@ -114,7 +113,7 @@ class _ProvaAtualTabViewState
   _buildProva(ProvaStore provaStore) {
     var espacamentoInterno = 24.0;
 
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       espacamentoInterno = 8.0;
     }
 
@@ -132,7 +131,7 @@ class _ProvaAtualTabViewState
           children: [
             Observer(
               builder: (_) {
-                if (kDeviceType == EnumTipoDispositivo.mobile) {
+                if (kIsMobile) {
                   return SizedBox();
                 }
                 return SvgPicture.asset(provaStore.icone);
@@ -148,7 +147,7 @@ class _ProvaAtualTabViewState
                   Observer(
                     builder: (_) {
                       var tamanhoFonte = temaStore.tTexto16;
-                      if (kDeviceType == EnumTipoDispositivo.mobile) {
+                      if (kIsMobile) {
                         tamanhoFonte = temaStore.tTexto14;
                       }
 
@@ -185,7 +184,7 @@ class _ProvaAtualTabViewState
                       Observer(
                         builder: (context) {
                           var tamanhoFonte = temaStore.tTexto16;
-                          if (kDeviceType == EnumTipoDispositivo.mobile) {
+                          if (kIsMobile) {
                             tamanhoFonte = temaStore.tTexto14;
                           }
                           return RichText(
@@ -200,13 +199,11 @@ class _ProvaAtualTabViewState
                                     style: TemaUtil.temaTextoPadrao.copyWith(
                                       fontWeight: FontWeight.bold,
                                       fontSize: tamanhoFonte,
-                                      fontFamily:
-                                          temaStore.fonteDoTexto.nomeFonte,
+                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                     ),
                                     text: tamanhoFonte >= 22
                                         ? '\n${provaStore.prova.itensQuantidade.toString()}'
-                                        : provaStore.prova.itensQuantidade
-                                            .toString())
+                                        : provaStore.prova.itensQuantidade.toString())
                               ],
                             ),
                           );
@@ -240,7 +237,7 @@ class _ProvaAtualTabViewState
                           Observer(
                             builder: (_) {
                               var tamanhoFonte = 16.0;
-                              if (kDeviceType == EnumTipoDispositivo.mobile) {
+                              if (kIsMobile) {
                                 tamanhoFonte = 14.0;
                               }
                               return Texto(
@@ -250,9 +247,7 @@ class _ProvaAtualTabViewState
                             },
                           ),
                           SizedBox(
-                            width: kDeviceType == EnumTipoDispositivo.mobile
-                                ? 250
-                                : 350,
+                            width: kIsMobile ? 250 : 350,
                             child: _formataDataAplicacao(provaStore.prova),
                           ),
                         ],
@@ -294,8 +289,7 @@ class _ProvaAtualTabViewState
     if (prova.dataInicio != prova.dataFim) {
       return Observer(
         builder: (_) {
-
-          if (kDeviceType == EnumTipoDispositivo.mobile) {
+          if (kIsMobile) {
             tamanhoFonte = temaStore.tTexto16;
 
             if (temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC) {
@@ -379,26 +373,22 @@ class _ProvaAtualTabViewState
 
   _buildBotao(ProvaStore provaStore) {
     // Download não iniciado e sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
-        !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
     }
 
     // Download prova pausado sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO &&
-        !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
       return _buildPausado(provaStore);
     }
 
     // Baixar prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
-        _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && _principalStore.temConexao) {
       return _buildBaixarProva(provaStore);
     }
 
     // Baixando prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO &&
-        _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO && _principalStore.temConexao) {
       return _buildDownloadProgresso(provaStore);
     }
 
@@ -514,7 +504,7 @@ class _ProvaAtualTabViewState
 
   Widget _buildBaixarProva(ProvaStore provaStore) {
     var tamanhoFonte = temaStore.tTexto16;
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       tamanhoFonte = temaStore.tTexto14;
     }
 
@@ -602,7 +592,7 @@ class _ProvaAtualTabViewState
     }
 
     var tamanhoFonte = 18.0;
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       tamanhoFonte = 14.0;
       if (temaStore.incrementador == 22) {
         tamanhoFonte = 12.0;
@@ -627,14 +617,13 @@ class _ProvaAtualTabViewState
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
-      largura: kDeviceType == EnumTipoDispositivo.mobile
+      largura: kIsMobile
           ? 320
           : tamanhoFonte >= 18
               ? 400
               : 312,
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA &&
-            provaStore.prova.senha != null) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
           //
           showDialog(
             context: context,
@@ -665,15 +654,12 @@ class _ProvaAtualTabViewState
                     ),
                     child: TextField(
                       focusNode: _codigoProvaFocus,
-                      onChanged: (value) =>
-                          provaStore.codigoIniciarProva = value,
+                      onChanged: (value) => provaStore.codigoIniciarProva = value,
                       maxLength: 10,
                       decoration: InputDecoration(
                         labelText: 'Digite o código para liberar a prova',
                         labelStyle: TextStyle(
-                          color: _codigoProvaFocus.hasFocus
-                              ? TemaUtil.laranja01
-                              : TemaUtil.preto,
+                          color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                         ),
                       ),
                     ),
@@ -682,9 +668,7 @@ class _ProvaAtualTabViewState
                 botoes: [
                   BotaoDefaultWidget(
                     onPressed: () {
-                      String senhaCriptografada = md5
-                          .convert(utf8.encode(provaStore.codigoIniciarProva))
-                          .toString();
+                      String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
 
                       if (provaStore.prova.senha == senhaCriptografada) {
                         Navigator.pop(context);
@@ -718,8 +702,7 @@ class _ProvaAtualTabViewState
           );
         }
 
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA &&
-            provaStore.prova.senha == null) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
           provaStore.iniciarProva();
           Navigator.pushReplacement(
             context,
@@ -735,9 +718,8 @@ class _ProvaAtualTabViewState
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {
-    var tempoRestante = prova.tempoPrevisto > 0
-        ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes"
-        : "";
+    var tempoRestante =
+        prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes" : "";
 
     return SizedBox(
       width: 350,
