@@ -112,14 +112,20 @@ class _ProvaAtualTabViewState
   }
 
   _buildProva(ProvaStore provaStore) {
+    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+
     var espacamentoInterno = 24.0;
+
+    var espacamentoInternoBlocoProva = EdgeInsets.all(espacamentoInterno);
 
     if (kIsMobile) {
       espacamentoInterno = 8.0;
-    }
 
-    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+      if (tela.size.width <= 450) {
+        espacamentoInternoBlocoProva = EdgeInsets.fromLTRB(8, 8, 0, 8);
+      }
+    }
 
     return Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -129,7 +135,7 @@ class _ProvaAtualTabViewState
         border: Border.all(color: TemaUtil.cinza),
       ),
       child: Padding(
-        padding: EdgeInsets.all(espacamentoInterno),
+        padding: espacamentoInternoBlocoProva,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -256,9 +262,7 @@ class _ProvaAtualTabViewState
                             },
                           ),
                           SizedBox(
-                            width: kIsMobile
-                                ? 250
-                                : 350,
+                            width: kIsMobile ? 250 : 350,
                             child: _formataDataAplicacao(provaStore.prova),
                           ),
                         ],
