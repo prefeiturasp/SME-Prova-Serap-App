@@ -48,8 +48,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   final listaQuestoesController = PageController(initialPage: 0);
   final controller = HtmlEditorController();
 
-  final temaStore = GetIt.I.get<TemaStore>();
-
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
@@ -245,6 +243,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                       ),
+                      'span': Style.fromTextStyle(
+                        TextStyle(color: TemaUtil.pretoSemFoco3),
+                      ),
                     },
                     onImageTap: (url, _, attributes, element) {
                       Uint8List imagem = base64.decode(url!.split(',').last);
@@ -260,6 +261,11 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                         TemaUtil.temaTextoHtmlPadrao.copyWith(
                           fontSize: temaStore.tTexto16,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        ),
+                      ),
+                      'span': Style.fromTextStyle(
+                        TextStyle(
+                          color: TemaUtil.pretoSemFoco3,
                         ),
                       ),
                     },
@@ -434,8 +440,18 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     List<Alternativa> alternativasQuestoes = questao.alternativas;
 
     alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
-    return Column(
-      children: alternativasQuestoes.map((e) => _buildAlternativa(e.id, e.numeracao, questao.id, e.descricao)).toList(),
+    return ListTileTheme.merge(
+      horizontalTitleGap: 0,
+      child: Column(
+        children: alternativasQuestoes
+            .map((e) => _buildAlternativa(
+                  e.id,
+                  e.numeracao,
+                  questao.id,
+                  e.descricao,
+                ))
+            .toList(),
+      ),
     );
   }
 
@@ -445,7 +461,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     return Observer(
       builder: (_) {
         return Container(
-          padding: EdgeInsets.all(8),
           margin: EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -457,6 +472,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             ),
           ),
           child: RadioListTile<int>(
+            contentPadding: EdgeInsets.all(0),
+            toggleable: true,
+            dense: true,
             value: idAlternativa,
             groupValue: resposta?.alternativaId,
             onChanged: (value) {
@@ -466,29 +484,30 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 tempoQuestao: null,
               );
             },
-            toggleable: true,
-            title: Row(children: [
-              Text(
-                "$numeracao ",
-                style: TemaUtil.temaTextoNumeracao.copyWith(
-                  fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+            title: Row(
+              children: [
+                Text(
+                  "$numeracao ",
+                  style: TemaUtil.temaTextoNumeracao.copyWith(
+                    fontSize: temaStore.tTexto16,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
                 ),
-              ),
-              Expanded(
-                child: Html(
-                  data: descricao,
-                  style: {
-                    '*': Style.fromTextStyle(
-                      TemaUtil.temaTextoPadrao.copyWith(
-                        fontSize: temaStore.tTexto16,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    )
-                  },
+                Expanded(
+                  child: Html(
+                    data: descricao,
+                    style: {
+                      '*': Style.fromTextStyle(
+                        TemaUtil.temaTextoPadrao.copyWith(
+                          fontSize: temaStore.tTexto16,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        ),
+                      )
+                    },
+                  ),
                 ),
-              ),
-            ]),
+              ],
+            ),
           ),
         );
       },
@@ -520,7 +539,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   Widget _buildBotaoProximo(Questao questao) {
     if (store.questaoAtual < widget.provaStore.prova.questoes.length) {
       return BotaoDefaultWidget(
-        textoBotao: 'Proxima questão',
+        textoBotao: 'Próxima questão',
         desabilitado: store.botaoOcupado,
         onPressed: () async {
           try {
@@ -588,7 +607,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       ],
     );
 
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       botoesRespondendoProva = Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -633,7 +652,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               height: 8,
             ),
             BotaoDefaultWidget(
-              textoBotao: 'Confirmar e voltar para o resumo',
+              textoBotao: 'Voltar para o resumo',
               onPressed: () async {
                 try {
                   if (store.botaoOcupado) return;
@@ -678,7 +697,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   String tratarArquivos(String texto, List<Arquivo> arquivos) {
     texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-      return '<div style="text-align: center; position:relative">${match.group(0)}<p>Toque na imagem para ampliar</p></div>';
+      return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
     });
 
     for (var arquivo in arquivos) {

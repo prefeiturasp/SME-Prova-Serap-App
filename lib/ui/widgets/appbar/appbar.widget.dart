@@ -4,6 +4,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';

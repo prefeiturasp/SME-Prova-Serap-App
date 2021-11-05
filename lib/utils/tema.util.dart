@@ -111,10 +111,7 @@ abstract class TemaUtil {
   );
 
   //TEMA QUESTAO SEM RESPOSTA
-  static const temaTextoQuestaoSemResposta = TextStyle(
-    color: TemaUtil.laranja03,
-    fontSize: 14,
-  );
+  static const temaTextoQuestaoSemResposta = TextStyle();
 
   //TEMA TABELA RESUMO
   static const temaTextoTabelaResumo = TextStyle(

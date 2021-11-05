@@ -1,8 +1,6 @@
-import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
@@ -26,7 +24,6 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
 
   final store = GetIt.I.get<OrientacaoInicialStore>();
   final _principalStore = GetIt.I.get<PrincipalStore>();
-  final _temaStore = GetIt.I.get<TemaStore>();
 
   void _irParaTelaInicial(context) {
     Navigator.of(context).pushReplacement(
@@ -123,8 +120,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
     Widget imagem,
     Widget corpoHTML,
   ) {
-
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       if (ehHTML) {
         return ListView(
           children: [corpoHTML],
@@ -179,8 +175,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
   }
 
   Widget _buildBotaoNavegacaoAdaptativo() {
-
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       return Observer(
         builder: (context) {
           return Container(
