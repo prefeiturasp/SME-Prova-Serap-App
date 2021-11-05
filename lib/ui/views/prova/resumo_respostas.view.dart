@@ -39,6 +39,10 @@ class ResumoRespostasView extends BaseStatefulWidget {
 class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, ProvaViewStore> with Loggable {
   List<Map<String, dynamic>> mapaDeQuestoes = [];
 
+  int flexQuestao = 18;
+  int flexAlternativa = 4;
+  int flexRevisao = 3;
+
   @override
   void initState() {
     super.initState();
@@ -139,7 +143,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
   _buildCabecalho() {
     List<Widget> rows = [];
 
-    int flexQuestao = 18;
     bool exibirRevisar = true;
 
     if (kIsMobile) {
@@ -148,6 +151,18 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         exibirRevisar = false;
       } else {
         flexQuestao = 8;
+      }
+    } else {
+      if (temaStore.incrementador > 20) {
+        flexQuestao = 14;
+        flexAlternativa = 7;
+        flexRevisao = 4;
+      } else if (temaStore.incrementador > 18) {
+        flexQuestao = 14;
+        flexAlternativa = 6;
+      } else if (temaStore.incrementador > 16) {
+        flexQuestao = 15;
+        flexAlternativa = 5;
       }
     }
 
@@ -164,7 +179,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
     rows.add(
       Flexible(
-        flex: 4,
+        flex: flexAlternativa,
         child: Center(
           child: Texto(
             "Alternativa selecionada",
@@ -180,7 +195,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     if (exibirRevisar) {
       rows.add(
         Flexible(
-          flex: 3,
+          flex: flexRevisao,
           child: Center(
             child: Texto(
               "Revisar",
@@ -321,7 +336,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     return Row(
       children: [
         Expanded(
-          flex: kIsMobile ? 8 : 18,
+          flex: kIsMobile ? 8 : flexQuestao,
           child: Texto(
             titulo,
             maxLines: 1,
@@ -329,13 +344,13 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           ),
         ),
         Flexible(
-          flex: 4,
+          flex: flexAlternativa,
           child: Center(
             child: _buildRespostaAlternativa(resposta),
           ),
         ),
         Flexible(
-          flex: 3,
+          flex: flexRevisao,
           child: Center(
             child: _buildRespostaRevisar(resposta, questaoOrdem),
           ),
