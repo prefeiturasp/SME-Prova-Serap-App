@@ -1,9 +1,11 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -472,7 +474,7 @@ mostrarDialogMudancaTema(BuildContext context) {
                                   temaStore.enviarPreferencias();
                                 },
                                 onChanged: (double valor) {
-                                  var min = 10;
+                                  var min = kIsTablet ? 16 : 14;
 
                                   if (valor >= min && valor <= 24) {
                                     temaStore.fachadaAlterarTamanhoDoTexto(valor, update: false);

@@ -75,7 +75,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
   }
 
   Widget _builderLogo() {
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       return Column(
         children: [
           SizedBox(
@@ -107,7 +107,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
   Widget _buildFormularioLogin() {
     var tela = TelaAdaptativaUtil();
 
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       return Form(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -132,9 +132,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                       decoration: InputDecoration(
                         labelText: 'Digite o código EOL',
                         labelStyle: TextStyle(
-                          color: _codigoEOLFocus.hasFocus
-                              ? TemaUtil.laranja01
-                              : TemaUtil.preto,
+                          color: _codigoEOLFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                         prefixText: "RA-",
@@ -164,9 +162,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: InputDecoration(
                         suffixIcon: IconButton(
-                          icon: store.ocultarSenha
-                              ? Icon(Icons.visibility)
-                              : Icon(Icons.visibility_off),
+                          icon: store.ocultarSenha ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
                           color: TemaUtil.pretoSemFoco,
                           onPressed: () {
                             store.ocultarSenha = !store.ocultarSenha;
@@ -174,9 +170,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                         ),
                         labelText: 'Digite a senha',
                         labelStyle: TextStyle(
-                          color: _senhaFocus.hasFocus
-                              ? TemaUtil.laranja01
-                              : TemaUtil.preto,
+                          color: _senhaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                         errorText: store.autenticacaoErroStore.senha,
@@ -256,9 +250,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                     decoration: InputDecoration(
                       labelText: 'Digite o código EOL',
                       labelStyle: TextStyle(
-                        color: _codigoEOLFocus.hasFocus
-                            ? TemaUtil.laranja01
-                            : TemaUtil.preto,
+                        color: _codigoEOLFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                         fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                       prefixText: "RA-",
@@ -288,9 +280,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
-                        icon: store.ocultarSenha
-                            ? Icon(Icons.visibility)
-                            : Icon(Icons.visibility_off),
+                        icon: store.ocultarSenha ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
                         color: TemaUtil.pretoSemFoco,
                         onPressed: () {
                           store.ocultarSenha = !store.ocultarSenha;
@@ -298,9 +288,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                       ),
                       labelText: 'Digite a senha',
                       labelStyle: TextStyle(
-                        color: _senhaFocus.hasFocus
-                            ? TemaUtil.laranja01
-                            : TemaUtil.preto,
+                        color: _senhaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                         fontFamily: temaStore.fonteDoTexto.nomeFonte,
                       ),
                       errorText: store.autenticacaoErroStore.senha,
