@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
-import 'package:appserap/utils/date.util.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
@@ -215,6 +214,8 @@ class GerenciadorDownload with Loggable {
             case EnumDownloadTipo.ARQUIVO:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
+              Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
+
               Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
 
               if (response.isSuccessful) {
@@ -234,7 +235,7 @@ class GerenciadorDownload with Loggable {
                       id: arquivo.id,
                       caminho: arquivo.caminho,
                       base64: base64,
-                      questaoId: arquivo.questaoId,
+                      questaoId: questao!.id,
                     ),
                     idProva);
 
@@ -271,7 +272,7 @@ class GerenciadorDownload with Loggable {
       try {
         prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
 
-        await validarProva();
+        //await validarProva();
 
         prova.questoes.sort(
           (questao1, questao2) {
@@ -330,6 +331,22 @@ class GerenciadorDownload with Loggable {
       downloads = (jsonDecode(downloadJson) as List<dynamic>)
           .map((e) => DownloadProva.fromJson(e as Map<String, dynamic>))
           .toList();
+    }
+  }
+
+  Future<Questao?> obterQuestaoPorArquivoLegadoId(int arquivoLegadoId, int provaId) async {
+    AppDatabase db = GetIt.I.get();
+    var questaoDb = await db.obterQuestaoPorArquivoLegadoId(arquivoLegadoId, provaId).getSingleOrNull();
+
+    if (questaoDb != null) {
+      return Questao(
+          id: questaoDb.id,
+          titulo: questaoDb.titulo,
+          tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == questaoDb.tipo),
+          descricao: questaoDb.descricao,
+          alternativas: [],
+          arquivos: [],
+          ordem: questaoDb.ordem);
     }
   }
 

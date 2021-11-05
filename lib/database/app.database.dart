@@ -130,6 +130,18 @@ class AppDatabase extends _$AppDatabase {
   Future inserirQuestao(QuestaoDb questaoDb) => into(questoesDb).insert(questaoDb);
   Future inserirOuAtualizarQuestao(QuestaoDb questaoDb) => into(questoesDb).insertOnConflictUpdate(questaoDb);
   Future removerQuestao(QuestaoDb questaoDb) => delete(questoesDb).delete(questaoDb);
+  // Future<QuestaoDb?> obterQuestaoPorArquivoLegadoId(int arquivoLegadoId) => (select(questoesDb)
+  //       ..where((t) =>
+  //           t.descricao.contains(arquivoLegadoId.toString()) | t.descricao.contains(arquivoLegadoId.toString())))
+  //     .getSingleOrNull();
+  Selectable<QuestaoDb> obterQuestaoPorArquivoLegadoId(int arquivoLegadoId, int provaId) {
+    return customSelect(
+        'select * from questoes_db where (titulo like \'%$arquivoLegadoId%\'\n or descricao like \'%$arquivoLegadoId%\') and prova_id = $provaId',
+        readsFrom: {
+          questoesDb,
+        }).map(questoesDb.mapFromRow);
+  }
+
   Future<List<QuestaoDb>> obterQuestoesPorProvaId(int provaId) =>
       (select(questoesDb)..where((t) => t.provaId.equals(provaId))).get();
   Future removerQuestoesPorProvaId(int id) {
@@ -159,6 +171,8 @@ class AppDatabase extends _$AppDatabase {
   Future removerArquivo(ArquivoDb arquivoDb) => delete(arquivosDb).delete(arquivoDb);
   Future<List<ArquivoDb>> obterArquivosPorQuestaoId(int questaoId) =>
       (select(arquivosDb)..where((t) => t.questaoId.equals(questaoId))).get();
+  Future<List<ArquivoDb>> obterArquivosPorProvaId(int provaId) =>
+      (select(arquivosDb)..where((t) => t.provaId.equals(provaId))).get();
   Future removerArquivosPorProvaId(int id) {
     return transaction(() async {
       await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
