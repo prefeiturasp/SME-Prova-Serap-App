@@ -118,6 +118,9 @@ class _ProvaAtualTabViewState
       espacamentoInterno = 8.0;
     }
 
+    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+
     return Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
       decoration: BoxDecoration(
@@ -152,13 +155,11 @@ class _ProvaAtualTabViewState
                         tamanhoFonte = temaStore.tTexto14;
                       }
 
-                      return AutoSizeText(
+                      return Texto(
                         provaStore.prova.descricao,
-                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: tamanhoFonte,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                        maxLines: 2,
+                        fontSize: tamanhoFonte,
+                        bold: true,
+                        maxLines: 3,
                       );
                     },
                   ),
@@ -188,6 +189,10 @@ class _ProvaAtualTabViewState
                           if (kDeviceType == EnumTipoDispositivo.mobile) {
                             tamanhoFonte = temaStore.tTexto14;
                           }
+                          if (telaMobileMenor) {
+                            tamanhoFonte = temaStore.tTexto12;
+                          }
+
                           return RichText(
                             text: TextSpan(
                               text: "Quantidade de itens: ",
@@ -197,16 +202,17 @@ class _ProvaAtualTabViewState
                               ),
                               children: [
                                 TextSpan(
-                                    style: TemaUtil.temaTextoPadrao.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: tamanhoFonte,
-                                      fontFamily:
-                                          temaStore.fonteDoTexto.nomeFonte,
-                                    ),
-                                    text: tamanhoFonte >= 22
-                                        ? '\n${provaStore.prova.itensQuantidade.toString()}'
-                                        : provaStore.prova.itensQuantidade
-                                            .toString())
+                                  style: TemaUtil.temaTextoPadrao.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: tamanhoFonte,
+                                    fontFamily:
+                                        temaStore.fonteDoTexto.nomeFonte,
+                                  ),
+                                  text: tamanhoFonte >= 22 || telaMobileMenor
+                                      ? '\n${provaStore.prova.itensQuantidade.toString()}'
+                                      : provaStore.prova.itensQuantidade
+                                          .toString(),
+                                )
                               ],
                             ),
                           );
@@ -294,7 +300,6 @@ class _ProvaAtualTabViewState
     if (prova.dataInicio != prova.dataFim) {
       return Observer(
         builder: (_) {
-
           if (kDeviceType == EnumTipoDispositivo.mobile) {
             tamanhoFonte = temaStore.tTexto16;
 
@@ -609,6 +614,9 @@ class _ProvaAtualTabViewState
       }
     }
 
+    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+
     return BotaoDefaultWidget(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -628,9 +636,11 @@ class _ProvaAtualTabViewState
         ],
       ),
       largura: kDeviceType == EnumTipoDispositivo.mobile
-          ? 320
+          ? telaMobileMenor
+              ? 280
+              : 312
           : tamanhoFonte >= 18
-              ? 400
+              ? 350
               : 312,
       onPressed: () async {
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA &&
@@ -739,8 +749,13 @@ class _ProvaAtualTabViewState
         ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes"
         : "";
 
+    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+
+    var espacamento = telaMobileMenor ? 250.0 : 350.0;
+
     return SizedBox(
-      width: 350,
+      width: espacamento,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
