@@ -34,7 +34,8 @@ class ProvaAtualTabView extends BaseStatefulWidget {
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
+class _ProvaAtualTabViewState
+    extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
   final temaStore = GetIt.I<TemaStore>();
@@ -117,6 +118,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       espacamentoInterno = 8.0;
     }
 
+    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+
     return Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
       decoration: BoxDecoration(
@@ -151,13 +155,11 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                         tamanhoFonte = temaStore.tTexto14;
                       }
 
-                      return AutoSizeText(
+                      return Texto(
                         provaStore.prova.descricao,
-                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: tamanhoFonte,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                        maxLines: 2,
+                        fontSize: tamanhoFonte,
+                        bold: true,
+                        maxLines: 3,
                       );
                     },
                   ),
@@ -187,6 +189,10 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                           if (kIsMobile) {
                             tamanhoFonte = temaStore.tTexto14;
                           }
+                          if (telaMobileMenor) {
+                            tamanhoFonte = temaStore.tTexto12;
+                          }
+
                           return RichText(
                             text: TextSpan(
                               text: "Quantidade de itens: ",
@@ -196,14 +202,17 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                               ),
                               children: [
                                 TextSpan(
-                                    style: TemaUtil.temaTextoPadrao.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: tamanhoFonte,
-                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    ),
-                                    text: tamanhoFonte >= 22
-                                        ? '\n${provaStore.prova.itensQuantidade.toString()}'
-                                        : provaStore.prova.itensQuantidade.toString())
+                                  style: TemaUtil.temaTextoPadrao.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: tamanhoFonte,
+                                    fontFamily:
+                                        temaStore.fonteDoTexto.nomeFonte,
+                                  ),
+                                  text: tamanhoFonte >= 22 || telaMobileMenor
+                                      ? '\n${provaStore.prova.itensQuantidade.toString()}'
+                                      : provaStore.prova.itensQuantidade
+                                          .toString(),
+                                )
                               ],
                             ),
                           );
@@ -247,7 +256,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                             },
                           ),
                           SizedBox(
-                            width: kIsMobile ? 250 : 350,
+                            width: kIsMobile
+                                ? 250
+                                : 350,
                             child: _formataDataAplicacao(provaStore.prova),
                           ),
                         ],
@@ -373,22 +384,26 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
   _buildBotao(ProvaStore provaStore) {
     // Download não iniciado e sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
+        !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
     }
 
     // Download prova pausado sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO &&
+        !_principalStore.temConexao) {
       return _buildPausado(provaStore);
     }
 
     // Baixar prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
+        _principalStore.temConexao) {
       return _buildBaixarProva(provaStore);
     }
 
     // Baixando prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO && _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO &&
+        _principalStore.temConexao) {
       return _buildDownloadProgresso(provaStore);
     }
 
@@ -599,6 +614,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       }
     }
 
+    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+
     return BotaoDefaultWidget(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -618,12 +636,15 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         ],
       ),
       largura: kIsMobile
-          ? 320
+          ? telaMobileMenor
+              ? 280
+              : 312
           : tamanhoFonte >= 18
-              ? 400
+              ? 350
               : 312,
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA &&
+            provaStore.prova.senha != null) {
           //
           showDialog(
             context: context,
@@ -654,12 +675,15 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                     ),
                     child: TextField(
                       focusNode: _codigoProvaFocus,
-                      onChanged: (value) => provaStore.codigoIniciarProva = value,
+                      onChanged: (value) =>
+                          provaStore.codigoIniciarProva = value,
                       maxLength: 10,
                       decoration: InputDecoration(
                         labelText: 'Digite o código para liberar a prova',
                         labelStyle: TextStyle(
-                          color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                          color: _codigoProvaFocus.hasFocus
+                              ? TemaUtil.laranja01
+                              : TemaUtil.preto,
                         ),
                       ),
                     ),
@@ -668,7 +692,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 botoes: [
                   BotaoDefaultWidget(
                     onPressed: () {
-                      String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
+                      String senhaCriptografada = md5
+                          .convert(utf8.encode(provaStore.codigoIniciarProva))
+                          .toString();
 
                       if (provaStore.prova.senha == senhaCriptografada) {
                         Navigator.pop(context);
@@ -702,7 +728,8 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           );
         }
 
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA &&
+            provaStore.prova.senha == null) {
           provaStore.iniciarProva();
           Navigator.pushReplacement(
             context,
@@ -718,11 +745,17 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {
-    var tempoRestante =
-        prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes" : "";
+    var tempoRestante = prova.tempoPrevisto > 0
+        ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes"
+        : "";
+
+    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
+    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+
+    var espacamento = telaMobileMenor ? 250.0 : 350.0;
 
     return SizedBox(
-      width: 350,
+      width: espacamento,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
