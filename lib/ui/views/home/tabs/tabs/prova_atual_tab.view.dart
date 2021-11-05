@@ -114,7 +114,7 @@ class _ProvaAtualTabViewState
   _buildProva(ProvaStore provaStore) {
     var espacamentoInterno = 24.0;
 
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       espacamentoInterno = 8.0;
     }
 
@@ -135,7 +135,7 @@ class _ProvaAtualTabViewState
           children: [
             Observer(
               builder: (_) {
-                if (kDeviceType == EnumTipoDispositivo.mobile) {
+                if (kIsMobile) {
                   return SizedBox();
                 }
                 return SvgPicture.asset(provaStore.icone);
@@ -151,7 +151,7 @@ class _ProvaAtualTabViewState
                   Observer(
                     builder: (_) {
                       var tamanhoFonte = temaStore.tTexto16;
-                      if (kDeviceType == EnumTipoDispositivo.mobile) {
+                      if (kIsMobile) {
                         tamanhoFonte = temaStore.tTexto14;
                       }
 
@@ -186,7 +186,7 @@ class _ProvaAtualTabViewState
                       Observer(
                         builder: (context) {
                           var tamanhoFonte = temaStore.tTexto16;
-                          if (kDeviceType == EnumTipoDispositivo.mobile) {
+                          if (kIsMobile) {
                             tamanhoFonte = temaStore.tTexto14;
                           }
                           if (telaMobileMenor) {
@@ -246,7 +246,7 @@ class _ProvaAtualTabViewState
                           Observer(
                             builder: (_) {
                               var tamanhoFonte = 16.0;
-                              if (kDeviceType == EnumTipoDispositivo.mobile) {
+                              if (kIsMobile) {
                                 tamanhoFonte = 14.0;
                               }
                               return Texto(
@@ -256,7 +256,7 @@ class _ProvaAtualTabViewState
                             },
                           ),
                           SizedBox(
-                            width: kDeviceType == EnumTipoDispositivo.mobile
+                            width: kIsMobile
                                 ? 250
                                 : 350,
                             child: _formataDataAplicacao(provaStore.prova),
@@ -300,7 +300,7 @@ class _ProvaAtualTabViewState
     if (prova.dataInicio != prova.dataFim) {
       return Observer(
         builder: (_) {
-          if (kDeviceType == EnumTipoDispositivo.mobile) {
+          if (kIsMobile) {
             tamanhoFonte = temaStore.tTexto16;
 
             if (temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC) {
@@ -519,7 +519,7 @@ class _ProvaAtualTabViewState
 
   Widget _buildBaixarProva(ProvaStore provaStore) {
     var tamanhoFonte = temaStore.tTexto16;
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       tamanhoFonte = temaStore.tTexto14;
     }
 
@@ -607,7 +607,7 @@ class _ProvaAtualTabViewState
     }
 
     var tamanhoFonte = 18.0;
-    if (kDeviceType == EnumTipoDispositivo.mobile) {
+    if (kIsMobile) {
       tamanhoFonte = 14.0;
       if (temaStore.incrementador == 22) {
         tamanhoFonte = 12.0;
@@ -635,7 +635,7 @@ class _ProvaAtualTabViewState
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
-      largura: kDeviceType == EnumTipoDispositivo.mobile
+      largura: kIsMobile
           ? telaMobileMenor
               ? 280
               : 312
