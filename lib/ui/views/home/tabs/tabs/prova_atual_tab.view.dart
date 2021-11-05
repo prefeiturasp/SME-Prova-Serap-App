@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -212,7 +211,7 @@ class _ProvaAtualTabViewState
                                     fontFamily:
                                         temaStore.fonteDoTexto.nomeFonte,
                                   ),
-                                  text: tamanhoFonte >= 22 || telaMobileMenor
+                                  text: tamanhoFonte >= 22
                                       ? '\n${provaStore.prova.itensQuantidade.toString()}'
                                       : provaStore.prova.itensQuantidade
                                           .toString(),
@@ -756,9 +755,9 @@ class _ProvaAtualTabViewState
         : "";
 
     final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+    bool telaMobileMenor = tela.size.width <= 400 ? true : false;
 
-    var espacamento = telaMobileMenor ? 300.0 : 350.0;
+    var espacamento = telaMobileMenor ? 280.0 : 350.0;
 
     return SizedBox(
       width: espacamento,
