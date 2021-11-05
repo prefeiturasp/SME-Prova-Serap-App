@@ -113,7 +113,7 @@ class _ProvaAtualTabViewState
 
   _buildProva(ProvaStore provaStore) {
     final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+    bool telaMobileMenor = tela.size.width <= 400 ? true : false;
 
     var espacamentoInterno = 24.0;
 
@@ -122,9 +122,7 @@ class _ProvaAtualTabViewState
     if (kIsMobile) {
       espacamentoInterno = 8.0;
 
-      if (tela.size.width <= 450) {
-        espacamentoInternoBlocoProva = EdgeInsets.fromLTRB(8, 8, 0, 8);
-      }
+      espacamentoInternoBlocoProva = EdgeInsets.fromLTRB(8, 8, 0, 12);
     }
 
     return Container(
@@ -304,16 +302,20 @@ class _ProvaAtualTabViewState
     if (prova.dataInicio != prova.dataFim) {
       return Observer(
         builder: (_) {
+          int tamanhoFonteParaQuebrarTexto = 18;
+
           if (kIsMobile) {
             tamanhoFonte = temaStore.tTexto16;
+            tamanhoFonteParaQuebrarTexto = 14;
 
             if (temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC) {
               tamanhoFonte = temaStore.tTexto14;
+              tamanhoFonteParaQuebrarTexto = 12;
             }
           }
 
           return Container(
-            child: tamanhoFonte >= tamanhoFonte
+            child: tamanhoFonte >= tamanhoFonteParaQuebrarTexto
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -352,7 +354,7 @@ class _ProvaAtualTabViewState
                     children: [
                       AutoSizeText(
                         formatEddMMyyyy(prova.dataInicio),
-                        maxLines: 4,
+                        maxLines: 1,
                         style: TemaUtil.temaTextoPadraoNegrito.copyWith(
                           fontSize: tamanhoFonte,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
@@ -360,7 +362,7 @@ class _ProvaAtualTabViewState
                       ),
                       AutoSizeText(
                         " à ",
-                        maxLines: 4,
+                        maxLines: 1,
                         style: TemaUtil.temaTextoPadrao.copyWith(
                           fontSize: tamanhoFonte,
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
@@ -368,7 +370,7 @@ class _ProvaAtualTabViewState
                       ),
                       AutoSizeText(
                         formatEddMMyyyy(prova.dataFim!),
-                        maxLines: 4,
+                        maxLines: 1,
                         minFontSize: 16,
                         overflow: TextOverflow.ellipsis,
                         style: TemaUtil.temaTextoPadraoNegrito.copyWith(
@@ -613,13 +615,13 @@ class _ProvaAtualTabViewState
     var tamanhoFonte = 18.0;
     if (kIsMobile) {
       tamanhoFonte = 14.0;
-      if (temaStore.incrementador == 22) {
+      if (temaStore.incrementador >= 22) {
         tamanhoFonte = 12.0;
       }
     }
 
     final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+    bool telaMobileMenor = tela.size.width <= 400 ? true : false;
 
     return BotaoDefaultWidget(
       child: Row(
@@ -642,7 +644,7 @@ class _ProvaAtualTabViewState
       largura: kIsMobile
           ? telaMobileMenor
               ? 280
-              : 312
+              : 320
           : tamanhoFonte >= 18
               ? 350
               : 312,
@@ -756,7 +758,7 @@ class _ProvaAtualTabViewState
     final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
     bool telaMobileMenor = tela.size.width <= 450 ? true : false;
 
-    var espacamento = telaMobileMenor ? 250.0 : 350.0;
+    var espacamento = telaMobileMenor ? 300.0 : 350.0;
 
     return SizedBox(
       width: espacamento,

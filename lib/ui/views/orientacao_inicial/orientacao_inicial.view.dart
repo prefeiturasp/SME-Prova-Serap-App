@@ -1,4 +1,3 @@
-import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
@@ -202,7 +201,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
             top: 50,
           ),
           child: SizedBox(
-            height: MediaQuery.of(context).size.height * .12,
+            height: MediaQuery.of(context).size.height * .18,
             child: _buildBotoesNavegacao(),
           ),
         );
