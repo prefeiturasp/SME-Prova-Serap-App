@@ -1,3 +1,4 @@
+import 'package:appserap/database/app.database.dart';
 import 'package:chopper/src/response.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -30,16 +31,19 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     Map<int, ProvaStore> provasStore = {};
 
-    // Carrega provas do cache
-    List<int> ids = getProvasCache();
+    AppDatabase db = GetIt.I.get();
 
-    for (var id in ids) {
-      var provaBanco = Prova.carregaProvaCache(id)!;
-      provasStore[provaBanco.id] = ProvaStore(
-        id: id,
-        prova: provaBanco,
-        respostas: ProvaRespostaStore(idProva: id),
-      );
+    List<ProvaDb> provasDb = await db.obterProvasPendentes();
+    if (provasDb.isNotEmpty) {
+      List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
+
+      for (var prova in provas) {
+        provasStore[prova.id] = ProvaStore(
+          id: prova.id,
+          prova: prova,
+          respostas: ProvaRespostaStore(idProva: prova.id),
+        );
+      }
     }
 
     ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
@@ -95,9 +99,9 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
           var idsRemote = provasResponse.map((e) => e.id).toList();
 
-          for (var idLocal in ids) {
-            if (!idsRemote.contains(idLocal)) {
-              await removerProvaLocal(provasStore[idLocal]!);
+          for (var provaDb in provasDb) {
+            if (!idsRemote.contains(provaDb.id)) {
+              await removerProvaLocal(provasStore[provaDb.id]!);
             }
           }
           provasStore.removeWhere((idProva, prova) => !idsRemote.contains(idProva));
@@ -127,7 +131,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   }
 
   Future<void> carregaProva(int idProva, ProvaStore provaStore) async {
-    Prova? prova = Prova.carregaProvaCache(idProva);
+    Prova? prova = await Prova.carregaProvaCache(idProva);
 
     if (prova != null) {
       // atualizar prova com os valores remotos

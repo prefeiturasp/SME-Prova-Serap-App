@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/home.store.dart';
@@ -9,7 +10,6 @@ import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: non_constant_identifier_names
@@ -25,6 +25,7 @@ class DependenciasIoC with Loggable {
 
   registrarServicos() {
     registerSingletonAsync<SharedPreferences>(() => SharedPreferences.getInstance());
+    registerSingleton<AppDatabase>(constructDb());
     registerSingleton<ApiService>(ApiService.build(
       ConnectionOptions(
         baseUrl: AppConfigReader.getApiHost(),

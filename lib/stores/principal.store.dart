@@ -1,3 +1,4 @@
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -55,6 +56,10 @@ abstract class _PrincipalStoreBase with Store {
   Future<void> sair() async {
     SharedPreferences prefs = GetIt.I.get();
     await prefs.clear();
+
+    AppDatabase db = GetIt.I.get();
+    db.limpar();
+
     usuario.dispose();
   }
 }

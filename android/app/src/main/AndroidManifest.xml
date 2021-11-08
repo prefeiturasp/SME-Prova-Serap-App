@@ -4,6 +4,9 @@
     package="br.gov.sp.prefeitura.sme.appserap">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.READ_XTERNAL_STORAGE" android:maxSdkVersion="30" />
 
    <application
         android:label="SERAp Estudantes"
