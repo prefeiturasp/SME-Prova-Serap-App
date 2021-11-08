@@ -78,6 +78,12 @@ dependencies:
   #criptografia da senha da prova
   crypto: ^3.0.1
 
+  #database
+  drift: ^1.0.1
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.0.0
+  path: ^1.8.0
+
 dependency_overrides:
   flutter_colorpicker: ^0.6.0
 
@@ -88,9 +94,10 @@ dev_dependencies:
 
   build_runner: ^2.1.2
   chopper_generator: ^4.0.1
-  json_annotation: ^4.1.0
-  json_serializable: ^4.1.4
   mobx_codegen: ^2.0.0
+  drift_dev: ^1.0.2
+  json_annotation: ^4.1.0
+  json_serializable: ^5.0.0
 
 scripts:
   clean: flutter clean flutter pub get

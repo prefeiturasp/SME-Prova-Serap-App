@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
@@ -127,6 +128,7 @@ class GerenciadorDownload with Loggable {
     info('Iniciando download da prova ID $idProva');
 
     Prova prova = await getProva();
+
     downloadAtual = downloads.length - getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length;
 
     if (prova.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
@@ -148,6 +150,7 @@ class GerenciadorDownload with Loggable {
         startTimer();
         try {
           prova = await getProva();
+
           prova.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
           if (onChangeStatusCallback != null) {
@@ -167,21 +170,24 @@ class GerenciadorDownload with Loggable {
                 Response<QuestaoResponseDTO> response = await apiService.questao.getQuestao(idQuestao: download.id);
 
                 if (response.isSuccessful) {
-                  QuestaoResponseDTO questao = response.body!;
+                  QuestaoResponseDTO questaoDTO = response.body!;
 
-                  prova.questoes.add(Questao(
-                    id: questao.id,
-                    titulo: questao.titulo,
-                    descricao: questao.descricao,
-                    ordem: questao.ordem,
+                  Questao questao = Questao(
+                    id: questaoDTO.id,
+                    titulo: questaoDTO.titulo,
+                    descricao: questaoDTO.descricao,
+                    ordem: questaoDTO.ordem,
                     alternativas: [],
                     arquivos: [],
-                    tipo: questao.tipo,
-                  ));
+                    tipo: questaoDTO.tipo,
+                  );
+
+                  await saveQuestao(questao, idProva);
                 }
               }
-
+              download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               break;
+
             case EnumDownloadTipo.ALTERNATIVA:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
@@ -189,63 +195,54 @@ class GerenciadorDownload with Loggable {
                   await apiService.alternativa.getAlternativa(idAlternativa: download.id);
 
               if (response.isSuccessful) {
-                AlternativaResponseDTO alternativa = response.body!;
+                AlternativaResponseDTO alternativaDTO = response.body!;
 
-                Questao? questao = prova.questoes.firstWhereOrNull((element) => element.id == alternativa.questaoId);
+                Alternativa alternativa = Alternativa(
+                  id: alternativaDTO.id,
+                  descricao: alternativaDTO.descricao,
+                  ordem: alternativaDTO.ordem,
+                  numeracao: alternativaDTO.numeracao,
+                  questaoId: alternativaDTO.questaoId,
+                );
 
-                if (questao != null) {
-                  questao.alternativas.add(Alternativa(
-                    id: alternativa.id,
-                    descricao: alternativa.descricao,
-                    ordem: alternativa.ordem,
-                    numeracao: alternativa.numeracao,
-                    questaoId: alternativa.questaoId,
-                  ));
+                await saveAlternativa(alternativa, idProva);
 
-                  download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
-                } else {
-                  warning('Alternativa ${download.id} nao vinculado a nenhuma questão!');
-                }
+                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               }
-
               break;
+
             case EnumDownloadTipo.ARQUIVO:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-              Questao? questao = prova.questoes.firstWhereOrNull((element) =>
-                  element.titulo.contains(download.id.toString()) ||
-                  element.descricao.contains(download.id.toString()));
+              Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
 
-              if (questao != null) {
-                Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
+              Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
 
-                if (response.isSuccessful) {
-                  ArquivoResponseDTO arquivo = response.body!;
+              if (response.isSuccessful) {
+                ArquivoResponseDTO arquivo = response.body!;
 
-                  http.Response arquivoResponse = await http.get(
-                    Uri.parse(
-                      arquivo.caminho.replaceFirst('http://', 'https://'),
+                http.Response arquivoResponse = await http.get(
+                  Uri.parse(
+                    arquivo.caminho.replaceFirst('http://', 'https://'),
+                  ),
+                );
+
+                // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
+                String base64 = base64Encode(arquivoResponse.bodyBytes);
+
+                saveArquivo(
+                    Arquivo(
+                      id: arquivo.id,
+                      caminho: arquivo.caminho,
+                      base64: base64,
+                      questaoId: questao!.id,
                     ),
-                  );
+                    idProva);
 
-                  // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
-                  String base64 = base64Encode(arquivoResponse.bodyBytes);
-
-                  questao.arquivos.add(Arquivo(
-                    id: arquivo.id,
-                    caminho: arquivo.caminho,
-                    base64: base64,
-                  ));
-                } else {
-                  warning('Arquivo ${download.id} nao vinculado a nenhuma questao');
-                }
+                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               }
-
               break;
           }
-
-          download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
-
           downloadAtual = i;
           prova.downloadProgresso = getPorcentagem();
 
@@ -275,7 +272,7 @@ class GerenciadorDownload with Loggable {
       try {
         prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
 
-        await validarProva();
+        //await validarProva();
 
         prova.questoes.sort(
           (questao1, questao2) {
@@ -337,6 +334,22 @@ class GerenciadorDownload with Loggable {
     }
   }
 
+  Future<Questao?> obterQuestaoPorArquivoLegadoId(int arquivoLegadoId, int provaId) async {
+    AppDatabase db = GetIt.I.get();
+    var questaoDb = await db.obterQuestaoPorArquivoLegadoId(arquivoLegadoId, provaId).getSingleOrNull();
+
+    if (questaoDb != null) {
+      return Questao(
+          id: questaoDb.id,
+          titulo: questaoDb.titulo,
+          tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == questaoDb.tipo),
+          descricao: questaoDb.descricao,
+          alternativas: [],
+          arquivos: [],
+          ordem: questaoDb.ordem);
+    }
+  }
+
   bool containsId(int id) {
     return downloads.firstWhereOrNull((element) => element.id == id) != null;
   }
@@ -346,17 +359,119 @@ class GerenciadorDownload with Loggable {
   }
 
   Future<Prova> getProva() async {
-    SharedPreferences prefs = GetIt.I.get();
+    AppDatabase db = GetIt.I.get();
 
-    var provaJson = prefs.getString('prova_$idProva');
+    var provaDb = await db.obterProvaPorId(idProva);
 
-    return Prova.fromJson(jsonDecode(provaJson!));
+    Prova prova = Prova.fromProvaDb(provaDb);
+
+    var questoesDb = await db.obterQuestoesPorProvaId(prova.id);
+    prova.questoes = questoesDb
+        .map(
+          (e) => Questao(
+            id: e.id,
+            titulo: e.titulo,
+            descricao: e.descricao,
+            ordem: e.ordem,
+            alternativas: [],
+            arquivos: [],
+            tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+          ),
+        )
+        .toList();
+
+    for (var questao in prova.questoes) {
+      var alternativasDb = await db.obterAlternativasPorQuestaoId(questao.id);
+      questao.alternativas = alternativasDb
+          .map(
+            (e) => Alternativa(
+                numeracao: e.numeracao, descricao: e.descricao, id: e.id, ordem: e.ordem, questaoId: e.questaoId),
+          )
+          .toList();
+
+      var arquivosDb = await db.obterArquivosPorQuestaoId(questao.id);
+      questao.arquivos = arquivosDb
+          .map(
+            (e) => Arquivo(
+              id: e.id,
+              caminho: e.caminho,
+              base64: e.base64,
+              questaoId: e.questaoId,
+            ),
+          )
+          .toList();
+    }
+
+    return prova;
+  }
+
+  saveQuestao(Questao questao, int provaId) {
+    AppDatabase database = GetIt.I.get();
+
+    database.inserirOuAtualizarQuestao(
+      QuestaoDb(
+          id: questao.id,
+          titulo: questao.titulo,
+          descricao: questao.descricao,
+          ordem: questao.ordem,
+          tipo: questao.tipo.index,
+          provaId: provaId),
+    );
+
+    fine('[QUESTAO SALVA]');
+  }
+
+  saveAlternativa(Alternativa alternativa, int provaId) {
+    AppDatabase database = GetIt.I.get();
+
+    database.inserirOuAtualizarAlternativa(
+      AlternativaDb(
+          id: alternativa.id,
+          descricao: alternativa.descricao,
+          ordem: alternativa.ordem,
+          numeracao: alternativa.numeracao,
+          questaoId: alternativa.questaoId,
+          provaId: provaId),
+    );
+
+    fine('[ALTERNATIVA SALVA]');
+  }
+
+  saveArquivo(Arquivo arquivo, int provaId) {
+    AppDatabase database = GetIt.I.get();
+
+    database.inserirOuAtualizarArquivo(
+      ArquivoDb(
+        id: arquivo.id,
+        caminho: arquivo.caminho,
+        base64: arquivo.base64,
+        questaoId: arquivo.questaoId,
+        provaId: provaId,
+      ),
+    );
+
+    fine('[ARQUIVO SALVO]');
   }
 
   saveProva(Prova prova) async {
-    SharedPreferences prefs = GetIt.I.get();
+    AppDatabase db = GetIt.I.get();
 
-    await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
+    db.inserirOuAtualizarProva(
+      ProvaDb(
+          id: prova.id,
+          descricao: prova.descricao,
+          downloadStatus: prova.downloadStatus.index,
+          tempoExtra: prova.tempoExtra,
+          tempoExecucao: prova.tempoExecucao,
+          tempoAlerta: prova.tempoAlerta,
+          itensQuantidade: prova.itensQuantidade,
+          status: prova.status.index,
+          dataInicio: prova.dataInicio,
+          ultimaAtualizacao: DateTime.now()),
+    );
+
+    var provaSalva = await db.obterProvaPorId(prova.id);
+    fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }
 
   deleteDownload() {
@@ -371,9 +486,11 @@ class GerenciadorDownload with Loggable {
       }
     }
     var prova = await getProva();
+
     prova.downloadStatus = EnumDownloadStatus.PAUSADO;
 
     await saveProva(prova);
+
     await saveDownloads();
   }
 
