@@ -151,10 +151,4 @@ abstract class TemaUtil {
     fontSize: 16,
     fontWeight: FontWeight.w800,
   );
-
-  //TEMA TEXTO DURACAO DIALOG
-  static const temaTextoMensagemCorpo = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-  );
 }

@@ -1,9 +1,7 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
-import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
-import 'package:appserap/stores/tema.store.dart';
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
@@ -447,7 +445,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
     if (finalizar) {
       await widget.provaStore.finalizarProva(context);
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => SplashScreenView()),
+        MaterialPageRoute(builder: (context) => HomeView()),
         (_) => false,
       );
     }
