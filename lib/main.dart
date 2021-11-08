@@ -1,16 +1,16 @@
 // ignore_for_file: avoid_print
 
+import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/utils/tema.util.dart';
 import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/workers/dispacher.dart';
@@ -68,8 +68,8 @@ void setupLogging() {
 
 void registerFonts() {
   LicenseRegistry.addLicense(() async* {
-    final license = await rootBundle.loadString('google_fonts/OFL.txt');
-    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+    final license = await rootBundle.loadString('fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['fonts'], license);
   });
 }
 
@@ -85,8 +85,13 @@ class MyApp extends StatelessWidget {
       builder: asuka.builder,
       navigatorObservers: [asuka.asukaHeroController],
       debugShowCheckedModeBanner: kDebugMode,
-      theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+      theme: ThemeData.light().copyWith(
+        appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
+        textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+          ),
+        ),
       ),
       locale: Locale('pt', 'BR'),
       home: SplashScreenView(),
