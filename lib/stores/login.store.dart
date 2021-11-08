@@ -5,6 +5,7 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -83,6 +84,9 @@ abstract class _LoginStoreBase with Store, Loggable {
 
   @action
   onPostLogin(AutenticacaoDadosResponseDTO usuarioDados) async {
+    if (kIsTablet && usuarioDados.tamanhoFonte < 16) {
+      usuarioDados.tamanhoFonte = 16;
+    }
     defineFonte(usuarioDados.familiaFonte, usuarioDados.tamanhoFonte);
   }
 
