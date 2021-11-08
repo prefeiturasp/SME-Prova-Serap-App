@@ -17,7 +17,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   final temaStore = GetIt.I<TemaStore>();
 
-  AppBarWidget({required this.popView, this.subtitulo, this.mostrarBotaoVoltar = true});
+  AppBarWidget(
+      {required this.popView, this.subtitulo, this.mostrarBotaoVoltar = true});
 
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
@@ -36,14 +37,20 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
-                style: TemaUtil.temaTextoAppBar.copyWith(
-                  fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
+                  style: TemaUtil.temaTextoAppBar.copyWith(
+                    fontSize: temaStore.tTexto16,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
                 ),
               ),
-              _buildSubtitulo(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _buildSubtitulo(),
+              ),
             ],
           );
         },
