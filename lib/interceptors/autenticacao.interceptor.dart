@@ -56,10 +56,6 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       SharedPreferences prefs = GetIt.I.get();
       await prefs.setString('token', newToken);
       await prefs.setString('token_expiration', expiration.toIso8601String());
-      
-      var orientacoesStore = GetIt.I.get<OrientacaoInicialStore>();
-      await orientacoesStore.popularListaDeOrientacoes();
-
       return newToken;
     }
 
