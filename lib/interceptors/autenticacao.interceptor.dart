@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:chopper/chopper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,6 +47,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
     fine('Atualizando token');
     Response<AutenticacaoResponseDTO> response = await service.auth.revalidar(token: oldToken);
 
+
     if (response.isSuccessful) {
       String newToken = response.body!.token;
       DateTime expiration = response.body!.dataHoraExpiracao;
@@ -54,6 +56,9 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       SharedPreferences prefs = GetIt.I.get();
       await prefs.setString('token', newToken);
       await prefs.setString('token_expiration', expiration.toIso8601String());
+      
+      var orientacoesStore = GetIt.I.get<OrientacaoInicialStore>();
+      await orientacoesStore.popularListaDeOrientacoes();
 
       return newToken;
     }

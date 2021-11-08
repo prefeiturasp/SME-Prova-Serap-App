@@ -42,12 +42,13 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     await _principalStore.setup();
 
     await _principalStore.usuario.carregarUsuario();
-    await _orientacaoStore.popularListaDeOrientacoes();
 
     if (_principalStore.temConexao && _principalStore.usuario.isLogado) {
       var responseMeusDados = await GetIt.I.get<ApiService>().auth.meusDados();
 
       if (responseMeusDados.isSuccessful) {
+        await _orientacaoStore.popularListaDeOrientacoes();
+
         var usuarioDados = responseMeusDados.body!;
         if (usuarioDados.nome != "") {
           _principalStore.usuario.atualizarDados(
