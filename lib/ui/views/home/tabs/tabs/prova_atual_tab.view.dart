@@ -724,9 +724,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes" : "";
 
     final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    bool telaMobileMenor = tela.size.width <= 450 ? true : false;
+    bool telaMobileMenor = tela.size.width <= 400 ? true : false;
 
-    var espacamento = telaMobileMenor ? 300.0 : 350.0;
+    var espacamento = telaMobileMenor ? 280.0 : 350.0;
 
     return SizedBox(
       width: espacamento,
