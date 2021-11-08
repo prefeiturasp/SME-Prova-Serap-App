@@ -5,8 +5,10 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/login.store.dart';
+import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
@@ -37,8 +39,10 @@ class DependenciasIoC with Loggable {
     registerSingleton<UsuarioStore>(UsuarioStore());
     registerSingleton<PrincipalStore>(PrincipalStore());
     registerSingleton<LoginStore>(LoginStore());
+    registerSingleton<TemaStore>(TemaStore());
     registerSingleton<HomeStore>(HomeStore());
     registerSingleton<ProvaViewStore>(ProvaViewStore());
+    registerSingleton<OrientacaoInicialStore>(OrientacaoInicialStore());
   }
 
   void registerSingletonAsync<T extends Object>(

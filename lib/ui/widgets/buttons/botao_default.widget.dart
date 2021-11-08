@@ -1,5 +1,8 @@
+import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class BotaoDefaultWidget extends StatelessWidget {
   final String? textoBotao;
@@ -7,6 +10,9 @@ class BotaoDefaultWidget extends StatelessWidget {
   final double? largura;
   final bool desabilitado;
   final Function()? onPressed;
+  // final BuildContext context;
+
+  final temaStore = GetIt.I.get<TemaStore>();
 
   BotaoDefaultWidget({
     this.textoBotao,
@@ -18,15 +24,21 @@ class BotaoDefaultWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: desabilitado ? null : onPressed,
-      child: Container(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-        width: largura,
-        height: 50,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: TemaUtil.laranja01,
+    return SizedBox(
+      height: 50,
+      width: largura,
+      child: TextButton(
+        onPressed: desabilitado ? null : onPressed,
+        style: ButtonStyle(
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          // backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+          padding: MaterialStateProperty.all(
+            EdgeInsets.fromLTRB(20, 0, 20, 0),
+          ),
         ),
         child: Center(
           child: _buildChild(),
@@ -37,10 +49,10 @@ class BotaoDefaultWidget extends StatelessWidget {
 
   _buildChild() {
     if (textoBotao != null) {
-      return Text(
+      return Texto(
         textoBotao!,
-        textAlign: TextAlign.center,
-        style: TextStyle(color: TemaUtil.branco, fontWeight: FontWeight.bold, fontSize: 16),
+        center: true,
+        texStyle: TemaUtil.temaTextoBotao,
       );
     }
 
