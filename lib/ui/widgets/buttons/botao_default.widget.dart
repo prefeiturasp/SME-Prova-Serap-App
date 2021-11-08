@@ -1,4 +1,3 @@
-import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';

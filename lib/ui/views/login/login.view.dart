@@ -1,5 +1,4 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
@@ -105,8 +104,6 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
   }
 
   Widget _buildFormularioLogin() {
-    var tela = TelaAdaptativaUtil();
-
     if (kIsMobile) {
       return Form(
         child: Column(

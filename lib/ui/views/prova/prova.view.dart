@@ -2,13 +2,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/enums/tipo_dispositivo.enum.dart';
-import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -22,7 +20,6 @@ import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/barras/barra_progresso.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
@@ -81,7 +78,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       var confirm = await widget.provaStore.finalizarProva(context, true);
       if (confirm) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => SplashScreenView()),
+          MaterialPageRoute(builder: (context) => HomeView()),
           (_) => false,
         );
       }
@@ -381,55 +378,58 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: HtmlEditor(
-              controller: controller,
-              callbacks: Callbacks(
-                onInit: () {
-                  controller.execCommand('fontName', argument: "Poppins");
-                  controller.setText(provaResposta?.resposta ?? "");
-                },
-                onChangeContent: (String? textoDigitado) {
-                  widget.provaStore.respostas.definirResposta(questao.id, textoResposta: textoDigitado);
-                },
-              ),
-              htmlToolbarOptions: HtmlToolbarOptions(
-                toolbarPosition: ToolbarPosition.belowEditor,
-                defaultToolbarButtons: [
-                  FontButtons(
-                    subscript: false,
-                    superscript: false,
-                    strikethrough: false,
-                  ),
-                  ParagraphButtons(
-                    lineHeight: false,
-                    caseConverter: false,
-                    decreaseIndent: true,
-                    increaseIndent: true,
-                    textDirection: false,
-                    alignRight: false,
-                  ),
-                  ListButtons(
-                    listStyles: false,
-                  ),
-                ],
-              ),
-              htmlEditorOptions: HtmlEditorOptions(
-                autoAdjustHeight: false,
-                hint: "Digite sua resposta aqui...",
-              ),
-              otherOptions: OtherOptions(
-                height: 400,
-              ),
-            ),
+            child: Observer(builder: (_) {
+              return HtmlEditor(
+                controller: controller,
+                callbacks: Callbacks(
+                  onInit: () {
+                    controller.execCommand('fontName', argument: temaStore.fonteDoTexto.nomeFonte);
+                    controller.setText(provaResposta?.resposta ?? "");
+                  },
+                  onChangeContent: (String? textoDigitado) {
+                    widget.provaStore.respostas.definirResposta(questao.id, textoResposta: textoDigitado);
+                  },
+                ),
+                htmlToolbarOptions: HtmlToolbarOptions(
+                  toolbarPosition: ToolbarPosition.belowEditor,
+                  defaultToolbarButtons: [
+                    FontButtons(
+                      subscript: false,
+                      superscript: false,
+                      strikethrough: false,
+                    ),
+                    ParagraphButtons(
+                      lineHeight: false,
+                      caseConverter: false,
+                      decreaseIndent: true,
+                      increaseIndent: true,
+                      textDirection: false,
+                      alignRight: false,
+                    ),
+                    ListButtons(
+                      listStyles: false,
+                    ),
+                  ],
+                ),
+                htmlEditorOptions: HtmlEditorOptions(
+                  autoAdjustHeight: false,
+                  hint: "Digite sua resposta aqui...",
+                ),
+                otherOptions: OtherOptions(
+                  height: 400,
+                ),
+              );
+            }),
           ),
         ),
         //
         Container(
           padding: EdgeInsets.symmetric(vertical: 15),
           width: MediaQuery.of(context).size.width,
-          child: Text(
+          child: Texto(
             'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length}',
             textAlign: TextAlign.end,
+            fontSize: 16,
           ),
         ),
       ],
