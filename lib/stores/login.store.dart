@@ -46,6 +46,8 @@ abstract class _LoginStoreBase with Store, Loggable {
     for (final d in _disposers) {
       d();
     }
+    senha = "";
+    codigoEOL = "";
   }
 
   void validateTodos() {

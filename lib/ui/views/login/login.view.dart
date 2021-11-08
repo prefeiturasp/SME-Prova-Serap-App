@@ -353,7 +353,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
     store.validateTodos();
     if (!store.autenticacaoErroStore.possuiErros) {
       await store.autenticar();
+      await _orientacaoStore.popularListaDeOrientacoes();
     }
-    await _orientacaoStore.popularListaDeOrientacoes();
   }
 }
