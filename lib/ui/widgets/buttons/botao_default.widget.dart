@@ -1,6 +1,6 @@
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
-import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -25,7 +25,6 @@ class BotaoDefaultWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50,
       width: largura,
       child: TextButton(
         onPressed: desabilitado ? null : onPressed,
@@ -37,7 +36,7 @@ class BotaoDefaultWidget extends StatelessWidget {
           ),
           // backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
           padding: MaterialStateProperty.all(
-            EdgeInsets.fromLTRB(20, 0, 20, 0),
+            EdgeInsets.symmetric(horizontal: 16, vertical: kIsMobile ? 8 : 16),
           ),
         ),
         child: Center(
@@ -52,7 +51,9 @@ class BotaoDefaultWidget extends StatelessWidget {
       return Texto(
         textoBotao!,
         center: true,
-        texStyle: TemaUtil.temaTextoBotao,
+        color: Colors.white,
+        fontSize: kIsMobile ? 14 : 16,
+        fontWeight: FontWeight.w500,
       );
     }
 

@@ -2,8 +2,10 @@ import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -210,6 +212,7 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
             builder: (_) {
               return RichText(
                 textAlign: TextAlign.left,
+                maxLines: 10,
                 text: TextSpan(
                   text: "Você ainda tem ",
                   style: TemaUtil.temaTextoTempoDialog.copyWith(
@@ -244,7 +247,13 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
           ),
-          child: Text(mensagemCorpo, textAlign: TextAlign.left, style: TemaUtil.temaTextoMensagemCorpo),
+          child: Texto(
+            mensagemCorpo,
+            textAlign: TextAlign.left,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            maxLines: 10,
+          ),
         ),
         botoes: [
           BotaoSecundarioWidget(
@@ -317,8 +326,6 @@ _buildFontButton({
 }
 
 mostrarDialogSenhaErrada(BuildContext context) {
-  final temaStore = GetIt.I.get<TemaStore>();
-
   String mensagemCorpo = "O código está incorreto. Solicite o código para o professor.";
 
   showDialog(
@@ -339,13 +346,11 @@ mostrarDialogSenhaErrada(BuildContext context) {
             padding: const EdgeInsets.symmetric(
               horizontal: 16,
             ),
-            child: Text(
+            child: Texto(
               mensagemCorpo,
               textAlign: TextAlign.center,
-              style: TemaUtil.temaTextoMensagemCorpo.copyWith(
-                fontSize: temaStore.tTexto14,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-              ),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
           ),
           botoes: [
@@ -468,9 +473,14 @@ mostrarDialogMudancaTema(BuildContext context) {
                                 label: temaStore.incrementador.round().toString(),
                                 activeColor: TemaUtil.azulScroll,
                                 inactiveColor: Colors.grey[350],
+                                onChangeEnd: (_) {
+                                  temaStore.enviarPreferencias();
+                                },
                                 onChanged: (double valor) {
-                                  if (valor >= 16 && valor <= 24) {
-                                    temaStore.fachadaAlterarTamanhoDoTexto(valor);
+                                  var min = kIsTablet ? 16 : 14;
+
+                                  if (valor >= min && valor <= 24) {
+                                    temaStore.fachadaAlterarTamanhoDoTexto(valor, update: false);
                                   }
                                 },
                               ),

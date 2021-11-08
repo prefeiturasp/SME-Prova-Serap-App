@@ -3,6 +3,7 @@ import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lottie/lottie.dart';
@@ -42,14 +43,19 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     await _principalStore.setup();
 
     await _principalStore.usuario.carregarUsuario();
-    await _orientacaoStore.popularListaDeOrientacoes();
 
     if (_principalStore.temConexao && _principalStore.usuario.isLogado) {
       var responseMeusDados = await GetIt.I.get<ApiService>().auth.meusDados();
 
       if (responseMeusDados.isSuccessful) {
+        await _orientacaoStore.popularListaDeOrientacoes();
+
         var usuarioDados = responseMeusDados.body!;
         if (usuarioDados.nome != "") {
+          if (kIsTablet && usuarioDados.tamanhoFonte < 16) {
+            usuarioDados.tamanhoFonte = 16;
+          }
+
           _principalStore.usuario.atualizarDados(
             nome: usuarioDados.nome,
             ano: usuarioDados.ano,

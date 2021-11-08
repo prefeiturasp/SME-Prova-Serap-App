@@ -1,5 +1,4 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';

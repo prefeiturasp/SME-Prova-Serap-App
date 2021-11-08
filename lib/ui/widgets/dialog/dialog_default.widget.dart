@@ -1,4 +1,5 @@
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
@@ -38,33 +39,46 @@ class DialogDefaultWidget extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: cabecalho!,
-            ),
-
-            // CORPO
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: corpo,
-            ),
-
-            // BOTOES
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _buildButtons(context),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: cabecalho!,
               ),
-            ),
-          ],
+
+              // CORPO
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: corpo,
+              ),
+
+              // BOTOES
+              Align(
+                alignment: Alignment.bottomRight,
+                child: _buildButtonsLauout(context),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  _buildButtonsLauout(context) {
+    if (kIsTablet) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: _buildButtons(context),
+      );
+    } else {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: _buildButtons(context),
+      );
+    }
   }
 
   List<Widget> _buildButtons(context) {

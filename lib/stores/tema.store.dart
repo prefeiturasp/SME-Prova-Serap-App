@@ -16,6 +16,9 @@ abstract class _TemaStoreBase with Store {
   double incrementador = 16;
 
   @observable
+  double tTexto10 = 10;
+
+  @observable
   double tTexto12 = 12;
 
   @observable
@@ -34,6 +37,9 @@ abstract class _TemaStoreBase with Store {
   double tTexto24 = 24;
 
   double size(double size) {
+    if (size == 10) {
+      return tTexto10;
+    }
     if (size == 12) {
       return tTexto12;
     }
@@ -63,6 +69,7 @@ abstract class _TemaStoreBase with Store {
   void fachadaAlterarTamanhoDoTexto(double valor, {bool update = true}) {
     incrementador = valor;
 
+    tTexto12 = 2 - (incrementador - 4);
     tTexto12 = (incrementador - 4);
     tTexto14 = 2 + (incrementador - 4);
     tTexto16 = 4 + (incrementador - 4);

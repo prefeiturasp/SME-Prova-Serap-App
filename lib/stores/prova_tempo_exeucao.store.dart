@@ -61,7 +61,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   ) {
     finer('Iniciando contador de tempo');
     this.dataHoraInicioProva = dataHoraInicioProva;
-    configugure();
+    configure();
   }
 
   setupReactions() {
@@ -100,7 +100,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  configugure() {
+  configure() {
     gerenciadorTempo = GerenciadorTempo();
 
     gerenciadorTempo!.configure(
