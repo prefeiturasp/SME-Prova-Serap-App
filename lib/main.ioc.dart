@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/home.store.dart';
@@ -26,6 +27,7 @@ class DependenciasIoC with Loggable {
 
   registrarServicos() {
     registerSingletonAsync<SharedPreferences>(() => SharedPreferences.getInstance());
+    registerSingleton<AppDatabase>(constructDb());
     registerSingleton<ApiService>(ApiService.build(
       ConnectionOptions(
         baseUrl: AppConfigReader.getApiHost(),

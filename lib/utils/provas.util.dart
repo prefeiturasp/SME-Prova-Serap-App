@@ -1,3 +1,4 @@
+import 'package:appserap/database/app.database.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +18,10 @@ List<int> getProvasCache() {
 }
 
 removerProvaLocal(ProvaStore provaStore) async {
+  AppDatabase db = GetIt.I.get();
+
+  await db.limparPorProvaId(provaStore.prova.id);
+
   // Remove prova do cache
   SharedPreferences prefs = ServiceLocator.get();
   await prefs.remove('prova_${provaStore.prova.id}');

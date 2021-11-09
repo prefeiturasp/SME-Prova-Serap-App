@@ -303,6 +303,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
           store.quantidadeDeQuestoesSemRespostas++;
         }
       } else {
+        if (widget.provaStore.tempoExecucaoStore == null) {
+          store.questoesParaRevisar.add(questao);
+        }
         store.quantidadeDeQuestoesSemRespostas++;
       }
 

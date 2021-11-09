@@ -136,8 +136,16 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   Widget builder(BuildContext context) {
     return Observer(builder: (context) {
       if (store.isLoading) {
-        return Center(
-          child: CircularProgressIndicator(),
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(
+              height: 10,
+            ),
+            Text("Carregando..."),
+          ],
         );
       }
 
