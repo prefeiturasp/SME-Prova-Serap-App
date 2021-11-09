@@ -171,6 +171,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                         errorText: store.autenticacaoErroStore.senha,
+                        errorMaxLines: 3,
                       ),
                       onSubmitted: (value) => fazerLogin(),
                     ),
