@@ -190,7 +190,7 @@ class ApresentacaoWidget extends StatelessWidget {
           padding: const EdgeInsets.only(
             left: 64,
             right: 64,
-            top: 50,
+            top: 16,
           ),
           child: SizedBox(
             height: MediaQuery.of(context).size.height * .18,
@@ -212,9 +212,11 @@ class ApresentacaoWidget extends StatelessWidget {
   ) {
     if (ehHTML) {
       return SizedBox(
-        height: MediaQuery.of(context).size.height * .65,
+        height: MediaQuery.of(context).size.height * .7,
         child: ListView(
-          children: [corpoHTML],
+          children: [
+            corpoHTML,
+          ],
         ),
       );
     }
