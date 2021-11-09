@@ -24,8 +24,9 @@ class BotaoDefaultWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: largura,
+      constraints: BoxConstraints(minHeight: 40),
       child: TextButton(
         onPressed: desabilitado ? null : onPressed,
         style: ButtonStyle(
