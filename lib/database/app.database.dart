@@ -34,6 +34,7 @@ class QuestoesDb extends Table {
   IntColumn get tipo => integer()();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get provaId => integer()();
+  IntColumn get quantidadeAlternativa => integer()();
 
   @override
   Set<Column> get primaryKey => {id};

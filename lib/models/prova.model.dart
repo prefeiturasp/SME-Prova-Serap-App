@@ -1,12 +1,9 @@
-import 'dart:convert';
-
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -91,6 +88,7 @@ class Prova {
               alternativas: [],
               arquivos: [],
               tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+              quantidadeAlternativa: e.quantidadeAlternativa,
             ),
           )
           .toList();
