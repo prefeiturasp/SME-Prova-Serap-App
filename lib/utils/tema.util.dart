@@ -14,6 +14,7 @@ abstract class TemaUtil {
   static const preto = Colors.black;
   static const pretoSemFoco = Colors.black54;
   static const pretoSemFoco2 = Colors.black38;
+  static const pretoSemFoco3 = Color(0xFF4D4D4D);
   static const azul = Colors.blue;
   static const azulScroll = Color(0xff10A1C1);
   static const verde01 = Colors.green;
@@ -110,10 +111,7 @@ abstract class TemaUtil {
   );
 
   //TEMA QUESTAO SEM RESPOSTA
-  static const temaTextoQuestaoSemResposta = TextStyle(
-    color: TemaUtil.laranja03,
-    fontSize: 14,
-  );
+  static const temaTextoQuestaoSemResposta = TextStyle();
 
   //TEMA TABELA RESUMO
   static const temaTextoTabelaResumo = TextStyle(
@@ -152,11 +150,5 @@ abstract class TemaUtil {
   static const temaTextoDuracaoDialog = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w800,
-  );
-
-  //TEMA TEXTO DURACAO DIALOG
-  static const temaTextoMensagemCorpo = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
   );
 }
