@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -24,11 +25,11 @@ class SincronizarProvaFinalizadaJob with Job, Loggable {
   @override
   Future<void> run() async {
     fine('Sincronizando provas para o servidor');
+    AppDatabase db = ServiceLocator.get();
 
-    List<Prova> provas = listProvasCache()
-        .map((e) => Prova.carregaProvaCache(e)!)
-        .where((e) => e.status == EnumProvaStatus.PENDENTE)
-        .toList();
+    List<ProvaDb> provasDb = await db.obterProvasPendentes();
+
+    List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
 
     info('${provas.length} provas pendente de sincronização');
 
@@ -54,7 +55,7 @@ class SincronizarProvaFinalizadaJob with Job, Loggable {
 
         // Remove prova do cache
         SharedPreferences prefs = ServiceLocator.get();
-        await prefs.remove('prova_${prova.id}');
+        db.limparPorProvaId(prova.id);
 
         // Remove respostas da prova do cache
         var respostasSincronizadas = respostasProva.where((element) => element.sincronizado == true).toList();
@@ -67,17 +68,6 @@ class SincronizarProvaFinalizadaJob with Job, Loggable {
       }
     }
     fine('Sincronização com o servidor servidor concluida');
-  }
-
-  List<int> listProvasCache() {
-    SharedPreferences prefs = ServiceLocator.get();
-
-    var ids = prefs.getKeys().toList().where((element) => element.startsWith('prova_'));
-
-    if (ids.isNotEmpty) {
-      return ids.map((e) => e.replaceAll('prova_', '')).map((e) => int.parse(e)).toList();
-    }
-    return [];
   }
 
   List<ProvaResposta> getRespostas(Prova prova) {

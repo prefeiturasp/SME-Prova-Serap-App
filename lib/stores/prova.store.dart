@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:appserap/database/app.database.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -104,7 +105,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     await respostas.carregarRespostasServidor(prova);
 
-    prova = await gerenciadorDownload.getProva();
+    var obterProva = await gerenciadorDownload.getProva();
+
+    prova = obterProva;
   }
 
   @action
@@ -223,9 +226,25 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   saveProva() async {
-    SharedPreferences prefs = GetIt.I.get();
+    AppDatabase database = GetIt.I.get();
 
-    await prefs.setString('prova_${prova.id}', jsonEncode(prova.toJson()));
+    database.inserirOuAtualizarProva(
+      ProvaDb(
+        id: prova.id,
+        descricao: prova.descricao,
+        downloadStatus: prova.downloadStatus.index,
+        tempoExtra: prova.tempoExtra,
+        tempoExecucao: prova.tempoExecucao,
+        tempoAlerta: prova.tempoAlerta,
+        status: prova.status.index,
+        itensQuantidade: prova.itensQuantidade,
+        dataInicio: prova.dataInicio,
+        ultimaAtualizacao: DateTime.now(),
+      ),
+    );
+
+    var provaSalva = await database.obterProvaPorId(prova.id);
+    fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }
 
   @action
@@ -274,7 +293,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
             case 411:
               // Remove prova do cache
               SharedPreferences prefs = ServiceLocator.get();
+              AppDatabase db = GetIt.I.get();
+
               await prefs.remove('prova_${prova.id}');
+              await prefs.remove('download_${prova.id}');
+              await db.limpar();
 
               // Remove respostas da prova do cache
               for (var questoes in prova.questoes) {

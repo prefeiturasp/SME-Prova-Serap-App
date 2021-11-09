@@ -37,11 +37,10 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
     List<int> idsQuestao = [];
 
-    prova ??= Prova.carregaProvaCache(idProva);
+    prova ??= await Prova.carregaProvaCache(idProva);
 
-    if (prova != null) {
-      idsQuestao = prova.questoes.map((e) => e.id).toList();
-    }
+    idsQuestao = prova!.questoes.map((e) => e.id).toList();
+
     for (var idQuestao in idsQuestao) {
       try {
         fine('[Prova $idProva] - (Questão ID $idQuestao) Carregando resposta');
