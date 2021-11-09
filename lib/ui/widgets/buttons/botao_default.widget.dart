@@ -54,6 +54,7 @@ class BotaoDefaultWidget extends StatelessWidget {
         color: Colors.white,
         fontSize: kIsMobile ? 14 : 16,
         fontWeight: FontWeight.w500,
+        maxLines: 2,
       );
     }
 
