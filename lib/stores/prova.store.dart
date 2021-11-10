@@ -240,6 +240,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         itensQuantidade: prova.itensQuantidade,
         dataInicio: prova.dataInicio,
         ultimaAtualizacao: DateTime.now(),
+        dataFim: prova.dataFim,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
       ),
     );
 

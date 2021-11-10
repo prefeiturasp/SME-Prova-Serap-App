@@ -22,6 +22,9 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
   bool isLoad = false;
 
   @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
   void initState() {
     if (!isLoad) {
       tabController = TabController(
