@@ -467,6 +467,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     }
 
     return BotaoDefaultWidget(
+      largura: kIsTablet ? 256 : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -487,7 +488,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           ),
         ],
       ),
-      largura: 256,
       onPressed: () async {
         await provaStore.iniciarDownload();
       },
@@ -555,6 +555,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     }
 
     return BotaoDefaultWidget(
+      largura: kIsTablet ? 256 : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
