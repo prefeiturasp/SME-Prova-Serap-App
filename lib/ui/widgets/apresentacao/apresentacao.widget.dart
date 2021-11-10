@@ -18,6 +18,7 @@ class ApresentacaoWidget extends StatelessWidget {
   String textoBotaoPular;
   bool regraMostrarTodosOsBotoesAoIniciar;
   bool regraMostrarApenasBotaoPoximo;
+  bool pularSeNaoTiverConexao;
 
   ApresentacaoWidget({
     required this.avancarParaPagina,
@@ -26,20 +27,22 @@ class ApresentacaoWidget extends StatelessWidget {
     required this.textoBotaoPular,
     required this.regraMostrarTodosOsBotoesAoIniciar,
     required this.regraMostrarApenasBotaoPoximo,
+    this.pularSeNaoTiverConexao = true,
   });
 
-  final _principalStore = GetIt.I.get<PrincipalStore>();
   final store = GetIt.I.get<ApresentacaoStore>();
   final PageController _controllerDicas = PageController(initialPage: 0);
 
   void _irParaProximaPagina(context) {
+    store.pagina = 0;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => avancarParaPagina),
     );
   }
 
   onAfterBuild(BuildContext context) {
-    if (!_principalStore.temConexao) {
+    //if (!_principalStore.temConexao) {
+    if (pularSeNaoTiverConexao) {
       _irParaProximaPagina(context);
     }
   }
