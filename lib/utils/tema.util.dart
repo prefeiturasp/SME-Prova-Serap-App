@@ -12,6 +12,7 @@ abstract class TemaUtil {
   static const branco = Colors.white;
   static const cinza = Colors.grey;
   static const preto = Colors.black;
+  static final preto2 = Colors.black.withOpacity(0.7);
   static const pretoSemFoco = Colors.black54;
   static const pretoSemFoco2 = Colors.black38;
   static const pretoSemFoco3 = Color(0xFF4D4D4D);
