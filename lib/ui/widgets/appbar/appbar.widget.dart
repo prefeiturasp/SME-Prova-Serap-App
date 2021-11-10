@@ -1,4 +1,5 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/stores/apresentacao.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
@@ -82,9 +83,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             if (popView) {
               var prova = GetIt.I.get<ProvaViewStore>();
               var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
+              var apresentacao = GetIt.I.get<ApresentacaoStore>();
 
               prova.dispose();
               orientacoes.dispose();
+              apresentacao.dispose();
 
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => SplashScreenView()),
