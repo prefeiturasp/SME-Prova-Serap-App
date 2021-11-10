@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/utils/assets.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -676,6 +677,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       texto =
           texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
+
+    texto = texto.replaceAll("#0#", AssetsUtil.notfound);
 
     return texto;
   }

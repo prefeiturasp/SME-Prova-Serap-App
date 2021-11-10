@@ -144,16 +144,20 @@ class Prova {
     AppDatabase db = GetIt.I.get();
     db.inserirOuAtualizarProva(
       ProvaDb(
-          id: prova.id,
-          descricao: prova.descricao,
-          downloadStatus: prova.downloadStatus.index,
-          tempoExtra: prova.tempoExtra,
-          tempoExecucao: prova.tempoExecucao,
-          tempoAlerta: prova.tempoAlerta,
-          itensQuantidade: prova.itensQuantidade,
-          status: prova.status.index,
-          dataInicio: prova.dataInicio,
-          ultimaAtualizacao: DateTime.now()),
+        id: prova.id,
+        descricao: prova.descricao,
+        downloadStatus: prova.downloadStatus.index,
+        tempoExtra: prova.tempoExtra,
+        tempoExecucao: prova.tempoExecucao,
+        tempoAlerta: prova.tempoAlerta,
+        itensQuantidade: prova.itensQuantidade,
+        status: prova.status.index,
+        dataInicio: prova.dataInicio,
+        ultimaAtualizacao: DateTime.now(),
+        dataFim: prova.dataFim,
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
+      ),
     );
   }
 

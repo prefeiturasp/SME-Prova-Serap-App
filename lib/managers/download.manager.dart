@@ -215,7 +215,6 @@ class GerenciadorDownload with Loggable {
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
-
               Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
 
               if (response.isSuccessful) {
@@ -458,16 +457,20 @@ class GerenciadorDownload with Loggable {
 
     db.inserirOuAtualizarProva(
       ProvaDb(
-          id: prova.id,
-          descricao: prova.descricao,
-          downloadStatus: prova.downloadStatus.index,
-          tempoExtra: prova.tempoExtra,
-          tempoExecucao: prova.tempoExecucao,
-          tempoAlerta: prova.tempoAlerta,
-          itensQuantidade: prova.itensQuantidade,
-          status: prova.status.index,
-          dataInicio: prova.dataInicio,
-          ultimaAtualizacao: DateTime.now()),
+        id: prova.id,
+        descricao: prova.descricao,
+        downloadStatus: prova.downloadStatus.index,
+        tempoExtra: prova.tempoExtra,
+        tempoExecucao: prova.tempoExecucao,
+        tempoAlerta: prova.tempoAlerta,
+        itensQuantidade: prova.itensQuantidade,
+        status: prova.status.index,
+        dataInicio: prova.dataInicio,
+        ultimaAtualizacao: DateTime.now(),
+        dataFim: prova.dataFim,
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
+      ),
     );
 
     var provaSalva = await db.obterProvaPorId(prova.id);

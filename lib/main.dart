@@ -60,7 +60,12 @@ Future setupAppConfig() async {
 }
 
 void setupLogging() {
-  Logger.root.level = Level.FINER;
+  if (kDebugMode) {
+    Logger.root.level = Level.FINER;
+  } else {
+    Logger.root.level = Level.WARNING;
+  }
+
   Logger.root.onRecord.listen((rec) {
     print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
   });
