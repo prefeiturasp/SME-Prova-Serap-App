@@ -1,11 +1,15 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
+import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -39,6 +43,66 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   final temaStore = GetIt.I<TemaStore>();
 
   FocusNode _codigoProvaFocus = FocusNode();
+
+  List<ApresentacaoModelWidget> listaContextoProva = [
+    ApresentacaoModelWidget(
+      ehHTML: true,
+      descricao: '',
+      corpoPersonalizado: Html(
+        data:
+            '<p><img src="https://via.placeholder.com/150/0000FF/808080%20" alt="" width="150" height="150" /></p><h2>Teste</h2><p>Teste de texto</p>',
+        style: {
+          '*': Style.fromTextStyle(
+            TextStyle(
+              fontFamily:
+                  ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+              fontSize: ServiceLocator.get<TemaStore>().size(16),
+            ),
+          )
+        },
+      ),
+      titulo: '',
+      imagem: CircularProgressIndicator(),
+    ),
+    ApresentacaoModelWidget(
+      ehHTML: true,
+      descricao: '',
+      corpoPersonalizado: Html(
+        data:
+            '<p><img src="https://via.placeholder.com/150/0000FF/808080%20" alt="" width="150" height="150" /></p><h2>Teste</h2><p>Teste de texto</p>',
+        style: {
+          '*': Style.fromTextStyle(
+            TextStyle(
+              fontFamily:
+                  ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+              fontSize: ServiceLocator.get<TemaStore>().size(16),
+            ),
+          )
+        },
+      ),
+      titulo: '',
+      imagem: CircularProgressIndicator(),
+    ),
+    ApresentacaoModelWidget(
+      ehHTML: true,
+      descricao: '',
+      corpoPersonalizado: Html(
+        data:
+            '<p><img src="https://via.placeholder.com/150/0000FF/808080%20" alt="" width="150" height="150" /></p><h2>Teste</h2><p>Teste de texto</p>',
+        style: {
+          '*': Style.fromTextStyle(
+            TextStyle(
+              fontFamily:
+                  ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+              fontSize: ServiceLocator.get<TemaStore>().size(16),
+            ),
+          )
+        },
+      ),
+      titulo: '',
+      imagem: CircularProgressIndicator(),
+    ),
+  ];
 
   @override
   void initState() {
@@ -675,10 +739,20 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       if (provaStore.prova.senha == senhaCriptografada) {
                         Navigator.pop(context);
 
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => ProvaView(
+                        //       provaStore: provaStore,
+                        //     ),
+                        //   ),
+                        // );
+
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ProvaView(
+                            builder: (context) => ContextoProva(
+                              listaDePaginas: listaContextoProva,
                               provaStore: provaStore,
                             ),
                           ),
@@ -705,11 +779,22 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         }
 
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
-          provaStore.iniciarProva();
+          //provaStore.iniciarProva();
+
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => ProvaView(
+          //       provaStore: provaStore,
+          //     ),
+          //   ),
+          // );
+
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ProvaView(
+              builder: (context) => ContextoProva(
+                listaDePaginas: listaContextoProva,
                 provaStore: provaStore,
               ),
             ),
@@ -720,8 +805,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {
-    var tempoRestante =
-        prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes" : "";
+    var tempoRestante = prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes": "";
 
     final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
     bool telaMobileMenor = tela.size.width <= 400 ? true : false;
