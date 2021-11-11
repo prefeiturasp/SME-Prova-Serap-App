@@ -456,7 +456,7 @@ class GerenciadorDownload with Loggable {
   saveProva(Prova prova) async {
     AppDatabase db = GetIt.I.get();
 
-    db.inserirOuAtualizarProva(
+    await db.inserirOuAtualizarProva(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
@@ -471,6 +471,7 @@ class GerenciadorDownload with Loggable {
         dataFim: prova.dataFim,
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
         dataFimProvaAluno: prova.dataFimProvaAluno,
+        senha: prova.senha,
       ),
     );
 
