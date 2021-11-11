@@ -30,26 +30,20 @@ Future<bool>? mostrarDialogSemInternet(BuildContext context) {
     builder: (context) {
       return DialogDefaultWidget(
         cabecalho: SvgPicture.asset(icone),
-        corpo: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 70,
-          ),
-          child: Observer(
-            builder: (_) {
-              return Text(
-                mensagem,
-                textAlign: TextAlign.center,
-                style: TemaUtil.temaTextoMensagemDialog.copyWith(
-                  fontSize: temaStore.tTexto20,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                ),
-              );
-            },
-          ),
+        corpo: Observer(
+          builder: (_) {
+            return Text(
+              mensagem,
+              textAlign: TextAlign.center,
+              style: TemaUtil.temaTextoMensagemDialog.copyWith(
+                fontSize: temaStore.tTexto20,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              ),
+            );
+          },
         ),
         botoes: [
           BotaoDefaultWidget(
-            largura: 170,
             onPressed: () async {
               Navigator.of(context).pop();
               return true;
@@ -114,26 +108,20 @@ mostrarDialogProvaEnviada(BuildContext context) {
     builder: (context) {
       return DialogDefaultWidget(
         cabecalho: SvgPicture.asset(icone),
-        corpo: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 70,
-          ),
-          child: Observer(
-            builder: (_) {
-              return Text(
-                mensagem,
-                textAlign: TextAlign.center,
-                style: TemaUtil.temaTextoMensagemDialog.copyWith(
-                  fontSize: temaStore.tTexto20,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                ),
-              );
-            },
-          ),
+        corpo: Observer(
+          builder: (_) {
+            return Text(
+              mensagem,
+              textAlign: TextAlign.center,
+              style: TemaUtil.temaTextoMensagemDialog.copyWith(
+                fontSize: temaStore.tTexto20,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              ),
+            );
+          },
         ),
         botoes: [
           BotaoDefaultWidget(
-            largura: 170,
             onPressed: () {
               Navigator.pop(context);
               return true;
@@ -158,27 +146,24 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
     barrierColor: Colors.black87,
     builder: (context) {
       return DialogDefaultWidget(
-        cabecalho: SvgPicture.asset(icone),
-        corpo: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 70,
-          ),
-          child: Observer(
-            builder: (_) {
-              return Text(
-                mensagem,
-                textAlign: TextAlign.center,
-                style: TemaUtil.temaTextoMensagemDialog.copyWith(
-                  fontSize: temaStore.tTexto20,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                ),
-              );
-            },
-          ),
+        cabecalho: SvgPicture.asset(
+          icone,
+          height: 55,
+        ),
+        corpo: Observer(
+          builder: (_) {
+            return Text(
+              mensagem,
+              textAlign: TextAlign.center,
+              style: TemaUtil.temaTextoMensagemDialog.copyWith(
+                fontSize: temaStore.tTexto20,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              ),
+            );
+          },
         ),
         botoes: [
           BotaoDefaultWidget(
-            largura: 170,
             onPressed: () {
               Navigator.pop(context);
               return true;
@@ -249,10 +234,10 @@ Future<bool?> mostrarDialogAindaPossuiTempo(BuildContext context, Duration tempo
           ),
           child: Texto(
             mensagemCorpo,
+            textOverflow: TextOverflow.visible,
             textAlign: TextAlign.left,
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            maxLines: 10,
           ),
         ),
         botoes: [
@@ -332,37 +317,39 @@ mostrarDialogSenhaErrada(BuildContext context) {
     context: context,
     barrierColor: Colors.black87,
     builder: (context) {
-      return Observer(builder: (_) {
-        return DialogDefaultWidget(
-          cabecalho: Padding(
-            padding: const EdgeInsets.only(
-              top: 16,
-              left: 16,
-              right: 16,
-            ),
-            child: SvgPicture.asset(AssetsUtil.erro),
+      return DialogDefaultWidget(
+        cabecalho: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
           ),
-          corpo: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-            ),
-            child: Texto(
-              mensagemCorpo,
-              textAlign: TextAlign.center,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
+          child: SvgPicture.asset(
+            AssetsUtil.erro,
+            height: 55,
           ),
-          botoes: [
-            BotaoDefaultWidget(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              textoBotao: "ENTENDI",
-            )
-          ],
-        );
-      });
+        ),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Texto(
+            mensagemCorpo,
+            textOverflow: TextOverflow.visible,
+            textAlign: TextAlign.center,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            textoBotao: "ENTENDI",
+          )
+        ],
+      );
     },
   );
 }

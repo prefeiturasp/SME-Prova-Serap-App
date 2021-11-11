@@ -33,7 +33,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     AppDatabase db = GetIt.I.get();
 
-    List<ProvaDb> provasDb = await db.obterProvasPendentes();
+    List<ProvaDb> provasDb = await db.obterProvas();
     if (provasDb.isNotEmpty) {
       List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
 

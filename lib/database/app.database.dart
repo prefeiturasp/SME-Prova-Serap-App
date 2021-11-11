@@ -21,6 +21,8 @@ class ProvasDb extends Table {
   DateTimeColumn get dataInicioProvaAluno => dateTime().nullable()();
   DateTimeColumn get dataFimProvaAluno => dateTime().nullable()();
 
+  TextColumn get senha => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -71,27 +73,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
-  MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (Migrator m) {
-          return m.createAll();
-        },
-      );
-
-  // @override
-  // MigrationStrategy get migration => MigrationStrategy(
-  //   onCreate: (Migrator m) {
-  //     return m.createAll();
-  //   },
-  //   onUpgrade: (Migrator m, int from, int to) async {
-  //     if (from == 1) {
-  //       // we added the dueDate property in the change from version 1
-  //       await m.addColumn(todos, todos.dueDate);
-  //     }
-  //   }
-  // );
+  MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
+        return m.createAll();
+      }, onUpgrade: (Migrator m, int from, int to) async {
+        if (from == 2) {
+          await m.addColumn(provasDb, provasDb.senha);
+        }
+      });
 
   Future limpar() {
     return transaction(() async {
