@@ -1,5 +1,4 @@
 import 'package:appserap/stores/apresentacao.store.dart';
-import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';

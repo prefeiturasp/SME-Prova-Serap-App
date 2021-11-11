@@ -9,12 +9,12 @@ part 'contexto_prova.service.chopper.dart';
 abstract class ContextoProvaService extends ChopperService {
   static ContextoProvaService create([ChopperClient? client]) => _$ContextoProvaService(client);
 
-  @Post(path: '/{id}')
+  @Get(path: '/{id}')
   Future<Response<ContextoProvaResponseDTO>> getContextoProva({
     @Path() required int id,
   });
 
-  @Post(path: '/provas/{id}')
+  @Get(path: '/provas/{id}')
   Future<Response<List<ContextoProvaResponseDTO>>> getContextosPorProva({
     @Path() required int idProva,
   });

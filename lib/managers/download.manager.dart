@@ -274,7 +274,6 @@ class GerenciadorDownload with Loggable {
                     ),
                   );
 
-
                 String base64 = base64Encode(contextoResponse.bodyBytes);
 
                   saveContexto(

@@ -25,7 +25,7 @@ class _ContextoProvaState extends BaseStatelessWidget<ContextoProva, HomeStore> 
   Widget builder(BuildContext context) {
     return Observer(
       builder: (_) {
-        Future<dynamic> funcaoIniciarProva = widget.provaStore.iniciarProva();
+        
         return ApresentacaoWidget(
           listaDePaginas: widget.listaDePaginas,
           textoBotaoAvancar: "PRÓXIMA DICA",
