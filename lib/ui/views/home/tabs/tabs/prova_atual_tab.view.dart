@@ -767,15 +767,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
               );
             },
           );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProvaView(
-                provaStore: provaStore,
-              ),
-            ),
-          );
         }
 
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
@@ -795,6 +786,17 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             MaterialPageRoute(
               builder: (context) => ContextoProva(
                 listaDePaginas: listaContextoProva,
+                provaStore: provaStore,
+              ),
+            ),
+          );
+        }
+
+        if (provaStore.prova.status == EnumProvaStatus.INICIADA){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProvaView(
                 provaStore: provaStore,
               ),
             ),

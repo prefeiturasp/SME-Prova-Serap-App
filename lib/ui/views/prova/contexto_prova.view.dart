@@ -21,23 +21,22 @@ class ContextoProva extends BaseStatefulWidget {
 }
 
 class _ContextoProvaState extends BaseStatelessWidget<ContextoProva, HomeStore> with Loggable {
-
   @override
   Widget builder(BuildContext context) {
     return Observer(
-          builder: (_) {
-            return ApresentacaoWidget(
-              avancarParaPagina: ProvaView(
-                provaStore: widget.provaStore,
-              ),
-              listaDePaginas: widget.listaDePaginas,
-              textoBotaoAvancar: "PRÓXIMA DICA",
-              textoBotaoPular: "IR PARA A PROVA",
-              regraMostrarTodosOsBotoesAoIniciar: false,
-              regraMostrarApenasBotaoPoximo: true,
-              pularSeNaoTiverConexao: false,
-            );
-          },
+      builder: (_) {
+        Future<dynamic> funcaoIniciarProva = widget.provaStore.iniciarProva();
+        return ApresentacaoWidget(
+          listaDePaginas: widget.listaDePaginas,
+          textoBotaoAvancar: "PRÓXIMA DICA",
+          textoBotaoPular: "IR PARA A PROVA",
+          regraMostrarTodosOsBotoesAoIniciar: false,
+          regraMostrarApenasBotaoPoximo: true,
+          pularSeNaoTiverConexao: false,
+          flagExecutarFuncao: "prova",
+          provaStore: widget.provaStore,
         );
+      },
+    );
   }
 }

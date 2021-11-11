@@ -20,20 +20,7 @@ class OrientacaoInicialView extends StatefulWidget {
 class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
   final store = GetIt.I.get<OrientacaoInicialStore>();
   final _principalStore = GetIt.I.get<PrincipalStore>();
-
   final usuario = GetIt.I.get<UsuarioStore>();
-
-  void _irParaTelaInicial(context) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => HomeView()),
-    );
-  }
-
-  onAfterBuild(BuildContext context) {
-    if (!_principalStore.temConexao) {
-      _irParaTelaInicial(context);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +36,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
               textoBotaoPular: "IR PARA A PÁGINA INICIAL",
               regraMostrarTodosOsBotoesAoIniciar: usuario.ultimoLogin != null,
               regraMostrarApenasBotaoPoximo: usuario.ultimoLogin == null,
+              pularSeNaoTiverConexao: !_principalStore.temConexao,
             );
           },
         ),

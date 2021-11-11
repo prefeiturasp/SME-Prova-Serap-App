@@ -1,5 +1,7 @@
 import 'package:appserap/stores/apresentacao.store.dart';
 import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
@@ -12,22 +14,26 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
 class ApresentacaoWidget extends StatelessWidget {
-  final BaseStatefulWidget avancarParaPagina;
+  final BaseStatefulWidget? avancarParaPagina;
   final List<ApresentacaoModelWidget> listaDePaginas;
   String textoBotaoAvancar;
   String textoBotaoPular;
   bool regraMostrarTodosOsBotoesAoIniciar;
   bool regraMostrarApenasBotaoPoximo;
   bool pularSeNaoTiverConexao;
+  String flagExecutarFuncao;
+  ProvaStore? provaStore;
 
   ApresentacaoWidget({
-    required this.avancarParaPagina,
+    this.avancarParaPagina,
     required this.listaDePaginas,
     required this.textoBotaoAvancar,
     required this.textoBotaoPular,
     required this.regraMostrarTodosOsBotoesAoIniciar,
     required this.regraMostrarApenasBotaoPoximo,
     this.pularSeNaoTiverConexao = true,
+    this.flagExecutarFuncao = "",
+    this.provaStore,
   });
 
   final store = GetIt.I.get<ApresentacaoStore>();
@@ -36,7 +42,13 @@ class ApresentacaoWidget extends StatelessWidget {
   void _irParaProximaPagina(context) {
     store.pagina = 0;
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => avancarParaPagina),
+      MaterialPageRoute(builder: (_) {
+        if (flagExecutarFuncao == "prova") {
+          provaStore!.iniciarProva();
+          return ProvaView(provaStore: provaStore!);
+        }
+        return avancarParaPagina!;
+      }),
     );
   }
 
@@ -51,48 +63,44 @@ class ApresentacaoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
 
-    return Observer(
-      builder: (_) {
-        return Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height * .65,
-              child: PageView.builder(
-                scrollDirection: Axis.horizontal,
-                controller: _controllerDicas,
-                itemCount: listaDePaginas.length,
-                onPageChanged: (int posicao) {
-                  store.pagina = posicao;
-                },
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: _buildPaginaOrientacaoAdaptativa(
-                      context,
-                      listaDePaginas[index].ehHTML,
-                      listaDePaginas[index].titulo!,
-                      listaDePaginas[index].descricao!,
-                      listaDePaginas[index].imagem!,
-                      listaDePaginas[index].corpoPersonalizado!,
-                    ),
-                  );
-                },
-              ),
-            ),
-            //
-            SizedBox(
-              height: MediaQuery.of(context).size.height * .012,
-              width: MediaQuery.of(context).size.width,
-              child: Center(
-                child: _buildPaginacao(),
-              ),
-            ),
-            //
-            _buildBotaoNavegacaoAdaptativo(),
-            //
-          ],
-        );
-      },
+    return Column(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * .65,
+          child: PageView.builder(
+            scrollDirection: Axis.horizontal,
+            controller: _controllerDicas,
+            itemCount: listaDePaginas.length,
+            onPageChanged: (int posicao) {
+              store.pagina = posicao;
+            },
+            itemBuilder: (context, index) {
+              return Container(
+                margin: EdgeInsets.only(top: 20),
+                child: _buildPaginaOrientacaoAdaptativa(
+                  context,
+                  listaDePaginas[index].ehHTML,
+                  listaDePaginas[index].titulo!,
+                  listaDePaginas[index].descricao!,
+                  listaDePaginas[index].imagem!,
+                  listaDePaginas[index].corpoPersonalizado!,
+                ),
+              );
+            },
+          ),
+        ),
+        //
+        SizedBox(
+          height: MediaQuery.of(context).size.height * .012,
+          width: MediaQuery.of(context).size.width,
+          child: Center(
+            child: _buildPaginacao(),
+          ),
+        ),
+        //
+        _buildBotaoNavegacaoAdaptativo(),
+        //
+      ],
     );
   }
 
@@ -260,52 +268,48 @@ class ApresentacaoWidget extends StatelessWidget {
 
   //
   Widget _buildPaginacao() {
-    return Observer(
-      builder: (_) {
-        return ListView.builder(
-          itemCount: listaDePaginas.length,
-          shrinkWrap: true,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    store.pagina = index;
-                    _controllerDicas.animateToPage(
-                      index,
-                      curve: Curves.easeIn,
-                      duration: Duration(milliseconds: 200),
-                    );
-                  },
-                  child: Observer(
-                    builder: (_) {
-                      return store.pagina == index
-                          ? Container(
-                              margin: EdgeInsets.symmetric(horizontal: 5),
-                              width: 24,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                color: TemaUtil.azulScroll,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            )
-                          : Container(
-                              margin: EdgeInsets.symmetric(horizontal: 5),
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                color: TemaUtil.pretoSemFoco2,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            );
-                    },
-                  ),
-                )
-              ],
-            );
-          },
+    return ListView.builder(
+      itemCount: listaDePaginas.length,
+      shrinkWrap: true,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (context, index) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                store.pagina = index;
+                _controllerDicas.animateToPage(
+                  index,
+                  curve: Curves.easeIn,
+                  duration: Duration(milliseconds: 200),
+                );
+              },
+              child: Observer(
+                builder: (_) {
+                  return store.pagina == index
+                      ? Container(
+                          margin: EdgeInsets.symmetric(horizontal: 5),
+                          width: 24,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: TemaUtil.azulScroll,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        )
+                      : Container(
+                          margin: EdgeInsets.symmetric(horizontal: 5),
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: TemaUtil.pretoSemFoco2,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        );
+                },
+              ),
+            )
+          ],
         );
       },
     );
@@ -348,7 +352,7 @@ class ApresentacaoWidget extends StatelessWidget {
         children: [
           BotaoDefaultWidget(
             largura: 400,
-            textoBotao: 'PRÓXIMA DICA',
+            textoBotao: textoBotaoAvancar,
             onPressed: () {
               _controllerDicas.animateToPage(
                 store.pagina + 1,
@@ -366,7 +370,7 @@ class ApresentacaoWidget extends StatelessWidget {
         children: [
           BotaoDefaultWidget(
             largura: 400,
-            textoBotao: 'IR PARA A PÁGINA INICIAL',
+            textoBotao: textoBotaoPular,
             onPressed: () {
               _irParaProximaPagina(context);
             },

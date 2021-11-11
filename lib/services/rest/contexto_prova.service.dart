@@ -1,14 +1,22 @@
 import 'dart:async';
+import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/dtos/orientacao_inicial.response.dto.dart';
 import 'package:chopper/chopper.dart';
 
 part 'contexto_prova.service.chopper.dart';
 
-@ChopperApi(baseUrl: "/v1/configuracoes/")
+@ChopperApi(baseUrl: "/v1/contextos-provas")
 abstract class ContextoProvaService extends ChopperService {
   static ContextoProvaService create([ChopperClient? client]) => _$ContextoProvaService(client);
 
-  @Get(path: 'telas-boas-vindas')
-  Future<Response<List<OrientacaoInicialResponseDTO>>> getContextoProva();
+  @Post(path: '/{id}')
+  Future<Response<ContextoProvaResponseDTO>> getContextoProva({
+    @Path() required int id,
+  });
+
+  @Post(path: '/provas/{id}')
+  Future<Response<List<ContextoProvaResponseDTO>>> getContextosPorProva({
+    @Path() required int idProva,
+  });
 
 }

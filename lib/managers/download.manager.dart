@@ -2,13 +2,16 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/dtos/alternativa.response.dto.dart';
@@ -58,7 +61,7 @@ class GerenciadorDownload with Loggable {
       await loadDownloads();
 
       for (var idQuestao in provaDetalhes.questoesId) {
-        if (!containsId(idQuestao)) {
+        if (!containsId(idQuestao, EnumDownloadTipo.QUESTAO)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.QUESTAO,
@@ -70,7 +73,7 @@ class GerenciadorDownload with Loggable {
       }
 
       for (var idArquivo in provaDetalhes.arquivosId) {
-        if (!containsId(idArquivo)) {
+        if (!containsId(idArquivo, EnumDownloadTipo.ARQUIVO)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.ARQUIVO,
@@ -82,7 +85,7 @@ class GerenciadorDownload with Loggable {
       }
 
       for (var idAlternativa in provaDetalhes.alternativasId) {
-        if (!containsId(idAlternativa)) {
+        if (!containsId(idAlternativa, EnumDownloadTipo.ALTERNATIVA)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.ALTERNATIVA,
@@ -92,6 +95,20 @@ class GerenciadorDownload with Loggable {
           );
         }
       }
+
+      for (var idContexto in provaDetalhes.contextoProvaIds) {
+        if (!containsId(idContexto, EnumDownloadTipo.CONTEXTO_PROVA)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.CONTEXTO_PROVA,
+              id: idContexto,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+
 
       finer('** Total Downloads ${downloads.length}');
       finer('** Downloads concluidos ${getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
@@ -242,6 +259,43 @@ class GerenciadorDownload with Loggable {
                 download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               }
               break;
+            
+            case EnumDownloadTipo.CONTEXTO_PROVA:
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+              Response<ContextoProvaResponseDTO> response = await apiService.contextoProva.getContextoProva(id: download.id);
+
+              if (response.isSuccessful) {
+                ContextoProvaResponseDTO contexto = response.body!;
+
+                http.Response contextoResponse = await http.get(
+                    Uri.parse(
+                      contexto.imagem!.replaceFirst('http://', 'https://'),
+                    ),
+                  );
+
+
+                String base64 = base64Encode(contextoResponse.bodyBytes);
+
+                  saveContexto(
+                    ContextoProva(
+                      id: contexto.id,
+                      imagem: contexto.imagem,
+                      imagemBase64: base64,
+                      ordem: contexto.ordem,
+                      posicionamento: contexto.posicionamento,
+                      provaId: contexto.provaId,
+                      texto: contexto.texto,
+                      titulo: contexto.titulo
+                    ),
+                    idProva,
+                  );
+
+                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              }
+              break;
+
+
           }
           downloadAtual = i;
           prova.downloadProgresso = getPorcentagem();
@@ -350,8 +404,8 @@ class GerenciadorDownload with Loggable {
     }
   }
 
-  bool containsId(int id) {
-    return downloads.firstWhereOrNull((element) => element.id == id) != null;
+  bool containsId(int id, EnumDownloadTipo tipo){
+    return downloads.firstWhereOrNull((element) => element.id == id && element.tipo== tipo) != null;
   }
 
   List<DownloadProva> getDownlodsByStatus(EnumDownloadStatus status) {
@@ -451,6 +505,25 @@ class GerenciadorDownload with Loggable {
     );
 
     fine('[ARQUIVO SALVO]');
+  }
+
+  saveContexto(ContextoProva contexto, int provaId) {
+    AppDatabase database = GetIt.I.get();
+
+    database.inserirOuAtualizarContextoProva(
+      ContextoProvaDb(
+        id: contexto.id!,
+        ordem: contexto.ordem!,
+        imagem: contexto.imagem,
+        imagemBase64: contexto.imagemBase64,
+        posicionamento: contexto.posicionamento!.index,
+        texto: contexto.texto,
+        titulo: contexto.titulo,
+        provaId: provaId,
+      ),
+    );
+
+    fine('[CONTEXTO SALVO]');
   }
 
   saveProva(Prova prova) async {
