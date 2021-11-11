@@ -135,6 +135,8 @@ class Prova {
       dataInicioProvaAluno: provaDb.dataInicioProvaAluno,
       dataFimProvaAluno: provaDb.dataFimProvaAluno,
       questoes: [],
+      status: EnumProvaStatus.values[provaDb.status],
+      senha: provaDb.senha,
     );
 
     return prova;
@@ -142,7 +144,7 @@ class Prova {
 
   static salvaProvaCache(Prova prova) async {
     AppDatabase db = GetIt.I.get();
-    db.inserirOuAtualizarProva(
+    await db.inserirOuAtualizarProva(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
@@ -157,6 +159,7 @@ class Prova {
         dataFim: prova.dataFim,
         dataFimProvaAluno: prova.dataFimProvaAluno,
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        senha: prova.senha,
       ),
     );
   }

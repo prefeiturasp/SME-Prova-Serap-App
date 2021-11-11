@@ -665,12 +665,13 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {
-    String tempoPrevisto = formatDuration(Duration(seconds: prova.tempoPrevisto.toInt()));
+    String tempoPrevisto = "0";
+
+    if (!prova.tempoPrevisto.isNaN) {
+      tempoPrevisto = formatDuration(Duration(seconds: prova.tempoPrevisto.toInt()));
+    }
 
     var tempoRestante = prova.tempoPrevisto > 0 ? " - Aproximadamente $tempoPrevisto restantes" : "";
-
-    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    bool telaMobileMenor = tela.size.width <= 400 ? true : false;
 
     return SizedBox(
       child: Column(
