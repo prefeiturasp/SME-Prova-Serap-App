@@ -109,6 +109,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               respostas: ProvaRespostaStore(idProva: provaResponse.id),
             );
 
+            //! ERRO AQUI
             await carregarContextoDaProva(provaResponse.id);
 
             // caso nao tenha o id, define como nova prova
