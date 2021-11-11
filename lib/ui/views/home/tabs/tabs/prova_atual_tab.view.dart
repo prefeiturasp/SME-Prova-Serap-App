@@ -101,8 +101,16 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
               itemCount: provas.length,
               itemBuilder: (_, index) {
                 var keys = provas.keys.toList();
-                var prova = provas[keys[index]]!;
-                return _buildProva(prova);
+                var provaStore = provas[keys[index]]!;
+
+                var provaVigente = DateTime.now().isAfter(provaStore.prova.dataInicio) &&
+                    (provaStore.prova.dataFim != null && DateTime.now().isBefore(provaStore.prova.dataFim!));
+
+                if (provaVigente) {
+                  return _buildProva(provaStore);
+                } else {
+                  return SizedBox.shrink();
+                }
               },
             ),
           );

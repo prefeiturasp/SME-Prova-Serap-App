@@ -138,6 +138,9 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       prova.status = provaStore.prova.status;
       prova.dataInicioProvaAluno = provaStore.prova.dataInicioProvaAluno;
 
+      prova.dataInicio = provaStore.prova.dataInicio;
+      prova.dataFim = provaStore.prova.dataFim;
+
       provaStore.prova = prova;
       provaStore.downloadStatus = prova.downloadStatus;
       provaStore.progressoDownload = prova.downloadProgresso;
