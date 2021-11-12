@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:appserap/stores/apresentacao.store.dart';
 import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
@@ -12,6 +15,7 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
@@ -100,10 +104,11 @@ class ApresentacaoContextoWidget extends StatelessWidget {
     if (kIsMobile) {
       return ListView(
         children: [
-          Container(
-            padding: EdgeInsets.only(top: 18),
-            height: 150,
-            child: Image.memory(base64Decode(imagemBase64)),
+
+          _builderImagemComPosicionamento(
+            posicionamento,
+            imagemBase64,
+            context,
           ),
 
           Padding(
@@ -130,13 +135,16 @@ class ApresentacaoContextoWidget extends StatelessWidget {
               right: 32,
               bottom: 32,
             ),
-            child: Texto(
-              texto,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-              center: true,
-              maxLines: 10,
+            child: Html(
+              data: texto,
+              style: {
+                '*': Style.fromTextStyle(
+                  TextStyle(
+                    fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+                    fontSize: ServiceLocator.get<TemaStore>().size(16),
+                  ),
+                )
+              },
             ),
           ),
         ],
@@ -244,13 +252,16 @@ class ApresentacaoContextoWidget extends StatelessWidget {
         //
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 64),
-          child: Texto(
-            texto,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-            center: true,
-            maxLines: 10,
+          child: Html(
+            data: texto,
+            style: {
+              '*': Style.fromTextStyle(
+                TextStyle(
+                  fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+                  fontSize: ServiceLocator.get<TemaStore>().size(16),
+                ),
+              )
+            },
           ),
         ),
       ],

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';

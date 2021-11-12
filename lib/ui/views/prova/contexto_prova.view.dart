@@ -1,9 +1,6 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
-import 'package:appserap/ui/widgets/apresentacao/apresentacao.widget.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao_contexto.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
