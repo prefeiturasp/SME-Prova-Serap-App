@@ -2,21 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/enums/tipo_questao.enum.dart';
-import 'package:appserap/exceptions/prova_download.exception.dart';
-import 'package:asuka/snackbars/asuka_snack_bar.dart';
-import 'package:chopper/src/response.dart';
-import 'package:collection/collection.dart';
-import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
@@ -24,6 +17,12 @@ import 'package:appserap/models/download_prova.model.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
+import 'package:asuka/snackbars/asuka_snack_bar.dart';
+import 'package:chopper/src/response.dart';
+import 'package:collection/collection.dart';
+import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
 typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
@@ -230,7 +229,7 @@ class GerenciadorDownload with Loggable {
                 // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
                 String base64 = base64Encode(arquivoResponse.bodyBytes);
 
-                saveArquivo(
+                await saveArquivo(
                     Arquivo(
                       id: arquivo.id,
                       caminho: arquivo.caminho,
@@ -405,10 +404,10 @@ class GerenciadorDownload with Loggable {
     return prova;
   }
 
-  saveQuestao(Questao questao, int provaId) {
+  saveQuestao(Questao questao, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarQuestao(
+    await database.inserirOuAtualizarQuestao(
       QuestaoDb(
           id: questao.id,
           titulo: questao.titulo,
@@ -418,13 +417,13 @@ class GerenciadorDownload with Loggable {
           provaId: provaId),
     );
 
-    fine('[QUESTAO SALVA]');
+    finer('[QUESTAO SALVA]');
   }
 
-  saveAlternativa(Alternativa alternativa, int provaId) {
+  saveAlternativa(Alternativa alternativa, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarAlternativa(
+    await database.inserirOuAtualizarAlternativa(
       AlternativaDb(
           id: alternativa.id,
           descricao: alternativa.descricao,
@@ -434,13 +433,13 @@ class GerenciadorDownload with Loggable {
           provaId: provaId),
     );
 
-    fine('[ALTERNATIVA SALVA]');
+    finer('[ALTERNATIVA SALVA]');
   }
 
-  saveArquivo(Arquivo arquivo, int provaId) {
+  saveArquivo(Arquivo arquivo, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarArquivo(
+    await database.inserirOuAtualizarArquivo(
       ArquivoDb(
         id: arquivo.id,
         caminho: arquivo.caminho,
@@ -450,7 +449,7 @@ class GerenciadorDownload with Loggable {
       ),
     );
 
-    fine('[ARQUIVO SALVO]');
+    finer('[ARQUIVO SALVO]');
   }
 
   saveProva(Prova prova) async {
@@ -476,7 +475,7 @@ class GerenciadorDownload with Loggable {
     );
 
     var provaSalva = await db.obterProvaPorId(prova.id);
-    fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
+    finer('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }
 
   deleteDownload() {
