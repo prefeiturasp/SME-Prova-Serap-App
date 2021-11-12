@@ -211,7 +211,8 @@ class ApresentacaoContextoWidget extends StatelessWidget {
     }
 
     return Container(
-      child: Image.memory(base64Decode(imagemBase64), alignment: posicao,),
+      child: Image.memory(base64Decode(imagemBase64), alignment: posicao),
+      width: double.infinity,
       alignment: posicao,
     );
   }
