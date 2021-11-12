@@ -1,33 +1,19 @@
 import 'dart:convert';
 
+import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/stores/tema.store.dart';
-import 'package:appserap/ui/views/home/home.view.util.dart';
-import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
-import 'package:appserap/stores/usuario.store.dart';
-import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
-import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
-import 'package:appserap/utils/extensions/date.extension.dart';
-import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mobx/mobx.dart';
-import 'package:percent_indicator/percent_indicator.dart';
-
-import 'package:appserap/enums/download_status.enum.dart';
-import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/ui/views/prova/prova.view.dart';
+import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/ui/views/home/home.view.util.dart';
+import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
+import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_tab.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
@@ -35,7 +21,18 @@ import 'package:appserap/ui/widgets/dialog/dialog_default.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:appserap/utils/extensions/date.extension.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobx/mobx.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:supercharged/supercharged.dart';
 
 class ProvaAtualTabView extends BaseStatefulWidget {
@@ -679,14 +676,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             _navegarParaProvaPrimeiraVez(provaStore);
           }
         } else if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProvaView(
-                provaStore: provaStore,
-              ),
-            ),
-          );
+          context.go("/prova/${provaStore.id}");
         }
       },
     );
@@ -708,19 +698,9 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
     if (iniciarProva) {
       if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ContextoProvaView(provaStore: provaStore),
-          ),
-        );
+        context.go("/prova/${provaStore.id}/contexto");
       } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ProvaView(provaStore: provaStore),
-          ),
-        );
+        context.go("/prova/${provaStore.id}");
       }
     }
   }

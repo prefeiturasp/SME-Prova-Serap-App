@@ -2,11 +2,10 @@ import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
-import 'package:appserap/ui/views/home/home.view.dart';
-import 'package:appserap/ui/views/login/login.view.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 
@@ -67,19 +66,9 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!, update: false);
 
     if (_principalStore.usuario.isLogado) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeView(),
-        ),
-      );
+      context.go("/");
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginView(),
-        ),
-      );
+      context.go("/login");
     }
   }
 

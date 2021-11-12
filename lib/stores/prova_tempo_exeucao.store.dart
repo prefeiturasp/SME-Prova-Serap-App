@@ -40,6 +40,9 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   @observable
   bool tempoAcabando = false;
 
+  @observable
+  bool mostrarAlertaDeTempoAcabando = false;
+
   @computed
   bool get isTempoNormalEmExecucao => status == EnumProvaTempoEventType.INICIADO;
 
@@ -79,6 +82,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
       if (finalizandoProvaCallback != null) {
         finalizandoProvaCallback!();
       }
+      mostrarAlertaDeTempoAcabando = true;
     }
   }
 
@@ -88,6 +92,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
         if (extenderProvaCallback != null) {
           extenderProvaCallback!();
         }
+        mostrarAlertaDeTempoAcabando = false;
         break;
 
       case EnumProvaTempoEventType.FINALIZADO:
@@ -106,6 +111,13 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   configure() {
     gerenciadorTempo = GerenciadorTempo();
 
+    gerenciadorTempo!.onChangeDuracao((TempoChangeData changeData) {
+      status = changeData.eventType;
+      porcentagem = changeData.porcentagemTotal;
+      tempoRestante = changeData.tempoRestante;
+      tempoAcabando = changeData.tempoAcabando;
+    });
+
     gerenciadorTempo!.configure(
       horaFinalTurno: horaFinalTurno,
       dataHoraInicioProva: dataHoraInicioProva,
@@ -114,12 +126,6 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
       duracaoTempoFinalizando: duracaoTempoFinalizando,
     );
 
-    gerenciadorTempo!.onChangeDuracao((TempoChangeData changeData) {
-      status = changeData.eventType;
-      porcentagem = changeData.porcentagemTotal;
-      tempoRestante = changeData.tempoRestante;
-      tempoAcabando = changeData.tempoAcabando;
-    });
   }
 
   onFinalizarlProva(finalizarProvaCallback) {

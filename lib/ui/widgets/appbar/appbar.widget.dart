@@ -5,14 +5,13 @@ import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
-import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
@@ -67,11 +66,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       automaticallyImplyLeading: false,
-      leading: leading != null
-          ? Observer(builder: (context) {
-              return leading!;
-            })
-          : null,
+      leading: leading,
       actions: [
         TextButton(
           onPressed: () {
@@ -139,10 +134,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             prova.dispose();
             orientacoes.dispose();
 
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => SplashScreenView()),
-              (_) => false,
-            );
+            context.go("/splash");
           }
         }
       },

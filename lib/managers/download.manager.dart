@@ -1,42 +1,39 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/idb_file.dart';
+import 'package:appserap/dtos/alternativa.response.dto.dart';
+import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
+import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
+import 'package:appserap/dtos/questao.response.dto.dart';
+import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
-import 'package:appserap/models/arquivo_video.model.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/models/alternativa.model.dart';
+import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/arquivo_video.model.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:appserap/models/download_prova.model.dart';
+import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
-import 'package:drift/drift.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:appserap/dtos/alternativa.response.dto.dart';
-import 'package:appserap/dtos/arquivo.response.dto.dart';
-import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
-import 'package:appserap/dtos/questao.response.dto.dart';
-import 'package:appserap/enums/download_status.enum.dart';
-import 'package:appserap/enums/download_tipo.enum.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/models/alternativa.model.dart';
-import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/download_prova.model.dart';
-import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/models/questao.model.dart';
-import 'package:appserap/services/api.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
 typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
@@ -129,7 +126,7 @@ class GerenciadorDownload with Loggable {
 
       await saveDownloads();
     } catch (e) {
-      AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
+      //AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
       return;
     }
   }

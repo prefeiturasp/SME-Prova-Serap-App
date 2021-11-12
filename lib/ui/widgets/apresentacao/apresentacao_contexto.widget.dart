@@ -7,7 +7,6 @@ import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:appserap/stores/apresentacao.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
-import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
@@ -19,6 +18,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 class ApresentacaoContextoWidget extends StatelessWidget {
   final BaseStatefulWidget? avancarParaPagina;
@@ -42,14 +42,9 @@ class ApresentacaoContextoWidget extends StatelessWidget {
   final store = GetIt.I.get<ApresentacaoStore>();
   final PageController _controllerDicas = PageController(initialPage: 0);
 
-  void _irParaProximaPagina(context) {
+  void _irParaProximaPagina(BuildContext context) {
     store.pagina = 0;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) {
-        provaStore!.iniciarProva();
-        return ProvaView(provaStore: provaStore!);
-      }),
-    );
+    context.go("/prova/${provaStore!.id}/");
   }
 
   @override

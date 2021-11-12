@@ -1,6 +1,5 @@
 import 'package:appserap/stores/apresentacao.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
@@ -9,9 +8,10 @@ import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 class ApresentacaoWidget extends StatelessWidget {
-  final BaseStatefulWidget? avancarParaPagina;
+  final String? avancarParaPagina;
   final List<ApresentacaoModelWidget> listaDePaginas;
   final String textoBotaoAvancar;
   final String textoBotaoPular;
@@ -32,13 +32,9 @@ class ApresentacaoWidget extends StatelessWidget {
   final store = GetIt.I.get<ApresentacaoStore>();
   final PageController _controllerDicas = PageController(initialPage: 0);
 
-  void _irParaProximaPagina(context) {
+  void _irParaProximaPagina(BuildContext context) {
     store.pagina = 0;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) {
-        return avancarParaPagina!;
-      }),
-    );
+    context.go(avancarParaPagina!);
   }
 
   onAfterBuild(BuildContext context) {
