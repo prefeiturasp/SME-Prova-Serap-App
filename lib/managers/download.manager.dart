@@ -229,7 +229,7 @@ class GerenciadorDownload with Loggable {
                 // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
                 String base64 = base64Encode(arquivoResponse.bodyBytes);
 
-                saveArquivo(
+                await saveArquivo(
                     Arquivo(
                       id: arquivo.id,
                       caminho: arquivo.caminho,
@@ -404,10 +404,10 @@ class GerenciadorDownload with Loggable {
     return prova;
   }
 
-  saveQuestao(Questao questao, int provaId) {
+  saveQuestao(Questao questao, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarQuestao(
+    await database.inserirOuAtualizarQuestao(
       QuestaoDb(
           id: questao.id,
           titulo: questao.titulo,
@@ -420,10 +420,10 @@ class GerenciadorDownload with Loggable {
     fine('[QUESTAO SALVA]');
   }
 
-  saveAlternativa(Alternativa alternativa, int provaId) {
+  saveAlternativa(Alternativa alternativa, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarAlternativa(
+    await database.inserirOuAtualizarAlternativa(
       AlternativaDb(
           id: alternativa.id,
           descricao: alternativa.descricao,
@@ -436,10 +436,10 @@ class GerenciadorDownload with Loggable {
     fine('[ALTERNATIVA SALVA]');
   }
 
-  saveArquivo(Arquivo arquivo, int provaId) {
+  saveArquivo(Arquivo arquivo, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarArquivo(
+    await database.inserirOuAtualizarArquivo(
       ArquivoDb(
         id: arquivo.id,
         caminho: arquivo.caminho,
@@ -455,7 +455,7 @@ class GerenciadorDownload with Loggable {
   saveProva(Prova prova) async {
     AppDatabase db = GetIt.I.get();
 
-    db.inserirOuAtualizarProva(
+    await db.inserirOuAtualizarProva(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,

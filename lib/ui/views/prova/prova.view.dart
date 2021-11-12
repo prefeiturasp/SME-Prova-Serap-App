@@ -72,9 +72,9 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   }
 
   configure() async {
-    await store.setup(widget.provaStore);
     await widget.provaStore.respostas.carregarRespostasServidor(widget.provaStore.prova);
     await _configureControlesTempoProva();
+    await store.setup(widget.provaStore);
   }
 
   _configureControlesTempoProva() async {

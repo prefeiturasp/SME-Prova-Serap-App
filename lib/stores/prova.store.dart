@@ -226,9 +226,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   saveProva() async {
-    AppDatabase database = GetIt.I.get();
+    AppDatabase db = GetIt.I.get();
 
-    database.inserirOuAtualizarProva(
+    await db.inserirOuAtualizarProva(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
@@ -246,7 +246,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       ),
     );
 
-    var provaSalva = await database.obterProvaPorId(prova.id);
+    var provaSalva = await db.obterProvaPorId(prova.id);
     fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }
 
