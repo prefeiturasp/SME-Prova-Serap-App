@@ -326,16 +326,12 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                     ),
                   ),
                   child: Center(
-                    child: Observer(
-                      builder: (_) {
-                        return Texto(
-                          "ENTRAR",
-                          color: Colors.white,
-                          fontSize: 16,
-                          center: true,
-                          fontWeight: FontWeight.w500,
-                        );
-                      },
+                    child: Texto(
+                      "ENTRAR",
+                      color: Colors.white,
+                      fontSize: 16,
+                      center: true,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),

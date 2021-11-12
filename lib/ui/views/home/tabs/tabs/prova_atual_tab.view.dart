@@ -578,7 +578,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         ],
       ),
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
+        if (provaStore.prova.senha != null) {
           //
           showDialog(
             context: context,
@@ -647,18 +647,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             },
           );
         } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProvaView(
-                provaStore: provaStore,
-              ),
-            ),
-          );
-        }
-
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
-          provaStore.iniciarProva();
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
