@@ -16,6 +16,7 @@ import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
@@ -210,8 +211,7 @@ class ApresentacaoContextoWidget extends StatelessWidget {
     }
 
     return Container(
-      child: Image.memory(base64Decode(imagemBase64)),
-      width: MediaQuery.of(context).size.width,
+      child: Image.memory(base64Decode(imagemBase64), alignment: posicao,),
       alignment: posicao,
     );
   }
