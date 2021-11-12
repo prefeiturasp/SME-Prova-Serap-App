@@ -4,6 +4,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,6 +39,8 @@ class Prova {
 
   String? senha;
 
+  List<ContextoProva> listaContextoProva;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -67,7 +70,8 @@ class Prova {
     if (provaDb != null) {
       var prova = Prova(
         id: provaDb.id,
-        downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
+        downloadStatus: EnumDownloadStatus.values
+            .firstWhere((element) => element.index == provaDb.downloadStatus),
         itensQuantidade: provaDb.itensQuantidade,
         tempoAlerta: provaDb.tempoAlerta,
         tempoExecucao: provaDb.tempoExecucao,
@@ -90,7 +94,8 @@ class Prova {
               ordem: e.ordem,
               alternativas: [],
               arquivos: [],
-              tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+              tipo: EnumTipoQuestao.values
+                  .firstWhere((element) => element.index == e.tipo),
             ),
           )
           .toList();
@@ -100,7 +105,11 @@ class Prova {
         questao.alternativas = alternativasDb
             .map(
               (e) => Alternativa(
-                  numeracao: e.numeracao, descricao: e.descricao, id: e.id, ordem: e.ordem, questaoId: e.questaoId),
+                  numeracao: e.numeracao,
+                  descricao: e.descricao,
+                  id: e.id,
+                  ordem: e.ordem,
+                  questaoId: e.questaoId),
             )
             .toList();
 
@@ -124,7 +133,8 @@ class Prova {
   static Prova fromProvaDb(ProvaDb provaDb) {
     Prova prova = Prova(
       id: provaDb.id,
-      downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
+      downloadStatus: EnumDownloadStatus.values
+          .firstWhere((element) => element.index == provaDb.downloadStatus),
       itensQuantidade: provaDb.itensQuantidade,
       tempoAlerta: provaDb.tempoAlerta,
       tempoExecucao: provaDb.tempoExecucao,

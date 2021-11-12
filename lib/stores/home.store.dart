@@ -25,36 +25,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   ObservableMap<int, ProvaStore> provas = ObservableMap<int, ProvaStore>();
 
   @observable
-  ObservableMap<int, List<ContextoProva>> listaContexto =
-      ObservableMap<int, List<ContextoProva>>();
-
-  @observable
   bool carregando = false;
-
-  @action
-  carregarContextoDaProva(int provaId) async {
-    AppDatabase db = GetIt.I.get();
-
-    List<ContextoProvaDb> listaContextoProvaDb =
-        await db.obterContextoPorProvaId(provaId);
-
-    List<ContextoProva> contextos = [];
-
-    for (ContextoProvaDb item in listaContextoProvaDb) {
-      contextos.add(ContextoProva(
-        id: item.id,
-        imagem: item.imagem,
-        imagemBase64: item.imagemBase64,
-        ordem: item.ordem,
-        posicionamento: PosicionamentoImagemEnum.values[item.posicionamento!],
-        provaId: provaId,
-        texto: item.texto,
-        titulo: item.titulo,
-      ));
-    }
-
-    listaContexto.addAll({provaId: contextos});
-  }
 
   @action
   carregarProvas() async {
@@ -108,9 +79,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               prova: prova,
               respostas: ProvaRespostaStore(idProva: provaResponse.id),
             );
-
-            //! ERRO AQUI
-            await carregarContextoDaProva(provaResponse.id);
 
             // caso nao tenha o id, define como nova prova
             if (!provasStore.keys.contains(provaStore.id)) {

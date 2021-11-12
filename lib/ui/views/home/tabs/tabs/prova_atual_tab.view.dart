@@ -681,20 +681,11 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                       if (provaStore.prova.senha == senhaCriptografada) {
                         Navigator.pop(context);
 
-                        // Navigator.pushReplacement(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => ProvaView(
-                        //       provaStore: provaStore,
-                        //     ),
-                        //   ),
-                        // );
-
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ContextoProva(
-                              listaDePaginas: listaContextoProva,
+                            builder: (context) => ContextoProvaView(
+                              listaDePaginasContexto: store.listaContexto[provaStore.prova.id],
                               provaStore: provaStore,
                             ),
                           ),
@@ -712,22 +703,12 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         }
 
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
-          //provaStore.iniciarProva();
-
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => ProvaView(
-          //       provaStore: provaStore,
-          //     ),
-          //   ),
-          // );
 
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ContextoProva(
-                listaDePaginas: listaContextoProva,
+              builder: (context) => ContextoProvaView(
+                listaDePaginasContexto: store.listaContexto[provaStore.prova.id],
                 provaStore: provaStore,
               ),
             ),
