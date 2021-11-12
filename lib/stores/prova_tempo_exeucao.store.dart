@@ -67,7 +67,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   setupReactions() {
     _reactions = [
       reaction((_) => status, onStatusChange),
-      reaction((_) => tempoAcabando, onAlertaTempoChange),
+      reaction((_) => tempoAcabando, onAlertaTempoChange, delay: 1000),
     ];
   }
 

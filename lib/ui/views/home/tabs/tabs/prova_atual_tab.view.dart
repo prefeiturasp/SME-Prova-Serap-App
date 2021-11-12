@@ -5,6 +5,8 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
+import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
+import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
@@ -54,8 +56,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         style: {
           '*': Style.fromTextStyle(
             TextStyle(
-              fontFamily:
-                  ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+              fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
               fontSize: ServiceLocator.get<TemaStore>().size(16),
             ),
           )
@@ -73,8 +74,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         style: {
           '*': Style.fromTextStyle(
             TextStyle(
-              fontFamily:
-                  ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+              fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
               fontSize: ServiceLocator.get<TemaStore>().size(16),
             ),
           )
@@ -92,8 +92,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         style: {
           '*': Style.fromTextStyle(
             TextStyle(
-              fontFamily:
-                  ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+              fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
               fontSize: ServiceLocator.get<TemaStore>().size(16),
             ),
           )
@@ -113,7 +112,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   @override
   Widget builder(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 10.0),
+      padding: const EdgeInsets.only(top: 16, bottom: 8),
       child: Observer(
         builder: (_) {
           ObservableMap<int, ProvaStore> provas = store.provas;
@@ -174,265 +173,217 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   _buildProva(ProvaStore provaStore) {
-    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    bool telaMobileMenor = tela.size.width <= 400 ? true : false;
-
-    var espacamentoInterno = 24.0;
-
-    var espacamentoInternoBlocoProva = EdgeInsets.all(espacamentoInterno);
-
-    if (kIsMobile) {
-      espacamentoInterno = 8.0;
-
-      espacamentoInternoBlocoProva = EdgeInsets.fromLTRB(8, 8, 0, 12);
-    }
-
-    return Container(
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-      decoration: BoxDecoration(
+    return Card(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: TemaUtil.cinza, width: 1),
         borderRadius: BorderRadius.circular(12),
-        color: TemaUtil.branco,
-        border: Border.all(color: TemaUtil.cinza),
       ),
-      child: Padding(
-        padding: espacamentoInternoBlocoProva,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Observer(
-              builder: (_) {
-                if (kIsMobile) {
-                  return SizedBox();
-                }
-                return SvgPicture.asset(provaStore.icone);
-              },
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(left: espacamentoInterno),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Row(children: [
+          ..._buildProvaIcon(provaStore),
+          Expanded(
+            flex: 14,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Titulo
+                Texto(
+                  provaStore.prova.descricao,
+                  textOverflow: TextOverflow.visible,
+                  fontSize: 18,
+                  bold: true,
+                ),
+                SizedBox(height: 10),
+                // Quantidade de itens
+                Row(
                   children: [
-                    // Titulo
-                    Observer(
-                      builder: (_) {
-                        var tamanhoFonte = temaStore.tTexto16;
-                        if (kIsMobile) {
-                          tamanhoFonte = temaStore.tTexto14;
-                        }
-
-                        return Texto(
-                          provaStore.prova.descricao,
-                          fontSize: tamanhoFonte,
-                          bold: true,
-                          maxLines: 3,
-                        );
-                      },
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: TemaUtil.laranja02.withOpacity(0.1),
+                      ),
+                      padding: EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.format_list_numbered,
+                        color: TemaUtil.laranja02,
+                        size: 24,
+                      ),
                     ),
-                    SizedBox(height: 10),
-                    // Quantidade de itens
-                    Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: TemaUtil.laranja02.withOpacity(0.1),
-                          ),
-                          padding: EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.format_list_numbered,
-                            color: TemaUtil.laranja02,
-                            size: 24,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        //
-                        Observer(
-                          builder: (context) {
-                            var tamanhoFonte = temaStore.tTexto16;
-                            if (kIsMobile) {
-                              tamanhoFonte = temaStore.tTexto14;
-                            }
-                            if (telaMobileMenor) {
-                              tamanhoFonte = temaStore.tTexto12;
-                            }
-
-                            return RichText(
-                              text: TextSpan(
-                                text: "Quantidade de itens: ",
-                                style: TemaUtil.temaTextoPadrao.copyWith(
-                                  fontSize: tamanhoFonte,
-                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    style: TemaUtil.temaTextoPadrao.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: tamanhoFonte,
-                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    ),
-                                    text: tamanhoFonte >= 22 || telaMobileMenor
-                                        ? '\n${provaStore.prova.itensQuantidade.toString()}'
-                                        : provaStore.prova.itensQuantidade.toString(),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                    SizedBox(
+                      width: 5,
                     ),
-                    SizedBox(height: 10),
-                    // Data aplicacao
-                    Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: TemaUtil.verde02.withOpacity(0.1),
-                          ),
-                          padding: EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.insert_invitation,
-                            color: TemaUtil.verde02,
-                            size: 24,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildDataAplicacao(),
-                            SizedBox(
-                              width: kIsMobile ? 250 : 350,
-                              child: _formataDataAplicacao(provaStore.prova),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    // Botao
+                    //
                     Observer(builder: (_) {
-                      return _buildBotao(provaStore);
+                      return AdaptativeWidget(
+                        mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC &&
+                                temaStore.incrementador > 22 &&
+                                kIsMobile
+                            ? AdaptativeWidgetMode.COLUMN
+                            : AdaptativeWidgetMode.ROW,
+                        children: [
+                          Texto(
+                            "Quantidade de itens: ",
+                            fontSize: 14,
+                            color: TemaUtil.preto,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          Texto(
+                            provaStore.prova.itensQuantidade.toString(),
+                            fontSize: 14,
+                            color: TemaUtil.preto,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ],
+                      );
                     }),
                   ],
                 ),
-              ),
+                SizedBox(height: 10),
+                // Data aplicacao
+                Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: TemaUtil.verde02.withOpacity(0.1),
+                      ),
+                      padding: EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.insert_invitation,
+                        color: TemaUtil.verde02,
+                        size: 24,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Texto(
+                          "Data de aplicação:",
+                          fontSize: 14,
+                        ),
+                        Observer(builder: (_) {
+                          return _formataDataAplicacao(provaStore.prova);
+                        }),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                // Botao
+                AdaptativeCenter(
+                  center: kIsMobile,
+                  child: Observer(builder: (_) {
+                    return _buildBotao(provaStore);
+                  }),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ]),
       ),
     );
   }
 
   Widget _formataDataAplicacao(Prova prova) {
-    var tamanhoFonte = temaStore.tTexto18;
+    var tamanhoFonte = temaStore.tTexto14;
 
     if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
-      return Observer(
-        builder: (_) {
-          return AutoSizeText(
-            formatEddMMyyyy(prova.dataInicio),
-            maxLines: 4,
-            style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-              fontSize: tamanhoFonte,
-              fontFamily: temaStore.fonteDoTexto.nomeFonte,
-            ),
-          );
-        },
+      return AutoSizeText(
+        formatEddMMyyyy(prova.dataInicio),
+        maxLines: 4,
+        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+          fontSize: tamanhoFonte,
+          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+        ),
       );
     }
 
     if (prova.dataInicio != prova.dataFim) {
-      return Observer(
-        builder: (_) {
-          int tamanhoFonteParaQuebrarTexto = 18;
+      int tamanhoFonteParaQuebrarTexto = 18;
 
-          if (kIsMobile) {
-            tamanhoFonte = temaStore.tTexto16;
-            tamanhoFonteParaQuebrarTexto = 14;
+      if (kIsMobile) {
+        tamanhoFonte = temaStore.tTexto16;
+        tamanhoFonteParaQuebrarTexto = 14;
 
-            if (temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC) {
-              tamanhoFonte = temaStore.tTexto14;
-              tamanhoFonteParaQuebrarTexto = 12;
-            }
-          }
+        if (temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC) {
+          tamanhoFonte = temaStore.tTexto14;
+          tamanhoFonteParaQuebrarTexto = 12;
+        }
+      }
 
-          return Container(
-            child: tamanhoFonte >= tamanhoFonteParaQuebrarTexto
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AutoSizeText(
-                        formatEddMMyyyy(prova.dataInicio),
-                        maxLines: 2,
-                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: tamanhoFonte,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 170,
-                        child: AutoSizeText(
-                          " à ",
-                          maxLines: 2,
-                          textAlign: TextAlign.center,
-                          style: TemaUtil.temaTextoPadrao.copyWith(
-                            fontSize: tamanhoFonte,
-                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                          ),
-                        ),
-                      ),
-                      AutoSizeText(
-                        formatEddMMyyyy(prova.dataFim!),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: tamanhoFonte,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      ),
-                    ],
-                  )
-                : Row(
-                    children: [
-                      AutoSizeText(
-                        formatEddMMyyyy(prova.dataInicio),
-                        maxLines: 1,
-                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: tamanhoFonte,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      ),
-                      AutoSizeText(
-                        " à ",
-                        maxLines: 1,
-                        style: TemaUtil.temaTextoPadrao.copyWith(
-                          fontSize: tamanhoFonte,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      ),
-                      AutoSizeText(
-                        formatEddMMyyyy(prova.dataFim!),
-                        maxLines: 1,
-                        minFontSize: 16,
-                        overflow: TextOverflow.ellipsis,
-                        style: TemaUtil.temaTextoPadraoNegrito.copyWith(
-                          fontSize: tamanhoFonte,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      ),
-                    ],
+      return Container(
+        child: tamanhoFonte >= tamanhoFonteParaQuebrarTexto
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AutoSizeText(
+                    formatEddMMyyyy(prova.dataInicio),
+                    maxLines: 2,
+                    style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                      fontSize: tamanhoFonte,
+                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                    ),
                   ),
-          );
-        },
+                  SizedBox(
+                    width: 170,
+                    child: AutoSizeText(
+                      " à ",
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      style: TemaUtil.temaTextoPadrao.copyWith(
+                        fontSize: tamanhoFonte,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                      ),
+                    ),
+                  ),
+                  AutoSizeText(
+                    formatEddMMyyyy(prova.dataFim!),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                      fontSize: tamanhoFonte,
+                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  AutoSizeText(
+                    formatEddMMyyyy(prova.dataInicio),
+                    maxLines: 1,
+                    style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                      fontSize: tamanhoFonte,
+                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                    ),
+                  ),
+                  AutoSizeText(
+                    " à ",
+                    maxLines: 1,
+                    style: TemaUtil.temaTextoPadrao.copyWith(
+                      fontSize: tamanhoFonte,
+                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                    ),
+                  ),
+                  AutoSizeText(
+                    formatEddMMyyyy(prova.dataFim!),
+                    maxLines: 1,
+                    minFontSize: 16,
+                    overflow: TextOverflow.ellipsis,
+                    style: TemaUtil.temaTextoPadraoNegrito.copyWith(
+                      fontSize: tamanhoFonte,
+                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                    ),
+                  ),
+                ],
+              ),
       );
     }
 
@@ -577,6 +528,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     }
 
     return BotaoDefaultWidget(
+      largura: kIsTablet ? 256 : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -597,7 +549,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           ),
         ],
       ),
-      largura: 256,
       onPressed: () async {
         await provaStore.iniciarDownload();
       },
@@ -656,7 +607,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         texto = "INICIAR PROVA";
     }
 
-    var tamanhoFonte = 18.0;
+    var tamanhoFonte = 14.0;
     if (kIsMobile) {
       tamanhoFonte = 14.0;
       if (temaStore.incrementador >= 22) {
@@ -664,10 +615,8 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       }
     }
 
-    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    bool telaMobileMenor = tela.size.width <= 400 ? true : false;
-
     return BotaoDefaultWidget(
+      largura: kIsTablet ? 256 : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -681,13 +630,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
-      largura: kIsMobile
-          ? telaMobileMenor
-              ? 280
-              : 320
-          : tamanhoFonte >= 18
-              ? 350
-              : 312,
       onPressed: () async {
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
           //
@@ -792,7 +734,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           );
         }
 
-        if (provaStore.prova.status == EnumProvaStatus.INICIADA){
+        if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -807,15 +749,15 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {
-    var tempoRestante = prova.tempoPrevisto > 0 ? " - Aproximadamente ${prova.tempoPrevisto.round()} segundos restantes": "";
+    String tempoPrevisto = "0";
 
-    final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
-    bool telaMobileMenor = tela.size.width <= 400 ? true : false;
+    if (!prova.tempoPrevisto.isNaN) {
+      tempoPrevisto = formatDuration(Duration(seconds: prova.tempoPrevisto.toInt()));
+    }
 
-    var espacamento = telaMobileMenor ? 280.0 : 350.0;
+    var tempoRestante = prova.tempoPrevisto > 0 ? " - Aproximadamente $tempoPrevisto restantes" : "";
 
     return SizedBox(
-      width: espacamento,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -833,28 +775,50 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Text(
-              "Download em progresso ${(prova.progressoDownload * 100).toStringAsFixed(2)}% $tempoRestante",
-              style: TextStyle(
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                fontSize: temaStore.tTexto14,
-              ),
-            ),
+            child: Observer(builder: (_) {
+              return Text.rich(
+                TextSpan(
+                  text: "Download em ${(prova.progressoDownload * 100).toStringAsFixed(2)}%",
+                  style: TextStyle(
+                    color: TemaUtil.preto2,
+                    fontSize: temaStore.size(12),
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: tempoRestante,
+                      style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
           ),
         ],
       ),
     );
   }
 
-  _buildDataAplicacao() {
-    var tamanhoFonte = 16.0;
-    if (kIsMobile) {
-      tamanhoFonte = 14.0;
+  List<Widget> _buildProvaIcon(ProvaStore provaStore) {
+    if (kIsTablet) {
+      return [
+        Expanded(
+          flex: 4,
+          child: Observer(builder: (_) {
+            return SvgPicture.asset(
+              provaStore.icone,
+            );
+          }),
+        ),
+        Spacer(
+          flex: 1,
+        ),
+      ];
+    } else {
+      return [];
     }
-    return Texto(
-      "Data de aplicação:",
-      fontSize: tamanhoFonte,
-    );
   }
-  //
 }

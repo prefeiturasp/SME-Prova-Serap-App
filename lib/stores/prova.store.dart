@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -228,7 +227,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   saveProva() async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarProva(
+    await database.inserirOuAtualizarProva(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
@@ -240,6 +239,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         itensQuantidade: prova.itensQuantidade,
         dataInicio: prova.dataInicio,
         ultimaAtualizacao: DateTime.now(),
+        dataFim: prova.dataFim,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        senha: prova.senha,
       ),
     );
 

@@ -1,1 +1,7 @@
-enum EnumDownloadStatus { NAO_INICIADO, BAIXANDO, PAUSADO, CONCLUIDO, ERRO }
+enum EnumDownloadStatus {
+  NAO_INICIADO,
+  BAIXANDO,
+  PAUSADO,
+  CONCLUIDO,
+  ERRO,
+}
