@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
@@ -39,25 +40,25 @@ class Prova {
 
   String? senha;
 
-  List<ContextoProva> listaContextoProva;
+  List<ContextoProva>? contextosProva;
 
-  Prova({
-    required this.id,
-    required this.descricao,
-    required this.itensQuantidade,
-    required this.dataInicio,
-    this.dataFim,
-    required this.tempoExecucao,
-    required this.tempoExtra,
-    required this.tempoAlerta,
-    required this.questoes,
-    this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
-    this.downloadProgresso = 0,
-    this.status = EnumProvaStatus.NAO_INICIADA,
-    this.senha,
-    this.dataInicioProvaAluno,
-    this.dataFimProvaAluno,
-  });
+  Prova(
+      {required this.id,
+      required this.descricao,
+      required this.itensQuantidade,
+      required this.dataInicio,
+      this.dataFim,
+      required this.tempoExecucao,
+      required this.tempoExtra,
+      required this.tempoAlerta,
+      required this.questoes,
+      this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
+      this.downloadProgresso = 0,
+      this.status = EnumProvaStatus.NAO_INICIADA,
+      this.senha,
+      this.dataInicioProvaAluno,
+      this.dataFimProvaAluno,
+      this.contextosProva});
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
   Map<String, dynamic> toJson() => _$ProvaToJson(this);
@@ -70,8 +71,7 @@ class Prova {
     if (provaDb != null) {
       var prova = Prova(
         id: provaDb.id,
-        downloadStatus: EnumDownloadStatus.values
-            .firstWhere((element) => element.index == provaDb.downloadStatus),
+        downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
         itensQuantidade: provaDb.itensQuantidade,
         tempoAlerta: provaDb.tempoAlerta,
         tempoExecucao: provaDb.tempoExecucao,
@@ -84,6 +84,24 @@ class Prova {
         questoes: [],
       );
 
+      var contextosProvaDb = await db.obterContextoPorProvaId(prova.id);
+
+      if (contextosProvaDb.isNotEmpty) {
+        prova.contextosProva = contextosProvaDb
+            .map((e) => ContextoProva(
+                  id: e.id,
+                  provaId: e.provaId,
+                  imagem: e.imagem,
+                  imagemBase64: e.imagemBase64,
+                  posicionamento:
+                      PosicionamentoImagemEnum.values.firstWhere((element) => element.index == e.posicionamento),
+                  ordem: e.ordem,
+                  titulo: e.titulo,
+                  texto: e.texto,
+                ))
+            .toList();
+      }
+
       var questoesDb = await db.obterQuestoesPorProvaId(prova.id);
       prova.questoes = questoesDb
           .map(
@@ -94,8 +112,7 @@ class Prova {
               ordem: e.ordem,
               alternativas: [],
               arquivos: [],
-              tipo: EnumTipoQuestao.values
-                  .firstWhere((element) => element.index == e.tipo),
+              tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
             ),
           )
           .toList();
@@ -105,11 +122,7 @@ class Prova {
         questao.alternativas = alternativasDb
             .map(
               (e) => Alternativa(
-                  numeracao: e.numeracao,
-                  descricao: e.descricao,
-                  id: e.id,
-                  ordem: e.ordem,
-                  questaoId: e.questaoId),
+                  numeracao: e.numeracao, descricao: e.descricao, id: e.id, ordem: e.ordem, questaoId: e.questaoId),
             )
             .toList();
 
@@ -133,8 +146,7 @@ class Prova {
   static Prova fromProvaDb(ProvaDb provaDb) {
     Prova prova = Prova(
       id: provaDb.id,
-      downloadStatus: EnumDownloadStatus.values
-          .firstWhere((element) => element.index == provaDb.downloadStatus),
+      downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
       itensQuantidade: provaDb.itensQuantidade,
       tempoAlerta: provaDb.tempoAlerta,
       tempoExecucao: provaDb.tempoExecucao,

@@ -13,10 +13,8 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 
 class ContextoProvaView extends BaseStatefulWidget {
   final ProvaStore provaStore;
-  final List<ApresentacaoModelWidget>? listaDePaginasOrientacoes;
-  final List<ContextoProva>? listaDePaginasContexto;
 
-  const ContextoProvaView({this.listaDePaginasContexto, this.listaDePaginasOrientacoes, required this.provaStore});
+  const ContextoProvaView({required this.provaStore});
 
   @override
   _ContextoProvaViewState createState() => _ContextoProvaViewState();
@@ -27,9 +25,8 @@ class _ContextoProvaViewState extends BaseStatelessWidget<ContextoProvaView, Hom
   Widget builder(BuildContext context) {
     return Observer(
       builder: (_) {
-        
         return ApresentacaoContextoWidget(
-          listaDePaginasContexto: widget.listaDePaginasContexto!,
+          listaDePaginasContexto: widget.provaStore.prova.contextosProva!,
           textoBotaoAvancar: "PRÓXIMA DICA",
           textoBotaoPular: "IR PARA A PROVA",
           regraMostrarTodosOsBotoesAoIniciar: false,

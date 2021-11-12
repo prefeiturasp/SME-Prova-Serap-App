@@ -95,13 +95,13 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
         return m.createAll();
       }, onUpgrade: (Migrator m, int from, int to) async {
-        if (from == 2) {
-          await m.addColumn(provasDb, provasDb.senha);
-        }
+        // if (from == 2) {
+        //   await m.addColumn(provasDb, provasDb.senha);
+        // }
 
-        if (from == 3) {
-          await m.createTable(contextosProvaDb);
-        }
+        // if (from == 3) {
+        //   await m.createTable(contextosProvaDb);
+        // }
       }, beforeOpen: (openingDetails) async {
         if (kDebugMode /* or some other flag */) {
           final m = createMigrator();

@@ -34,9 +34,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
-  @observable
-  ObservableMap<int, List<ContextoProva>> listaContexto = ObservableMap<int, List<ContextoProva>>();
-
   late GerenciadorDownload gerenciadorDownload;
 
   int id;
@@ -253,30 +250,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     var provaSalva = await database.obterProvaPorId(prova.id);
     fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
-  }
-
-  @action
-  carregarContextoDaProva(int provaId) async {
-    AppDatabase db = GetIt.I.get();
-
-    List<ContextoProvaDb> listaContextoProvaDb = await db.obterContextoPorProvaId(provaId);
-
-    List<ContextoProva> contextos = [];
-
-    for (ContextoProvaDb item in listaContextoProvaDb) {
-      contextos.add(ContextoProva(
-        id: item.id,
-        imagem: item.imagem,
-        imagemBase64: item.imagemBase64,
-        ordem: item.ordem,
-        posicionamento: PosicionamentoImagemEnum.values[item.posicionamento!],
-        provaId: provaId,
-        texto: item.texto,
-        titulo: item.titulo,
-      ));
-    }
-
-    listaContexto.addAll({provaId: contextos});
   }
 
   @action
