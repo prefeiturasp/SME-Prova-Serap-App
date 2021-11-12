@@ -95,18 +95,31 @@ class AppDatabase extends _$AppDatabase {
 
   Future limpar() {
     return transaction(() async {
-      await customUpdate(
-        "delete from alternativas_db; delete from questoes_db; delete from arquivos_db; delete from provas_db;",
-      );
+      await customUpdate("delete from alternativas_db;");
+
+      await customUpdate("delete from questoes_db;");
+
+      await customUpdate("delete from arquivos_db;");
+
+      await customUpdate("delete from provas_db;");
     });
   }
 
   Future limparPorProvaId(int provaId) {
     return transaction(() async {
-      await customUpdate("""delete from alternativas_db where prova_id = ?; 
-        delete from questoes_db where prova_id = ?; 
-        delete from arquivos_db where prova_id = ?; 
-        delete from provas_db where prova_id = ?; """, variables: [
+      await customUpdate("delete from alternativas_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from questoes_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from arquivos_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from provas_db where prova_id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
     });

@@ -33,7 +33,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     AppDatabase db = GetIt.I.get();
 
-    List<ProvaDb> provasDb = await db.obterProvasPendentes();
+    List<ProvaDb> provasDb = await db.obterProvas();
     if (provasDb.isNotEmpty) {
       List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
 
@@ -138,6 +138,9 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       prova.status = provaStore.prova.status;
       prova.dataInicioProvaAluno = provaStore.prova.dataInicioProvaAluno;
 
+      prova.dataInicio = provaStore.prova.dataInicio;
+      prova.dataFim = provaStore.prova.dataFim;
+
       provaStore.prova = prova;
       provaStore.downloadStatus = prova.downloadStatus;
       provaStore.progressoDownload = prova.downloadProgresso;
@@ -153,6 +156,14 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   @override
   onDispose() {
     limpar();
+    cancelarTimers();
+  }
+
+  @action
+  cancelarTimers() {
+    for (var prova in provas.values) {
+      prova.onDispose();
+    }
   }
 
   @action

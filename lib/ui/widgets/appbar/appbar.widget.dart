@@ -1,4 +1,6 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
@@ -78,6 +80,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         TextButton(
           onPressed: () async {
             await _principalStore.sair();
+
+            await ServiceLocator.get<HomeStore>().onDispose();
 
             if (popView) {
               var prova = GetIt.I.get<ProvaViewStore>();
