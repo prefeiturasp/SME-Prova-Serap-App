@@ -1,6 +1,6 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:drift/web.dart';
 
-AppDatabase constructDb() {
-  return AppDatabase(WebDatabase('db'));
+Future<AppDatabase> constructDb() async {
+  return AppDatabase(WebDatabase.withStorage(await DriftWebStorage.indexedDbIfSupported('db')));
 }
