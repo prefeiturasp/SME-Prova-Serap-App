@@ -27,7 +27,7 @@ class DependenciasIoC with Loggable {
 
   registrarServicos() {
     registerSingletonAsync<SharedPreferences>(() => SharedPreferences.getInstance());
-    registerSingletonAsync<AppDatabase>(() => constructDb());
+    registerSingleton<AppDatabase>(constructDb());
     registerSingleton<ApiService>(ApiService.build(
       ConnectionOptions(
         baseUrl: AppConfigReader.getApiHost(),

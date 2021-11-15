@@ -1,6 +1,12 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:drift/drift.dart';
 import 'package:drift/web.dart';
 
-Future<AppDatabase> constructDb() async {
-  return AppDatabase(WebDatabase.withStorage(await DriftWebStorage.indexedDbIfSupported('db')));
+AppDatabase constructDb() {
+  final db = LazyDatabase(() async {
+    final webDb = await DriftWebStorage.indexedDbIfSupported('serap');
+    return WebDatabase.withStorage(webDb);
+  });
+
+  return AppDatabase(db);
 }
