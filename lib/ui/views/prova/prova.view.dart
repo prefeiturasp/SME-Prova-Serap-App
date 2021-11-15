@@ -2,6 +2,15 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/utils/assets.util.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:photo_view/photo_view.dart';
+
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -714,6 +723,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       texto =
           texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
+
+    texto = texto.replaceAll("#0#", AssetsUtil.notfound);
 
     return texto;
   }
