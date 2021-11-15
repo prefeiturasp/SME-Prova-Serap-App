@@ -214,7 +214,6 @@ class GerenciadorDownload with Loggable {
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
-
               Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
 
               if (response.isSuccessful) {
