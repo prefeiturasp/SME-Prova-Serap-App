@@ -243,7 +243,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         dataInicio: prova.dataInicio,
         dataFim: prova.dataFim,
         ultimaAtualizacao: DateTime.now(),
-        dataFim: prova.dataFim,
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
         dataFimProvaAluno: prova.dataFimProvaAluno,
         senha: prova.senha,
