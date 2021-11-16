@@ -162,8 +162,20 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
               itemCount: provas.length,
               itemBuilder: (_, index) {
                 var keys = provas.keys.toList();
-                var prova = provas[keys[index]]!;
-                return _buildProva(prova);
+                var provaStore = provas[keys[index]]!;
+
+                var provaVigente = (DateTime.now().isAfter(provaStore.prova.dataInicio) &&
+                    (provaStore.prova.dataFim != null && DateTime.now().isBefore(provaStore.prova.dataFim!)));
+
+                if (!provaVigente) {
+                  provaVigente = isSameDate(provaStore.prova.dataInicio);
+                }
+
+                if (provaVigente) {
+                  return _buildProva(provaStore);
+                } else {
+                  return SizedBox.shrink();
+                }
               },
             ),
           );
@@ -631,93 +643,69 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         ],
       ),
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha != null) {
-          //
-          showDialog(
-            context: context,
-            barrierColor: Colors.black87,
-            builder: (context) {
-              return DialogDefaultWidget(
-                cabecalho: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 16,
-                    left: 16,
-                    right: 16,
+        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
+          if (provaStore.prova.senha != null) {
+            showDialog(
+              context: context,
+              barrierColor: Colors.black87,
+              builder: (context) {
+                return DialogDefaultWidget(
+                  cabecalho: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 16,
+                      left: 16,
+                      right: 16,
+                    ),
+                    child: Observer(builder: (_) {
+                      return Texto(
+                        "Insira a senha informada para iniciar a prova",
+                        center: true,
+                        fontSize: tamanhoFonte,
+                      );
+                    }),
                   ),
-                  child: Observer(builder: (_) {
-                    return Texto(
-                      "Insira a senha informada para iniciar a prova",
-                      center: true,
-                      fontSize: tamanhoFonte,
-                    );
-                  }),
-                ),
-                corpo: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: Padding(
+                  corpo: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                     ),
-                    child: TextField(
-                      focusNode: _codigoProvaFocus,
-                      onChanged: (value) => provaStore.codigoIniciarProva = value,
-                      maxLength: 10,
-                      decoration: InputDecoration(
-                        labelText: 'Digite o código para liberar a prova',
-                        labelStyle: TextStyle(
-                          color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                      child: TextField(
+                        focusNode: _codigoProvaFocus,
+                        onChanged: (value) => provaStore.codigoIniciarProva = value,
+                        maxLength: 10,
+                        decoration: InputDecoration(
+                          labelText: 'Digite o código para liberar a prova',
+                          labelStyle: TextStyle(
+                            color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                botoes: [
-                  BotaoDefaultWidget(
-                    onPressed: () {
-                      String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
+                  botoes: [
+                    BotaoDefaultWidget(
+                      onPressed: () {
+                        String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
 
-                      if (provaStore.prova.senha == senhaCriptografada) {
-                        Navigator.pop(context);
+                        if (provaStore.prova.senha == senhaCriptografada) {
+                          Navigator.pop(context);
 
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ContextoProvaView(
-                              provaStore: provaStore,
-                            ),
-                          ),
-                        );
-                      } else {
-                        mostrarDialogSenhaErrada(context);
-                      }
-                    },
-                    textoBotao: "ENVIAR CODIGO",
-                  ),
-                ],
-              );
-            },
-          );
-        }
-
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA && provaStore.prova.senha == null) {
-          if (provaStore.prova.contextosProva != null) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ContextoProvaView(
-                  provaStore: provaStore,
-                ),
-              ),
+                          _navegarParaProvaPrimeiraVez(provaStore);
+                        } else {
+                          mostrarDialogSenhaErrada(context);
+                        }
+                      },
+                      textoBotao: "ENVIAR CODIGO",
+                    ),
+                  ],
+                );
+              },
             );
           } else {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) {
-                provaStore.iniciarProva();
-                return ProvaView(provaStore: provaStore);
-              }),
-            );
+            _navegarParaProvaPrimeiraVez(provaStore);
           }
         }
 
@@ -733,6 +721,21 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         }
       },
     );
+  }
+
+  _navegarParaProvaPrimeiraVez(ProvaStore provaStore) {
+    if (provaStore.prova.contextosProva != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ContextoProvaView(provaStore: provaStore),
+        ),
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => ProvaView(provaStore: provaStore)),
+      );
+    }
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {

@@ -1,15 +1,17 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/apresentacao.store.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
@@ -18,8 +20,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
   final temaStore = GetIt.I<TemaStore>();
 
-  AppBarWidget(
-      {required this.popView, this.subtitulo, this.mostrarBotaoVoltar = true});
+  AppBarWidget({required this.popView, this.subtitulo, this.mostrarBotaoVoltar = true});
 
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
@@ -77,24 +78,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           }),
         ),
         TextButton(
-          onPressed: () async {
-            await _principalStore.sair();
-
-            if (popView) {
-              var prova = GetIt.I.get<ProvaViewStore>();
-              var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
-              var apresentacao = GetIt.I.get<ApresentacaoStore>();
-
-              prova.dispose();
-              orientacoes.dispose();
-              apresentacao.dispose();
-
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => SplashScreenView()),
-                (_) => false,
-              );
-            }
-          },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.appBar),
           ),
@@ -115,6 +98,24 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               SizedBox(width: 5),
             ],
           ),
+          onPressed: () async {
+            await _principalStore.sair();
+
+            await ServiceLocator.get<HomeStore>().onDispose();
+
+            if (popView) {
+              var prova = GetIt.I.get<ProvaViewStore>();
+              var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
+
+              prova.dispose();
+              orientacoes.dispose();
+
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => SplashScreenView()),
+                (_) => false,
+              );
+            }
+          },
         ),
       ],
     );

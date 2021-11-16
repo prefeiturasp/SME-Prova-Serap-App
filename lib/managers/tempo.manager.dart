@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:get_it/get_it.dart';
-
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:get_it/get_it.dart';
 
 typedef DuracaoChangeCallback = void Function(TempoChangeData changeData);
 
@@ -23,6 +22,8 @@ class GerenciadorTempo with Loggable, Disposable {
 
   Timer? timer;
   Timer? timerAdicional;
+
+  Duration intervaloAtualizacao = Duration(milliseconds: 500);
 
   configure({
     required DateTime dataHoraInicioProva,
@@ -46,7 +47,7 @@ class GerenciadorTempo with Loggable, Disposable {
       );
     }
 
-    timer = Timer.periodic(Duration(milliseconds: 100), (_) => process());
+    timer = Timer.periodic(intervaloAtualizacao, (_) => process());
   }
 
   process() {
@@ -88,7 +89,7 @@ class GerenciadorTempo with Loggable, Disposable {
   }
 
   iniciarTimerProvaExtendida() {
-    timerAdicional = Timer.periodic(Duration(milliseconds: 100), (_) => processAdicional());
+    timerAdicional = Timer.periodic(intervaloAtualizacao, (_) => processAdicional());
   }
 
   processAdicional() {
