@@ -43,7 +43,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
     for (var idQuestao in idsQuestao) {
       try {
-        fine('[Prova $idProva] - (Questão ID $idQuestao) Carregando resposta');
+        finer('[Prova $idProva] - (Questão ID $idQuestao) Carregando resposta');
         var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
         if (respostaBanco.isSuccessful) {
           var body = respostaBanco.body!;
@@ -66,7 +66,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
           severe(e);
           severe(stack);
         } else {
-          info('[Prova $idProva] - (Questão ID $idQuestao) Sem resposta salva');
+          finer('[Prova $idProva] - (Questão ID $idQuestao) Sem resposta salva');
         }
       }
     }

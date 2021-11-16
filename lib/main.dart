@@ -1,19 +1,19 @@
 // ignore_for_file: avoid_print
-
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
+import 'package:appserap/utils/app_config.util.dart';
+import 'package:appserap/utils/notificacao.util.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/workers/dispacher.dart';
 import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
-
-import 'package:appserap/main.ioc.dart';
-import 'package:appserap/utils/app_config.util.dart';
-import 'package:appserap/utils/notificacao.util.dart';
-import 'package:appserap/workers/dispacher.dart';
 
 import 'utils/firebase.util.dart';
 
@@ -47,6 +47,8 @@ configure() async {
   await setupAppConfig();
 
   await DependenciasIoC().setup();
+
+  TelaAdaptativaUtil().setup();
 }
 
 Future setupAppConfig() async {
@@ -86,21 +88,29 @@ setupDateFormating() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: asuka.builder,
-      navigatorObservers: [asuka.asukaHeroController],
-      debugShowCheckedModeBanner: kDebugMode,
-      theme: ThemeData.light().copyWith(
-        appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
-        textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
-          ),
-        ),
+    return ScreenUtilInit(
+      designSize: Size(
+        960,
+        600,
       ),
-      locale: Locale('pt', 'BR'),
-      home: SplashScreenView(),
-      scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+      builder: () {
+        return MaterialApp(
+          builder: asuka.builder,
+          navigatorObservers: [asuka.asukaHeroController],
+          debugShowCheckedModeBanner: kDebugMode,
+          theme: ThemeData.light().copyWith(
+            appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
+            textButtonTheme: TextButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+              ),
+            ),
+          ),
+          locale: Locale('pt', 'BR'),
+          home: SplashScreenView(),
+          scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+        );
+      },
     );
   }
 }

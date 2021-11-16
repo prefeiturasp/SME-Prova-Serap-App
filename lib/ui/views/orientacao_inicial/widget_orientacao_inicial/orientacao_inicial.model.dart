@@ -1,4 +1,3 @@
-import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:flutter/widgets.dart';
 
 class OrientacaoInicialModel {
@@ -8,11 +7,5 @@ class OrientacaoInicialModel {
   Widget? corpoPersonalizado;
   bool ehHTML;
 
-  OrientacaoInicialModel({
-    this.imagem,
-    this.titulo,
-    this.descricao,
-    this.corpoPersonalizado,
-    this.ehHTML = false
-  });
+  OrientacaoInicialModel({this.imagem, this.titulo, this.descricao, this.corpoPersonalizado, this.ehHTML = false});
 }

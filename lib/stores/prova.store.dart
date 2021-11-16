@@ -1,13 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:flutter/widgets.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
@@ -22,6 +15,11 @@ import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'prova.store.g.dart';
 
@@ -90,6 +88,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
+    fine("[Prova $id] - Configurando Download");
+
     await gerenciadorDownload.configure();
 
     gerenciadorDownload.onStatusChange((downloadStatus, progressoDownload) {
@@ -108,6 +108,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     var obterProva = await gerenciadorDownload.getProva();
 
     prova = obterProva;
+
+    fine("[Prova $id] - Download Concluído");
   }
 
   @action
@@ -209,7 +211,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @action
   _configurarTempoExecucao() {
     if (prova.tempoExecucao > 0) {
-      fine('Configurando controlador de tempo');
+      fine('[Prova $id] - Configurando controlador de tempo');
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
         duracaoProva: Duration(seconds: prova.tempoExecucao),
@@ -239,13 +241,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         status: prova.status.index,
         itensQuantidade: prova.itensQuantidade,
         dataInicio: prova.dataInicio,
-        ultimaAtualizacao: DateTime.now(),
         dataFim: prova.dataFim,
+        ultimaAtualizacao: DateTime.now(),
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
         dataFimProvaAluno: prova.dataFimProvaAluno,
+        senha: prova.senha,
       ),
     );
-
     var provaSalva = await db.obterProvaPorId(prova.id);
     fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }

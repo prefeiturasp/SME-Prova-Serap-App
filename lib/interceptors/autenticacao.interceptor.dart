@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:chopper/chopper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,9 +34,12 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       Map<String, String> updatedHeaders = Map.of(request.headers);
 
       updatedHeaders.update('Authorization', (value) => "Bearer $token", ifAbsent: () => "Bearer $token");
-      updatedHeaders.update('access-control-allow-origin', (value) => "*");
-      updatedHeaders.update('Access-Control-Allow-Methods',
-          (value) => "GET, PUT, POST, DELETE, HEAD, OPTIONS, PATCH, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK");
+      updatedHeaders.update('access-control-allow-origin', (value) => "*", ifAbsent: () => "*");
+      updatedHeaders.update(
+        'Access-Control-Allow-Methods',
+        (value) => "GET, PUT, POST, DELETE, HEAD, OPTIONS, PATCH, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK",
+        ifAbsent: () => "GET, PUT, POST, DELETE, HEAD, OPTIONS, PATCH, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK",
+      );
       return request.copyWith(headers: updatedHeaders);
     }
   }
@@ -54,7 +58,6 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       SharedPreferences prefs = GetIt.I.get();
       await prefs.setString('token', newToken);
       await prefs.setString('token_expiration', expiration.toIso8601String());
-
       return newToken;
     }
 

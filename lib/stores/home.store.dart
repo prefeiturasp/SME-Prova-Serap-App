@@ -1,9 +1,4 @@
 import 'package:appserap/database/app.database.dart';
-import 'package:chopper/src/response.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mobx/mobx.dart';
-
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -13,6 +8,10 @@ import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
 import 'package:appserap/utils/provas.util.dart';
+import 'package:chopper/src/response.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 
 part 'home.store.g.dart';
 
@@ -140,6 +139,10 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
       prova.dataInicio = provaStore.prova.dataInicio;
       prova.dataFim = provaStore.prova.dataFim;
+
+      prova.tempoAlerta = provaStore.prova.tempoAlerta;
+      prova.tempoExecucao = provaStore.prova.tempoExecucao;
+      prova.tempoExtra = provaStore.prova.tempoExtra;
 
       provaStore.prova = prova;
       provaStore.downloadStatus = prova.downloadStatus;

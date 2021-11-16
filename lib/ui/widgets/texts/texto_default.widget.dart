@@ -19,6 +19,7 @@ class Texto extends StatelessWidget {
   final Variant variant;
   final FontWeight? fontWeight;
   final TextStyle? texStyle;
+  final TextAlign? textAlign;
 
   final _temaStore = GetIt.I.get<TemaStore>();
 
@@ -35,6 +36,7 @@ class Texto extends StatelessWidget {
     this.variant = Variant.primary,
     this.fontWeight,
     this.texStyle,
+    this.textAlign,
   }) : super(key: key);
 
   @override
@@ -67,6 +69,6 @@ class Texto extends StatelessWidget {
       return TextAlign.center;
     }
 
-    return null;
+    return textAlign;
   }
 }
