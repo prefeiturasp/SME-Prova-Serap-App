@@ -110,7 +110,7 @@ class AppDatabase extends _$AppDatabase {
         Variable.withInt(provaId),
       ]);
 
-      await customUpdate("delete from provas_db where prova_id = ?;", variables: [
+      await customUpdate("delete from provas_db where id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
     });
