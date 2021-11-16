@@ -8,7 +8,7 @@ part 'app.database.g.dart';
 @DataClassName("ProvaDb")
 class ProvasDb extends Table {
   IntColumn get id => integer()();
-  TextColumn get descricao => text().withLength(min: 1, max: 50)();
+  TextColumn get descricao => text().withLength(min: 1, max: 150)();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get downloadStatus => integer()();
   IntColumn get itensQuantidade => integer()();
@@ -79,7 +79,7 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
         return m.createAll();
       }, onUpgrade: (Migrator m, int from, int to) async {
-        if (from == 2) {
+        if (from == 1) {
           await m.addColumn(provasDb, provasDb.senha);
         }
       });
