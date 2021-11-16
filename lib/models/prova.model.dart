@@ -78,6 +78,8 @@ class Prova {
         dataInicioProvaAluno: provaDb.dataInicioProvaAluno,
         dataFimProvaAluno: provaDb.dataFimProvaAluno,
         questoes: [],
+        status: EnumProvaStatus.values[provaDb.status],
+        senha: provaDb.senha,
       );
 
       var questoesDb = await db.obterQuestoesPorProvaId(prova.id);
@@ -135,6 +137,8 @@ class Prova {
       dataInicioProvaAluno: provaDb.dataInicioProvaAluno,
       dataFimProvaAluno: provaDb.dataFimProvaAluno,
       questoes: [],
+      status: EnumProvaStatus.values[provaDb.status],
+      senha: provaDb.senha,
     );
 
     return prova;
@@ -155,9 +159,9 @@ class Prova {
         dataInicio: prova.dataInicio,
         ultimaAtualizacao: DateTime.now(),
         dataFim: prova.dataFim,
-        dataInicioProvaAluno: prova.dataInicioProvaAluno,
         dataFimProvaAluno: prova.dataFimProvaAluno,
-
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        senha: prova.senha,
       ),
     );
   }

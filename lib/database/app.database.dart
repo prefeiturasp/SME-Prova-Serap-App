@@ -21,6 +21,8 @@ class ProvasDb extends Table {
   DateTimeColumn get dataInicioProvaAluno => dateTime().nullable()();
   DateTimeColumn get dataFimProvaAluno => dateTime().nullable()();
 
+  TextColumn get senha => text().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -119,7 +121,7 @@ class AppDatabase extends _$AppDatabase {
         Variable.withInt(provaId),
       ]);
 
-      await customUpdate("delete from provas_db where prova_id = ?;", variables: [
+      await customUpdate("delete from provas_db where id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
     });
