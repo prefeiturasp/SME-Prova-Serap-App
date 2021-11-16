@@ -8,7 +8,7 @@ part 'app.database.g.dart';
 @DataClassName("ProvaDb")
 class ProvasDb extends Table {
   IntColumn get id => integer()();
-  TextColumn get descricao => text().withLength(min: 1, max: 50)();
+  TextColumn get descricao => text().withLength(min: 1, max: 150)();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get downloadStatus => integer()();
   IntColumn get itensQuantidade => integer()();
@@ -73,27 +73,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
-  MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (Migrator m) {
-          return m.createAll();
-        },
-      );
-
-  // @override
-  // MigrationStrategy get migration => MigrationStrategy(
-  //   onCreate: (Migrator m) {
-  //     return m.createAll();
-  //   },
-  //   onUpgrade: (Migrator m, int from, int to) async {
-  //     if (from == 1) {
-  //       // we added the dueDate property in the change from version 1
-  //       await m.addColumn(todos, todos.dueDate);
-  //     }
-  //   }
-  // );
+  MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
+        return m.createAll();
+      }, onUpgrade: (Migrator m, int from, int to) async {
+        if (from == 1) {
+          await m.addColumn(provasDb, provasDb.senha);
+        }
+      });
 
   Future limpar() {
     return transaction(() async {
