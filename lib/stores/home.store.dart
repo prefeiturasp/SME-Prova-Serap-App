@@ -141,6 +141,9 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     if (prova != null) {
       // atualizar prova com os valores remotos
+
+      prova.contextosProva = provaStore.prova.contextosProva;
+
       prova.status = provaStore.prova.status;
       prova.dataInicioProvaAluno = provaStore.prova.dataInicioProvaAluno;
 

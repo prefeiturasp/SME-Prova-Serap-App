@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
@@ -269,8 +270,7 @@ class GerenciadorDownload with Loggable {
             case EnumDownloadTipo.CONTEXTO_PROVA:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-              Response<ContextoProvaResponseDTO> response =
-                  await apiService.contextoProva.getContextoProva(id: download.id);
+              Response<ContextoProvaResponseDTO> response = await apiService.contextoProva.getContextoProva(id: download.id);
 
               if (response.isSuccessful) {
                 ContextoProvaResponseDTO contexto = response.body!;
@@ -283,7 +283,7 @@ class GerenciadorDownload with Loggable {
 
                 String base64 = base64Encode(contextoResponse.bodyBytes);
 
-                saveContexto(
+                await saveContexto(
                   ContextoProva(
                       id: contexto.id,
                       imagem: contexto.imagem,
@@ -457,6 +457,20 @@ class GerenciadorDownload with Loggable {
             ),
           )
           .toList();
+
+      var contextoDb = await db.obterContextoPorProvaId(prova.id);
+      prova.contextosProva = contextoDb.map(
+        (e) => ContextoProva(
+          id: e.id,
+          imagem: e.imagem,
+          imagemBase64: e.imagemBase64,
+          ordem: e.ordem,
+          posicionamento: PosicionamentoImagemEnum.values[e.posicionamento!],
+          provaId: e.provaId,
+          texto: e.texto,
+          titulo: e.titulo,
+        ),
+      ).toList();
     }
 
     return prova;
@@ -510,10 +524,10 @@ class GerenciadorDownload with Loggable {
     finer('[ARQUIVO SALVO]');
   }
 
-  saveContexto(ContextoProva contexto, int provaId) {
+  saveContexto(ContextoProva contexto, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarContextoProva(
+    await database.inserirOuAtualizarContextoProva(
       ContextoProvaDb(
         id: contexto.id!,
         ordem: contexto.ordem!,
