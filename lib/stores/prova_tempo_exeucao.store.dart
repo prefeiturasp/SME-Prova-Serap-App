@@ -1,9 +1,8 @@
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/managers/tempo.manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/managers/tempo.manager.dart';
 
 part 'prova_tempo_exeucao.store.g.dart';
 
@@ -136,6 +135,9 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
     finalizarProvaCallback = null;
     finalizandoProvaCallback = null;
     extenderProvaCallback = null;
+
+    tempoAcabando = false;
+    tempoRestante = Duration(seconds: 0);
 
     for (var reaction in _reactions) {
       reaction();
