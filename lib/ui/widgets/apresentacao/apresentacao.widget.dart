@@ -44,8 +44,7 @@ class ApresentacaoWidget extends StatelessWidget {
   }
 
   onAfterBuild(BuildContext context) {
-    //if (!_principalStore.temConexao) {
-    if (pularSeNaoTiverConexao) {
+    if (!_principalStore.temConexao) {
       _irParaProximaPagina(context);
     }
   }
@@ -356,7 +355,6 @@ class ApresentacaoWidget extends StatelessWidget {
         ],
       );
     } else if (ehUltimaDica) {
-      // SEM LOGIN
       return Column(
         children: [
           BotaoDefaultWidget(
