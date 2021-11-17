@@ -106,33 +106,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 var keys = provas.keys.toList();
                 var provaStore = provas[keys[index]]!;
 
-                bool provaVigente = false;
-
-                if (provaStore.prova.dataFim != null) {
-                  DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-                  provaVigente = dataAtual.isBetween(provaStore.prova.dataInicio, provaStore.prova.dataFim!);
-                }
-
-                if (!provaVigente) {
-                  provaVigente = isSameDate(provaStore.prova.dataInicio);
-                }
-
-                DateTime horaAtual = DateTime.now();
-                if (provaVigente) {
-                  if (_usuarioStore.fimTurno != 0) {
-                    provaVigente =
-                        horaAtual.hour >= _usuarioStore.inicioTurno && horaAtual.hour <= _usuarioStore.fimTurno;
-                  } else {
-                    provaVigente =
-                        horaAtual.hour >= _usuarioStore.inicioTurno && (horaAtual.hour <= 23 && horaAtual.minute <= 59);
-                  }
-                }
-
-                if (provaVigente) {
-                  return _buildProva(provaStore);
-                } else {
-                  return SizedBox.shrink();
-                }
+                return _buildProva(provaStore);
               },
             ),
           );

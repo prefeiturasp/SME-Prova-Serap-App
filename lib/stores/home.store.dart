@@ -7,11 +7,14 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/provas.util.dart';
 import 'package:chopper/src/response.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:supercharged_dart/supercharged_dart.dart';
 
 part 'home.store.g.dart';
 
@@ -104,6 +107,35 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
             }
           }
           provasStore.removeWhere((idProva, prova) => !idsRemote.contains(idProva));
+
+          //Verificação de periodos da prova
+          UsuarioStore usuarioStore = GetIt.I.get<UsuarioStore>();
+          for (var provaDb in provasDb) {
+            bool provaVigente = false;
+
+            if (provaDb.dataFim != null) {
+              DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+              provaVigente = dataAtual.isBetween(provaDb.dataInicio, provaDb.dataFim!);
+            }
+
+            if (!provaVigente) {
+              provaVigente = isSameDate(provaDb.dataInicio);
+            }
+
+            DateTime horaAtual = DateTime.now();
+            if (provaVigente) {
+              if (usuarioStore.fimTurno != 0) {
+                provaVigente = horaAtual.hour >= usuarioStore.inicioTurno && horaAtual.hour <= usuarioStore.fimTurno;
+              } else {
+                provaVigente =
+                    horaAtual.hour >= usuarioStore.inicioTurno && (horaAtual.hour <= 23 && horaAtual.minute <= 59);
+              }
+            }
+
+            if (!provaVigente) {
+              provasStore.removeWhere((idProva, prova) => idProva == provaDb.id);
+            }
+          }
         }
       } catch (e, stacktrace) {
         severe(e);
