@@ -47,6 +47,7 @@ class ApiService {
         QuestaoRespostaService.create(),
         UsuarioService.create(),
         OrientacaoInicialService.create(),
+        ContextoProvaService.create(),
       ],
       interceptors: [
         CustomAuthInterceptor(),
@@ -67,4 +68,5 @@ class ApiService {
   QuestaoRespostaService get questaoResposta => chopper.getService<QuestaoRespostaService>();
   UsuarioService get usuario => chopper.getService<UsuarioService>();
   OrientacaoInicialService get orientacoesIniciais => chopper.getService<OrientacaoInicialService>();
+  ContextoProvaService get contextoProva => chopper.getService<ContextoProvaService>();
 }
