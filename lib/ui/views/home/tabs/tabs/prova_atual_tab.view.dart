@@ -67,7 +67,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
           _verificaProvaVisivel(provasStore);
 
-          if (provasStore.isEmpty || provasStore.filter((p) => p.value.isVisible).isEmpty) {
+          final listaProvas = provasStore.filter((p) => p.value.isVisible).toList();
+
+          if (provasStore.isEmpty || listaProvas.isEmpty) {
             return Padding(
               padding: const EdgeInsets.all(10.0),
               child: SizedBox(
@@ -103,11 +105,10 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
               await store.carregarProvas();
             },
             child: ListView.builder(
-              itemCount: provasStore.filter((p) => p.value.isVisible).length,
+              itemCount: listaProvas.length,
               itemBuilder: (_, index) {
-                var keys = provasStore.keys.toList();
-                var provaStore = provasStore[keys[index]]!;
-                return _buildProva(provaStore);
+                var provaStore = listaProvas[index];
+                return _buildProva(provaStore.value);
               },
             ),
           );
