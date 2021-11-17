@@ -1,6 +1,7 @@
 import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
 import 'package:appserap/dtos/error.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -125,15 +126,17 @@ abstract class _LoginStoreBase with Store, Loggable {
           var usuarioDados = responseMeusDados.body!;
           if (usuarioDados.nome != "") {
             _usuarioStore.atualizarDados(
-              codigoEOL: codigoEOL,
-              token: body.token,
-              nome: usuarioDados.nome,
-              ano: usuarioDados.ano,
-              tipoTurno: usuarioDados.tipoTurno,
-              ultimoLogin: body.ultimoLogin,
-              tamanhoFonte: usuarioDados.tamanhoFonte,
-              familiaFonte: usuarioDados.familiaFonte,
-            );
+                codigoEOL: codigoEOL,
+                token: body.token,
+                nome: usuarioDados.nome,
+                ano: usuarioDados.ano,
+                tipoTurno: usuarioDados.tipoTurno,
+                ultimoLogin: body.ultimoLogin,
+                tamanhoFonte: usuarioDados.tamanhoFonte,
+                familiaFonte: usuarioDados.familiaFonte,
+                inicioTurno: usuarioDados.inicioTurno,
+                fimTurno: usuarioDados.fimTurno,
+                modalidade: ModalidadeEnum.values[usuarioDados.modalidade]);
 
             await onPostLogin(usuarioDados);
           }

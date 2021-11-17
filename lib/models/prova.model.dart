@@ -78,6 +78,8 @@ class Prova {
         dataInicioProvaAluno: provaDb.dataInicioProvaAluno,
         dataFimProvaAluno: provaDb.dataFimProvaAluno,
         questoes: [],
+        status: EnumProvaStatus.values[provaDb.status],
+        senha: provaDb.senha,
       );
 
       var questoesDb = await db.obterQuestoesPorProvaId(prova.id);
