@@ -84,7 +84,7 @@ class ArquivosDb extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [ProvasDb, QuestoesDb, AlternativasDb, ArquivosDb])
+@DriftDatabase(tables: [ProvasDb, QuestoesDb, AlternativasDb, ArquivosDb, ContextosProvaDb])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
