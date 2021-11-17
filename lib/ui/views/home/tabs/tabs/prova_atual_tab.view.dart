@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
-import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
@@ -12,7 +10,6 @@ import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
