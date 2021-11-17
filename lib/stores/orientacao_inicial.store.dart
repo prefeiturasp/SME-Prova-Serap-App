@@ -40,7 +40,7 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
               ApresentacaoModelWidget(
                 titulo: '',
                 descricao: '',
-                imagem: SizedBox(),
+                imagem: CircularProgressIndicator(),
                 corpoPersonalizado: Html(
                   data: dica.descricao,
                   style: {

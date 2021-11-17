@@ -1,17 +1,13 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/tema.store.dart';
-import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
-import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -45,63 +41,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   final temaStore = GetIt.I<TemaStore>();
 
   FocusNode _codigoProvaFocus = FocusNode();
-
-  List<ApresentacaoModelWidget> listaContextoProva = [
-    ApresentacaoModelWidget(
-      ehHTML: true,
-      descricao: '',
-      corpoPersonalizado: Html(
-        data:
-            '<p><img src="https://via.placeholder.com/150/0000FF/808080%20" alt="" width="150" height="150" /></p><h2>Teste</h2><p>Teste de texto</p>',
-        style: {
-          '*': Style.fromTextStyle(
-            TextStyle(
-              fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
-              fontSize: ServiceLocator.get<TemaStore>().size(16),
-            ),
-          )
-        },
-      ),
-      titulo: '',
-      imagem: CircularProgressIndicator(),
-    ),
-    ApresentacaoModelWidget(
-      ehHTML: true,
-      descricao: '',
-      corpoPersonalizado: Html(
-        data:
-            '<p><img src="https://via.placeholder.com/150/0000FF/808080%20" alt="" width="150" height="150" /></p><h2>Teste</h2><p>Teste de texto</p>',
-        style: {
-          '*': Style.fromTextStyle(
-            TextStyle(
-              fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
-              fontSize: ServiceLocator.get<TemaStore>().size(16),
-            ),
-          )
-        },
-      ),
-      titulo: '',
-      imagem: CircularProgressIndicator(),
-    ),
-    ApresentacaoModelWidget(
-      ehHTML: true,
-      descricao: '',
-      corpoPersonalizado: Html(
-        data:
-            '<p><img src="https://via.placeholder.com/150/0000FF/808080%20" alt="" width="150" height="150" /></p><h2>Teste</h2><p>Teste de texto</p>',
-        style: {
-          '*': Style.fromTextStyle(
-            TextStyle(
-              fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
-              fontSize: ServiceLocator.get<TemaStore>().size(16),
-            ),
-          )
-        },
-      ),
-      titulo: '',
-      imagem: CircularProgressIndicator(),
-    ),
-  ];
 
   @override
   void initState() {
@@ -643,73 +582,75 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         ],
       ),
       onPressed: () async {
-        if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
-          if (provaStore.prova.senha != null) {
-            showDialog(
-              context: context,
-              barrierColor: Colors.black87,
-              builder: (context) {
-                return DialogDefaultWidget(
-                  cabecalho: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 16,
-                      left: 16,
-                      right: 16,
-                    ),
-                    child: Observer(builder: (_) {
-                      return Texto(
-                        "Insira a senha informada para iniciar a prova",
-                        center: true,
-                        fontSize: tamanhoFonte,
-                      );
-                    }),
+        if (provaStore.prova.senha != null) {
+          //
+          showDialog(
+            context: context,
+            barrierColor: Colors.black87,
+            builder: (context) {
+              return DialogDefaultWidget(
+                cabecalho: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 16,
+                    left: 16,
+                    right: 16,
                   ),
-                  corpo: Padding(
+                  child: Observer(builder: (_) {
+                    return Texto(
+                      "Insira a senha informada para iniciar a prova",
+                      center: true,
+                      fontSize: tamanhoFonte,
+                    );
+                  }),
+                ),
+                corpo: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                  ),
+                  child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-                      child: TextField(
-                        focusNode: _codigoProvaFocus,
-                        onChanged: (value) => provaStore.codigoIniciarProva = value,
-                        maxLength: 10,
-                        decoration: InputDecoration(
-                          labelText: 'Digite o código para liberar a prova',
-                          labelStyle: TextStyle(
-                            color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
-                          ),
+                    child: TextField(
+                      focusNode: _codigoProvaFocus,
+                      onChanged: (value) => provaStore.codigoIniciarProva = value,
+                      maxLength: 10,
+                      decoration: InputDecoration(
+                        labelText: 'Digite o código para liberar a prova',
+                        labelStyle: TextStyle(
+                          color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                         ),
                       ),
                     ),
                   ),
-                  botoes: [
-                    BotaoDefaultWidget(
-                      onPressed: () {
-                        String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
+                ),
+                botoes: [
+                  BotaoDefaultWidget(
+                    onPressed: () {
+                      String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
 
-                        if (provaStore.prova.senha == senhaCriptografada) {
-                          Navigator.pop(context);
+                      if (provaStore.prova.senha == senhaCriptografada) {
+                        Navigator.pop(context);
 
-                          _navegarParaProvaPrimeiraVez(provaStore);
-                        } else {
-                          mostrarDialogSenhaErrada(context);
-                        }
-                      },
-                      textoBotao: "ENVIAR CODIGO",
-                    ),
-                  ],
-                );
-              },
-            );
-          } else {
-            _navegarParaProvaPrimeiraVez(provaStore);
-          }
-        }
-
-        if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProvaView(
+                              provaStore: provaStore,
+                            ),
+                          ),
+                        );
+                      } else {
+                        mostrarDialogSenhaErrada(context);
+                      }
+                    },
+                    textoBotao: "ENVIAR CODIGO",
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -721,21 +662,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         }
       },
     );
-  }
-
-  _navegarParaProvaPrimeiraVez(ProvaStore provaStore) {
-    if (provaStore.prova.contextosProva != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ContextoProvaView(provaStore: provaStore),
-        ),
-      );
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => ProvaView(provaStore: provaStore)),
-      );
-    }
   }
 
   Widget _buildDownloadProgresso(ProvaStore prova) {

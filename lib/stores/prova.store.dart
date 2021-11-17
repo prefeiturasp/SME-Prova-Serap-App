@@ -1,13 +1,6 @@
 import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/models/contexto_prova.model.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:flutter/widgets.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';

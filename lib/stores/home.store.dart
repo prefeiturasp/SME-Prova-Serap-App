@@ -1,11 +1,4 @@
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/enums/posicionamento_imagem.enum.dart';
-import 'package:appserap/models/contexto_prova.model.dart';
-import 'package:chopper/src/response.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mobx/mobx.dart';
-
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -141,9 +134,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     if (prova != null) {
       // atualizar prova com os valores remotos
-
-      prova.contextosProva = provaStore.prova.contextosProva;
-
       prova.status = provaStore.prova.status;
       prova.dataInicioProvaAluno = provaStore.prova.dataInicioProvaAluno;
 
