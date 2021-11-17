@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
@@ -29,6 +30,7 @@ import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:supercharged/supercharged.dart';
 
 class ProvaAtualTabView extends BaseStatefulWidget {
   @override
@@ -37,6 +39,7 @@ class ProvaAtualTabView extends BaseStatefulWidget {
 
 class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
+  final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
   final temaStore = GetIt.I<TemaStore>();
 
@@ -103,11 +106,26 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
                 var keys = provas.keys.toList();
                 var provaStore = provas[keys[index]]!;
 
-                var provaVigente = (DateTime.now().isAfter(provaStore.prova.dataInicio) &&
-                    (provaStore.prova.dataFim != null && DateTime.now().isBefore(provaStore.prova.dataFim!)));
+                bool provaVigente = false;
+
+                if (provaStore.prova.dataFim != null) {
+                  DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+                  provaVigente = dataAtual.isBetween(provaStore.prova.dataInicio, provaStore.prova.dataFim!);
+                }
 
                 if (!provaVigente) {
                   provaVigente = isSameDate(provaStore.prova.dataInicio);
+                }
+
+                DateTime horaAtual = DateTime.now();
+                if (provaVigente) {
+                  if (_usuarioStore.fimTurno != 0) {
+                    provaVigente =
+                        horaAtual.hour >= _usuarioStore.inicioTurno && horaAtual.hour <= _usuarioStore.fimTurno;
+                  } else {
+                    provaVigente =
+                        horaAtual.hour >= _usuarioStore.inicioTurno && (horaAtual.hour <= 23 && horaAtual.minute <= 59);
+                  }
                 }
 
                 if (provaVigente) {

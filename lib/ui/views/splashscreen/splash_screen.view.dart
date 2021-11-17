@@ -1,3 +1,4 @@
+import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/fluxo_inicial.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
@@ -62,6 +63,9 @@ class _SplashScreenViewState extends State<SplashScreenView> {
             tipoTurno: usuarioDados.tipoTurno,
             tamanhoFonte: usuarioDados.tamanhoFonte,
             familiaFonte: usuarioDados.familiaFonte,
+            inicioTurno: usuarioDados.inicioTurno,
+            fimTurno: usuarioDados.fimTurno,
+            modalidade: ModalidadeEnum.values[usuarioDados.modalidade],
           );
         }
       }
