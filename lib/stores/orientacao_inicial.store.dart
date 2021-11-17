@@ -68,7 +68,7 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
                 imagem: Center(
                   child: Image.network(
                     urlImagem,
-                    height: 175.0,
+                    height: 250.0,
                   ),
                 ),
                 corpoPersonalizado: SizedBox(),
