@@ -105,7 +105,6 @@ class ApresentacaoContextoWidget extends StatelessWidget {
     if (kIsMobile) {
       return ListView(
         children: [
-
           _builderImagemComPosicionamento(
             posicionamento,
             imagemBase64,
@@ -210,6 +209,17 @@ class ApresentacaoContextoWidget extends StatelessWidget {
       posicao = Alignment.centerLeft;
     }
 
+    if (kIsMobile) {
+      return Container(
+        child: Image.memory(
+          base64Decode(imagemBase64),
+          alignment: posicao,
+          width: 150,
+        ),
+        alignment: posicao,
+      );
+    }
+
     return Container(
       child: Image.memory(base64Decode(imagemBase64), alignment: posicao),
       width: double.infinity,
@@ -230,10 +240,7 @@ class ApresentacaoContextoWidget extends StatelessWidget {
 
     return ListView(
       children: [
-
-        _builderImagemComPosicionamento(
-          posicionamento, imagemBase64, context
-        ),
+        _builderImagemComPosicionamento(posicionamento, imagemBase64, context),
 
         Padding(
           padding: const EdgeInsets.only(
