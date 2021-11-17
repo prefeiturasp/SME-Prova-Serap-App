@@ -38,6 +38,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   Prova prova;
 
+  @observable
+  bool isVisible = true;
+
   _ProvaStoreBase({
     required this.id,
     required this.prova,
