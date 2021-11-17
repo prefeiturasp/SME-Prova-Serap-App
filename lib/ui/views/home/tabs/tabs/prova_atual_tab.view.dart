@@ -46,63 +46,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
   FocusNode _codigoProvaFocus = FocusNode();
 
-  List<ApresentacaoModelWidget> listaContextoProva = [
-    ApresentacaoModelWidget(
-      ehHTML: true,
-      descricao: '',
-      corpoPersonalizado: Html(
-        data:
-            '<p><img src="https://via.placeholder.com/150/0000FF/808080%20" alt="" width="150" height="150" /></p><h2>Teste</h2><p>Teste de texto</p>',
-        style: {
-          '*': Style.fromTextStyle(
-            TextStyle(
-              fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
-              fontSize: ServiceLocator.get<TemaStore>().size(16),
-            ),
-          )
-        },
-      ),
-      titulo: '',
-      imagem: CircularProgressIndicator(),
-    ),
-    ApresentacaoModelWidget(
-      ehHTML: true,
-      descricao: '',
-      corpoPersonalizado: Html(
-        data:
-            '<p><img src="https://via.placeholder.com/150/0000FF/808080%20" alt="" width="150" height="150" /></p><h2>Teste</h2><p>Teste de texto</p>',
-        style: {
-          '*': Style.fromTextStyle(
-            TextStyle(
-              fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
-              fontSize: ServiceLocator.get<TemaStore>().size(16),
-            ),
-          )
-        },
-      ),
-      titulo: '',
-      imagem: CircularProgressIndicator(),
-    ),
-    ApresentacaoModelWidget(
-      ehHTML: true,
-      descricao: '',
-      corpoPersonalizado: Html(
-        data:
-            '<p><img src="https://via.placeholder.com/150/0000FF/808080%20" alt="" width="150" height="150" /></p><h2>Teste</h2><p>Teste de texto</p>',
-        style: {
-          '*': Style.fromTextStyle(
-            TextStyle(
-              fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
-              fontSize: ServiceLocator.get<TemaStore>().size(16),
-            ),
-          )
-        },
-      ),
-      titulo: '',
-      imagem: CircularProgressIndicator(),
-    ),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -724,7 +667,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   _navegarParaProvaPrimeiraVez(ProvaStore provaStore) {
-    if (provaStore.prova.contextosProva != null) {
+    if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
