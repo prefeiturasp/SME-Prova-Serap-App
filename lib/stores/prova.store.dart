@@ -193,10 +193,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     setStatusProva(EnumProvaStatus.INICIADA);
     prova.dataInicioProvaAluno = DateTime.now();
 
-    try {
-      await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
-    } catch (e) {
-      warning(e);
+    var connectionStatus = await Connectivity().checkConnectivity();
+    if (connectionStatus != ConnectivityStatus.none) {
+      try {
+        await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
+      } catch (e) {
+        warning(e);
+      }
     }
 
     await saveProva();
