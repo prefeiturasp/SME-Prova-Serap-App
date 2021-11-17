@@ -1,4 +1,5 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -34,6 +35,15 @@ abstract class _UsuarioStoreBase with Store {
   double? tamanhoFonte = 16;
 
   @observable
+  ModalidadeEnum modalidade = ModalidadeEnum.NAO_CADASTRADO;
+
+  @observable
+  int inicioTurno = 7;
+
+  @observable
+  int fimTurno = 17;
+
+  @observable
   FonteTipoEnum? familiaFonte = FonteTipoEnum.POPPINS;
 
   @computed
@@ -62,6 +72,21 @@ abstract class _UsuarioStoreBase with Store {
     ano = prefs.getString("serapUsuarioAno");
     tipoTurno = prefs.getString("serapUsuarioTipoTurno");
 
+    if (prefs.getInt("serapUsuarioInicioTurno") != null) {
+      inicioTurno = prefs.getInt("serapUsuarioInicioTurno")!;
+    }
+
+    if (prefs.getInt("serapUsuarioFimTurno") != null) {
+      fimTurno = prefs.getInt("serapUsuarioInicioTurno")!;
+    }
+
+    if (prefs.getInt("serapUsuarioModalidade") != null) {
+      modalidade = ModalidadeEnum.values[prefs.getInt('serapUsuarioModalidade')!];
+    }
+
+    await prefs.setInt('serapUsuarioInicioTurno', inicioTurno);
+    await prefs.setInt('serapUsuarioFimTurno', fimTurno);
+
     if (prefs.getString("ultimoLogin") != null) {
       ultimoLogin = DateTime.tryParse(prefs.getString("ultimoLogin")!);
     }
@@ -80,22 +105,27 @@ abstract class _UsuarioStoreBase with Store {
   }
 
   @action
-  atualizarDados({
-    required String nome,
-    String? codigoEOL,
-    String? token,
-    required String ano,
-    required String tipoTurno,
-    DateTime? ultimoLogin,
-    required double tamanhoFonte,
-    required FonteTipoEnum familiaFonte,
-  }) async {
+  atualizarDados(
+      {required String nome,
+      String? codigoEOL,
+      String? token,
+      required String ano,
+      required String tipoTurno,
+      DateTime? ultimoLogin,
+      required double tamanhoFonte,
+      required FonteTipoEnum familiaFonte,
+      required ModalidadeEnum modalidade,
+      required int inicioTurno,
+      required int fimTurno}) async {
     this.nome = nome;
     this.ano = ano;
     this.tipoTurno = tipoTurno;
     this.ultimoLogin = ultimoLogin;
     this.tamanhoFonte = tamanhoFonte;
     this.familiaFonte = familiaFonte;
+    this.modalidade = modalidade;
+    this.inicioTurno = inicioTurno;
+    this.fimTurno = fimTurno;
 
     SharedPreferences prefs = GetIt.I.get();
     await prefs.setString('serapUsuarioNome', nome);
@@ -112,6 +142,10 @@ abstract class _UsuarioStoreBase with Store {
 
     await prefs.setString('serapUsuarioAno', ano);
     await prefs.setString('serapUsuarioTipoTurno', tipoTurno);
+
+    await prefs.setInt('serapUsuarioModalidade', modalidade.index);
+    await prefs.setInt('serapUsuarioInicioTurno', inicioTurno);
+    await prefs.setInt('serapUsuarioFimTurno', fimTurno);
 
     if (this.ultimoLogin != null) {
       await prefs.setString('ultimoLogin', ultimoLogin.toString());
