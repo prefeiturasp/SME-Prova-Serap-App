@@ -41,23 +41,24 @@ class Prova {
 
   List<ContextoProva>? contextosProva;
 
-  Prova(
-      {required this.id,
-      required this.descricao,
-      required this.itensQuantidade,
-      required this.dataInicio,
-      this.dataFim,
-      required this.tempoExecucao,
-      required this.tempoExtra,
-      required this.tempoAlerta,
-      required this.questoes,
-      this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
-      this.downloadProgresso = 0,
-      this.status = EnumProvaStatus.NAO_INICIADA,
-      this.senha,
-      this.dataInicioProvaAluno,
-      this.dataFimProvaAluno,
-      this.contextosProva});
+  Prova({
+    required this.id,
+    required this.descricao,
+    required this.itensQuantidade,
+    required this.dataInicio,
+    this.dataFim,
+    required this.tempoExecucao,
+    required this.tempoExtra,
+    required this.tempoAlerta,
+    required this.questoes,
+    this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
+    this.downloadProgresso = 0,
+    this.status = EnumProvaStatus.NAO_INICIADA,
+    this.senha,
+    this.dataInicioProvaAluno,
+    this.dataFimProvaAluno,
+    this.contextosProva,
+  });
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
   Map<String, dynamic> toJson() => _$ProvaToJson(this);
