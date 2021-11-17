@@ -1,6 +1,13 @@
+import 'dart:convert';
+
+import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:appserap/stores/apresentacao.store.dart';
 import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
+import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
@@ -8,27 +15,28 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
-class ApresentacaoWidget extends StatelessWidget {
+class ApresentacaoContextoWidget extends StatelessWidget {
   final BaseStatefulWidget? avancarParaPagina;
-  final List<ApresentacaoModelWidget> listaDePaginas;
+  final List<ContextoProva> listaDePaginasContexto;
   String textoBotaoAvancar;
   String textoBotaoPular;
   bool regraMostrarTodosOsBotoesAoIniciar;
   bool regraMostrarApenasBotaoPoximo;
-  bool pularSeNaoTiverConexao;
   ProvaStore? provaStore;
 
-  ApresentacaoWidget({
+  ApresentacaoContextoWidget({
     this.avancarParaPagina,
-    required this.listaDePaginas,
+    required this.listaDePaginasContexto,
     required this.textoBotaoAvancar,
     required this.textoBotaoPular,
     required this.regraMostrarTodosOsBotoesAoIniciar,
     required this.regraMostrarApenasBotaoPoximo,
-    this.pularSeNaoTiverConexao = false,
+    this.provaStore,
   });
 
   final store = GetIt.I.get<ApresentacaoStore>();
@@ -38,21 +46,14 @@ class ApresentacaoWidget extends StatelessWidget {
     store.pagina = 0;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) {
-        return avancarParaPagina!;
+        provaStore!.iniciarProva();
+        return ProvaView(provaStore: provaStore!);
       }),
     );
   }
 
-  onAfterBuild(BuildContext context) {
-    if (pularSeNaoTiverConexao) {
-      _irParaProximaPagina(context);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
-
     return Column(
       children: [
         SizedBox(
@@ -60,20 +61,19 @@ class ApresentacaoWidget extends StatelessWidget {
           child: PageView.builder(
             scrollDirection: Axis.horizontal,
             controller: _controllerDicas,
-            itemCount: listaDePaginas.length,
+            itemCount: listaDePaginasContexto.length,
             onPageChanged: (int posicao) {
               store.pagina = posicao;
             },
             itemBuilder: (context, index) {
               return Container(
                 margin: EdgeInsets.only(top: 20),
-                child: _buildPaginaOrientacaoAdaptativa(
+                child: _buildPaginaContextoAdaptativa(
                   context,
-                  listaDePaginas[index].ehHTML,
-                  listaDePaginas[index].titulo!,
-                  listaDePaginas[index].descricao!,
-                  listaDePaginas[index].imagem!,
-                  listaDePaginas[index].corpoPersonalizado!,
+                  listaDePaginasContexto[index].titulo!,
+                  listaDePaginasContexto[index].texto!,
+                  listaDePaginasContexto[index].imagemBase64!,
+                  listaDePaginasContexto[index].posicionamento!.index,
                 ),
               );
             },
@@ -95,26 +95,21 @@ class ApresentacaoWidget extends StatelessWidget {
   }
 
   //
-  Widget _buildPaginaOrientacaoAdaptativa(
+  Widget _buildPaginaContextoAdaptativa(
     BuildContext context,
-    bool ehHTML,
     String titulo,
-    String descricao,
-    Widget imagem,
-    Widget corpoHTML,
+    String texto,
+    String imagemBase64,
+    int posicionamento,
   ) {
     if (kIsMobile) {
-      if (ehHTML) {
-        return ListView(
-          children: [corpoHTML],
-        );
-      }
       return ListView(
         children: [
-          Container(
-            padding: EdgeInsets.only(top: 18),
-            height: 150,
-            child: imagem,
+
+          _builderImagemComPosicionamento(
+            posicionamento,
+            imagemBase64,
+            context,
           ),
 
           Padding(
@@ -141,26 +136,28 @@ class ApresentacaoWidget extends StatelessWidget {
               right: 32,
               bottom: 32,
             ),
-            child: Texto(
-              descricao,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
-              center: true,
-              maxLines: 10,
+            child: Html(
+              data: texto,
+              style: {
+                '*': Style.fromTextStyle(
+                  TextStyle(
+                    fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+                    fontSize: ServiceLocator.get<TemaStore>().size(16),
+                  ),
+                )
+              },
             ),
           ),
         ],
       );
     }
 
-    return _builderPaginaOrientacao(
+    return _builderPaginaContexto(
       context,
-      ehHTML,
       titulo,
-      descricao,
-      imagem,
-      corpoHTML,
+      texto,
+      imagemBase64,
+      posicionamento,
     );
   }
 
@@ -203,27 +200,40 @@ class ApresentacaoWidget extends StatelessWidget {
   }
 
   //
-  _builderPaginaOrientacao(
-    BuildContext context,
-    bool ehHTML,
-    String titulo,
-    String descricao,
-    Widget imagem,
-    Widget corpoHTML,
-  ) {
-    if (ehHTML) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * .7,
-        child: ListView(
-          children: [
-            corpoHTML,
-          ],
-        ),
-      );
+
+  Widget _builderImagemComPosicionamento(int posicionamento, String imagemBase64, BuildContext context) {
+    Alignment posicao = Alignment.center;
+
+    if (posicionamento == PosicionamentoImagemEnum.DIREITA.index) {
+      posicao = Alignment.centerRight;
+    } else if (posicionamento == PosicionamentoImagemEnum.ESQUERDA.index) {
+      posicao = Alignment.centerLeft;
     }
+
+    return Container(
+      child: Image.memory(base64Decode(imagemBase64), alignment: posicao),
+      width: double.infinity,
+      alignment: posicao,
+    );
+  }
+
+  //
+  _builderPaginaContexto(
+    BuildContext context,
+    String titulo,
+    String texto,
+    String imagemBase64,
+    int posicionamento,
+  ) {
+    if (posicionamento == PosicionamentoImagemEnum.DIREITA.index) {
+    } else if (posicionamento == PosicionamentoImagemEnum.ESQUERDA.index) {}
+
     return ListView(
       children: [
-        imagem,
+
+        _builderImagemComPosicionamento(
+          posicionamento, imagemBase64, context
+        ),
 
         Padding(
           padding: const EdgeInsets.only(
@@ -243,13 +253,16 @@ class ApresentacaoWidget extends StatelessWidget {
         //
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 64),
-          child: Texto(
-            descricao,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.black,
-            center: true,
-            maxLines: 10,
+          child: Html(
+            data: texto,
+            style: {
+              '*': Style.fromTextStyle(
+                TextStyle(
+                  fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
+                  fontSize: ServiceLocator.get<TemaStore>().size(16),
+                ),
+              )
+            },
           ),
         ),
       ],
@@ -259,7 +272,7 @@ class ApresentacaoWidget extends StatelessWidget {
   //
   Widget _buildPaginacao() {
     return ListView.builder(
-      itemCount: listaDePaginas.length,
+      itemCount: listaDePaginasContexto.length,
       shrinkWrap: true,
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, index) {
@@ -308,7 +321,7 @@ class ApresentacaoWidget extends StatelessWidget {
   //
 
   Widget _buildBotoesNavegacao(BuildContext context) {
-    bool ehUltimaDica = store.pagina == listaDePaginas.length - 1;
+    bool ehUltimaDica = store.pagina == listaDePaginasContexto.length - 1;
 
     if (regraMostrarTodosOsBotoesAoIniciar && !ehUltimaDica) {
       // SE TIVER LOGIN
@@ -355,6 +368,7 @@ class ApresentacaoWidget extends StatelessWidget {
         ],
       );
     } else if (ehUltimaDica) {
+      // SEM LOGIN
       return Column(
         children: [
           BotaoDefaultWidget(
