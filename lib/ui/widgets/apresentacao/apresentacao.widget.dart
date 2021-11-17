@@ -44,7 +44,7 @@ class ApresentacaoWidget extends StatelessWidget {
   }
 
   onAfterBuild(BuildContext context) {
-    if (!_principalStore.temConexao) {
+    if (pularSeNaoTiverConexao) {
       _irParaProximaPagina(context);
     }
   }
