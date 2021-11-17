@@ -107,35 +107,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
             }
           }
           provasStore.removeWhere((idProva, prova) => !idsRemote.contains(idProva));
-
-          //Verificação de periodos da prova
-          UsuarioStore usuarioStore = GetIt.I.get<UsuarioStore>();
-          for (var provaDb in provasDb) {
-            bool provaVigente = false;
-
-            if (provaDb.dataFim != null) {
-              DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-              provaVigente = dataAtual.isBetween(provaDb.dataInicio, provaDb.dataFim!);
-            }
-
-            if (!provaVigente) {
-              provaVigente = isSameDate(provaDb.dataInicio);
-            }
-
-            DateTime horaAtual = DateTime.now();
-            if (provaVigente) {
-              if (usuarioStore.fimTurno != 0) {
-                provaVigente = horaAtual.hour >= usuarioStore.inicioTurno && horaAtual.hour <= usuarioStore.fimTurno;
-              } else {
-                provaVigente =
-                    horaAtual.hour >= usuarioStore.inicioTurno && (horaAtual.hour <= 23 && horaAtual.minute <= 59);
-              }
-            }
-
-            if (!provaVigente) {
-              provasStore.removeWhere((idProva, prova) => idProva == provaDb.id);
-            }
-          }
         }
       } catch (e, stacktrace) {
         severe(e);
