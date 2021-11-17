@@ -84,48 +84,49 @@ class ArquivosDb extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [ProvasDb, QuestoesDb, AlternativasDb, ArquivosDb, ContextosProvaDb])
+@DriftDatabase(tables: [ProvasDb, QuestoesDb, AlternativasDb, ArquivosDb])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
         return m.createAll();
       }, onUpgrade: (Migrator m, int from, int to) async {
-        // if (from == 2) {
-        //   await m.addColumn(provasDb, provasDb.senha);
-        // }
-
-        // if (from == 3) {
-        //   await m.createTable(contextosProvaDb);
-        // }
-      }, beforeOpen: (openingDetails) async {
-        if (kDebugMode /* or some other flag */) {
-          final m = createMigrator();
-          for (final table in allTables) {
-            await m.deleteTable(table.actualTableName);
-            await m.createTable(table);
-          }
+        if (from == 1) {
+          await m.addColumn(provasDb, provasDb.senha);
         }
       });
 
   Future limpar() {
     return transaction(() async {
-      await customUpdate(
-        "delete from alternativas_db; delete from questoes_db; delete from arquivos_db; delete from provas_db;",
-      );
+      await customUpdate("delete from alternativas_db;");
+
+      await customUpdate("delete from questoes_db;");
+
+      await customUpdate("delete from arquivos_db;");
+
+      await customUpdate("delete from provas_db;");
     });
   }
 
   Future limparPorProvaId(int provaId) {
     return transaction(() async {
-      await customUpdate("""delete from alternativas_db where prova_id = ?; 
-        delete from questoes_db where prova_id = ?; 
-        delete from arquivos_db where prova_id = ?; 
-        delete from provas_db where prova_id = ?; """, variables: [
+      await customUpdate("delete from alternativas_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from questoes_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from arquivos_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from provas_db where id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
     });
