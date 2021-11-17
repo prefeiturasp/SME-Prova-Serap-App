@@ -81,6 +81,8 @@ class Prova {
         dataInicioProvaAluno: provaDb.dataInicioProvaAluno,
         dataFimProvaAluno: provaDb.dataFimProvaAluno,
         questoes: [],
+        status: EnumProvaStatus.values[provaDb.status],
+        senha: provaDb.senha,
       );
 
       var contextosProvaDb = await db.obterContextoPorProvaId(prova.id);

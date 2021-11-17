@@ -45,6 +45,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   Prova prova;
 
+  @observable
+  bool isVisible = true;
+
   _ProvaStoreBase({
     required this.id,
     required this.prova,
@@ -235,9 +238,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   saveProva() async {
-    AppDatabase database = GetIt.I.get();
+    AppDatabase db = GetIt.I.get();
 
-    await database.inserirOuAtualizarProva(
+    await db.inserirOuAtualizarProva(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
@@ -250,14 +253,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         dataInicio: prova.dataInicio,
         dataFim: prova.dataFim,
         ultimaAtualizacao: DateTime.now(),
-        dataFimProvaAluno: prova.dataFimProvaAluno,
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
         senha: prova.senha,
       ),
     );
-
-    var provaSalva = await database.obterProvaPorId(prova.id);
-    finer('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
+    var provaSalva = await db.obterProvaPorId(prova.id);
+    fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }
 
   @action

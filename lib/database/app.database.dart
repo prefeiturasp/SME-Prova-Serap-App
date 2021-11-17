@@ -9,7 +9,7 @@ part 'app.database.g.dart';
 @DataClassName("ProvaDb")
 class ProvasDb extends Table {
   IntColumn get id => integer()();
-  TextColumn get descricao => text().withLength(min: 1, max: 50)();
+  TextColumn get descricao => text().withLength(min: 1, max: 150)();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get downloadStatus => integer()();
   IntColumn get itensQuantidade => integer()();
@@ -95,37 +95,38 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
         return m.createAll();
       }, onUpgrade: (Migrator m, int from, int to) async {
-        // if (from == 2) {
-        //   await m.addColumn(provasDb, provasDb.senha);
-        // }
-
-        // if (from == 3) {
-        //   await m.createTable(contextosProvaDb);
-        // }
-      }, beforeOpen: (openingDetails) async {
-        if (kDebugMode /* or some other flag */) {
-          final m = createMigrator();
-          for (final table in allTables) {
-            await m.deleteTable(table.actualTableName);
-            await m.createTable(table);
-          }
+        if (from == 1) {
+          await m.addColumn(provasDb, provasDb.senha);
         }
       });
 
   Future limpar() {
     return transaction(() async {
-      await customUpdate(
-        "delete from alternativas_db; delete from questoes_db; delete from arquivos_db; delete from provas_db;",
-      );
+      await customUpdate("delete from alternativas_db;");
+
+      await customUpdate("delete from questoes_db;");
+
+      await customUpdate("delete from arquivos_db;");
+
+      await customUpdate("delete from provas_db;");
     });
   }
 
   Future limparPorProvaId(int provaId) {
     return transaction(() async {
-      await customUpdate("""delete from alternativas_db where prova_id = ?; 
-        delete from questoes_db where prova_id = ?; 
-        delete from arquivos_db where prova_id = ?; 
-        delete from provas_db where prova_id = ?; """, variables: [
+      await customUpdate("delete from alternativas_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from questoes_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from arquivos_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from provas_db where id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
     });
