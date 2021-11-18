@@ -21,7 +21,7 @@ pipeline {
       stage('Build APK Dev') {
 	      when { 
           anyOf { 
-            branch 'developer'; 
+            branch 'development'; 
           } 
         }       
         steps {
