@@ -60,7 +60,7 @@ pipeline {
         }
         steps {
           withCredentials([
-            file(credentialsId: 'google-service-prod', variable: 'GOOGLEJSONPROD'),
+            file(credentialsId: 'serap-app-google-service-prod', variable: 'GOOGLEJSONPROD'),
             file(credentialsId: 'app-config-prod', variable: 'APPCONFIGPROD'),
             file(credentialsId: 'app-key-jks', variable: 'APPKEYJKS'),
             file(credentialsId: 'app-key-properties', variable: 'APPKEYPROPERTIES'),
