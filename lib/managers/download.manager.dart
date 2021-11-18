@@ -239,7 +239,6 @@ class GerenciadorDownload with Loggable {
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
-
               Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
 
               if (response.isSuccessful) {
@@ -270,7 +269,8 @@ class GerenciadorDownload with Loggable {
             case EnumDownloadTipo.CONTEXTO_PROVA:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-              Response<ContextoProvaResponseDTO> response = await apiService.contextoProva.getContextoProva(id: download.id);
+              Response<ContextoProvaResponseDTO> response =
+                  await apiService.contextoProva.getContextoProva(id: download.id);
 
               if (response.isSuccessful) {
                 ContextoProvaResponseDTO contexto = response.body!;
@@ -459,18 +459,20 @@ class GerenciadorDownload with Loggable {
           .toList();
 
       var contextoDb = await db.obterContextoPorProvaId(prova.id);
-      prova.contextosProva = contextoDb.map(
-        (e) => ContextoProva(
-          id: e.id,
-          imagem: e.imagem,
-          imagemBase64: e.imagemBase64,
-          ordem: e.ordem,
-          posicionamento: PosicionamentoImagemEnum.values[e.posicionamento!],
-          provaId: e.provaId,
-          texto: e.texto,
-          titulo: e.titulo,
-        ),
-      ).toList();
+      prova.contextosProva = contextoDb
+          .map(
+            (e) => ContextoProva(
+              id: e.id,
+              imagem: e.imagem,
+              imagemBase64: e.imagemBase64,
+              ordem: e.ordem,
+              posicionamento: PosicionamentoImagemEnum.values[e.posicionamento!],
+              provaId: e.provaId,
+              texto: e.texto,
+              titulo: e.titulo,
+            ),
+          )
+          .toList();
     }
 
     return prova;

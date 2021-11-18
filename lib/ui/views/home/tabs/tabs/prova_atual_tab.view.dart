@@ -1,17 +1,15 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
-import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -33,6 +31,7 @@ import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:supercharged/supercharged.dart';
 
 class ProvaAtualTabView extends BaseStatefulWidget {
   @override
@@ -41,6 +40,7 @@ class ProvaAtualTabView extends BaseStatefulWidget {
 
 class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
+  final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
   final temaStore = GetIt.I<TemaStore>();
 
@@ -58,7 +58,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       padding: const EdgeInsets.only(top: 16, bottom: 8),
       child: Observer(
         builder: (_) {
-          ObservableMap<int, ProvaStore> provas = store.provas;
+          ObservableMap<int, ProvaStore> provasStore = store.provas;
 
           if (store.carregando) {
             return Center(
@@ -66,7 +66,11 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             );
           }
 
-          if (provas.isEmpty) {
+          _verificaProvaVisivel(provasStore);
+
+          final listaProvas = provasStore.filter((p) => p.value.isVisible).toList();
+
+          if (provasStore.isEmpty || listaProvas.isEmpty) {
             return Padding(
               padding: const EdgeInsets.all(10.0),
               child: SizedBox(
@@ -102,29 +106,43 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
               await store.carregarProvas();
             },
             child: ListView.builder(
-              itemCount: provas.length,
+              itemCount: listaProvas.length,
               itemBuilder: (_, index) {
-                var keys = provas.keys.toList();
-                var provaStore = provas[keys[index]]!;
-
-                var provaVigente = (DateTime.now().isAfter(provaStore.prova.dataInicio) &&
-                    (provaStore.prova.dataFim != null && DateTime.now().isBefore(provaStore.prova.dataFim!)));
-
-                if (!provaVigente) {
-                  provaVigente = isSameDate(provaStore.prova.dataInicio);
-                }
-
-                if (provaVigente) {
-                  return _buildProva(provaStore);
-                } else {
-                  return SizedBox.shrink();
-                }
+                var provaStore = listaProvas[index];
+                return _buildProva(provaStore.value);
               },
             ),
           );
         },
       ),
     );
+  }
+
+  _verificaProvaVisivel(ObservableMap<int, ProvaStore> provasStore) {
+    for (var entry in provasStore.entries) {
+      var provaStore = entry.value;
+      bool provaVigente = false;
+
+      if (provaStore.prova.dataFim != null) {
+        DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+        provaVigente = dataAtual.isBetween(provaStore.prova.dataInicio, provaStore.prova.dataFim!);
+      }
+
+      if (!provaVigente) {
+        provaVigente = isSameDate(provaStore.prova.dataInicio);
+      }
+
+      DateTime horaAtual = DateTime.now();
+      if (provaVigente) {
+        if (_usuarioStore.fimTurno != 0) {
+          provaVigente = horaAtual.hour >= _usuarioStore.inicioTurno && horaAtual.hour <= _usuarioStore.fimTurno;
+        } else {
+          provaVigente = horaAtual.hour >= _usuarioStore.inicioTurno &&
+              (horaAtual.hour <= 23 && horaAtual.minute <= 59 && horaAtual.second <= 59);
+        }
+      }
+      provaStore.isVisible = provaVigente;
+    }
   }
 
   _buildProva(ProvaStore provaStore) {
