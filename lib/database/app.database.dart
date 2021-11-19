@@ -37,7 +37,7 @@ class QuestoesDb extends Table {
   IntColumn get tipo => integer()();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get provaId => integer()();
-  IntColumn get quantidadeAlternativa => integer()();
+  IntColumn get quantidadeAlternativas => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -90,7 +90,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -98,6 +98,9 @@ class AppDatabase extends _$AppDatabase {
       }, onUpgrade: (Migrator m, int from, int to) async {
         if (from == 1) {
           await m.addColumn(provasDb, provasDb.senha);
+        }
+        if (from == 2) {
+          await m.addColumn(questoesDb, questoesDb.quantidadeAlternativas);
         }
       });
 

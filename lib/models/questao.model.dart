@@ -14,7 +14,7 @@ class Questao {
   int ordem;
   EnumTipoQuestao tipo;
 
-  int quantidadeAlternativa;
+  int quantidadeAlternativas;
 
   List<Alternativa> alternativas;
   List<Arquivo> arquivos;
@@ -27,7 +27,7 @@ class Questao {
       required this.alternativas,
       required this.arquivos,
       required this.tipo,
-      required this.quantidadeAlternativa});
+      required this.quantidadeAlternativas});
 
   factory Questao.fromJson(Map<String, dynamic> json) => _$QuestaoFromJson(json);
   Map<String, dynamic> toJson() => _$QuestaoToJson(this);

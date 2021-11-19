@@ -113,7 +113,7 @@ class Prova {
               alternativas: [],
               arquivos: [],
               tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
-              quantidadeAlternativa: e.quantidadeAlternativa,
+              quantidadeAlternativas: e.quantidadeAlternativas!,
             ),
           )
           .toList();
