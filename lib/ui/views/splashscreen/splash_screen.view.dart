@@ -1,13 +1,15 @@
 import 'package:appserap/enums/modalidade.enum.dart';
-import 'package:appserap/fluxo_inicial.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/views/home/home.view.dart';
+import 'package:appserap/ui/views/login/login.view.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lottie/lottie.dart';
+import 'package:mobx/mobx.dart';
 
 class SplashScreenView extends StatefulWidget {
   const SplashScreenView({Key? key}) : super(key: key);
@@ -23,23 +25,13 @@ class _SplashScreenViewState extends State<SplashScreenView> {
 
   @override
   void initState() {
-    carregarInformacoes();
+    autorun((_) {
+      carregarInformacoes();
+    });
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Container(
-          child: Lottie.asset('assets/images/students.json'),
-        ),
-      ),
-    );
-  }
-
   Future<void> carregarInformacoes() async {
-    Future.delayed(const Duration(seconds: 5), () => "5");
     await GetIt.instance.allReady();
     await _principalStore.setup();
 
@@ -49,8 +41,6 @@ class _SplashScreenViewState extends State<SplashScreenView> {
       var responseMeusDados = await GetIt.I.get<ApiService>().auth.meusDados();
 
       if (responseMeusDados.isSuccessful) {
-        await _orientacaoStore.popularListaDeOrientacoes();
-
         var usuarioDados = responseMeusDados.body!;
         if (usuarioDados.nome != "") {
           if (kIsTablet && usuarioDados.tamanhoFonte < 16) {
@@ -74,10 +64,30 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     _temaStore.fonteDoTexto = _principalStore.usuario.familiaFonte!;
     _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!, update: false);
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FluxoInicial(),
+    if (_principalStore.usuario.isLogado) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeView(),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginView(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Container(
+          child: Lottie.asset('assets/images/students.json'),
+        ),
       ),
     );
   }

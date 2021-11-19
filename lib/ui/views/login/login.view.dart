@@ -1,6 +1,7 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
+import 'package:appserap/ui/views/orientacao_inicial/orientacao_inicial.view.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
@@ -202,7 +203,6 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      // backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
                       padding: MaterialStateProperty.all(
                         EdgeInsets.fromLTRB(20, 0, 20, 0),
                       ),
@@ -320,7 +320,6 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    // backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
                     padding: MaterialStateProperty.all(
                       EdgeInsets.fromLTRB(20, 0, 20, 0),
                     ),
@@ -349,8 +348,16 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
 
     store.validateTodos();
     if (!store.autenticacaoErroStore.possuiErros) {
-      await store.autenticar();
-      await _orientacaoStore.popularListaDeOrientacoes();
+      if (await store.autenticar()) {
+        await _orientacaoStore.popularListaDeOrientacoes();
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrientacaoInicialView(),
+          ),
+        );
+      }
     }
   }
 }

@@ -31,7 +31,7 @@ pipeline {
           ]) {
             sh 'mkdir config && cp $APPCONFIGDEV config/app_config.json'
             sh 'cp $GOOGLEJSONDEV android/app/google-services.json'
-            sh 'flutter channel stable && flutter upgrade && flutter pub cache repair && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk'
+            sh 'rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --release'
           }
         }
       }
@@ -49,7 +49,7 @@ pipeline {
           ]) {
             sh 'mkdir config && cp $APPCONFIGHOM config/app_config.json'
             sh 'cp $GOOGLEJSONHOM android/app/google-services.json'
-            sh 'flutter channel stable && flutter upgrade && flutter pub cache repair && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk'
+            sh 'rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --release'
           }
         }
       }
