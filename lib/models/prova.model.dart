@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -115,6 +113,7 @@ class Prova {
               alternativas: [],
               arquivos: [],
               tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+              quantidadeAlternativas: e.quantidadeAlternativas!,
             ),
           )
           .toList();
