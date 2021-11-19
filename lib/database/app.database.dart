@@ -1,5 +1,6 @@
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 
 export 'core/shared.database.dart';
 
@@ -36,6 +37,22 @@ class QuestoesDb extends Table {
   IntColumn get tipo => integer()();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get provaId => integer()();
+  IntColumn get quantidadeAlternativas => integer().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName("ContextoProvaDb")
+class ContextosProvaDb extends Table {
+  IntColumn get id => integer()();
+  TextColumn get titulo => text().nullable()();
+  TextColumn get texto => text().nullable()();
+  TextColumn get imagemBase64 => text().nullable()();
+  IntColumn get ordem => integer()();
+  TextColumn get imagem => text().nullable()();
+  IntColumn get posicionamento => integer().nullable()();
+  IntColumn get provaId => integer()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -68,12 +85,12 @@ class ArquivosDb extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [ProvasDb, QuestoesDb, AlternativasDb, ArquivosDb])
+@DriftDatabase(tables: [ProvasDb, QuestoesDb, AlternativasDb, ArquivosDb, ContextosProvaDb])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -81,6 +98,12 @@ class AppDatabase extends _$AppDatabase {
       }, onUpgrade: (Migrator m, int from, int to) async {
         if (from == 1) {
           await m.addColumn(provasDb, provasDb.senha);
+        }
+        if (from == 2) {
+          await m.addColumn(questoesDb, questoesDb.quantidadeAlternativas);
+        }
+        if (from == 3) {
+          await m.createTable(contextosProvaDb);
         }
       });
 
@@ -176,6 +199,19 @@ class AppDatabase extends _$AppDatabase {
   Future<List<ArquivoDb>> obterArquivosPorProvaId(int provaId) =>
       (select(arquivosDb)..where((t) => t.provaId.equals(provaId))).get();
   Future removerArquivosPorProvaId(int id) {
+    return transaction(() async {
+      await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
+    });
+  }
+
+  //Contexto Prova
+  Future inserirContextoProva(ContextoProvaDb contextoProvaDb) => into(contextosProvaDb).insert(contextoProvaDb);
+  Future inserirOuAtualizarContextoProva(ContextoProvaDb contextoProvaDb) =>
+      into(contextosProvaDb).insertOnConflictUpdate(contextoProvaDb);
+  Future removerContexto(ContextoProvaDb contextoProvaDb) => delete(contextosProvaDb).delete(contextoProvaDb);
+  Future<List<ContextoProvaDb>> obterContextoPorProvaId(int provaId) =>
+      (select(contextosProvaDb)..where((t) => t.provaId.equals(provaId))).get();
+  Future removerContextoPorProvaId(int id) {
     return transaction(() async {
       await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });

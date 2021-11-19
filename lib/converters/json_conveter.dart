@@ -3,6 +3,7 @@ import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/autenticacao.dto.dart';
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
+import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/dtos/preferencias_usuario.response.dto.dart';
 import 'package:appserap/dtos/orientacao_inicial.response.dto.dart';
 import 'package:appserap/dtos/prova.response.dto.dart';
@@ -66,4 +67,5 @@ final jsonConverter = JsonSerializableConverter({
   "QuestaoRespostaResponseDTO": QuestaoRespostaResponseDTO.fromJson,
   "PreferenciasUsuarioResponseDTO": PreferenciasUsuarioResponseDTO.fromJson,
   "OrientacaoInicialResponseDTO": OrientacaoInicialResponseDTO.fromJson,
+  "ContextoProvaResponseDTO": ContextoProvaResponseDTO.fromJson,
 });
