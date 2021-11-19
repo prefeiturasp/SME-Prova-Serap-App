@@ -102,7 +102,7 @@ abstract class _LoginStoreBase with Store, Loggable {
   }
 
   @action
-  Future<void> autenticar() async {
+  Future<bool> autenticar() async {
     carregando = true;
     try {
       var responseLogin = await _autenticacaoService.login(
@@ -126,20 +126,23 @@ abstract class _LoginStoreBase with Store, Loggable {
           var usuarioDados = responseMeusDados.body!;
           if (usuarioDados.nome != "") {
             _usuarioStore.atualizarDados(
-                codigoEOL: codigoEOL,
-                token: body.token,
-                nome: usuarioDados.nome,
-                ano: usuarioDados.ano,
-                tipoTurno: usuarioDados.tipoTurno,
-                ultimoLogin: body.ultimoLogin,
-                tamanhoFonte: usuarioDados.tamanhoFonte,
-                familiaFonte: usuarioDados.familiaFonte,
-                inicioTurno: usuarioDados.inicioTurno,
-                fimTurno: usuarioDados.fimTurno,
-                modalidade: ModalidadeEnum.values[usuarioDados.modalidade]);
+              codigoEOL: codigoEOL,
+              token: body.token,
+              nome: usuarioDados.nome,
+              ano: usuarioDados.ano,
+              tipoTurno: usuarioDados.tipoTurno,
+              ultimoLogin: body.ultimoLogin,
+              tamanhoFonte: usuarioDados.tamanhoFonte,
+              familiaFonte: usuarioDados.familiaFonte,
+              inicioTurno: usuarioDados.inicioTurno,
+              fimTurno: usuarioDados.fimTurno,
+              modalidade: ModalidadeEnum.values[usuarioDados.modalidade],
+            );
 
             await onPostLogin(usuarioDados);
           }
+
+          return true;
         }
       } else {
         switch (responseLogin.statusCode) {
@@ -157,6 +160,7 @@ abstract class _LoginStoreBase with Store, Loggable {
       severe(stack);
     }
     carregando = false;
+    return false;
   }
 }
 
