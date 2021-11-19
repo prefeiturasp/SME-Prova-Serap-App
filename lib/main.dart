@@ -28,6 +28,8 @@ Future<void> main() async {
 
   await setupFirebase();
 
+  print("Decifra-me, mas não me conclua, eu posso te surpreender");
+
   // await SentryFlutter.init(
   //   (options) => options
   //     ..dsn = AppConfigReader.getSentryDsn()
