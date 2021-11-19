@@ -90,7 +90,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -101,6 +101,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from == 2) {
           await m.addColumn(questoesDb, questoesDb.quantidadeAlternativas);
+        }
+        if (from == 3) {
+          await m.createTable(contextosProvaDb);
         }
       });
 
