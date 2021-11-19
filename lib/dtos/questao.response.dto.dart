@@ -10,12 +10,15 @@ class QuestaoResponseDTO {
   String descricao;
   int ordem;
   EnumTipoQuestao tipo;
+  int quantidadeAlternativas;
+
   QuestaoResponseDTO({
     required this.id,
     required this.titulo,
     required this.descricao,
     required this.ordem,
     required this.tipo,
+    required this.quantidadeAlternativas,
   });
 
   static const fromJson = _$QuestaoResponseDTOFromJson;

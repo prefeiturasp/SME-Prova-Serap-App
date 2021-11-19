@@ -1,12 +1,11 @@
-import 'dart:convert';
-
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -38,6 +37,8 @@ class Prova {
 
   String? senha;
 
+  List<ContextoProva>? contextosProva;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -54,6 +55,7 @@ class Prova {
     this.senha,
     this.dataInicioProvaAluno,
     this.dataFimProvaAluno,
+    this.contextosProva,
   });
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
@@ -82,6 +84,24 @@ class Prova {
         senha: provaDb.senha,
       );
 
+      var contextosProvaDb = await db.obterContextoPorProvaId(prova.id);
+
+      if (contextosProvaDb.isNotEmpty) {
+        prova.contextosProva = contextosProvaDb
+            .map((e) => ContextoProva(
+                  id: e.id,
+                  provaId: e.provaId,
+                  imagem: e.imagem,
+                  imagemBase64: e.imagemBase64,
+                  posicionamento:
+                      PosicionamentoImagemEnum.values.firstWhere((element) => element.index == e.posicionamento),
+                  ordem: e.ordem,
+                  titulo: e.titulo,
+                  texto: e.texto,
+                ))
+            .toList();
+      }
+
       var questoesDb = await db.obterQuestoesPorProvaId(prova.id);
       prova.questoes = questoesDb
           .map(
@@ -93,6 +113,7 @@ class Prova {
               alternativas: [],
               arquivos: [],
               tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+              quantidadeAlternativas: e.quantidadeAlternativas!,
             ),
           )
           .toList();
