@@ -2,14 +2,24 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/dtos/contexto_prova.response.dto.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/exceptions/prova_download.exception.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:asuka/snackbars/asuka_snack_bar.dart';
+import 'package:chopper/src/response.dart';
+import 'package:collection/collection.dart';
+import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
-import 'package:appserap/enums/tipo_questao.enum.dart';
-import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
@@ -17,12 +27,6 @@ import 'package:appserap/models/download_prova.model.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
-import 'package:asuka/snackbars/asuka_snack_bar.dart';
-import 'package:chopper/src/response.dart';
-import 'package:collection/collection.dart';
-import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
 typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
@@ -57,7 +61,7 @@ class GerenciadorDownload with Loggable {
       await loadDownloads();
 
       for (var idQuestao in provaDetalhes.questoesId) {
-        if (!containsId(idQuestao)) {
+        if (!containsId(idQuestao, EnumDownloadTipo.QUESTAO)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.QUESTAO,
@@ -69,7 +73,7 @@ class GerenciadorDownload with Loggable {
       }
 
       for (var idArquivo in provaDetalhes.arquivosId) {
-        if (!containsId(idArquivo)) {
+        if (!containsId(idArquivo, EnumDownloadTipo.ARQUIVO)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.ARQUIVO,
@@ -81,11 +85,23 @@ class GerenciadorDownload with Loggable {
       }
 
       for (var idAlternativa in provaDetalhes.alternativasId) {
-        if (!containsId(idAlternativa)) {
+        if (!containsId(idAlternativa, EnumDownloadTipo.ALTERNATIVA)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.ALTERNATIVA,
               id: idAlternativa,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+      for (var idContexto in provaDetalhes.contextoProvaIds) {
+        if (!containsId(idContexto, EnumDownloadTipo.CONTEXTO_PROVA)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.CONTEXTO_PROVA,
+              id: idContexto,
               dataHoraInicio: DateTime.now(),
             ),
           );
@@ -179,6 +195,7 @@ class GerenciadorDownload with Loggable {
                     alternativas: [],
                     arquivos: [],
                     tipo: questaoDTO.tipo,
+                    quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
                   );
 
                   await saveQuestao(questao, idProva);
@@ -236,6 +253,40 @@ class GerenciadorDownload with Loggable {
                       questaoId: questao!.id,
                     ),
                     idProva);
+
+                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              }
+              break;
+
+            case EnumDownloadTipo.CONTEXTO_PROVA:
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+              Response<ContextoProvaResponseDTO> response =
+                  await apiService.contextoProva.getContextoProva(id: download.id);
+
+              if (response.isSuccessful) {
+                ContextoProvaResponseDTO contexto = response.body!;
+
+                http.Response contextoResponse = await http.get(
+                  Uri.parse(
+                    contexto.imagem!.replaceFirst('http://', 'https://'),
+                  ),
+                );
+
+                String base64 = base64Encode(contextoResponse.bodyBytes);
+
+                await saveContexto(
+                  ContextoProva(
+                      id: contexto.id,
+                      imagem: contexto.imagem,
+                      imagemBase64: base64,
+                      ordem: contexto.ordem,
+                      posicionamento: contexto.posicionamento,
+                      provaId: contexto.provaId,
+                      texto: contexto.texto,
+                      titulo: contexto.titulo),
+                  idProva,
+                );
 
                 download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               }
@@ -338,18 +389,20 @@ class GerenciadorDownload with Loggable {
 
     if (questaoDb != null) {
       return Questao(
-          id: questaoDb.id,
-          titulo: questaoDb.titulo,
-          tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == questaoDb.tipo),
-          descricao: questaoDb.descricao,
-          alternativas: [],
-          arquivos: [],
-          ordem: questaoDb.ordem);
+        id: questaoDb.id,
+        titulo: questaoDb.titulo,
+        tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == questaoDb.tipo),
+        descricao: questaoDb.descricao,
+        alternativas: [],
+        arquivos: [],
+        ordem: questaoDb.ordem,
+        quantidadeAlternativas: questaoDb.quantidadeAlternativas!,
+      );
     }
   }
 
-  bool containsId(int id) {
-    return downloads.firstWhereOrNull((element) => element.id == id) != null;
+  bool containsId(int id, EnumDownloadTipo tipo) {
+    return downloads.firstWhereOrNull((element) => element.id == id && element.tipo == tipo) != null;
   }
 
   List<DownloadProva> getDownlodsByStatus(EnumDownloadStatus status) {
@@ -374,6 +427,7 @@ class GerenciadorDownload with Loggable {
             alternativas: [],
             arquivos: [],
             tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+            quantidadeAlternativas: e.quantidadeAlternativas!,
           ),
         )
         .toList();
@@ -398,6 +452,22 @@ class GerenciadorDownload with Loggable {
             ),
           )
           .toList();
+
+      var contextoDb = await db.obterContextoPorProvaId(prova.id);
+      prova.contextosProva = contextoDb
+          .map(
+            (e) => ContextoProva(
+              id: e.id,
+              imagem: e.imagem,
+              imagemBase64: e.imagemBase64,
+              ordem: e.ordem,
+              posicionamento: PosicionamentoImagemEnum.values[e.posicionamento!],
+              provaId: e.provaId,
+              texto: e.texto,
+              titulo: e.titulo,
+            ),
+          )
+          .toList();
     }
 
     return prova;
@@ -408,12 +478,14 @@ class GerenciadorDownload with Loggable {
 
     await database.inserirOuAtualizarQuestao(
       QuestaoDb(
-          id: questao.id,
-          titulo: questao.titulo,
-          descricao: questao.descricao,
-          ordem: questao.ordem,
-          tipo: questao.tipo.index,
-          provaId: provaId),
+        id: questao.id,
+        titulo: questao.titulo,
+        descricao: questao.descricao,
+        ordem: questao.ordem,
+        tipo: questao.tipo.index,
+        provaId: provaId,
+        quantidadeAlternativas: questao.quantidadeAlternativas,
+      ),
     );
 
     finer('[QUESTAO SALVA]');
@@ -449,6 +521,25 @@ class GerenciadorDownload with Loggable {
     );
 
     finer('[ARQUIVO SALVO]');
+  }
+
+  saveContexto(ContextoProva contexto, int provaId) async {
+    AppDatabase database = GetIt.I.get();
+
+    await database.inserirOuAtualizarContextoProva(
+      ContextoProvaDb(
+        id: contexto.id!,
+        ordem: contexto.ordem!,
+        imagem: contexto.imagem,
+        imagemBase64: contexto.imagemBase64,
+        posicionamento: contexto.posicionamento!.index,
+        texto: contexto.texto,
+        titulo: contexto.titulo,
+        provaId: provaId,
+      ),
+    );
+
+    fine('[CONTEXTO SALVO]');
   }
 
   saveProva(Prova prova) async {
@@ -502,24 +593,16 @@ class GerenciadorDownload with Loggable {
 
     for (var questao in prova.questoes) {
       switch (questao.tipo) {
-        case EnumTipoQuestao.MULTIPLA_ESCOLHA_4:
-          if (questao.alternativas.length != 4) {
+        case EnumTipoQuestao.MULTIPLA_ESCOLHA:
+          if (questao.alternativas.length != questao.quantidadeAlternativas) {
             throw ProvaDownloadException(
               prova.id,
-              'Questão ${questao.id} deve conter 4 alternatias, mas contem ${questao.alternativas.length} alternativas',
+              'Questão ${questao.id} deve conter ${questao.quantidadeAlternativas} alternatias, mas contem ${questao.alternativas.length} alternativas',
             );
           }
 
           break;
-        case EnumTipoQuestao.MULTIPLA_ESCOLHA_5:
-          if (questao.alternativas.length != 5) {
-            throw ProvaDownloadException(
-              prova.id,
-              'Questão ${questao.id} deve conter 5 alternatias, mas contem ${questao.alternativas.length} alternativas',
-            );
-          }
 
-          break;
         case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
           if (questao.alternativas.isNotEmpty) {
             throw ProvaDownloadException(
@@ -529,7 +612,7 @@ class GerenciadorDownload with Loggable {
           }
           break;
 
-        default:
+        case EnumTipoQuestao.NAO_CADASTRADO:
           break;
       }
     }

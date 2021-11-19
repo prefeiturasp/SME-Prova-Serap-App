@@ -372,8 +372,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   Widget _buildResposta(Questao questao) {
     switch (questao.tipo) {
-      case EnumTipoQuestao.MULTIPLA_ESCOLHA_4:
-      case EnumTipoQuestao.MULTIPLA_ESCOLHA_5:
+      case EnumTipoQuestao.MULTIPLA_ESCOLHA:
         return _buildAlternativas(questao);
       case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
         return _buildRespostaConstruida(questao);
@@ -572,7 +571,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 tempoQuestao: widget.provaStore.segundos,
               );
             }
-            if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA_4) {
+            if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA) {
               await widget.provaStore.respostas.definirTempoResposta(
                 questao.id,
                 tempoQuestao: widget.provaStore.segundos,
