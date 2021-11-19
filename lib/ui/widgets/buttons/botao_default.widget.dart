@@ -24,8 +24,9 @@ class BotaoDefaultWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: largura,
+      constraints: BoxConstraints(minHeight: 40),
       child: TextButton(
         onPressed: desabilitado ? null : onPressed,
         style: ButtonStyle(
@@ -54,6 +55,7 @@ class BotaoDefaultWidget extends StatelessWidget {
         color: Colors.white,
         fontSize: kIsMobile ? 14 : 16,
         fontWeight: FontWeight.w500,
+        maxLines: 2,
       );
     }
 

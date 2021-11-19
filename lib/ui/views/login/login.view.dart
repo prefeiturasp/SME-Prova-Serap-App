@@ -171,6 +171,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
                         ),
                         errorText: store.autenticacaoErroStore.senha,
+                        errorMaxLines: 3,
                       ),
                       onSubmitted: (value) => fazerLogin(),
                     ),
@@ -325,16 +326,12 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
                     ),
                   ),
                   child: Center(
-                    child: Observer(
-                      builder: (_) {
-                        return Texto(
-                          "ENTRAR",
-                          color: Colors.white,
-                          fontSize: 16,
-                          center: true,
-                          fontWeight: FontWeight.w500,
-                        );
-                      },
+                    child: Texto(
+                      "ENTRAR",
+                      color: Colors.white,
+                      fontSize: 16,
+                      center: true,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),

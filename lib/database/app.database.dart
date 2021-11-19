@@ -1,5 +1,6 @@
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 
 export 'core/shared.database.dart';
 
@@ -8,7 +9,7 @@ part 'app.database.g.dart';
 @DataClassName("ProvaDb")
 class ProvasDb extends Table {
   IntColumn get id => integer()();
-  TextColumn get descricao => text().withLength(min: 1, max: 50)();
+  TextColumn get descricao => text().withLength(min: 1, max: 150)();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get downloadStatus => integer()();
   IntColumn get itensQuantidade => integer()();
@@ -20,6 +21,8 @@ class ProvasDb extends Table {
   DateTimeColumn get dataFim => dateTime().nullable()();
   DateTimeColumn get dataInicioProvaAluno => dateTime().nullable()();
   DateTimeColumn get dataFimProvaAluno => dateTime().nullable()();
+
+  TextColumn get senha => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -35,6 +38,21 @@ class QuestoesDb extends Table {
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get provaId => integer()();
   IntColumn get quantidadeAlternativa => integer()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName("ContextoProvaDb")
+class ContextosProvaDb extends Table {
+  IntColumn get id => integer()();
+  TextColumn get titulo => text().nullable()();
+  TextColumn get texto => text().nullable()();
+  TextColumn get imagemBase64 => text().nullable()();
+  IntColumn get ordem => integer()();
+  TextColumn get imagem => text().nullable()();
+  IntColumn get posicionamento => integer().nullable()();
+  IntColumn get provaId => integer()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -67,47 +85,49 @@ class ArquivosDb extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [ProvasDb, QuestoesDb, AlternativasDb, ArquivosDb])
+@DriftDatabase(tables: [ProvasDb, QuestoesDb, AlternativasDb, ArquivosDb, ContextosProvaDb])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
-  MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (Migrator m) {
-          return m.createAll();
-        },
-      );
-
-  // @override
-  // MigrationStrategy get migration => MigrationStrategy(
-  //   onCreate: (Migrator m) {
-  //     return m.createAll();
-  //   },
-  //   onUpgrade: (Migrator m, int from, int to) async {
-  //     if (from == 1) {
-  //       // we added the dueDate property in the change from version 1
-  //       await m.addColumn(todos, todos.dueDate);
-  //     }
-  //   }
-  // );
+  MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
+        return m.createAll();
+      }, onUpgrade: (Migrator m, int from, int to) async {
+        if (from == 1) {
+          await m.addColumn(provasDb, provasDb.senha);
+        }
+      });
 
   Future limpar() {
     return transaction(() async {
-      await customUpdate(
-        "delete from alternativas_db; delete from questoes_db; delete from arquivos_db; delete from provas_db;",
-      );
+      await customUpdate("delete from alternativas_db;");
+
+      await customUpdate("delete from questoes_db;");
+
+      await customUpdate("delete from arquivos_db;");
+
+      await customUpdate("delete from provas_db;");
     });
   }
 
   Future limparPorProvaId(int provaId) {
     return transaction(() async {
-      await customUpdate("""delete from alternativas_db where prova_id = ?; 
-        delete from questoes_db where prova_id = ?; 
-        delete from arquivos_db where prova_id = ?; 
-        delete from provas_db where prova_id = ?; """, variables: [
+      await customUpdate("delete from alternativas_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from questoes_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from arquivos_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from provas_db where id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
     });
@@ -173,6 +193,19 @@ class AppDatabase extends _$AppDatabase {
   Future<List<ArquivoDb>> obterArquivosPorProvaId(int provaId) =>
       (select(arquivosDb)..where((t) => t.provaId.equals(provaId))).get();
   Future removerArquivosPorProvaId(int id) {
+    return transaction(() async {
+      await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
+    });
+  }
+
+  //Contexto Prova
+  Future inserirContextoProva(ContextoProvaDb contextoProvaDb) => into(contextosProvaDb).insert(contextoProvaDb);
+  Future inserirOuAtualizarContextoProva(ContextoProvaDb contextoProvaDb) =>
+      into(contextosProvaDb).insertOnConflictUpdate(contextoProvaDb);
+  Future removerContexto(ContextoProvaDb contextoProvaDb) => delete(contextosProvaDb).delete(contextoProvaDb);
+  Future<List<ContextoProvaDb>> obterContextoPorProvaId(int provaId) =>
+      (select(contextosProvaDb)..where((t) => t.provaId.equals(provaId))).get();
+  Future removerContextoPorProvaId(int id) {
     return transaction(() async {
       await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });

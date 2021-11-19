@@ -1,7 +1,9 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -35,6 +37,8 @@ class Prova {
 
   String? senha;
 
+  List<ContextoProva>? contextosProva;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -51,6 +55,7 @@ class Prova {
     this.senha,
     this.dataInicioProvaAluno,
     this.dataFimProvaAluno,
+    this.contextosProva,
   });
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
@@ -75,7 +80,27 @@ class Prova {
         dataInicioProvaAluno: provaDb.dataInicioProvaAluno,
         dataFimProvaAluno: provaDb.dataFimProvaAluno,
         questoes: [],
+        status: EnumProvaStatus.values[provaDb.status],
+        senha: provaDb.senha,
       );
+
+      var contextosProvaDb = await db.obterContextoPorProvaId(prova.id);
+
+      if (contextosProvaDb.isNotEmpty) {
+        prova.contextosProva = contextosProvaDb
+            .map((e) => ContextoProva(
+                  id: e.id,
+                  provaId: e.provaId,
+                  imagem: e.imagem,
+                  imagemBase64: e.imagemBase64,
+                  posicionamento:
+                      PosicionamentoImagemEnum.values.firstWhere((element) => element.index == e.posicionamento),
+                  ordem: e.ordem,
+                  titulo: e.titulo,
+                  texto: e.texto,
+                ))
+            .toList();
+      }
 
       var questoesDb = await db.obterQuestoesPorProvaId(prova.id);
       prova.questoes = questoesDb
@@ -133,6 +158,8 @@ class Prova {
       dataInicioProvaAluno: provaDb.dataInicioProvaAluno,
       dataFimProvaAluno: provaDb.dataFimProvaAluno,
       questoes: [],
+      status: EnumProvaStatus.values[provaDb.status],
+      senha: provaDb.senha,
     );
 
     return prova;
@@ -140,18 +167,23 @@ class Prova {
 
   static salvaProvaCache(Prova prova) async {
     AppDatabase db = GetIt.I.get();
-    db.inserirOuAtualizarProva(
+    await db.inserirOuAtualizarProva(
       ProvaDb(
-          id: prova.id,
-          descricao: prova.descricao,
-          downloadStatus: prova.downloadStatus.index,
-          tempoExtra: prova.tempoExtra,
-          tempoExecucao: prova.tempoExecucao,
-          tempoAlerta: prova.tempoAlerta,
-          itensQuantidade: prova.itensQuantidade,
-          status: prova.status.index,
-          dataInicio: prova.dataInicio,
-          ultimaAtualizacao: DateTime.now()),
+        id: prova.id,
+        descricao: prova.descricao,
+        downloadStatus: prova.downloadStatus.index,
+        tempoExtra: prova.tempoExtra,
+        tempoExecucao: prova.tempoExecucao,
+        tempoAlerta: prova.tempoAlerta,
+        itensQuantidade: prova.itensQuantidade,
+        status: prova.status.index,
+        dataInicio: prova.dataInicio,
+        ultimaAtualizacao: DateTime.now(),
+        dataFim: prova.dataFim,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        senha: prova.senha,
+      ),
     );
   }
 

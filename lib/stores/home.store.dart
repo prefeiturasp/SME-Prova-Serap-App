@@ -1,4 +1,6 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:chopper/src/response.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -12,7 +14,14 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/provas.util.dart';
+import 'package:chopper/src/response.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
+import 'package:supercharged_dart/supercharged_dart.dart';
 
 part 'home.store.g.dart';
 
@@ -33,7 +42,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     AppDatabase db = GetIt.I.get();
 
-    List<ProvaDb> provasDb = await db.obterProvasPendentes();
+    List<ProvaDb> provasDb = await db.obterProvas();
     if (provasDb.isNotEmpty) {
       List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
 
@@ -135,8 +144,18 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     if (prova != null) {
       // atualizar prova com os valores remotos
+
+      prova.contextosProva = provaStore.prova.contextosProva;
+
       prova.status = provaStore.prova.status;
       prova.dataInicioProvaAluno = provaStore.prova.dataInicioProvaAluno;
+
+      prova.dataInicio = provaStore.prova.dataInicio;
+      prova.dataFim = provaStore.prova.dataFim;
+
+      prova.tempoAlerta = provaStore.prova.tempoAlerta;
+      prova.tempoExecucao = provaStore.prova.tempoExecucao;
+      prova.tempoExtra = provaStore.prova.tempoExtra;
 
       provaStore.prova = prova;
       provaStore.downloadStatus = prova.downloadStatus;
@@ -153,6 +172,14 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   @override
   onDispose() {
     limpar();
+    cancelarTimers();
+  }
+
+  @action
+  cancelarTimers() {
+    for (var prova in provas.values) {
+      prova.onDispose();
+    }
   }
 
   @action

@@ -2,13 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/dtos/contexto_prova.response.dto.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/dtos/alternativa.response.dto.dart';
@@ -17,6 +21,8 @@ import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
@@ -24,6 +30,12 @@ import 'package:appserap/models/download_prova.model.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
+import 'package:asuka/snackbars/asuka_snack_bar.dart';
+import 'package:chopper/src/response.dart';
+import 'package:collection/collection.dart';
+import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
 typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
@@ -58,7 +70,7 @@ class GerenciadorDownload with Loggable {
       await loadDownloads();
 
       for (var idQuestao in provaDetalhes.questoesId) {
-        if (!containsId(idQuestao)) {
+        if (!containsId(idQuestao, EnumDownloadTipo.QUESTAO)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.QUESTAO,
@@ -70,7 +82,7 @@ class GerenciadorDownload with Loggable {
       }
 
       for (var idArquivo in provaDetalhes.arquivosId) {
-        if (!containsId(idArquivo)) {
+        if (!containsId(idArquivo, EnumDownloadTipo.ARQUIVO)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.ARQUIVO,
@@ -82,11 +94,23 @@ class GerenciadorDownload with Loggable {
       }
 
       for (var idAlternativa in provaDetalhes.alternativasId) {
-        if (!containsId(idAlternativa)) {
+        if (!containsId(idAlternativa, EnumDownloadTipo.ALTERNATIVA)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.ALTERNATIVA,
               id: idAlternativa,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+      for (var idContexto in provaDetalhes.contextoProvaIds) {
+        if (!containsId(idContexto, EnumDownloadTipo.CONTEXTO_PROVA)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.CONTEXTO_PROVA,
+              id: idContexto,
               dataHoraInicio: DateTime.now(),
             ),
           );
@@ -216,7 +240,6 @@ class GerenciadorDownload with Loggable {
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
-
               Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
 
               if (response.isSuccessful) {
@@ -231,7 +254,7 @@ class GerenciadorDownload with Loggable {
                 // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
                 String base64 = base64Encode(arquivoResponse.bodyBytes);
 
-                saveArquivo(
+                await saveArquivo(
                     Arquivo(
                       id: arquivo.id,
                       caminho: arquivo.caminho,
@@ -239,6 +262,40 @@ class GerenciadorDownload with Loggable {
                       questaoId: questao!.id,
                     ),
                     idProva);
+
+                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              }
+              break;
+
+            case EnumDownloadTipo.CONTEXTO_PROVA:
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+              Response<ContextoProvaResponseDTO> response =
+                  await apiService.contextoProva.getContextoProva(id: download.id);
+
+              if (response.isSuccessful) {
+                ContextoProvaResponseDTO contexto = response.body!;
+
+                http.Response contextoResponse = await http.get(
+                  Uri.parse(
+                    contexto.imagem!.replaceFirst('http://', 'https://'),
+                  ),
+                );
+
+                String base64 = base64Encode(contextoResponse.bodyBytes);
+
+                await saveContexto(
+                  ContextoProva(
+                      id: contexto.id,
+                      imagem: contexto.imagem,
+                      imagemBase64: base64,
+                      ordem: contexto.ordem,
+                      posicionamento: contexto.posicionamento,
+                      provaId: contexto.provaId,
+                      texto: contexto.texto,
+                      titulo: contexto.titulo),
+                  idProva,
+                );
 
                 download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               }
@@ -353,8 +410,8 @@ class GerenciadorDownload with Loggable {
     }
   }
 
-  bool containsId(int id) {
-    return downloads.firstWhereOrNull((element) => element.id == id) != null;
+  bool containsId(int id, EnumDownloadTipo tipo) {
+    return downloads.firstWhereOrNull((element) => element.id == id && element.tipo == tipo) != null;
   }
 
   List<DownloadProva> getDownlodsByStatus(EnumDownloadStatus status) {
@@ -404,15 +461,31 @@ class GerenciadorDownload with Loggable {
             ),
           )
           .toList();
+
+      var contextoDb = await db.obterContextoPorProvaId(prova.id);
+      prova.contextosProva = contextoDb
+          .map(
+            (e) => ContextoProva(
+              id: e.id,
+              imagem: e.imagem,
+              imagemBase64: e.imagemBase64,
+              ordem: e.ordem,
+              posicionamento: PosicionamentoImagemEnum.values[e.posicionamento!],
+              provaId: e.provaId,
+              texto: e.texto,
+              titulo: e.titulo,
+            ),
+          )
+          .toList();
     }
 
     return prova;
   }
 
-  saveQuestao(Questao questao, int provaId) {
+  saveQuestao(Questao questao, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarQuestao(
+    await database.inserirOuAtualizarQuestao(
       QuestaoDb(
         id: questao.id,
         titulo: questao.titulo,
@@ -424,13 +497,13 @@ class GerenciadorDownload with Loggable {
       ),
     );
 
-    fine('[QUESTAO SALVA]');
+    finer('[QUESTAO SALVA]');
   }
 
-  saveAlternativa(Alternativa alternativa, int provaId) {
+  saveAlternativa(Alternativa alternativa, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarAlternativa(
+    await database.inserirOuAtualizarAlternativa(
       AlternativaDb(
           id: alternativa.id,
           descricao: alternativa.descricao,
@@ -440,13 +513,13 @@ class GerenciadorDownload with Loggable {
           provaId: provaId),
     );
 
-    fine('[ALTERNATIVA SALVA]');
+    finer('[ALTERNATIVA SALVA]');
   }
 
-  saveArquivo(Arquivo arquivo, int provaId) {
+  saveArquivo(Arquivo arquivo, int provaId) async {
     AppDatabase database = GetIt.I.get();
 
-    database.inserirOuAtualizarArquivo(
+    await database.inserirOuAtualizarArquivo(
       ArquivoDb(
         id: arquivo.id,
         caminho: arquivo.caminho,
@@ -456,28 +529,52 @@ class GerenciadorDownload with Loggable {
       ),
     );
 
-    fine('[ARQUIVO SALVO]');
+    finer('[ARQUIVO SALVO]');
+  }
+
+  saveContexto(ContextoProva contexto, int provaId) async {
+    AppDatabase database = GetIt.I.get();
+
+    await database.inserirOuAtualizarContextoProva(
+      ContextoProvaDb(
+        id: contexto.id!,
+        ordem: contexto.ordem!,
+        imagem: contexto.imagem,
+        imagemBase64: contexto.imagemBase64,
+        posicionamento: contexto.posicionamento!.index,
+        texto: contexto.texto,
+        titulo: contexto.titulo,
+        provaId: provaId,
+      ),
+    );
+
+    fine('[CONTEXTO SALVO]');
   }
 
   saveProva(Prova prova) async {
     AppDatabase db = GetIt.I.get();
 
-    db.inserirOuAtualizarProva(
+    await db.inserirOuAtualizarProva(
       ProvaDb(
-          id: prova.id,
-          descricao: prova.descricao,
-          downloadStatus: prova.downloadStatus.index,
-          tempoExtra: prova.tempoExtra,
-          tempoExecucao: prova.tempoExecucao,
-          tempoAlerta: prova.tempoAlerta,
-          itensQuantidade: prova.itensQuantidade,
-          status: prova.status.index,
-          dataInicio: prova.dataInicio,
-          ultimaAtualizacao: DateTime.now()),
+        id: prova.id,
+        descricao: prova.descricao,
+        downloadStatus: prova.downloadStatus.index,
+        tempoExtra: prova.tempoExtra,
+        tempoExecucao: prova.tempoExecucao,
+        tempoAlerta: prova.tempoAlerta,
+        itensQuantidade: prova.itensQuantidade,
+        status: prova.status.index,
+        dataInicio: prova.dataInicio,
+        ultimaAtualizacao: DateTime.now(),
+        dataFim: prova.dataFim,
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
+        senha: prova.senha,
+      ),
     );
 
     var provaSalva = await db.obterProvaPorId(prova.id);
-    fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
+    finer('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }
 
   deleteDownload() {

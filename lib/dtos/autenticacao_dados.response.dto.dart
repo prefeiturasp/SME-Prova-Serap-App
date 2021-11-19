@@ -10,6 +10,9 @@ class AutenticacaoDadosResponseDTO {
   String tipoTurno;
   double tamanhoFonte;
   FonteTipoEnum familiaFonte;
+  int modalidade;
+  int inicioTurno;
+  int fimTurno;
 
   AutenticacaoDadosResponseDTO(
     this.nome,
@@ -17,6 +20,9 @@ class AutenticacaoDadosResponseDTO {
     this.tipoTurno,
     this.tamanhoFonte,
     this.familiaFonte,
+    this.modalidade,
+    this.inicioTurno,
+    this.fimTurno,
   );
 
   static const fromJson = _$AutenticacaoDadosResponseDTOFromJson;

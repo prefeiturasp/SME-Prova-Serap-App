@@ -5,6 +5,7 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,6 +34,11 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
   @action
   Future<void> carregarRespostasServidor([Prova? prova]) async {
+    var connectionStatus = await Connectivity().checkConnectivity();
+    if (connectionStatus == ConnectivityStatus.none) {
+      return;
+    }
+
     fine('[Prova $idProva] - Carregando respostas da prova');
 
     List<int> idsQuestao = [];
@@ -43,7 +49,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
     for (var idQuestao in idsQuestao) {
       try {
-        fine('[Prova $idProva] - (Questão ID $idQuestao) Carregando resposta');
+        finer('[Prova $idProva] - (Questão ID $idQuestao) Carregando resposta');
         var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
         if (respostaBanco.isSuccessful) {
           var body = respostaBanco.body!;
@@ -66,7 +72,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
           severe(e);
           severe(stack);
         } else {
-          info('[Prova $idProva] - (Questão ID $idQuestao) Sem resposta salva');
+          finer('[Prova $idProva] - (Questão ID $idQuestao) Sem resposta salva');
         }
       }
     }
