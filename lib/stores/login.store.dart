@@ -141,7 +141,7 @@ abstract class _LoginStoreBase with Store, Loggable {
 
             await onPostLogin(usuarioDados);
           }
-
+          carregando = false;
           return true;
         }
       } else {
