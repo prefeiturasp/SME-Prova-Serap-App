@@ -1,17 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/idb_file.dart';
+import 'package:appserap/dtos/arquivo_video.response.dto.dart';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
+import 'package:appserap/models/arquivo_video.model.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
+import 'package:drift/drift.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/dtos/alternativa.response.dto.dart';
@@ -291,6 +297,11 @@ class GerenciadorDownload with Loggable {
                 download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               }
               break;
+
+            case EnumDownloadTipo.VIDEO:
+              await sincronizarVideo();
+
+              break;
           }
           downloadAtual = i;
           prova.downloadProgresso = getPorcentagem();
@@ -351,6 +362,41 @@ class GerenciadorDownload with Loggable {
     }
 
     cancelTimer();
+  }
+
+  sincronizarVideo() async {
+    var response = ArquivoVideoResponseDTO(
+      id: 12,
+      urlVideo: 'http:/dajskldas',
+      nomeArquivo: 'video.mp4',
+      idProva: 123,
+      idQuestao: 123,
+    );
+
+    String path = join(
+      'prova',
+      idProva.toString(),
+      'video',
+      response.id.toString(),
+      extension(response.nomeArquivo),
+    );
+
+    var idbFileVideo = IdbFile(path);
+
+    Uint8List contentes = await http.readBytes(Uri.parse(response.urlVideo));
+
+    await idbFileVideo.writeAsBytes(contentes);
+
+    await saveVideo(
+      ArquivoVideo(
+        id: response.id,
+        nome: response.nomeArquivo,
+        path: path,
+        idProva: idProva,
+        idQuestao: 1,
+      ),
+      idProva,
+    );
   }
 
   double getPorcentagem() {
@@ -539,7 +585,23 @@ class GerenciadorDownload with Loggable {
       ),
     );
 
-    fine('[CONTEXTO SALVO]');
+    finer('[CONTEXTO SALVO]');
+  }
+
+  saveVideo(ArquivoVideo entity, int provaId) async {
+    AppDatabase database = GetIt.I.get();
+
+    await database.arquivosVideosDao.inserirOuAtualizar(
+      ArquivoVideoDb(
+        id: entity.id,
+        path: entity.path,
+        nome: entity.nome,
+        questaoId: entity.idQuestao,
+        provaId: entity.idProva,
+      ),
+    );
+
+    finer('[VIDEO SALVO]');
   }
 
   saveProva(Prova prova) async {
