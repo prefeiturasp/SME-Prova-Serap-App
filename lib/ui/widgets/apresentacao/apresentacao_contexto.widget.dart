@@ -23,11 +23,11 @@ import 'package:get_it/get_it.dart';
 class ApresentacaoContextoWidget extends StatelessWidget {
   final BaseStatefulWidget? avancarParaPagina;
   final List<ContextoProva> listaDePaginasContexto;
-  String textoBotaoAvancar;
-  String textoBotaoPular;
-  bool regraMostrarTodosOsBotoesAoIniciar;
-  bool regraMostrarApenasBotaoPoximo;
-  ProvaStore? provaStore;
+  final String textoBotaoAvancar;
+  final String textoBotaoPular;
+  final bool regraMostrarTodosOsBotoesAoIniciar;
+  final bool regraMostrarApenasBotaoPoximo;
+  final ProvaStore? provaStore;
 
   ApresentacaoContextoWidget({
     this.avancarParaPagina,

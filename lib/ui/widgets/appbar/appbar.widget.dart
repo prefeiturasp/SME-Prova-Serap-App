@@ -1,5 +1,4 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/stores/apresentacao.store.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';

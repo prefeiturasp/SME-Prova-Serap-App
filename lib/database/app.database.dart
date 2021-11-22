@@ -1,6 +1,5 @@
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/foundation.dart';
 
 export 'core/shared.database.dart';
 

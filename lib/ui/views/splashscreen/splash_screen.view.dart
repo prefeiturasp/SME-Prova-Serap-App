@@ -1,6 +1,5 @@
 import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
@@ -21,7 +20,6 @@ class SplashScreenView extends StatefulWidget {
 class _SplashScreenViewState extends State<SplashScreenView> {
   final _principalStore = GetIt.I.get<PrincipalStore>();
   final _temaStore = GetIt.I.get<TemaStore>();
-  final _orientacaoStore = GetIt.I.get<OrientacaoInicialStore>();
 
   @override
   void initState() {

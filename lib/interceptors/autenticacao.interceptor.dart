@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:chopper/chopper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';

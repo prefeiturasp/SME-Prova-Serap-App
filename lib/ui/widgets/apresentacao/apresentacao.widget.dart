@@ -1,5 +1,4 @@
 import 'package:appserap/stores/apresentacao.store.dart';
-import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
@@ -14,12 +13,11 @@ import 'package:get_it/get_it.dart';
 class ApresentacaoWidget extends StatelessWidget {
   final BaseStatefulWidget? avancarParaPagina;
   final List<ApresentacaoModelWidget> listaDePaginas;
-  String textoBotaoAvancar;
-  String textoBotaoPular;
-  bool regraMostrarTodosOsBotoesAoIniciar;
-  bool regraMostrarApenasBotaoPoximo;
-  bool pularSeNaoTiverConexao;
-  ProvaStore? provaStore;
+  final String textoBotaoAvancar;
+  final String textoBotaoPular;
+  final bool regraMostrarTodosOsBotoesAoIniciar;
+  final bool regraMostrarApenasBotaoPoximo;
+  final bool pularSeNaoTiverConexao;
 
   ApresentacaoWidget({
     this.avancarParaPagina,
