@@ -671,7 +671,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         }
 
         if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ProvaView(
@@ -686,15 +686,18 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
   _navegarParaProvaPrimeiraVez(ProvaStore provaStore) {
     if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ContextoProvaView(provaStore: provaStore),
         ),
       );
     } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => ProvaView(provaStore: provaStore)),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ProvaView(provaStore: provaStore),
+        ),
       );
     }
   }

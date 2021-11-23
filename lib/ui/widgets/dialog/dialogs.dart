@@ -506,3 +506,105 @@ mostrarDialogMudancaTema(BuildContext context) {
     },
   );
 }
+
+Future<bool?> mostrarDialogVoltarProva(BuildContext context) {
+  String mensagemCorpo =
+      "Você deseja voltar para a tela inicial? Caso a prova possua tempo de execução, o mesmo não será pausado.";
+
+  return showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: SvgPicture.asset(
+            AssetsUtil.erro,
+            height: 55,
+          ),
+        ),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Texto(
+            mensagemCorpo,
+            textOverflow: TextOverflow.visible,
+            textAlign: TextAlign.center,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        botoes: [
+          BotaoSecundarioWidget(
+            textoBotao: "CANCELAR",
+            onPressed: () {
+              Navigator.pop(context, false);
+            },
+          ),
+          BotaoDefaultWidget(
+            textoBotao: "VOLTAR",
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+          )
+        ],
+      );
+    },
+  );
+}
+
+Future<bool?> mostrarDialogSairSistema(BuildContext context) {
+  String mensagemCorpo =
+      "Atenção, se você sair do sistema as provas baixadas serão apagadas do seu dispositivo. Deseja realmente sair?";
+
+  return showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: SvgPicture.asset(
+            AssetsUtil.erro,
+            height: 55,
+          ),
+        ),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Texto(
+            mensagemCorpo,
+            textOverflow: TextOverflow.visible,
+            textAlign: TextAlign.center,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        botoes: [
+          BotaoSecundarioWidget(
+            textoBotao: "CANCELAR",
+            onPressed: () {
+              Navigator.pop(context, false);
+            },
+          ),
+          BotaoDefaultWidget(
+            textoBotao: "SAIR",
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+          )
+        ],
+      );
+    },
+  );
+}

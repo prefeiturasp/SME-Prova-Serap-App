@@ -18,6 +18,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool exibirSair;
   final String? subtitulo;
   final bool mostrarBotaoVoltar;
+  final Widget? leading;
 
   final temaStore = GetIt.I<TemaStore>();
 
@@ -26,6 +27,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     this.subtitulo,
     this.mostrarBotaoVoltar = true,
     this.exibirSair = false,
+    this.leading,
   });
 
   final _principalStore = GetIt.I.get<PrincipalStore>();
@@ -64,6 +66,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       automaticallyImplyLeading: false,
+      leading: leading != null
+          ? Observer(builder: (context) {
+              return leading!;
+            })
+          : null,
       actions: [
         TextButton(
           onPressed: () {
@@ -111,39 +118,27 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.appBar),
       ),
-      child: Row(
-        children: [
-          Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
-          SizedBox(width: 5),
-          Observer(builder: (_) {
-            return Text(
-              "Sair",
-              style: TextStyle(
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                fontSize: temaStore.tTexto16,
-                color: TemaUtil.laranja02,
-              ),
-            );
-          }),
-          SizedBox(width: 5),
-        ],
-      ),
+      child: Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
       onPressed: () async {
-        await _principalStore.sair();
+        bool sair = (await mostrarDialogSairSistema(context)) ?? false;
 
-        await ServiceLocator.get<HomeStore>().onDispose();
+        if (sair) {
+          await _principalStore.sair();
 
-        if (popView) {
-          var prova = GetIt.I.get<ProvaViewStore>();
-          var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
+          await ServiceLocator.get<HomeStore>().onDispose();
 
-          prova.dispose();
-          orientacoes.dispose();
+          if (popView) {
+            var prova = GetIt.I.get<ProvaViewStore>();
+            var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
 
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => SplashScreenView()),
-            (_) => false,
-          );
+            prova.dispose();
+            orientacoes.dispose();
+
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => SplashScreenView()),
+              (_) => false,
+            );
+          }
         }
       },
     );
