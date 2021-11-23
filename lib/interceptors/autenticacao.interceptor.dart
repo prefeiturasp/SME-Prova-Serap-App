@@ -48,17 +48,21 @@ class ServiceAuthenticator extends Authenticator with Loggable {
     ApiService service = GetIt.I.get();
 
     fine('Atualizando token');
-    Response<AutenticacaoResponseDTO> response = await service.auth.revalidar(token: oldToken);
+    try {
+      Response<AutenticacaoResponseDTO> response = await service.auth.revalidar(token: oldToken);
 
-    if (response.isSuccessful) {
-      String newToken = response.body!.token;
-      DateTime expiration = response.body!.dataHoraExpiracao;
-      fine('Novo token - Data Expiracao ($expiration) $newToken');
+      if (response.isSuccessful) {
+        String newToken = response.body!.token;
+        DateTime expiration = response.body!.dataHoraExpiracao;
+        fine('Novo token - Data Expiracao ($expiration) $newToken');
 
-      SharedPreferences prefs = GetIt.I.get();
-      await prefs.setString('token', newToken);
-      await prefs.setString('token_expiration', expiration.toIso8601String());
-      return newToken;
+        SharedPreferences prefs = GetIt.I.get();
+        await prefs.setString('token', newToken);
+        await prefs.setString('token_expiration', expiration.toIso8601String());
+        return newToken;
+      }
+    } catch (e) {
+      severe('Erro ao atualizar token: $e');
     }
 
     return null;

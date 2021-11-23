@@ -15,12 +15,18 @@ import 'package:get_it/get_it.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
+  final bool exibirSair;
   final String? subtitulo;
   final bool mostrarBotaoVoltar;
 
   final temaStore = GetIt.I<TemaStore>();
 
-  AppBarWidget({required this.popView, this.subtitulo, this.mostrarBotaoVoltar = true});
+  AppBarWidget({
+    required this.popView,
+    this.subtitulo,
+    this.mostrarBotaoVoltar = true,
+    this.exibirSair = false,
+  });
 
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
@@ -77,46 +83,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             );
           }),
         ),
-        TextButton(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.appBar),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
-              SizedBox(width: 5),
-              Observer(builder: (_) {
-                return Text(
-                  "Sair",
-                  style: TextStyle(
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                    fontSize: temaStore.tTexto16,
-                    color: TemaUtil.laranja02,
-                  ),
-                );
-              }),
-              SizedBox(width: 5),
-            ],
-          ),
-          onPressed: () async {
-            await _principalStore.sair();
-
-            await ServiceLocator.get<HomeStore>().onDispose();
-
-            if (popView) {
-              var prova = GetIt.I.get<ProvaViewStore>();
-              var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
-
-              prova.dispose();
-              orientacoes.dispose();
-
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => SplashScreenView()),
-                (_) => false,
-              );
-            }
-          },
-        ),
+        exibirSair ? _buildBotaoSair(context) : Container(),
       ],
     );
   }
@@ -136,6 +103,49 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
     return SizedBox(
       height: 0,
+    );
+  }
+
+  _buildBotaoSair(BuildContext context) {
+    return TextButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.appBar),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
+          SizedBox(width: 5),
+          Observer(builder: (_) {
+            return Text(
+              "Sair",
+              style: TextStyle(
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                fontSize: temaStore.tTexto16,
+                color: TemaUtil.laranja02,
+              ),
+            );
+          }),
+          SizedBox(width: 5),
+        ],
+      ),
+      onPressed: () async {
+        await _principalStore.sair();
+
+        await ServiceLocator.get<HomeStore>().onDispose();
+
+        if (popView) {
+          var prova = GetIt.I.get<ProvaViewStore>();
+          var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
+
+          prova.dispose();
+          orientacoes.dispose();
+
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => SplashScreenView()),
+            (_) => false,
+          );
+        }
+      },
     );
   }
 }
