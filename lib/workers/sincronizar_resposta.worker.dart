@@ -69,6 +69,7 @@ class SincronizarRespostasWorker with Worker, Loggable {
 
     try {
       var response = await _service.postResposta(
+        codigoEOL: resposta.codigoEOL,
         questaoId: idQuestao,
         alternativaId: resposta.alternativaId,
         resposta: resposta.resposta,
