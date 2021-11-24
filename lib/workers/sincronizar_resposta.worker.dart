@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -69,7 +70,8 @@ class SincronizarRespostasWorker with Worker, Loggable {
 
     try {
       var response = await _service.postResposta(
-        codigoEOL: resposta.codigoEOL,
+        chaveAPI: AppConfigReader.getChaveApi(),
+        alunoRa: resposta.codigoEOL,
         questaoId: idQuestao,
         alternativaId: resposta.alternativaId,
         resposta: resposta.resposta,

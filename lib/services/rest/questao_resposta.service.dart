@@ -12,7 +12,8 @@ abstract class QuestaoRespostaService extends ChopperService {
 
   @Post(path: '/respostas')
   Future<Response<bool>> postResposta({
-    @Field() required String codigoEOL,
+    @Header('chave-api') required String chaveAPI,
+    @Field() required String alunoRa,
     @Field() required int questaoId,
     @Field() int? alternativaId,
     @Field() String? resposta,

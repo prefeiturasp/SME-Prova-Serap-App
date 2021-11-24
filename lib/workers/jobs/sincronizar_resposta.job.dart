@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:appserap/interfaces/job_config.interface.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,7 +49,8 @@ class SincronizarRespostaJob with Job, Loggable {
 
     try {
       var response = await _service.postResposta(
-        codigoEOL: resposta.codigoEOL,
+        chaveAPI: AppConfigReader.getChaveApi(),
+        alunoRa: resposta.codigoEOL,
         questaoId: idQuestao,
         alternativaId: resposta.alternativaId,
         resposta: resposta.resposta,

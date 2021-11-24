@@ -20,4 +20,8 @@ abstract class AppConfigReader {
   static String getApiHost() {
     return _config["apiHost"] as String;
   }
+
+  static String getChaveApi() {
+    return _config["chaveApi"] as String;
+  }
 }

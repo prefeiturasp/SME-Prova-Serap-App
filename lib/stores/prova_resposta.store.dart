@@ -5,6 +5,7 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/login.store.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -113,7 +114,8 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
       try {
         var response = await _service.postResposta(
-          codigoEOL: codigoEOL,
+          chaveAPI: AppConfigReader.getChaveApi(),
+          alunoRa: codigoEOL,
           questaoId: idQuestao,
           alternativaId: resposta.alternativaId,
           resposta: resposta.resposta,
