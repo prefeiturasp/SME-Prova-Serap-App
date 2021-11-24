@@ -8,7 +8,9 @@ import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -120,7 +122,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       ),
       child: Icon(Icons.exit_to_app_outlined, color: TemaUtil.laranja02),
       onPressed: () async {
-        bool sair = (await mostrarDialogSairSistema(context)) ?? false;
+        bool sair = true;
+
+        if (!kIsWeb) {
+          sair = (await mostrarDialogSairSistema(context)) ?? false;
+        }
 
         if (sair) {
           await _principalStore.sair();
