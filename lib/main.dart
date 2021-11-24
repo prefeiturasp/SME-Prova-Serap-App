@@ -111,6 +111,7 @@ class MyApp extends StatelessWidget {
           locale: Locale('pt', 'BR'),
           home: SplashScreenView(),
           scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+          onGenerateTitle: (context) => "SERAp Estudantes",
         );
       },
     );
