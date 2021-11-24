@@ -51,6 +51,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
     return AppBarWidget(
       popView: true,
       mostrarBotaoVoltar: false,
+      exibirSair: true,
     );
   }
 
