@@ -5,6 +5,7 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/login.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -29,7 +30,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @observable
-  String codigoEOL = ServiceLocator.get<LoginStore>().codigoEOL;
+  String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
 
   @observable
   ObservableMap<int, ProvaResposta> respostasSalvas = <int, ProvaResposta>{}.asObservable();
@@ -180,16 +181,20 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   salvarCache(ProvaResposta resposta) async {
     SharedPreferences _pref = GetIt.I.get();
 
+    var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
+
     return await _pref.setString(
-      'resposta_${resposta.questaoId}',
+      'resposta_${codigoEOL}_${resposta.questaoId}',
       jsonEncode(resposta.toJson()),
     );
   }
 
   Map<int, ProvaResposta> carregaRespostasCache() {
     SharedPreferences _pref = ServiceLocator.get();
+    var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
 
-    List<String> keysResposta = _pref.getKeys().toList().where((element) => element.startsWith('resposta_')).toList();
+    List<String> keysResposta =
+        _pref.getKeys().toList().where((element) => element.startsWith('resposta_${codigoEOL}_')).toList();
 
     Map<int, ProvaResposta> respostas = {};
 

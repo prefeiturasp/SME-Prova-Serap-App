@@ -11,6 +11,17 @@ abstract class QuestaoRespostaService extends ChopperService {
   Future<Response<QuestaoRespostaResponseDTO>> getRespostaPorQuestaoId({@Path() required int questaoId});
 
   @Post(path: '/respostas')
+  Future<Response<bool>> postRespostaOld({
+    @Header('chave-api') required String chaveAPI,
+    @Field() required String alunoRa,
+    @Field() required int questaoId,
+    @Field() int? alternativaId,
+    @Field() String? resposta,
+    @Field() required int dataHoraRespostaTicks,
+    @Field() int? tempoRespostaAluno,
+  });
+
+  @Post(path: '/respostas/sincronizar')
   Future<Response<bool>> postResposta({
     @Header('chave-api') required String chaveAPI,
     @Field() required String alunoRa,

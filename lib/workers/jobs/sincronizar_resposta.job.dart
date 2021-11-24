@@ -84,7 +84,7 @@ class SincronizarRespostaJob with Job, Loggable {
     SharedPreferences _pref = GetIt.I.get();
 
     return await _pref.setString(
-      'resposta_${resposta.questaoId}',
+      'resposta_${resposta.codigoEOL}_${resposta.questaoId}',
       jsonEncode(resposta.toJson()),
     );
   }

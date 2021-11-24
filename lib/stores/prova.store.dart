@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -22,11 +22,6 @@ import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:flutter/widgets.dart';
-import 'package:get_it/get_it.dart';
-import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'prova.store.g.dart';
 
@@ -319,7 +314,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
               // Remove respostas da prova do cache
               for (var questoes in prova.questoes) {
-                await prefs.remove('resposta_${questoes.id}');
+                var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
+                await prefs.remove('resposta_${codigoEOL}_${questoes.id}');
               }
 
               mostrarDialogProvaJaEnviada(context);
