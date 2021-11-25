@@ -1,11 +1,14 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
+import 'package:appserap/utils/extensions/date.extension.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
@@ -38,7 +41,7 @@ class ProvaAtualTabView extends BaseStatefulWidget {
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
+class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> with Loggable {
   final _principalStore = GetIt.I.get<PrincipalStore>();
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
@@ -66,83 +69,106 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             );
           }
 
-          _verificaProvaVisivel(provasStore);
-
-          final listaProvas = provasStore.filter((p) => p.value.isVisible).toList();
-
-          if (provasStore.isEmpty || listaProvas.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height - 400,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 28),
-                      child: SvgPicture.asset(
-                        'assets/images/sem_prova.svg',
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 24),
-                      child: Texto(
-                        "Você não tem novas\nprovas para fazer.",
-                        fontSize: 18,
-                        center: true,
-                        fontWeight: FontWeight.w600,
-                        color: TemaUtil.pretoSemFoco3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
           return RefreshIndicator(
             onRefresh: () async {
               await store.carregarProvas();
             },
-            child: ListView.builder(
-              itemCount: listaProvas.length,
-              itemBuilder: (_, index) {
-                var provaStore = listaProvas[index];
-                return _buildProva(provaStore.value);
-              },
-            ),
+            child: _buildItens(provasStore),
           );
         },
       ),
     );
   }
 
-  _verificaProvaVisivel(ObservableMap<int, ProvaStore> provasStore) {
-    for (var entry in provasStore.entries) {
-      var provaStore = entry.value;
-      bool provaVigente = false;
+  _buildItens(ObservableMap<int, ProvaStore> provasStore) {
+    provasStore.forEach((key, value) {
+      value.isVisible = _verificaProvaVigente(value);
+    });
 
-      if (provaStore.prova.dataFim != null) {
-        DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-        provaVigente = dataAtual.isBetween(provaStore.prova.dataInicio, provaStore.prova.dataFim!);
-      }
+    var listProvas = provasStore.filter((p) => p.value.isVisible).toMap();
 
-      if (!provaVigente) {
-        provaVigente = isSameDate(provaStore.prova.dataInicio);
-      }
-
-      DateTime horaAtual = DateTime.now();
-      if (provaVigente) {
-        if (_usuarioStore.fimTurno != 0) {
-          provaVigente = horaAtual.hour >= _usuarioStore.inicioTurno && horaAtual.hour <= _usuarioStore.fimTurno;
-        } else {
-          provaVigente = horaAtual.hour >= _usuarioStore.inicioTurno &&
-              (horaAtual.hour <= 23 && horaAtual.minute <= 59 && horaAtual.second <= 59);
-        }
-      }
-      provaStore.isVisible = provaVigente;
+    if (listProvas.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - 400,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 28),
+                child: SvgPicture.asset(
+                  'assets/images/sem_prova.svg',
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: Texto(
+                  "Você não tem novas\nprovas para fazer.",
+                  fontSize: 18,
+                  center: true,
+                  fontWeight: FontWeight.w600,
+                  color: TemaUtil.pretoSemFoco3,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
+
+    return ListView.builder(
+      itemCount: listProvas.length,
+      itemBuilder: (_, index) {
+        var key = listProvas.keys.toList()[index];
+        var provaStore = listProvas[key];
+        return _buildProva(provaStore!);
+      },
+    );
+  }
+
+  bool _verificaProvaVigente(ProvaStore provaStore) {
+    bool provaVigente = false;
+
+    if (provaStore.prova.dataFim != null) {
+      DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      provaVigente = dataAtual.isBetween(provaStore.prova.dataInicio, provaStore.prova.dataFim!);
+    }
+
+    if (!provaVigente) {
+      provaVigente = isSameDate(provaStore.prova.dataInicio);
+    }
+
+    return provaVigente;
+  }
+
+  bool _verificaProvaDisponivel(ProvaStore provaStore) {
+    bool isFinalDeSemanaEPossuiTempo = isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
+    bool isFinalDeSemanaENaoPossuiTempo = isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
+    bool naoEFinalDeSemanaEPossuiTempo = !isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
+    bool naoEFinalDeSemanaENaoPossuiTempo = !isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
+
+    bool podeIniciarProva = !isFinalDeSemanaEPossuiTempo ||
+        isFinalDeSemanaENaoPossuiTempo ||
+        naoEFinalDeSemanaEPossuiTempo ||
+        naoEFinalDeSemanaENaoPossuiTempo;
+
+    return podeIniciarProva;
+  }
+
+  bool _verificaProvaTurno(ProvaStore provaStore) {
+    bool vigente = false;
+
+    DateTime horaAtual = DateTime.now();
+    if (_usuarioStore.fimTurno != 0) {
+      vigente = horaAtual.hour >= _usuarioStore.inicioTurno && horaAtual.hour < _usuarioStore.fimTurno;
+    } else {
+      vigente = horaAtual.hour >= _usuarioStore.inicioTurno &&
+          (horaAtual.hour <= 23 && horaAtual.minute <= 59 && horaAtual.second <= 59);
+    }
+
+    return vigente;
   }
 
   _buildProva(ProvaStore provaStore) {
@@ -386,12 +412,28 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
     // Prova baixada -- iniciar
     if (provaStore.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
-      if (provaStore.status == EnumProvaStatus.PENDENTE) {
-        // Prova finalizada - aguardando sincronização
-        return _buildProvaPendente(provaStore);
+      bool provaDisponivel =
+          _verificaProvaTurno(provaStore) && provaStore.possuiTempoExecucao() && _verificaProvaDisponivel(provaStore) ||
+              !provaStore.possuiTempoExecucao();
+
+      info('inicioTurno ${ServiceLocator.get<UsuarioStore>().inicioTurno}');
+      info('fimTurno ${ServiceLocator.get<UsuarioStore>().fimTurno}');
+      info('_verificaProvaTurno(provaStore) ${_verificaProvaTurno(provaStore)}');
+      info('provaStore.possuiTempoExecucao() ${provaStore.possuiTempoExecucao()}');
+      info('_verificaProvaDisponivel(provaStore) ${_verificaProvaDisponivel(provaStore)}');
+      info("Prova provaDisponivel: $provaDisponivel '${provaStore.prova.descricao}' ");
+
+      if (!provaDisponivel) {
+        return _buildProvaTurnoIndisponivel(provaStore);
       } else {
-        // Prova não finalizada
-        return _buildIniciarProva(provaStore);
+        if (provaStore.status == EnumProvaStatus.PENDENTE) {
+          // Prova finalizada - aguardando sincronização
+          return _buildProvaPendente(provaStore);
+        } else {
+          //
+          //Prova não finalizada
+          return _buildIniciarProva(provaStore);
+        }
       }
     }
 
@@ -588,16 +630,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       }
     }
 
-    bool isFinalDeSemanaEPossuiTempo = isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
-    bool isFinalDeSemanaENaoPossuiTempo = isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
-    bool naoEFinalDeSemanaEPossuiTempo = !isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
-    bool naoEFinalDeSemanaENaoPossuiTempo = !isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
-
-    bool podeIniciarProva = !isFinalDeSemanaEPossuiTempo ||
-        isFinalDeSemanaENaoPossuiTempo ||
-        naoEFinalDeSemanaEPossuiTempo ||
-        naoEFinalDeSemanaENaoPossuiTempo;
-
     return BotaoDefaultWidget(
       largura: kIsTablet ? 256 : null,
       child: Row(
@@ -613,7 +645,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
-      desabilitado: !podeIniciarProva,
       onPressed: () async {
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
           if (provaStore.prova.senha != null) {
@@ -693,21 +724,36 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     );
   }
 
-  _navegarParaProvaPrimeiraVez(ProvaStore provaStore) {
-    if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ContextoProvaView(provaStore: provaStore),
-        ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ProvaView(provaStore: provaStore),
-        ),
-      );
+  _navegarParaProvaPrimeiraVez(ProvaStore provaStore) async {
+    bool iniciarProva = true;
+
+    if (provaStore.possuiTempoExecucao()) {
+      var fimTurno = ServiceLocator.get<UsuarioStore>().fimTurno;
+
+      var tempoTotalDisponivel = provaStore.prova.tempoExecucao;
+      var tempoDisponivel = DateTime.now().copyWith(hour: fimTurno, minute: 0, second: 0).difference(DateTime.now());
+
+      if (tempoDisponivel.inSeconds < tempoTotalDisponivel) {
+        iniciarProva = await mostrarDialogNaoPossuiTempoTotalDisponivel(context, tempoDisponivel) ?? false;
+      }
+    }
+
+    if (iniciarProva) {
+      if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContextoProvaView(provaStore: provaStore),
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ProvaView(provaStore: provaStore),
+          ),
+        );
+      }
     }
   }
 
@@ -783,5 +829,40 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     } else {
       return [];
     }
+  }
+
+  Widget _buildProvaTurnoIndisponivel(ProvaStore provaStore) {
+    return SizedBox(
+      width: 350,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+            child: Row(
+              children: [
+                Observer(
+                  builder: (_) {
+                    return Texto(
+                      "A execução da prova estará disponível no seu turno",
+                      color: TemaUtil.laranja01,
+                      bold: true,
+                      texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
+                        fontSize: temaStore.tTexto12,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
