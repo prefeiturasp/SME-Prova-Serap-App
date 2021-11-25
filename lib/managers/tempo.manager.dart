@@ -53,8 +53,11 @@ class GerenciadorTempo with Loggable, Disposable {
       );
     }
 
-    timer = Timer.periodic(intervaloAtualizacao, (_) => process());
-    timerFinalTurno = Timer.periodic(intervaloAtualizacao, (_) => processFinalTurno());
+    if (iniciarTempoNormal()) {
+      timer = Timer.periodic(intervaloAtualizacao, (_) => process());
+    } else {
+      timerFinalTurno = Timer.periodic(intervaloAtualizacao, (_) => processFinalTurno());
+    }
   }
 
   iniciarTimerFinalTurno() {}
@@ -63,27 +66,54 @@ class GerenciadorTempo with Loggable, Disposable {
     timerAdicional = Timer.periodic(intervaloAtualizacao, (_) => processAdicional());
   }
 
-  processFinalTurno() {
-    var tempoRestante =
+  bool iniciarTempoNormal() {
+    var tempoRestanteIdeal = dataHoraInicioProva.add(duracaoProva).difference(DateTime.now());
+
+    var tempoRestanteReal =
         DateTime.now().copyWith(hour: horaFinalTurno, minute: 0, second: 0, millisecond: 0).difference(DateTime.now());
 
-    if (tempoRestante.inSeconds < 0) {
-      if (_onChangeDuracaoCallback != null) {
-        _onChangeDuracaoCallback!(
-          TempoChangeData(
-            eventType: EnumProvaTempoEventType.FINALIZADO,
-            porcentagemTotal: 1,
-            tempoRestante: Duration(
-              seconds: tempoRestante.inSeconds,
-            ),
-            tempoAcabando: true,
-          ),
-        );
+    if (tempoRestanteReal < tempoRestanteIdeal) {
+      return false;
+    }
 
-        timer?.cancel();
-        timerAdicional?.cancel();
-        timerFinalTurno?.cancel();
-      }
+    return true;
+  }
+
+  processFinalTurno() {
+    var horaFinal = DateTime.now().copyWith(hour: horaFinalTurno, minute: 0, second: 0, millisecond: 0);
+    var duracaoTotal = horaFinal.difference(dataHoraInicioProva);
+
+    var tempoRestante = horaFinal.difference(DateTime.now());
+
+    var porcentagemDecorrida = ((tempoRestante.inMilliseconds / duracaoTotal.inMilliseconds) - 1) * -1;
+
+    if (porcentagemDecorrida > 1) {
+      porcentagemDecorrida = 1;
+    }
+
+    if (tempoRestante.inSeconds < 0) {
+      tempoAcabando = true;
+      estagioTempo = EnumProvaTempoEventType.FINALIZADO;
+
+      timer?.cancel();
+      timerAdicional?.cancel();
+      timerFinalTurno?.cancel();
+    } else {
+      tempoAcabando = false;
+      estagioTempo = EnumProvaTempoEventType.INICIADO;
+    }
+
+    if (_onChangeDuracaoCallback != null) {
+      _onChangeDuracaoCallback!(
+        TempoChangeData(
+          eventType: estagioTempo,
+          porcentagemTotal: porcentagemDecorrida,
+          tempoRestante: Duration(
+            seconds: tempoRestante.inSeconds,
+          ),
+          tempoAcabando: tempoAcabando,
+        ),
+      );
     }
   }
 
