@@ -32,6 +32,9 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   double porcentagem = 0;
 
   @observable
+  int horaFinalTurno;
+
+  @observable
   Duration tempoRestante = Duration(seconds: 0);
 
   @observable
@@ -50,6 +53,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
     required this.duracaoProva,
     required this.duracaoTempoExtra,
     required this.duracaoTempoFinalizando,
+    required this.horaFinalTurno,
   }) {
     setupReactions();
   }
@@ -103,6 +107,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
     gerenciadorTempo = GerenciadorTempo();
 
     gerenciadorTempo!.configure(
+      horaFinalTurno: horaFinalTurno,
       dataHoraInicioProva: dataHoraInicioProva,
       duracaoProva: duracaoProva,
       duracaoTempoExtra: duracaoTempoExtra,

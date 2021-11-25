@@ -416,13 +416,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           _verificaProvaTurno(provaStore) && provaStore.possuiTempoExecucao() && _verificaProvaDisponivel(provaStore) ||
               !provaStore.possuiTempoExecucao();
 
-      info('inicioTurno ${ServiceLocator.get<UsuarioStore>().inicioTurno}');
-      info('fimTurno ${ServiceLocator.get<UsuarioStore>().fimTurno}');
-      info('_verificaProvaTurno(provaStore) ${_verificaProvaTurno(provaStore)}');
-      info('provaStore.possuiTempoExecucao() ${provaStore.possuiTempoExecucao()}');
-      info('_verificaProvaDisponivel(provaStore) ${_verificaProvaDisponivel(provaStore)}');
-      info("Prova provaDisponivel: $provaDisponivel '${provaStore.prova.descricao}' ");
-
       if (!provaDisponivel) {
         return _buildProvaTurnoIndisponivel(provaStore);
       } else {

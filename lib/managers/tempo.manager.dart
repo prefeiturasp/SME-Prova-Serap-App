@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/utils/extensions/date.extension.dart';
 import 'package:get_it/get_it.dart';
 
 typedef DuracaoChangeCallback = void Function(TempoChangeData changeData);
@@ -14,6 +15,8 @@ class GerenciadorTempo with Loggable, Disposable {
   Duration? duracaoTempoExtra;
   late Duration duracaoTempoFinalizando;
 
+  late int horaFinalTurno;
+
   bool tempoAcabando = false;
 
   EnumProvaTempoEventType estagioTempo = EnumProvaTempoEventType.INICIADO;
@@ -22,6 +25,7 @@ class GerenciadorTempo with Loggable, Disposable {
 
   Timer? timer;
   Timer? timerAdicional;
+  Timer? timerFinalTurno;
 
   Duration intervaloAtualizacao = Duration(milliseconds: 500);
 
@@ -30,11 +34,13 @@ class GerenciadorTempo with Loggable, Disposable {
     required Duration duracaoProva,
     required Duration duracaoTempoExtra,
     required Duration duracaoTempoFinalizando,
+    required int horaFinalTurno,
   }) {
     this.dataHoraInicioProva = dataHoraInicioProva;
     this.duracaoProva = duracaoProva;
     this.duracaoTempoExtra = duracaoTempoExtra;
     this.duracaoTempoFinalizando = duracaoTempoFinalizando;
+    this.horaFinalTurno = horaFinalTurno;
 
     if (_onChangeDuracaoCallback != null) {
       _onChangeDuracaoCallback!(
@@ -48,6 +54,37 @@ class GerenciadorTempo with Loggable, Disposable {
     }
 
     timer = Timer.periodic(intervaloAtualizacao, (_) => process());
+    timerFinalTurno = Timer.periodic(intervaloAtualizacao, (_) => processFinalTurno());
+  }
+
+  iniciarTimerFinalTurno() {}
+
+  iniciarTimerProvaExtendida() {
+    timerAdicional = Timer.periodic(intervaloAtualizacao, (_) => processAdicional());
+  }
+
+  processFinalTurno() {
+    var tempoRestante =
+        DateTime.now().copyWith(hour: horaFinalTurno, minute: 0, second: 0, millisecond: 0).difference(DateTime.now());
+
+    if (tempoRestante.inSeconds < 0) {
+      if (_onChangeDuracaoCallback != null) {
+        _onChangeDuracaoCallback!(
+          TempoChangeData(
+            eventType: EnumProvaTempoEventType.FINALIZADO,
+            porcentagemTotal: 1,
+            tempoRestante: Duration(
+              seconds: tempoRestante.inSeconds,
+            ),
+            tempoAcabando: true,
+          ),
+        );
+
+        timer?.cancel();
+        timerAdicional?.cancel();
+        timerFinalTurno?.cancel();
+      }
+    }
   }
 
   process() {
@@ -88,10 +125,6 @@ class GerenciadorTempo with Loggable, Disposable {
     }
   }
 
-  iniciarTimerProvaExtendida() {
-    timerAdicional = Timer.periodic(intervaloAtualizacao, (_) => processAdicional());
-  }
-
   processAdicional() {
     var tempoRestante = dataHoraInicioProva.add(duracaoProva + duracaoTempoExtra!).difference(DateTime.now());
 
@@ -130,6 +163,7 @@ class GerenciadorTempo with Loggable, Disposable {
   onDispose() {
     timer?.cancel();
     timerAdicional?.cancel();
+    timerFinalTurno?.cancel();
   }
 }
 
