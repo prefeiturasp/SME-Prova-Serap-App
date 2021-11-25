@@ -338,4 +338,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     }
     tempoExecucaoStore?.onDispose();
   }
+
+  bool possuiTempoExecucao() {
+    return prova.tempoExecucao > 0;
+  }
 }

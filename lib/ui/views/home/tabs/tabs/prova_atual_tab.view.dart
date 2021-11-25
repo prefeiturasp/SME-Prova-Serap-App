@@ -588,6 +588,16 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       }
     }
 
+    bool isFinalDeSemanaEPossuiTempo = isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
+    bool isFinalDeSemanaENaoPossuiTempo = isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
+    bool naoEFinalDeSemanaEPossuiTempo = !isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
+    bool naoEFinalDeSemanaENaoPossuiTempo = !isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
+
+    bool podeIniciarProva = !isFinalDeSemanaEPossuiTempo ||
+        isFinalDeSemanaENaoPossuiTempo ||
+        naoEFinalDeSemanaEPossuiTempo ||
+        naoEFinalDeSemanaENaoPossuiTempo;
+
     return BotaoDefaultWidget(
       largura: kIsTablet ? 256 : null,
       child: Row(
@@ -603,6 +613,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           Icon(Icons.arrow_forward, color: Colors.white, size: 18),
         ],
       ),
+      desabilitado: !podeIniciarProva,
       onPressed: () async {
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
           if (provaStore.prova.senha != null) {
@@ -668,9 +679,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           } else {
             _navegarParaProvaPrimeiraVez(provaStore);
           }
-        }
-
-        if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
+        } else if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
           Navigator.push(
             context,
             MaterialPageRoute(
