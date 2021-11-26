@@ -608,3 +608,76 @@ Future<bool?> mostrarDialogSairSistema(BuildContext context) {
     },
   );
 }
+
+Future<bool?> mostrarDialogNaoPossuiTempoTotalDisponivel(BuildContext context, Duration tempoDisponivel) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
+  String tempoRestante = formatDuration(tempoDisponivel);
+
+  String mensagemCorpo1 = "Se você iniciar a prova agora terá apenas ";
+  String mensagemCorpo2 = " para respondê-la. Deseja continuar?";
+
+  return showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: Padding(
+          padding: const EdgeInsets.only(
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: SvgPicture.asset(
+            AssetsUtil.erro,
+            height: 55,
+          ),
+        ),
+        corpo: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+          ),
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: mensagemCorpo1,
+                ),
+                TextSpan(
+                  text: tempoRestante,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                TextSpan(
+                  text: mensagemCorpo2,
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.visible,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              fontFamily: temaStore.fonteDoTexto.nomeFonte,
+            ),
+          ),
+        ),
+        botoes: [
+          BotaoSecundarioWidget(
+            textoBotao: "CANCELAR",
+            onPressed: () {
+              Navigator.pop(context, false);
+            },
+          ),
+          BotaoDefaultWidget(
+            textoBotao: "CONTINUAR",
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+          )
+        ],
+      );
+    },
+  );
+}

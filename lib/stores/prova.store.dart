@@ -222,6 +222,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       fine('[Prova $id] - Configurando controlador de tempo');
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
+        horaFinalTurno: ServiceLocator.get<UsuarioStore>().fimTurno,
         duracaoProva: Duration(seconds: prova.tempoExecucao),
         duracaoTempoExtra: Duration(seconds: prova.tempoExtra),
         duracaoTempoFinalizando: Duration(seconds: prova.tempoAlerta ?? 0),
@@ -337,5 +338,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       _reaction();
     }
     tempoExecucaoStore?.onDispose();
+  }
+
+  bool possuiTempoExecucao() {
+    return prova.tempoExecucao > 0;
   }
 }

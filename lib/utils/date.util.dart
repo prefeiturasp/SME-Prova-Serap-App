@@ -124,3 +124,7 @@ String formatDuration(Duration d) {
 
   return tokens.join(' ');
 }
+
+isFinalDeSemana(DateTime data) {
+  return data.weekday == DateTime.saturday || data.weekday == DateTime.sunday;
+}
