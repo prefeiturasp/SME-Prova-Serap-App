@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -139,6 +140,24 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     return AppBarWidget(
       popView: true,
       subtitulo: widget.provaStore.prova.descricao,
+      leading: _buildLeading(),
+    );
+  }
+
+  Widget? _buildLeading() {
+    if (store.revisandoProva) {
+      return null;
+    }
+
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () async {
+        bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
+
+        if (voltar) {
+          Navigator.of(context).pop();
+        }
+      },
     );
   }
 
@@ -697,6 +716,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                   listaQuestoesController.jumpToPage(
                     posicaoDaQuestao,
                   );
+
+                  setState(() {});
                 } catch (e) {
                   fine(e);
                 } finally {
@@ -786,6 +807,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         listaQuestoesController.jumpToPage(
           store.posicaoQuestaoSendoRevisada,
         );
+
+        setState(() {});
       }
     }
   }
