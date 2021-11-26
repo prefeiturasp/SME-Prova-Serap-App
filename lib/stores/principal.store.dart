@@ -21,7 +21,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
   setup() async {
     _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
-    obterVersaoDoApp();
+    await obterVersaoDoApp();
   }
 
   void dispose() {
