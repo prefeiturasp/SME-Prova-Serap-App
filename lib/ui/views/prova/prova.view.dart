@@ -278,7 +278,10 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                         ),
                       ),
                       'span': Style.fromTextStyle(
-                        TextStyle(color: TemaUtil.pretoSemFoco3),
+                        TextStyle(
+                            fontSize: temaStore.tTexto16,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                            color: TemaUtil.pretoSemFoco3),
                       ),
                     },
                     onImageTap: (url, _, attributes, element) {
@@ -299,6 +302,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                       ),
                       'span': Style.fromTextStyle(
                         TextStyle(
+                          fontSize: temaStore.tTexto16,
+                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                           color: TemaUtil.pretoSemFoco3,
                         ),
                       ),
