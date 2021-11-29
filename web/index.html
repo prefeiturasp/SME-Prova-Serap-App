@@ -41,6 +41,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-messaging.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
 </head>
 
 <body style="position: fixed; inset: 0px; overflow: hidden; padding: 0px; margin: 0px; user-select: none; touch-action: none; font: 14px sans-serif; color: red;">
@@ -59,6 +60,7 @@
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
   </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
