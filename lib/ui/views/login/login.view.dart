@@ -82,8 +82,8 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
           SizedBox(
             height: 50,
           ),
-          SvgPicture.asset(
-            AssetsUtil.logoSerap,
+          Image.asset(
+            AssetsUtil.logoSerapPng,
             width: 150,
           ),
           SizedBox(
