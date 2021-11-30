@@ -172,121 +172,144 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   _buildProva(ProvaStore provaStore) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: TemaUtil.cinza, width: 1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Row(children: [
-          ..._buildProvaIcon(provaStore),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Titulo
-                Texto(
-                  provaStore.prova.descricao,
-                  textOverflow: TextOverflow.visible,
-                  fontSize: 18,
-                  bold: true,
-                ),
-                SizedBox(height: 10),
-                // Quantidade de itens
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: TemaUtil.laranja02.withOpacity(0.1),
+    return Padding(
+      padding: getPadding(EdgeInsets.symmetric(horizontal: 8)),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: TemaUtil.cinza, width: 1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Row(children: [
+            ..._buildProvaIcon(provaStore),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Titulo
+                  Texto(
+                    provaStore.prova.descricao,
+                    textOverflow: TextOverflow.visible,
+                    fontSize: 18,
+                    bold: true,
+                  ),
+                  SizedBox(height: 10),
+                  // Quantidade de itens
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: TemaUtil.laranja02.withOpacity(0.1),
+                        ),
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.format_list_numbered,
+                          color: TemaUtil.laranja02,
+                          size: 24,
+                        ),
                       ),
-                      padding: EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.format_list_numbered,
-                        color: TemaUtil.laranja02,
-                        size: 24,
+                      SizedBox(
+                        width: 5,
                       ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    //
-                    Observer(builder: (_) {
-                      return AdaptativeWidget(
-                        mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC &&
-                                temaStore.incrementador > 22 &&
-                                kIsMobile
-                            ? AdaptativeWidgetMode.COLUMN
-                            : AdaptativeWidgetMode.ROW,
+                      //
+                      Observer(builder: (_) {
+                        return AdaptativeWidget(
+                          mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC &&
+                                  temaStore.incrementador > 22 &&
+                                  kIsMobile
+                              ? AdaptativeWidgetMode.COLUMN
+                              : AdaptativeWidgetMode.ROW,
+                          children: [
+                            Texto(
+                              "Quantidade de itens: ",
+                              fontSize: 14,
+                              color: TemaUtil.preto,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            Texto(
+                              provaStore.prova.itensQuantidade.toString(),
+                              fontSize: 14,
+                              color: TemaUtil.preto,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ],
+                        );
+                      }),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  // Data aplicacao
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: TemaUtil.verde02.withOpacity(0.1),
+                        ),
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.insert_invitation,
+                          color: TemaUtil.verde02,
+                          size: 24,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Texto(
-                            "Quantidade de itens: ",
+                            "Data de aplicação:",
                             fontSize: 14,
-                            color: TemaUtil.preto,
-                            fontWeight: FontWeight.normal,
                           ),
-                          Texto(
-                            provaStore.prova.itensQuantidade.toString(),
-                            fontSize: 14,
-                            color: TemaUtil.preto,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          Observer(builder: (_) {
+                            return _formataDataAplicacao(provaStore.prova);
+                          }),
                         ],
-                      );
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  // Botao
+                  AdaptativeCenter(
+                    center: kIsMobile,
+                    child: Observer(builder: (_) {
+                      return _buildBotao(provaStore);
                     }),
-                  ],
-                ),
-                SizedBox(height: 10),
-                // Data aplicacao
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: TemaUtil.verde02.withOpacity(0.1),
-                      ),
-                      padding: EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.insert_invitation,
-                        color: TemaUtil.verde02,
-                        size: 24,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Texto(
-                          "Data de aplicação:",
-                          fontSize: 14,
-                        ),
-                        Observer(builder: (_) {
-                          return _formataDataAplicacao(provaStore.prova);
-                        }),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                // Botao
-                AdaptativeCenter(
-                  center: kIsMobile,
-                  child: Observer(builder: (_) {
-                    return _buildBotao(provaStore);
-                  }),
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
       ),
     );
+  }
+
+  List<Widget> _buildProvaIcon(ProvaStore provaStore) {
+    if (kIsTablet) {
+      return [
+        Container(
+          width: 128,
+          padding: EdgeInsets.only(
+            right: 16,
+          ),
+          child: Observer(builder: (_) {
+            return SvgPicture.asset(
+              provaStore.icone,
+            );
+          }),
+        ),
+      ];
+    } else {
+      return [];
+    }
   }
 
   Widget _formataDataAplicacao(Prova prova) {
@@ -801,29 +824,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         ],
       ),
     );
-  }
-
-  List<Widget> _buildProvaIcon(ProvaStore provaStore) {
-    if (kIsTablet) {
-      return [
-        Container(
-          width: 128,
-          padding: EdgeInsets.only(
-            right: 16,
-          ),
-          child: Observer(builder: (_) {
-            return SvgPicture.asset(
-              provaStore.icone,
-            );
-          }),
-        ),
-        Spacer(
-          flex: 1,
-        ),
-      ];
-    } else {
-      return [];
-    }
   }
 
   Widget _buildProvaTurnoIndisponivel(ProvaStore provaStore) {
