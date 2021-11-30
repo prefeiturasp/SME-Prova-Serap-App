@@ -88,8 +88,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     var listProvas = provasStore.filter((p) => p.value.isVisible).toMap();
 
     if (listProvas.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(10.0),
+      return Center(
         child: SizedBox(
           height: MediaQuery.of(context).size.height - 400,
           child: Column(
