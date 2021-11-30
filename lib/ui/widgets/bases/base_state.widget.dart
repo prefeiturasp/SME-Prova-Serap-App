@@ -4,6 +4,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -68,14 +69,17 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
                 onWillPop: () async {
                   return willPop;
                 },
-                child: Container(
-                  padding: EdgeInsets.only(
-                    left: defaultPadding,
-                    right: defaultPadding,
-                    top: defaultPaddingTop ?? defaultPadding,
-                    bottom: showBottomNaviationBar ? 0 : defaultPadding,
+                child: Padding(
+                  padding: _getPadding(),
+                  child: Container(
+                    padding: EdgeInsets.only(
+                      left: defaultPadding,
+                      right: defaultPadding,
+                      top: defaultPaddingTop ?? defaultPadding,
+                      bottom: showBottomNaviationBar ? 0 : defaultPadding,
+                    ),
+                    child: builder(context),
                   ),
-                  child: builder(context),
                 ),
               ),
             ),
@@ -83,6 +87,16 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
         ),
       ),
     );
+  }
+
+  _getPadding() {
+    if (kIsWeb) {
+      return EdgeInsets.symmetric(
+        horizontal: (MediaQuery.of(context).size.width - 600 - (24 * 2)) / 2,
+      );
+    } else {
+      return EdgeInsets.zero;
+    }
   }
 
   PreferredSizeWidget buildAppBar() {
