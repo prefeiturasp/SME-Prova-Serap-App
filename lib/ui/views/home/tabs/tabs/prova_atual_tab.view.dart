@@ -183,7 +183,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         child: Row(children: [
           ..._buildProvaIcon(provaStore),
           Expanded(
-            flex: 14,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -807,8 +806,11 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   List<Widget> _buildProvaIcon(ProvaStore provaStore) {
     if (kIsTablet) {
       return [
-        Expanded(
-          flex: 4,
+        Container(
+          width: 128,
+          padding: EdgeInsets.only(
+            right: 16,
+          ),
           child: Observer(builder: (_) {
             return SvgPicture.asset(
               provaStore.icone,
