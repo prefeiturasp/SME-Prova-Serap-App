@@ -78,61 +78,64 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         return false;
       },
       child: SingleChildScrollView(
-        child: Observer(
-          builder: (_) {
-            return Column(
-              children: [
-                ..._buildTempoProva(),
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      //
-                      Observer(
-                        builder: (_) {
-                          return Text(
-                            'Resumo das respostas',
-                            textAlign: TextAlign.start,
-                            style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                              fontSize: temaStore.tTexto20,
-                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                            ),
-                          );
-                        },
-                      ),
-                      //
-                      Observer(
-                        builder: (context) {
-                          return mensagemDeQuestoesSemRespostas();
-                        },
-                      ),
-                      //
-                      Column(
-                        children: [
-                          _buildCabecalho(),
-                          divider(),
-                          ..._buildListaRespostas(),
-                        ],
-                      ),
-
-                      SizedBox(height: 32),
-                      Center(
-                        child: BotaoDefaultWidget(
-                          textoBotao: 'FINALIZAR E ENVIAR',
-                          largura: 392,
-                          onPressed: () async {
-                            await finalizarProva();
+        child: Padding(
+          padding: getPadding(),
+          child: Observer(
+            builder: (_) {
+              return Column(
+                children: [
+                  ..._buildTempoProva(),
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //
+                        Observer(
+                          builder: (_) {
+                            return Text(
+                              'Resumo das respostas',
+                              textAlign: TextAlign.start,
+                              style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                fontSize: temaStore.tTexto20,
+                                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                              ),
+                            );
                           },
                         ),
-                      )
-                    ],
+                        //
+                        Observer(
+                          builder: (context) {
+                            return mensagemDeQuestoesSemRespostas();
+                          },
+                        ),
+                        //
+                        Column(
+                          children: [
+                            _buildCabecalho(),
+                            divider(),
+                            ..._buildListaRespostas(),
+                          ],
+                        ),
+
+                        SizedBox(height: 32),
+                        Center(
+                          child: BotaoDefaultWidget(
+                            textoBotao: 'FINALIZAR E ENVIAR',
+                            largura: 392,
+                            onPressed: () async {
+                              await finalizarProva();
+                            },
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

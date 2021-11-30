@@ -4,6 +4,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -83,6 +84,16 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
         ),
       ),
     );
+  }
+
+  getPadding([EdgeInsets mobile = EdgeInsets.zero]) {
+    if (kIsWeb) {
+      return EdgeInsets.symmetric(
+        horizontal: (MediaQuery.of(context).size.width - 600 - (24 * 2)) / 2,
+      );
+    } else {
+      return mobile;
+    }
   }
 
   PreferredSizeWidget buildAppBar() {
