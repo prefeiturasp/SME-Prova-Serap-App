@@ -10,6 +10,7 @@ import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
@@ -81,8 +82,8 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
           SizedBox(
             height: 50,
           ),
-          SvgPicture.asset(
-            AssetsUtil.logoSerap,
+          Image.asset(
+            AssetsUtil.logoSerapPng,
             width: 150,
           ),
           SizedBox(
@@ -96,7 +97,9 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
         SizedBox(
           height: 150,
         ),
-        SvgPicture.asset(AssetsUtil.logoSerap),
+        Image.asset(
+          AssetsUtil.logoSerapPng
+        ),
         SizedBox(
           height: 48,
         ),

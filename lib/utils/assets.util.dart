@@ -1,5 +1,6 @@
 abstract class AssetsUtil {
   static const logoSerap = "assets/images/logo-serap.svg";
+  static const logoSerapPng = "assets/images/logo-serap.png";
   static const iconeProva = "assets/images/prova.svg";
   static const iconeProvaDownload = "assets/images/prova_download.svg";
   static const iconeProvaErroDownload = "assets/images/prova_erro_download.svg";

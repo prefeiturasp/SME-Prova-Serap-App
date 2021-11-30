@@ -41,24 +41,35 @@
 
   <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-messaging.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
 </head>
 
 <body style="position: fixed; inset: 0px; overflow: hidden; padding: 0px; margin: 0px; user-select: none; touch-action: none; font: 14px sans-serif; color: red;">
 
-  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-85250794-18"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-85250794-18');
+  </script>
+
   <script>
     var firebaseConfig = {
-      apiKey: "AIzaSyCKw1XMMDkjP0VcruPyOIgxeYNmnfkDGoQ",
-      authDomain: "test-app-bd32c.firebaseapp.com",
-      projectId: "test-app-bd32c",
-      storageBucket: "test-app-bd32c.appspot.com",
-      messagingSenderId: "522768055060",
-      appId: "1:522768055060:web:41fef8e1bc6b2936076001",
-      measurementId: "G-SMQZN4K6NX"
+      apiKey: "AIzaSyCtMmNGb4HdXkFzRZTFXmW5Npwk4j1p-mc",
+      authDomain: "prod-appserap.firebaseapp.com",
+      projectId: "prod-appserap",
+      storageBucket: "prod-appserap.appspot.com",
+      messagingSenderId: "948771905844",
+      appId: "1:948771905844:web:084326ba6e6a46a4788561",
+      measurementId: "G-S3WSMCJ3ZD"
     };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
   </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
