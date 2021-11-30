@@ -1,4 +1,5 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -10,7 +11,7 @@ part 'principal.store.g.dart';
 
 class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
-abstract class _PrincipalStoreBase with Store {
+abstract class _PrincipalStoreBase with Store, Loggable {
   final usuario = GetIt.I.get<UsuarioStore>();
 
   @observable
@@ -20,7 +21,7 @@ abstract class _PrincipalStoreBase with Store {
 
   setup() async {
     _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
-    obterVersaoDoApp();
+    await obterVersaoDoApp();
   }
 
   void dispose() {
@@ -52,12 +53,23 @@ abstract class _PrincipalStoreBase with Store {
 
   @action
   Future<void> sair() async {
-    SharedPreferences prefs = GetIt.I.get();
-    await prefs.clear();
+    await _limparDadosLocais();
 
     AppDatabase db = GetIt.I.get();
     db.limpar();
 
     usuario.dispose();
+  }
+
+  _limparDadosLocais() async {
+    SharedPreferences prefs = GetIt.I.get();
+
+    info(prefs.getKeys());
+
+    for (var key in prefs.getKeys()) {
+      if (!key.startsWith("resposta_")) {
+        await prefs.remove(key);
+      }
+    }
   }
 }

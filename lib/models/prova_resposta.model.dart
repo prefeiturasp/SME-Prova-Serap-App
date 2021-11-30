@@ -4,6 +4,7 @@ part 'prova_resposta.model.g.dart';
 
 @JsonSerializable()
 class ProvaResposta {
+  String codigoEOL;
   int questaoId;
   int? alternativaId;
   String? resposta;
@@ -12,6 +13,7 @@ class ProvaResposta {
   DateTime? dataHoraResposta = DateTime.now();
 
   ProvaResposta({
+    required this.codigoEOL,
     required this.questaoId,
     this.alternativaId,
     this.resposta,
@@ -25,6 +27,6 @@ class ProvaResposta {
 
   @override
   String toString() {
-    return 'ProvaResposta(questaoId: $questaoId, alternativaId: $alternativaId, resposta: $resposta, sincronizado: $sincronizado, dataHoraResposta: $dataHoraResposta)';
+    return 'ProvaResposta(codigoEOL: $codigoEOL, questaoId: $questaoId, alternativaId: $alternativaId, resposta: $resposta, sincronizado: $sincronizado, dataHoraResposta: $dataHoraResposta)';
   }
 }

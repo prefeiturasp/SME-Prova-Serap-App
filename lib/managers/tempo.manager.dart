@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/utils/extensions/date.extension.dart';
 import 'package:get_it/get_it.dart';
 
 typedef DuracaoChangeCallback = void Function(TempoChangeData changeData);
@@ -14,6 +15,8 @@ class GerenciadorTempo with Loggable, Disposable {
   Duration? duracaoTempoExtra;
   late Duration duracaoTempoFinalizando;
 
+  late int horaFinalTurno;
+
   bool tempoAcabando = false;
 
   EnumProvaTempoEventType estagioTempo = EnumProvaTempoEventType.INICIADO;
@@ -22,6 +25,7 @@ class GerenciadorTempo with Loggable, Disposable {
 
   Timer? timer;
   Timer? timerAdicional;
+  Timer? timerFinalTurno;
 
   Duration intervaloAtualizacao = Duration(milliseconds: 500);
 
@@ -30,11 +34,13 @@ class GerenciadorTempo with Loggable, Disposable {
     required Duration duracaoProva,
     required Duration duracaoTempoExtra,
     required Duration duracaoTempoFinalizando,
+    required int horaFinalTurno,
   }) {
     this.dataHoraInicioProva = dataHoraInicioProva;
     this.duracaoProva = duracaoProva;
     this.duracaoTempoExtra = duracaoTempoExtra;
     this.duracaoTempoFinalizando = duracaoTempoFinalizando;
+    this.horaFinalTurno = horaFinalTurno;
 
     if (_onChangeDuracaoCallback != null) {
       _onChangeDuracaoCallback!(
@@ -47,7 +53,68 @@ class GerenciadorTempo with Loggable, Disposable {
       );
     }
 
-    timer = Timer.periodic(intervaloAtualizacao, (_) => process());
+    if (iniciarTempoNormal()) {
+      timer = Timer.periodic(intervaloAtualizacao, (_) => process());
+    } else {
+      timerFinalTurno = Timer.periodic(intervaloAtualizacao, (_) => processFinalTurno());
+    }
+  }
+
+  iniciarTimerFinalTurno() {}
+
+  iniciarTimerProvaExtendida() {
+    timerAdicional = Timer.periodic(intervaloAtualizacao, (_) => processAdicional());
+  }
+
+  bool iniciarTempoNormal() {
+    var tempoRestanteIdeal = dataHoraInicioProva.add(duracaoProva).difference(DateTime.now());
+
+    var tempoRestanteReal =
+        DateTime.now().copyWith(hour: horaFinalTurno, minute: 0, second: 0, millisecond: 0).difference(DateTime.now());
+
+    if (tempoRestanteReal < tempoRestanteIdeal) {
+      return false;
+    }
+
+    return true;
+  }
+
+  processFinalTurno() {
+    var horaFinal = DateTime.now().copyWith(hour: horaFinalTurno, minute: 0, second: 0, millisecond: 0);
+    var duracaoTotal = horaFinal.difference(dataHoraInicioProva);
+
+    var tempoRestante = horaFinal.difference(DateTime.now());
+
+    var porcentagemDecorrida = ((tempoRestante.inMilliseconds / duracaoTotal.inMilliseconds) - 1) * -1;
+
+    if (porcentagemDecorrida > 1) {
+      porcentagemDecorrida = 1;
+    }
+
+    if (tempoRestante.inSeconds < 0) {
+      tempoAcabando = true;
+      estagioTempo = EnumProvaTempoEventType.FINALIZADO;
+
+      timer?.cancel();
+      timerAdicional?.cancel();
+      timerFinalTurno?.cancel();
+    } else {
+      tempoAcabando = false;
+      estagioTempo = EnumProvaTempoEventType.INICIADO;
+    }
+
+    if (_onChangeDuracaoCallback != null) {
+      _onChangeDuracaoCallback!(
+        TempoChangeData(
+          eventType: estagioTempo,
+          porcentagemTotal: porcentagemDecorrida,
+          tempoRestante: Duration(
+            seconds: tempoRestante.inSeconds,
+          ),
+          tempoAcabando: tempoAcabando,
+        ),
+      );
+    }
   }
 
   process() {
@@ -88,10 +155,6 @@ class GerenciadorTempo with Loggable, Disposable {
     }
   }
 
-  iniciarTimerProvaExtendida() {
-    timerAdicional = Timer.periodic(intervaloAtualizacao, (_) => processAdicional());
-  }
-
   processAdicional() {
     var tempoRestante = dataHoraInicioProva.add(duracaoProva + duracaoTempoExtra!).difference(DateTime.now());
 
@@ -130,6 +193,7 @@ class GerenciadorTempo with Loggable, Disposable {
   onDispose() {
     timer?.cancel();
     timerAdicional?.cancel();
+    timerFinalTurno?.cancel();
   }
 }
 

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -61,7 +62,8 @@ class SincronizarProvaFinalizadaJob with Job, Loggable {
         var respostasSincronizadas = respostasProva.where((element) => element.sincronizado == true).toList();
         info('Total de respostas sincronizadas ${respostasSincronizadas.length}');
         for (var resposta in respostasSincronizadas) {
-          await prefs.remove('resposta_${resposta.questaoId}');
+          var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
+          await prefs.remove('resposta_${codigoEOL}_${resposta.questaoId}');
         }
       } catch (e) {
         severe(e);
@@ -77,11 +79,20 @@ class SincronizarProvaFinalizadaJob with Job, Loggable {
 
     List<ProvaResposta> respostas = [];
 
-    for (int idQuestao in idsQuestoes) {
-      var respostaJson = prefs.getString('resposta_$idQuestao');
+    var keys = prefs.getKeys();
 
-      if (respostaJson != null) {
-        respostas.add(ProvaResposta.fromJson(jsonDecode(respostaJson)));
+    for (var key in keys) {
+      if (key.startsWith('resposta_')) {
+        List<String> infos = key.split('_');
+        var idQuestao = infos[2];
+
+        if (idsQuestoes.contains(int.parse(idQuestao))) {
+          var respostaJson = prefs.getString(key);
+
+          if (respostaJson != null) {
+            respostas.add(ProvaResposta.fromJson(jsonDecode(respostaJson)));
+          }
+        }
       }
     }
 

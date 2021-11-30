@@ -4,6 +4,9 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/services/api_service.dart';
+import 'package:appserap/stores/login.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -25,6 +28,9 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   _ProvaRespostaStoreBase({required this.idProva}) {
     respostasLocal = carregaRespostasCache().asObservable();
   }
+
+  @observable
+  String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
 
   @observable
   ObservableMap<int, ProvaResposta> respostasSalvas = <int, ProvaResposta>{}.asObservable();
@@ -55,6 +61,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
           var body = respostaBanco.body!;
 
           respostasSalvas[idQuestao] = ProvaResposta(
+            codigoEOL: codigoEOL,
             questaoId: idQuestao,
             sincronizado: true,
             alternativaId: body.alternativaId,
@@ -108,6 +115,8 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
       try {
         var response = await _service.postResposta(
+          chaveAPI: AppConfigReader.getChaveApi(),
+          alunoRa: codigoEOL,
           questaoId: idQuestao,
           alternativaId: resposta.alternativaId,
           resposta: resposta.resposta,
@@ -132,6 +141,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   @action
   definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) {
     var resposta = ProvaResposta(
+      codigoEOL: codigoEOL,
       questaoId: questaoId,
       alternativaId: alternativaId,
       resposta: textoResposta,
@@ -171,16 +181,20 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   salvarCache(ProvaResposta resposta) async {
     SharedPreferences _pref = GetIt.I.get();
 
+    var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
+
     return await _pref.setString(
-      'resposta_${resposta.questaoId}',
+      'resposta_${codigoEOL}_${resposta.questaoId}',
       jsonEncode(resposta.toJson()),
     );
   }
 
   Map<int, ProvaResposta> carregaRespostasCache() {
     SharedPreferences _pref = ServiceLocator.get();
+    var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
 
-    List<String> keysResposta = _pref.getKeys().toList().where((element) => element.startsWith('resposta_')).toList();
+    List<String> keysResposta =
+        _pref.getKeys().toList().where((element) => element.startsWith('resposta_${codigoEOL}_')).toList();
 
     Map<int, ProvaResposta> respostas = {};
 
