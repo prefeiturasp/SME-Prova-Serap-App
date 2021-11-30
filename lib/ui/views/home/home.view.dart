@@ -56,47 +56,54 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
   }
 
   @override
+  double get defaultPadding => 0;
+
+  @override
   Widget builder(BuildContext context) {
     return Observer(builder: (_) {
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TabBar(
-              controller: tabController,
-              labelStyle: TextStyle(
-                fontSize: temaStore.tTexto20,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                fontWeight: FontWeight.w600,
-              ),
-              indicatorSize: TabBarIndicatorSize.label,
-              labelColor: TemaUtil.preto,
-              unselectedLabelColor: TemaUtil.pretoSemFoco,
-              isScrollable: true,
-              indicator: UnderlineTabIndicator(
-                borderSide: BorderSide(
-                  width: 4,
-                  color: TemaUtil.laranja01,
+          Padding(
+            padding: getPadding(),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TabBar(
+                controller: tabController,
+                labelStyle: TextStyle(
+                  fontSize: temaStore.tTexto20,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  fontWeight: FontWeight.w600,
                 ),
-              ),
-              tabs: [
-                Tab(
-                  child: Observer(
-                    builder: (_) {
-                      return Texto(
-                        'Prova atual',
-                        texStyle: TemaUtil.temaTextoNumeracao.copyWith(
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                          fontSize: temaStore.tTexto20,
-                        ),
-                      );
-                    },
+                indicatorSize: TabBarIndicatorSize.label,
+                labelColor: TemaUtil.preto,
+                unselectedLabelColor: TemaUtil.pretoSemFoco,
+                isScrollable: true,
+                indicator: UnderlineTabIndicator(
+                  borderSide: BorderSide(
+                    width: 4,
+                    color: TemaUtil.laranja01,
                   ),
                 ),
-                // Tab(
-                //   text: "Provas anteriores",
-                // ),
-              ],
+                tabs: [
+                  Tab(
+                    child: Observer(
+                      builder: (_) {
+                        return Texto(
+                          'Prova atual',
+                          texStyle: TemaUtil.temaTextoNumeracao.copyWith(
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                            fontSize: temaStore.tTexto20,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // Tab(
+                  //   text: "Provas anteriores",
+                  // ),
+                ],
+              ),
             ),
           ),
           Expanded(

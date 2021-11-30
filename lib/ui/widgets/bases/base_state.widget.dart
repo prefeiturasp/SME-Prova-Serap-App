@@ -69,17 +69,14 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
                 onWillPop: () async {
                   return willPop;
                 },
-                child: Padding(
-                  padding: _getPadding(),
-                  child: Container(
-                    padding: EdgeInsets.only(
-                      left: defaultPadding,
-                      right: defaultPadding,
-                      top: defaultPaddingTop ?? defaultPadding,
-                      bottom: showBottomNaviationBar ? 0 : defaultPadding,
-                    ),
-                    child: builder(context),
+                child: Container(
+                  padding: EdgeInsets.only(
+                    left: defaultPadding,
+                    right: defaultPadding,
+                    top: defaultPaddingTop ?? defaultPadding,
+                    bottom: showBottomNaviationBar ? 0 : defaultPadding,
                   ),
+                  child: builder(context),
                 ),
               ),
             ),
@@ -89,13 +86,13 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
     );
   }
 
-  _getPadding() {
+  getPadding([EdgeInsets mobile = EdgeInsets.zero]) {
     if (kIsWeb) {
       return EdgeInsets.symmetric(
         horizontal: (MediaQuery.of(context).size.width - 600 - (24 * 2)) / 2,
       );
     } else {
-      return EdgeInsets.zero;
+      return mobile;
     }
   }
 
