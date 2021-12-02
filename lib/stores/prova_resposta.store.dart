@@ -33,9 +33,6 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
 
   @observable
-  ObservableMap<int, ProvaResposta> respostasSalvas = <int, ProvaResposta>{}.asObservable();
-
-  @observable
   ObservableMap<int, ProvaResposta> respostasLocal = <int, ProvaResposta>{}.asObservable();
 
   @action
@@ -60,7 +57,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
         if (respostaBanco.isSuccessful) {
           var body = respostaBanco.body!;
 
-          respostasSalvas[idQuestao] = ProvaResposta(
+          respostasLocal[idQuestao] = ProvaResposta(
             codigoEOL: codigoEOL,
             questaoId: idQuestao,
             sincronizado: true,
@@ -84,22 +81,11 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       }
     }
 
-    fine('[Prova $idProva] - ${respostasSalvas.length} respostas carregadas do banco de dados remoto');
+    fine('[Prova $idProva] - ${respostasLocal.length} respostas carregadas do banco de dados remoto');
   }
 
   ProvaResposta? obterResposta(int questaoId) {
-    var respostaRemota = respostasSalvas[questaoId];
-    var respostaLocal = respostasLocal[questaoId];
-
-    if (respostaRemota != null && respostaLocal != null) {
-      if (respostaRemota.dataHoraResposta!.isBefore(respostaLocal.dataHoraResposta!)) {
-        return respostaLocal;
-      } else {
-        return respostaRemota;
-      }
-    }
-
-    return respostaRemota ?? respostaLocal;
+    return respostasLocal[questaoId];
   }
 
   @action
@@ -139,7 +125,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) {
+  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) async {
     var resposta = ProvaResposta(
       codigoEOL: codigoEOL,
       questaoId: questaoId,
@@ -152,19 +138,19 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
     respostasLocal[questaoId] = resposta;
 
-    salvarCache(resposta);
+    await salvarCache(resposta);
   }
 
   @action
-  definirTempoResposta(int questaoId, {int? tempoQuestao}) {
+  Future<void> definirTempoResposta(int questaoId, {int? tempoQuestao}) async {
     var resposta = obterResposta(questaoId);
 
     if (resposta != null) {
       resposta.sincronizado = false;
       resposta.tempoRespostaAluno = tempoQuestao;
-      salvarCache(resposta);
+      await salvarCache(resposta);
     } else {
-      definirResposta(questaoId, tempoQuestao: tempoQuestao);
+      await definirResposta(questaoId, tempoQuestao: tempoQuestao);
     }
   }
 
