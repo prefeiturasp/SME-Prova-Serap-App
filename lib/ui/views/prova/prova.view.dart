@@ -525,8 +525,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             dense: true,
             value: idAlternativa,
             groupValue: resposta?.alternativaId,
-            onChanged: (value) {
-              widget.provaStore.respostas.definirResposta(
+            onChanged: (value) async {
+              await widget.provaStore.respostas.definirResposta(
                 questaoId,
                 alternativaId: value,
                 tempoQuestao: null,
