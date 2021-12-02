@@ -129,7 +129,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       alternativaId: alternativaId,
       resposta: textoResposta,
       sincronizado: false,
-      dataHoraResposta: DateTime.now(),
+      dataHoraResposta: DateTime.now().toUtc(),
       tempoRespostaAluno: tempoQuestao,
     );
 
