@@ -21,6 +21,7 @@ class ProvaRespostaStore = _ProvaRespostaStoreBase with _$ProvaRespostaStore;
 
 abstract class _ProvaRespostaStoreBase with Store, Loggable {
   final _service = GetIt.I.get<ApiService>().questaoResposta;
+  final _serviceProva = GetIt.I.get<ApiService>().prova;
 
   @observable
   int idProva;
@@ -44,40 +45,36 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
     fine('[Prova $idProva] - Carregando respostas da prova');
 
-    List<int> idsQuestao = [];
-
     prova ??= await Prova.carregaProvaCache(idProva);
 
-    idsQuestao = prova!.questoes.map((e) => e.id).toList();
+    try {
+      var respostaBanco = await _serviceProva.getRespostasPorProvaId(idProva: idProva);
 
-    for (var idQuestao in idsQuestao) {
-      try {
-        finer('[Prova $idProva] - (Questão ID $idQuestao) Carregando resposta');
-        var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
-        if (respostaBanco.isSuccessful) {
-          var body = respostaBanco.body!;
+      if (respostaBanco.isSuccessful) {
+        var questoesResponse = respostaBanco.body!;
 
-          respostasLocal[idQuestao] = ProvaResposta(
+        for (var questaoResponse in questoesResponse) {
+          respostasLocal[questaoResponse.questaoId] = ProvaResposta(
             codigoEOL: codigoEOL,
-            questaoId: idQuestao,
+            questaoId: questaoResponse.questaoId,
             sincronizado: true,
-            alternativaId: body.alternativaId,
-            resposta: body.resposta,
-            dataHoraResposta: body.dataHoraResposta.toLocal(),
+            alternativaId: questaoResponse.alternativaId,
+            resposta: questaoResponse.resposta,
+            dataHoraResposta: questaoResponse.dataHoraResposta.toLocal(),
           );
 
           finer(
-            "[Prova $idProva] - (Questão ID $idQuestao) Resposta Banco Questao ${body.alternativaId} | ${body.resposta}",
+            "[Prova $idProva] - (Questão ID ${questaoResponse.questaoId}) Resposta Banco Questao ${questaoResponse.alternativaId} | ${questaoResponse.resposta}",
           );
         }
-      } catch (e, stack) {
-        if (!e.toString().contains("but got one of type 'String'") &&
-            !e.toString().contains("type 'String' is not a subtype of type")) {
-          severe(e);
-          severe(stack);
-        } else {
-          finer('[Prova $idProva] - (Questão ID $idQuestao) Sem resposta salva');
-        }
+      }
+    } catch (e, stack) {
+      if (!e.toString().contains("but got one of type 'String'") &&
+          !e.toString().contains("type 'String' is not a subtype of type")) {
+        severe(e);
+        severe(stack);
+      } else {
+        finer('[Prova $idProva] Sem respostas salva');
       }
     }
 
@@ -132,7 +129,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       alternativaId: alternativaId,
       resposta: textoResposta,
       sincronizado: false,
-      dataHoraResposta: DateTime.now(),
+      dataHoraResposta: DateTime.now().toUtc(),
       tempoRespostaAluno: tempoQuestao,
     );
 
