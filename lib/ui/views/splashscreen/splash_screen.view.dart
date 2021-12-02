@@ -38,26 +38,30 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     await _principalStore.usuario.carregarUsuario();
 
     if (_principalStore.temConexao && _principalStore.usuario.isLogado) {
-      var responseMeusDados = await GetIt.I.get<ApiService>().auth.meusDados();
+      try {
+        var responseMeusDados = await GetIt.I.get<ApiService>().auth.meusDados();
 
-      if (responseMeusDados.isSuccessful) {
-        var usuarioDados = responseMeusDados.body!;
-        if (usuarioDados.nome != "") {
-          if (kIsTablet && usuarioDados.tamanhoFonte < 16) {
-            usuarioDados.tamanhoFonte = 16;
+        if (responseMeusDados.isSuccessful) {
+          var usuarioDados = responseMeusDados.body!;
+          if (usuarioDados.nome != "") {
+            if (kIsTablet && usuarioDados.tamanhoFonte < 16) {
+              usuarioDados.tamanhoFonte = 16;
+            }
+
+            _principalStore.usuario.atualizarDados(
+              nome: usuarioDados.nome,
+              ano: usuarioDados.ano,
+              tipoTurno: usuarioDados.tipoTurno,
+              tamanhoFonte: usuarioDados.tamanhoFonte,
+              familiaFonte: usuarioDados.familiaFonte,
+              inicioTurno: usuarioDados.inicioTurno,
+              fimTurno: usuarioDados.fimTurno,
+              modalidade: ModalidadeEnum.values[usuarioDados.modalidade],
+            );
           }
-
-          _principalStore.usuario.atualizarDados(
-            nome: usuarioDados.nome,
-            ano: usuarioDados.ano,
-            tipoTurno: usuarioDados.tipoTurno,
-            tamanhoFonte: usuarioDados.tamanhoFonte,
-            familiaFonte: usuarioDados.familiaFonte,
-            inicioTurno: usuarioDados.inicioTurno,
-            fimTurno: usuarioDados.fimTurno,
-            modalidade: ModalidadeEnum.values[usuarioDados.modalidade],
-          );
         }
+      } catch (e) {
+        await _principalStore.sair();
       }
     }
 
