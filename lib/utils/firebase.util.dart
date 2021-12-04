@@ -8,6 +8,8 @@ import 'package:flutter/foundation.dart';
 setupFirebase() async {
   try {
     await fb.Firebase.initializeApp();
+    String? firebaseMessagingToken = await FirebaseMessaging.instance.getToken();
+    logger.config('[Firebase] Firebase Messaging Token: $firebaseMessagingToken');
     logger.config('[Firebase] Configurando Firebase');
   } catch (e) {
     logger.severe('[Firebase] Falha ao inicializar Firebase');
