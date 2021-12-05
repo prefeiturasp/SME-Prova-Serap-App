@@ -218,19 +218,16 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
       children: [
         ..._buildTempoProva(),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: PageView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              controller: listaQuestoesController,
-              onPageChanged: (value) {
-                store.questaoAtual = value + 1;
-              },
-              itemCount: questoes.length,
-              itemBuilder: (context, index) {
-                return _buildQuestoes(questoes[index], index);
-              },
-            ),
+          child: PageView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            controller: listaQuestoesController,
+            onPageChanged: (value) {
+              store.questaoAtual = value + 1;
+            },
+            itemCount: questoes.length,
+            itemBuilder: (context, index) {
+              return _buildQuestoes(questoes[index], index);
+            },
           ),
         ),
       ],
@@ -241,91 +238,101 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     widget.provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
     store.botaoOcupado = false;
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          Observer(builder: (_) {
-            return Container(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Questão ${questao.ordem + 1} ',
-                        style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                          fontSize: temaStore.tTexto20,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+      child: Padding(
+        padding: getPadding(),
+        child: Column(
+          children: [
+            Observer(builder: (_) {
+              return Container(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Questão ${questao.ordem + 1} ',
+                          style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                            fontSize: temaStore.tTexto20,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'de ${widget.provaStore.prova.questoes.length}',
-                        style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                          fontSize: temaStore.tTexto20,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                        Text(
+                          'de ${widget.provaStore.prova.questoes.length}',
+                          style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                            fontSize: temaStore.tTexto20,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Html(
-                    data: tratarArquivos(questao.titulo, questao.arquivos),
-                    style: {
-                      '*': Style.fromTextStyle(
-                        TemaUtil.temaTextoHtmlPadrao.copyWith(
-                          fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      ),
-                      'span': Style.fromTextStyle(
-                        TextStyle(
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Html(
+                      data: tratarArquivos(questao.titulo, questao.arquivos),
+                      style: {
+                        '*': Style.fromTextStyle(
+                          TemaUtil.temaTextoHtmlPadrao.copyWith(
                             fontSize: temaStore.tTexto16,
                             fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                            color: TemaUtil.pretoSemFoco3),
-                      ),
-                    },
-                    onImageTap: (url, _, attributes, element) {
-                      Uint8List imagem = base64.decode(url!.split(',').last);
-
-                      _exibirImagem(context, imagem);
-                    },
-                  ),
-                  SizedBox(height: 8),
-                  Html(
-                    data: tratarArquivos(questao.descricao, questao.arquivos),
-                    style: {
-                      '*': Style.fromTextStyle(
-                        TemaUtil.temaTextoHtmlPadrao.copyWith(
-                          fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                          ),
                         ),
-                      ),
-                      'span': Style.fromTextStyle(
-                        TextStyle(
-                          fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                          color: TemaUtil.pretoSemFoco3,
+                        'span': Style.fromTextStyle(
+                          TextStyle(
+                              fontSize: temaStore.tTexto16,
+                              fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                              color: TemaUtil.pretoSemFoco3),
                         ),
-                      ),
-                    },
-                    onImageTap: (url, _, attributes, element) {
-                      Uint8List imagem = base64.decode(url!.split(',').last);
+                      },
+                      onImageTap: (url, _, attributes, element) {
+                        Uint8List imagem = base64.decode(url!.split(',').last);
 
-                      _exibirImagem(context, imagem);
-                    },
-                  ),
-                  SizedBox(height: 16),
-                  Observer(builder: (_) {
-                    return _buildResposta(questao);
-                  }),
-                ],
-              ),
-            );
-          }),
-          Observer(builder: (context) {
-            return _buildBotoes(questao);
-          }),
-        ],
+                        _exibirImagem(context, imagem);
+                      },
+                    ),
+                    SizedBox(height: 8),
+                    Html(
+                      data: tratarArquivos(questao.descricao, questao.arquivos),
+                      style: {
+                        '*': Style.fromTextStyle(
+                          TemaUtil.temaTextoHtmlPadrao.copyWith(
+                            fontSize: temaStore.tTexto16,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                          ),
+                        ),
+                        'span': Style.fromTextStyle(
+                          TextStyle(
+                            fontSize: temaStore.tTexto16,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                            color: TemaUtil.pretoSemFoco3,
+                          ),
+                        ),
+                      },
+                      onImageTap: (url, _, attributes, element) {
+                        Uint8List imagem = base64.decode(url!.split(',').last);
+
+                        _exibirImagem(context, imagem);
+                      },
+                    ),
+                    SizedBox(height: 16),
+                    Observer(builder: (_) {
+                      return _buildResposta(questao);
+                    }),
+                  ],
+                ),
+              );
+            }),
+            Observer(builder: (context) {
+              return Padding(
+                padding: const EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  bottom: 20,
+                ),
+                child: _buildBotoes(questao),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
@@ -518,8 +525,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             dense: true,
             value: idAlternativa,
             groupValue: resposta?.alternativaId,
-            onChanged: (value) {
-              widget.provaStore.respostas.definirResposta(
+            onChanged: (value) async {
+              await widget.provaStore.respostas.definirResposta(
                 questaoId,
                 alternativaId: value,
                 tempoQuestao: null,
@@ -660,78 +667,71 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     }
 
     if (store.revisandoProva) {
-      return Padding(
-        padding: const EdgeInsets.only(
-          left: 16,
-          right: 16,
-          bottom: 20,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Observer(
-              builder: (context) {
-                if (store.posicaoQuestaoSendoRevisada != store.totalDeQuestoesParaRevisar) {
-                  return BotaoDefaultWidget(
-                    textoBotao: 'Proximo item da revisão',
-                    onPressed: () async {
-                      store.revisandoProva = true;
-                      store.posicaoQuestaoSendoRevisada++;
-                      listaQuestoesController.animateToPage(
-                        store.posicaoQuestaoSendoRevisada,
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeIn,
-                      );
-                    },
-                  );
-                }
-                return Container();
-              },
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            BotaoDefaultWidget(
-              textoBotao: 'Voltar para o resumo',
-              onPressed: () async {
-                try {
-                  if (store.botaoOcupado) return;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Observer(
+            builder: (context) {
+              if (store.posicaoQuestaoSendoRevisada != store.totalDeQuestoesParaRevisar) {
+                return BotaoDefaultWidget(
+                  textoBotao: 'Proximo item da revisão',
+                  onPressed: () async {
+                    store.revisandoProva = true;
+                    store.posicaoQuestaoSendoRevisada++;
+                    listaQuestoesController.animateToPage(
+                      store.posicaoQuestaoSendoRevisada,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeIn,
+                    );
+                  },
+                );
+              }
+              return Container();
+            },
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          BotaoDefaultWidget(
+            textoBotao: 'Voltar para o resumo',
+            onPressed: () async {
+              try {
+                if (store.botaoOcupado) return;
 
-                  store.botaoOcupado = true;
-                  widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                  await widget.provaStore.respostas.definirTempoResposta(
-                    questao.id,
-                    tempoQuestao: widget.provaStore.segundos,
-                  );
-                  await SincronizarRespostasWorker().sincronizar();
-                  int posicaoDaQuestao = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ResumoRespostasView(
-                        provaStore: widget.provaStore,
-                      ),
+                store.botaoOcupado = true;
+                widget.provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                await widget.provaStore.respostas.definirTempoResposta(
+                  questao.id,
+                  tempoQuestao: widget.provaStore.segundos,
+                );
+                await SincronizarRespostasWorker().sincronizar();
+                int posicaoDaQuestao = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ResumoRespostasView(
+                      provaStore: widget.provaStore,
                     ),
-                  );
+                  ),
+                );
 
-                  store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
+                store.posicaoQuestaoSendoRevisada = posicaoDaQuestao;
 
-                  store.revisandoProva = true;
-                  store.questaoAtual = posicaoDaQuestao;
-                  listaQuestoesController.jumpToPage(
-                    posicaoDaQuestao,
-                  );
+                store.revisandoProva = true;
+                store.questaoAtual = posicaoDaQuestao;
+                listaQuestoesController.jumpToPage(
+                  posicaoDaQuestao,
+                );
 
-                  setState(() {});
-                } catch (e) {
-                  fine(e);
-                } finally {
-                  store.botaoOcupado = false;
-                }
-              },
-            ),
-          ],
-        ),
+                setState(() {});
+              } catch (e) {
+                fine(e);
+              } finally {
+                store.botaoOcupado = false;
+              }
+            },
+          ),
+        ],
       );
     } else {
       return botoesRespondendoProva;
