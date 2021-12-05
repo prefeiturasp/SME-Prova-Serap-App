@@ -27,18 +27,21 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: TemaUtil.corDeFundo,
-        body: Observer(
-          builder: (_) {
-            return ApresentacaoWidget(
-              avancarParaPagina: HomeView(),
-              listaDePaginas: store.listaPaginasOrientacoes,
-              textoBotaoAvancar: "PRÓXIMA DICA",
-              textoBotaoPular: "IR PARA A PÁGINA INICIAL",
-              regraMostrarTodosOsBotoesAoIniciar: usuario.ultimoLogin != null,
-              regraMostrarApenasBotaoPoximo: usuario.ultimoLogin == null,
-              pularSeNaoTiverConexao: !_principalStore.temConexao,
-            );
-          },
+        body: Padding(
+          padding: getPadding(),
+          child: Observer(
+            builder: (_) {
+              return ApresentacaoWidget(
+                avancarParaPagina: HomeView(),
+                listaDePaginas: store.listaPaginasOrientacoes,
+                textoBotaoAvancar: "PRÓXIMA DICA",
+                textoBotaoPular: "IR PARA A PÁGINA INICIAL",
+                regraMostrarTodosOsBotoesAoIniciar: usuario.ultimoLogin != null,
+                regraMostrarApenasBotaoPoximo: usuario.ultimoLogin == null,
+                pularSeNaoTiverConexao: !_principalStore.temConexao,
+              );
+            },
+          ),
         ),
         persistentFooterButtons: _buildPersistentFooterButtons(),
       ),
@@ -65,5 +68,15 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
         ),
       )
     ];
+  }
+
+  EdgeInsets getPadding([EdgeInsets mobile = EdgeInsets.zero]) {
+    if (kIsWeb) {
+      return EdgeInsets.symmetric(
+        horizontal: (MediaQuery.of(context).size.width - 600 - (24 * 2)) / 2,
+      );
+    } else {
+      return mobile;
+    }
   }
 }
