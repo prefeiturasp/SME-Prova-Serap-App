@@ -7,8 +7,10 @@ class QuestaoRespostaResponseDTO {
   int? alternativaId;
   String? resposta;
   DateTime dataHoraResposta;
+  int questaoId;
 
   QuestaoRespostaResponseDTO({
+    required this.questaoId,
     this.alternativaId,
     this.resposta,
     required this.dataHoraResposta,

@@ -21,6 +21,7 @@ class ProvaRespostaStore = _ProvaRespostaStoreBase with _$ProvaRespostaStore;
 
 abstract class _ProvaRespostaStoreBase with Store, Loggable {
   final _service = GetIt.I.get<ApiService>().questaoResposta;
+  final _serviceProva = GetIt.I.get<ApiService>().prova;
 
   @observable
   int idProva;
@@ -31,9 +32,6 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
   @observable
   String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
-
-  @observable
-  ObservableMap<int, ProvaResposta> respostasSalvas = <int, ProvaResposta>{}.asObservable();
 
   @observable
   ObservableMap<int, ProvaResposta> respostasLocal = <int, ProvaResposta>{}.asObservable();
@@ -47,59 +45,44 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
     fine('[Prova $idProva] - Carregando respostas da prova');
 
-    List<int> idsQuestao = [];
-
     prova ??= await Prova.carregaProvaCache(idProva);
 
-    idsQuestao = prova!.questoes.map((e) => e.id).toList();
+    try {
+      var respostaBanco = await _serviceProva.getRespostasPorProvaId(idProva: idProva);
 
-    for (var idQuestao in idsQuestao) {
-      try {
-        finer('[Prova $idProva] - (Questão ID $idQuestao) Carregando resposta');
-        var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
-        if (respostaBanco.isSuccessful) {
-          var body = respostaBanco.body!;
+      if (respostaBanco.isSuccessful) {
+        var questoesResponse = respostaBanco.body!;
 
-          respostasSalvas[idQuestao] = ProvaResposta(
+        for (var questaoResponse in questoesResponse) {
+          respostasLocal[questaoResponse.questaoId] = ProvaResposta(
             codigoEOL: codigoEOL,
-            questaoId: idQuestao,
+            questaoId: questaoResponse.questaoId,
             sincronizado: true,
-            alternativaId: body.alternativaId,
-            resposta: body.resposta,
-            dataHoraResposta: body.dataHoraResposta.toLocal(),
+            alternativaId: questaoResponse.alternativaId,
+            resposta: questaoResponse.resposta,
+            dataHoraResposta: questaoResponse.dataHoraResposta.toLocal(),
           );
 
           finer(
-            "[Prova $idProva] - (Questão ID $idQuestao) Resposta Banco Questao ${body.alternativaId} | ${body.resposta}",
+            "[Prova $idProva] - (Questão ID ${questaoResponse.questaoId}) Resposta Banco Questao ${questaoResponse.alternativaId} | ${questaoResponse.resposta}",
           );
         }
-      } catch (e, stack) {
-        if (!e.toString().contains("but got one of type 'String'") &&
-            !e.toString().contains("type 'String' is not a subtype of type")) {
-          severe(e);
-          severe(stack);
-        } else {
-          finer('[Prova $idProva] - (Questão ID $idQuestao) Sem resposta salva');
-        }
+      }
+    } catch (e, stack) {
+      if (!e.toString().contains("but got one of type 'String'") &&
+          !e.toString().contains("type 'String' is not a subtype of type")) {
+        severe(e);
+        severe(stack);
+      } else {
+        finer('[Prova $idProva] Sem respostas salva');
       }
     }
 
-    fine('[Prova $idProva] - ${respostasSalvas.length} respostas carregadas do banco de dados remoto');
+    fine('[Prova $idProva] - ${respostasLocal.length} respostas carregadas do banco de dados remoto');
   }
 
   ProvaResposta? obterResposta(int questaoId) {
-    var respostaRemota = respostasSalvas[questaoId];
-    var respostaLocal = respostasLocal[questaoId];
-
-    if (respostaRemota != null && respostaLocal != null) {
-      if (respostaRemota.dataHoraResposta!.isBefore(respostaLocal.dataHoraResposta!)) {
-        return respostaLocal;
-      } else {
-        return respostaRemota;
-      }
-    }
-
-    return respostaRemota ?? respostaLocal;
+    return respostasLocal[questaoId];
   }
 
   @action
@@ -139,32 +122,32 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) {
+  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) async {
     var resposta = ProvaResposta(
       codigoEOL: codigoEOL,
       questaoId: questaoId,
       alternativaId: alternativaId,
       resposta: textoResposta,
       sincronizado: false,
-      dataHoraResposta: DateTime.now(),
+      dataHoraResposta: DateTime.now().toUtc(),
       tempoRespostaAluno: tempoQuestao,
     );
 
     respostasLocal[questaoId] = resposta;
 
-    salvarCache(resposta);
+    await salvarCache(resposta);
   }
 
   @action
-  definirTempoResposta(int questaoId, {int? tempoQuestao}) {
+  Future<void> definirTempoResposta(int questaoId, {int? tempoQuestao}) async {
     var resposta = obterResposta(questaoId);
 
     if (resposta != null) {
       resposta.sincronizado = false;
       resposta.tempoRespostaAluno = tempoQuestao;
-      salvarCache(resposta);
+      await salvarCache(resposta);
     } else {
-      definirResposta(questaoId, tempoQuestao: tempoQuestao);
+      await definirResposta(questaoId, tempoQuestao: tempoQuestao);
     }
   }
 

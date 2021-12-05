@@ -21,6 +21,7 @@ GetIt ServiceLocator = GetIt.instance;
 class DependenciasIoC with Loggable {
   setup() async {
     config('Configurando Injeção de Dependencias');
+    ServiceLocator.allowReassignment = true;
     registrarServicos();
     registrarStores();
     await ServiceLocator.allReady();
