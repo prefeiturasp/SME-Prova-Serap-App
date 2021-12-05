@@ -45,6 +45,7 @@ class BaixarProvaJob with Job, Loggable {
       for (var idProva in idsToDownload) {
         ProvaResponseDTO provaResumo = provasRemoto.firstWhere((element) => element.id == idProva);
         info('Iniciando download prova $idProva - ${provaResumo.descricao}');
+        await _saveProva(provaResumo);
 
         GerenciadorDownload gerenciadorDownload = GerenciadorDownload(idProva: idProva);
 
@@ -57,5 +58,24 @@ class BaixarProvaJob with Job, Loggable {
       severe(e);
       severe(stacktrace);
     }
+  }
+
+  _saveProva(ProvaResponseDTO provaResponse) async {
+    var prova = Prova(
+      id: provaResponse.id,
+      descricao: provaResponse.descricao,
+      itensQuantidade: provaResponse.itensQuantidade,
+      dataInicio: provaResponse.dataInicio,
+      dataFim: provaResponse.dataFim,
+      status: provaResponse.status,
+      tempoExecucao: provaResponse.tempoExecucao,
+      tempoExtra: provaResponse.tempoExtra,
+      tempoAlerta: provaResponse.tempoAlerta,
+      dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
+      questoes: [],
+      senha: provaResponse.senha,
+    );
+
+    await Prova.salvaProvaCache(prova);
   }
 }
