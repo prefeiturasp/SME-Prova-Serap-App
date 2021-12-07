@@ -151,6 +151,11 @@ class AppDatabase extends _$AppDatabase {
   Future removerProva(ProvaDb provaDb) => delete(provasDb).delete(provaDb);
   Future<ProvaDb?> obterProvaPorIdNull(int id) => (select(provasDb)..where((t) => t.id.equals(id))).getSingleOrNull();
   Future<ProvaDb> obterProvaPorId(int id) => (select(provasDb)..where((t) => t.id.equals(id))).getSingle();
+  Future<List<int>> obterProvasCacheIds() {
+    var query = select(provasDb);
+    return query.map((row) => row.id).get();
+  }
+
   Future<List<ProvaDb>> obterProvas() => (select(provasDb)).get();
 
   Future<List<ProvaDb>> obterProvasPendentes() => (select(provasDb)
