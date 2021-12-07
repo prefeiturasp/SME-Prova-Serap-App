@@ -165,7 +165,7 @@ class AppDatabase extends _$AppDatabase {
   Future removerQuestao(QuestaoDb questaoDb) => delete(questoesDb).delete(questaoDb);
   Selectable<QuestaoDb> obterQuestaoPorArquivoLegadoId(int arquivoLegadoId, int provaId) {
     return customSelect(
-        'select * from questoes_db where (titulo like \'%$arquivoLegadoId%\'\n or descricao like \'%$arquivoLegadoId%\') and prova_id = $provaId',
+        'select * from questoes_db where (titulo like \'%$arquivoLegadoId%\'\n or descricao like \'%$arquivoLegadoId%\') and prova_id = $provaId limit 1',
         readsFrom: {
           questoesDb,
         }).map(questoesDb.mapFromRow);
@@ -176,7 +176,8 @@ class AppDatabase extends _$AppDatabase {
         inner join alternativas_db on
         questoes_db.id = alternativas_db.questao_id and questoes_db.prova_id = alternativas_db.prova_id
         where alternativas_db.descricao like '%$arquivoLegadoId%' and
-        alternativas_db.prova_id = $provaId''', readsFrom: {questoesDb, alternativasDb}).map(questoesDb.mapFromRow);
+        alternativas_db.prova_id = $provaId limit 1''', readsFrom: {questoesDb, alternativasDb})
+        .map(questoesDb.mapFromRow);
   }
 
   Future<List<QuestaoDb>> obterQuestoesPorProvaId(int provaId) => (select(questoesDb)
