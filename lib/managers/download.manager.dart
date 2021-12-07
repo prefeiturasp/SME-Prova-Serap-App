@@ -389,13 +389,13 @@ class GerenciadorDownload with Loggable {
     AppDatabase db = GetIt.I.get();
     var questaoDb = await db.obterQuestaoPorArquivoLegadoId(arquivoLegadoId, provaId).getSingleOrNull();
 
-    //questaoDb ??= await db.obterQuestaoAlternativaPorArquivoLegadoId(arquivoLegadoId, provaId).getSingleOrNull();
+    questaoDb ??= await db.obterQuestaoPorArquivoLegadoIdAlternativa(arquivoLegadoId, provaId).getSingleOrNull();
 
     if (questaoDb != null) {
       return Questao(
         id: questaoDb.id,
         titulo: questaoDb.titulo,
-        tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == questaoDb.tipo),
+        tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == questaoDb!.tipo),
         descricao: questaoDb.descricao,
         alternativas: [],
         arquivos: [],
