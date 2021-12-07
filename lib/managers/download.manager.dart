@@ -261,54 +261,6 @@ class GerenciadorDownload with Loggable {
               }
               break;
             case EnumDownloadTipo.ARQUIVO:
-              // TODO: Handle this case.
-              break;
-          }
-          downloadAtual = i;
-          prova.downloadProgresso = getPorcentagem();
-
-          await saveProva(prova);
-          await saveDownloads();
-        } catch (e, stack) {
-          severe('[Prova $idProva] - ERRO: $e');
-          severe(download);
-          severe(stack);
-
-          download.downloadStatus = EnumDownloadStatus.ERRO;
-          prova.downloadStatus = EnumDownloadStatus.ERRO;
-
-          if (onChangeStatusCallback != null) {
-            onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
-          }
-
-          if (onTempoPrevistoChangeCallback != null) {
-            onTempoPrevistoChangeCallback!(getTempoPrevisto());
-          }
-        }
-      }
-    }
-
-    for (var i = 0; i < downloads.length; i++) {
-      var download = downloads[i];
-
-      if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
-        finer('[Prova $idProva] - Iniciando download TIPO: ${download.tipo} ID: ${download.id}');
-
-        startTimer();
-        try {
-          prova = await getProva();
-
-          prova.downloadStatus = EnumDownloadStatus.BAIXANDO;
-
-          if (onChangeStatusCallback != null) {
-            onChangeStatusCallback!(prova.downloadStatus, getPorcentagem());
-          }
-          if (onTempoPrevistoChangeCallback != null) {
-            onTempoPrevistoChangeCallback!(getTempoPrevisto());
-          }
-
-          switch (download.tipo) {
-            case EnumDownloadTipo.ARQUIVO:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
               Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
@@ -340,12 +292,6 @@ class GerenciadorDownload with Loggable {
 
                 download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               }
-              break;
-            case EnumDownloadTipo.QUESTAO:
-              break;
-            case EnumDownloadTipo.ALTERNATIVA:
-              break;
-            case EnumDownloadTipo.CONTEXTO_PROVA:
               break;
           }
           downloadAtual = i;
