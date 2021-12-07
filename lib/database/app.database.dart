@@ -75,6 +75,7 @@ class AlternativasDb extends Table {
 @DataClassName("ArquivoDb")
 class ArquivosDb extends Table {
   IntColumn get id => integer()();
+  IntColumn get legadoId => integer().nullable()();
   TextColumn get caminho => text()();
   TextColumn get base64 => text()();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
@@ -90,7 +91,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -105,6 +106,11 @@ class AppDatabase extends _$AppDatabase {
         if (from == 3) {
           await m.createTable(contextosProvaDb);
         }
+        if (from == 4) {
+          await m.addColumn(arquivosDb, arquivosDb.legadoId);
+        }
+      }, beforeOpen: (details) async {
+        await customStatement('PRAGMA auto_vacuum = 1;');
       });
 
   Future limpar() {
@@ -163,6 +169,14 @@ class AppDatabase extends _$AppDatabase {
         readsFrom: {
           questoesDb,
         }).map(questoesDb.mapFromRow);
+  }
+
+  Selectable<QuestaoDb> obterQuestaoPorArquivoLegadoIdAlternativa(int arquivoLegadoId, int provaId) {
+    return customSelect('''select distinct questoes_db.* from questoes_db
+        inner join alternativas_db on
+        questoes_db.id = alternativas_db.questao_id and questoes_db.prova_id = alternativas_db.prova_id
+        where alternativas_db.descricao like '%$arquivoLegadoId%' and
+        alternativas_db.prova_id = $provaId''', readsFrom: {questoesDb, alternativasDb}).map(questoesDb.mapFromRow);
   }
 
   Future<List<QuestaoDb>> obterQuestoesPorProvaId(int provaId) => (select(questoesDb)
