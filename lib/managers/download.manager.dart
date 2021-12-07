@@ -469,7 +469,7 @@ class GerenciadorDownload with Loggable {
       questao.arquivos = arquivosDb
           .map(
             (e) => Arquivo(
-              id: e.id,
+              id: e.legadoId!,
               caminho: e.caminho,
               base64: e.base64,
               questaoId: e.questaoId,
