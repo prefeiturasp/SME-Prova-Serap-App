@@ -154,7 +154,7 @@ class GerenciadorDownload with Loggable {
 
     inicio = DateTime.now();
 
-    downloads.sort((a, b) => a.tipo.index.compareTo(b.tipo.index));
+    downloads.sort((a, b) => a.tipo.order.compareTo(b.tipo.order));
 
     for (var i = 0; i < downloads.length; i++) {
       var download = downloads[i];
