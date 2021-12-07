@@ -166,7 +166,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     }
 
     if (resultado == ConnectivityStatus.none && 
-      downloadStatus == EnumDownloadStatus.BAIXANDO) {
+      (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
         downloadStatus = EnumDownloadStatus.PAUSADO;
         gerenciadorDownload.pause();
     } else if (resultado != ConnectivityStatus.none && 
