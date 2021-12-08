@@ -167,6 +167,7 @@ class Prova {
 
   static salvaProvaCache(Prova prova) async {
     AppDatabase db = GetIt.I.get();
+
     await db.inserirOuAtualizarProva(
       ProvaDb(
         id: prova.id,
@@ -177,11 +178,11 @@ class Prova {
         tempoAlerta: prova.tempoAlerta,
         itensQuantidade: prova.itensQuantidade,
         status: prova.status.index,
-        dataInicio: prova.dataInicio.add(Duration(hours: 3)),
+        dataInicio: prova.dataInicio,
         ultimaAtualizacao: DateTime.now(),
-        dataFim: prova.dataFim?.add(Duration(hours: 3)),
-        dataFimProvaAluno: prova.dataFimProvaAluno?.add(Duration(hours: 3)),
-        dataInicioProvaAluno: prova.dataInicioProvaAluno?.add(Duration(hours: 3)),
+        dataFim: prova.dataFim,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
         senha: prova.senha,
       ),
     );
