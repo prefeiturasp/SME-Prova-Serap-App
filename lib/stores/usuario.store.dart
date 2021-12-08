@@ -46,8 +46,16 @@ abstract class _UsuarioStoreBase with Store {
   @observable
   FonteTipoEnum? familiaFonte = FonteTipoEnum.POPPINS;
 
+  @observable
+  bool isRespondendoProva = false;
+
   @computed
   bool get isLogado => codigoEOL != null;
+
+  @action
+  setRespondendoProva(bool value) {
+    isRespondendoProva = value;
+  }
 
   @action
   void dispose() {

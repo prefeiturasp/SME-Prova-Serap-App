@@ -131,7 +131,7 @@ class Prova {
         questao.arquivos = arquivosDb
             .map(
               (e) => Arquivo(
-                id: e.id,
+                id: e.legadoId!,
                 caminho: e.caminho,
                 base64: e.base64,
                 questaoId: e.questaoId,
@@ -167,6 +167,7 @@ class Prova {
 
   static salvaProvaCache(Prova prova) async {
     AppDatabase db = GetIt.I.get();
+
     await db.inserirOuAtualizarProva(
       ProvaDb(
         id: prova.id,
