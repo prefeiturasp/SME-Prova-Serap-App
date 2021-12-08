@@ -3,13 +3,11 @@ import 'dart:typed_data';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_imagem.enum.dart';
-import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
@@ -35,11 +33,6 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:photo_view/photo_view.dart';
 
 import 'resumo_respostas.view.dart';
 
