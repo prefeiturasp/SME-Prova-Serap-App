@@ -27,7 +27,7 @@ class BaixarProvaJob with Job, Loggable {
       List<ProvaResponseDTO> provasRemoto = provasResponse.body!;
       List<int> idsProvasRemoto = provasRemoto.map((e) => e.id).toList();
 
-      List<int> idsProvasLocal = getProvasCache();
+      List<int> idsProvasLocal = await getProvasCacheIds();
       List<int> idsToDownload = idsProvasRemoto.toSet().difference(idsProvasLocal.toSet()).toList();
 
       List<int> idsParaVerificar = idsProvasLocal.toSet().difference(idsToDownload.toSet()).toList();

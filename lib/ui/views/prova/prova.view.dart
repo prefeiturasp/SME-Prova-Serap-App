@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
@@ -269,7 +270,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                     ),
                     SizedBox(height: 8),
                     Html(
-                      data: tratarArquivos(questao.titulo, questao.arquivos),
+                      data: tratarArquivos(questao.titulo, questao.arquivos, EnumTipoImagem.QUESTAO),
                       style: {
                         '*': Style.fromTextStyle(
                           TemaUtil.temaTextoHtmlPadrao.copyWith(
@@ -292,7 +293,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                     ),
                     SizedBox(height: 8),
                     Html(
-                      data: tratarArquivos(questao.descricao, questao.arquivos),
+                      data: tratarArquivos(questao.descricao, questao.arquivos, EnumTipoImagem.QUESTAO),
                       style: {
                         '*': Style.fromTextStyle(
                           TemaUtil.temaTextoHtmlPadrao.copyWith(
@@ -496,7 +497,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             .map((e) => _buildAlternativa(
                   e.id,
                   e.numeracao,
-                  questao.id,
+                  questao,
                   e.descricao,
                 ))
             .toList(),
@@ -504,8 +505,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     );
   }
 
-  Widget _buildAlternativa(int idAlternativa, String numeracao, int questaoId, String descricao) {
-    ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questaoId);
+  Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
+    ProvaResposta? resposta = widget.provaStore.respostas.obterResposta(questao.id);
 
     return Observer(
       builder: (_) {
@@ -528,7 +529,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             groupValue: resposta?.alternativaId,
             onChanged: (value) async {
               await widget.provaStore.respostas.definirResposta(
-                questaoId,
+                questao.id,
                 alternativaId: value,
                 tempoQuestao: null,
               );
@@ -544,7 +545,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
                 ),
                 Expanded(
                   child: Html(
-                    data: descricao,
+                    data: tratarArquivos(descricao, questao.arquivos, EnumTipoImagem.ALTERNATIVA),
                     style: {
                       '*': Style.fromTextStyle(
                         TemaUtil.temaTextoPadrao.copyWith(
@@ -739,10 +740,12 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     }
   }
 
-  String tratarArquivos(String texto, List<Arquivo> arquivos) {
-    texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-      return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
-    });
+  String tratarArquivos(String texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
+    if (tipoImagem == EnumTipoImagem.QUESTAO) {
+      texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
+        return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
+      });
+    }
 
     for (var arquivo in arquivos) {
       var obterTipo = arquivo.caminho.split(".");
