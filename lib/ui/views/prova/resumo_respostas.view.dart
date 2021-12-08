@@ -50,6 +50,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
 
   @override
   void dispose() {
+    widget.provaStore.setRespondendoProva(false);
     super.dispose();
   }
 

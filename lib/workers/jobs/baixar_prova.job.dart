@@ -6,12 +6,16 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/managers/download.manager.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/provas.util.dart';
 
 class BaixarProvaJob with Job, Loggable {
   @override
   run() async {
     try {
+      var _usuarioStore = ServiceLocator.get<UsuarioStore>();
+      if (_usuarioStore.isRespondendoProva) return;
+      
       ProvaService provaService = ServiceLocator.get<ApiService>().prova;
 
       var provasResponse = await provaService.getProvas();
