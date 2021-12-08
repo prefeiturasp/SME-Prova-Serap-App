@@ -167,6 +167,7 @@ class Prova {
 
   static salvaProvaCache(Prova prova) async {
     AppDatabase db = GetIt.I.get();
+
     await db.inserirOuAtualizarProva(
       ProvaDb(
         id: prova.id,
