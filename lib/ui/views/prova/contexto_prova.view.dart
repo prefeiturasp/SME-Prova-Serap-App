@@ -22,6 +22,12 @@ class _ContextoProvaViewState extends State<ContextoProvaView> with Loggable {
   final store = GetIt.I.get<HomeStore>();
 
   @override
+  void initState() {
+    widget.provaStore.setRespondendoProva(true);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(

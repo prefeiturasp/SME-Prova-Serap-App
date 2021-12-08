@@ -28,6 +28,7 @@ part 'prova.store.g.dart';
 class ProvaStore = _ProvaStoreBase with _$ProvaStore;
 
 abstract class _ProvaStoreBase with Store, Loggable, Disposable {
+  var _usuarioStore = ServiceLocator.get<UsuarioStore>();
   List<ReactionDisposer> _reactions = [];
 
   @observable
@@ -88,6 +89,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @observable
   bool foraDaPaginaDeRevisao = true;
+
+  @action
+  setRespondendoProva(bool value) {
+    _usuarioStore.setRespondendoProva(value);
+  }
 
   @action
   iniciarDownload() async {
@@ -159,11 +165,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       return;
     }
 
-    if (resultado != ConnectivityStatus.none && downloadStatus != EnumDownloadStatus.BAIXANDO) {
-      await iniciarDownload();
-    } else {
-      downloadStatus = EnumDownloadStatus.PAUSADO;
-      gerenciadorDownload.pause();
+    if (resultado == ConnectivityStatus.none && 
+      (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
+        downloadStatus = EnumDownloadStatus.PAUSADO;
+        gerenciadorDownload.pause();
+    } else if (resultado != ConnectivityStatus.none && 
+      (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
+        await iniciarDownload();
     }
   }
 
@@ -266,6 +274,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     try {
       ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
       prova.dataFimProvaAluno = DateTime.now();
+      setRespondendoProva(false);
 
       if (resultado == ConnectivityStatus.none) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');

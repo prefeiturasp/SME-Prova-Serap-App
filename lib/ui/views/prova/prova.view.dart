@@ -72,6 +72,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     });
 
     widget.provaStore.foraDaPaginaDeRevisao = true;
+    widget.provaStore.setRespondendoProva(true);
 
     super.initState();
   }
