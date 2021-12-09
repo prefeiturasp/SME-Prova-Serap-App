@@ -421,6 +421,11 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       return _buildPausado(provaStore);
     }
 
+    // Download prova error - Download pausado
+    if (provaStore.downloadStatus == EnumDownloadStatus.ERRO) {
+      return _buildPausado(provaStore);
+    }
+
     // Baixar prova
     if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && _principalStore.temConexao) {
       return _buildBaixarProva(provaStore);
