@@ -150,6 +150,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
 
         if (voltar) {
+          widget.provaStore.setRespondendoProva(false);
           Navigator.of(context).pop();
         }
       },

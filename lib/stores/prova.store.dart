@@ -138,6 +138,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         fireImmediately: false,
       ),
       reaction((_) => tempoCorrendo, onChangeContadorQuestao),
+      reaction((_) => _usuarioStore.isRespondendoProva, _onRespondendoProvaChange),
     ];
   }
 
@@ -160,6 +161,17 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
+  _onRespondendoProvaChange(bool isRepondendoProva) async {
+    if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
+        downloadStatus = EnumDownloadStatus.PAUSADO;
+        gerenciadorDownload.pauseAllDownloads();
+    }
+    if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
+      await iniciarDownload();
+    }
+  }
+
+  @action
   Future onChangeConexao(ConnectivityStatus? resultado) async {
     if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
@@ -168,7 +180,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     if (resultado == ConnectivityStatus.none && 
       (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
         downloadStatus = EnumDownloadStatus.PAUSADO;
-        gerenciadorDownload.pause();
+        gerenciadorDownload.pauseAllDownloads();
     } else if (resultado != ConnectivityStatus.none && 
       (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
         await iniciarDownload();

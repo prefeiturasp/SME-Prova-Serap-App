@@ -34,6 +34,7 @@ typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
 class GerenciadorDownload with Loggable {
   int idProva;
   List<DownloadProva> downloads = [];
+  bool _isPauseAllDownloads = false;
   late DateTime inicio;
   late int downloadAtual;
 
@@ -45,6 +46,10 @@ class GerenciadorDownload with Loggable {
   GerenciadorDownload({
     required this.idProva,
   });
+
+  pauseAllDownloads() {
+    _isPauseAllDownloads = true;
+  }
 
   Future<void> configure() async {
     ApiService apiService = GetIt.I.get();
@@ -158,6 +163,11 @@ class GerenciadorDownload with Loggable {
 
     for (var i = 0; i < downloads.length; i++) {
       var download = downloads[i];
+
+      if (_isPauseAllDownloads) {
+        _pause();
+        break;
+      }
 
       if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
         finer('[Prova $idProva] - Iniciando download TIPO: ${download.tipo} ID: ${download.id}');
@@ -598,19 +608,24 @@ class GerenciadorDownload with Loggable {
     prefs.remove('download_$idProva');
   }
 
-  Future<void> pause() async {
-    for (var download in downloads) {
-      if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
-        download.downloadStatus = EnumDownloadStatus.PAUSADO;
+  Future<void> _pause() async {
+    try {
+      for (var download in downloads) {
+        if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+          download.downloadStatus = EnumDownloadStatus.PAUSADO;
+        }
       }
+      var prova = await getProva();
+
+      prova.downloadStatus = EnumDownloadStatus.PAUSADO;
+
+      await saveProva(prova);
+
+      await saveDownloads();
+
+    } finally {
+      _isPauseAllDownloads = false;
     }
-    var prova = await getProva();
-
-    prova.downloadStatus = EnumDownloadStatus.PAUSADO;
-
-    await saveProva(prova);
-
-    await saveDownloads();
   }
 
   validarProva() async {
