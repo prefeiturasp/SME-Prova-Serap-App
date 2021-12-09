@@ -28,6 +28,7 @@ part 'prova.store.g.dart';
 class ProvaStore = _ProvaStoreBase with _$ProvaStore;
 
 abstract class _ProvaStoreBase with Store, Loggable, Disposable {
+  var _usuarioStore = ServiceLocator.get<UsuarioStore>();
   List<ReactionDisposer> _reactions = [];
 
   @observable
@@ -90,6 +91,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   bool foraDaPaginaDeRevisao = true;
 
   @action
+  setRespondendoProva(bool value) {
+    _usuarioStore.setRespondendoProva(value);
+  }
+
+  @action
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
@@ -132,6 +138,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         fireImmediately: false,
       ),
       reaction((_) => tempoCorrendo, onChangeContadorQuestao),
+      reaction((_) => _usuarioStore.isRespondendoProva, _onRespondendoProvaChange),
     ];
   }
 
@@ -154,16 +161,29 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
+  _onRespondendoProvaChange(bool isRepondendoProva) async {
+    if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
+        downloadStatus = EnumDownloadStatus.PAUSADO;
+        gerenciadorDownload.pauseAllDownloads();
+    }
+    if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
+      await iniciarDownload();
+    }
+  }
+
+  @action
   Future onChangeConexao(ConnectivityStatus? resultado) async {
     if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
-    if (resultado != ConnectivityStatus.none && downloadStatus != EnumDownloadStatus.BAIXANDO) {
-      await iniciarDownload();
-    } else {
-      downloadStatus = EnumDownloadStatus.PAUSADO;
-      gerenciadorDownload.pause();
+    if (resultado == ConnectivityStatus.none && 
+      (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
+        downloadStatus = EnumDownloadStatus.PAUSADO;
+        gerenciadorDownload.pauseAllDownloads();
+    } else if (resultado != ConnectivityStatus.none && 
+      (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
+        await iniciarDownload();
     }
   }
 
@@ -266,6 +286,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     try {
       ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
       prova.dataFimProvaAluno = DateTime.now();
+      setRespondendoProva(false);
 
       if (resultado == ConnectivityStatus.none) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');

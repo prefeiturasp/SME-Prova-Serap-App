@@ -18,6 +18,15 @@ List<int> getProvasCache() {
   return [];
 }
 
+Future<List<int>> getProvasCacheIds() async {
+  AppDatabase db = GetIt.I.get();
+  var provas = await db.obterProvasCacheIds();
+  if (provas.isNotEmpty) {
+    return provas;
+  }
+  return [];
+}
+
 removerProvaLocal(ProvaStore provaStore) async {
   AppDatabase db = GetIt.I.get();
 
