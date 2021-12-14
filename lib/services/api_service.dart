@@ -11,6 +11,8 @@ import 'package:chopper/chopper.dart';
 import 'package:http/io_client.dart' as httpio;
 import 'package:http/http.dart' as http;
 
+import 'rest/download.service.dart';
+
 class ConnectionOptions {
   final String baseUrl;
 
@@ -48,6 +50,7 @@ class ApiService {
         UsuarioService.create(),
         OrientacaoInicialService.create(),
         ContextoProvaService.create(),
+        DownloadService.create(),
       ],
       interceptors: [
         CustomAuthInterceptor(),
@@ -69,4 +72,5 @@ class ApiService {
   UsuarioService get usuario => chopper.getService<UsuarioService>();
   OrientacaoInicialService get orientacoesIniciais => chopper.getService<OrientacaoInicialService>();
   ContextoProvaService get contextoProva => chopper.getService<ContextoProvaService>();
+  DownloadService get download => chopper.getService<DownloadService>();
 }

@@ -1,5 +1,7 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -56,7 +58,12 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     await _limparDadosLocais();
 
     AppDatabase db = GetIt.I.get();
-    db.limpar();
+
+    List<int> ids = await db.obterProvasCacheIds();
+
+    await ServiceLocator.get<ApiService>().download.removerDownloads(ids);
+
+    await db.limpar();
 
     usuario.dispose();
   }

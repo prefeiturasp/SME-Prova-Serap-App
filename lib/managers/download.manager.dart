@@ -6,10 +6,14 @@ import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -358,11 +362,55 @@ class GerenciadorDownload with Loggable {
           onTempoPrevistoChangeCallback!(getTempoPrevisto());
         }
 
+        try {
+          int idDownload = await informarDownloadConcluido(prova.id);
+
+          //TODO salvar id download
+          // prova.idDownload = idDownload;
+          prova.idDownload = idDownload;
+        } catch (e) {
+          severe('[Prova $idProva] - Erro ao informar download concluido');
+          severe(e);
+        }
+
         await saveProva(prova);
       }
     }
 
     cancelTimer();
+  }
+
+  Future<int> informarDownloadConcluido(int idProva) async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    String modeloDispositivo;
+    String dispositivoId = "";
+    String versao = "";
+
+    if (kIsWeb) {
+      WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+      modeloDispositivo = webBrowserInfo.userAgent!;
+      versao = webBrowserInfo.appVersion!;
+    } else {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      modeloDispositivo = "${androidInfo.manufacturer!} ${androidInfo.model!}";
+      dispositivoId = androidInfo.androidId!;
+      versao = "Android ${androidInfo.version.release} (SDK ${androidInfo.version.release})";
+    }
+
+    var response = await ServiceLocator.get<ApiService>().download.informarDownloadConcluido(
+          provaId: idProva,
+          tipoDispositivo: kDeviceType.index,
+          dispositivoId: dispositivoId,
+          modeloDispositivo: modeloDispositivo,
+          versao: versao,
+        );
+
+    if (response.isSuccessful) {
+      return response.body!;
+    }
+
+    return -1;
   }
 
   double getPorcentagem() {
@@ -622,7 +670,6 @@ class GerenciadorDownload with Loggable {
       await saveProva(prova);
 
       await saveDownloads();
-
     } finally {
       _isPauseAllDownloads = false;
     }
