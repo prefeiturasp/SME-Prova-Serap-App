@@ -33,6 +33,6 @@ abstract class ProvaService extends ChopperService {
   @Get(path: '{idProva}/respostas')
   Future<Response<List<QuestaoRespostaResponseDTO>>> getRespostasPorProvaId({@Path() required int idProva});
 
-  @Get(path: 'https://mocki.io/v1/cd7be902-dcd5-4159-b57b-ebf14ba1981e')
+  @Get(path: 'finalizadas')
   Future<Response<List<ProvaAnteriorResponseDTO>>> getProvasAnteriores();
 }
