@@ -1,5 +1,6 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/home.store.dart';
+import 'package:appserap/ui/views/home/tabs/tabs/provas_anteriores_tab.view.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -29,7 +30,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
     if (!isLoad) {
       tabController = TabController(
         initialIndex: 0,
-        length: 1,
+        length: 2,
         vsync: this,
       );
       super.initState();
@@ -99,9 +100,13 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
                       },
                     ),
                   ),
-                  // Tab(
-                  //   text: "Provas anteriores",
-                  // ),
+                  Tab(
+                    child: Texto(
+                      'Provas anteriores',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -111,7 +116,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
               controller: tabController,
               children: [
                 ProvaAtualTabView(),
-                // Container(),
+                ProvasAnterioresTabView(),
               ],
             ),
           )
