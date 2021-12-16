@@ -15,6 +15,8 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'stores/home_provas_anteriores.store.dart';
+
 // ignore: non_constant_identifier_names
 GetIt ServiceLocator = GetIt.instance;
 
@@ -46,6 +48,7 @@ class DependenciasIoC with Loggable {
     registerSingleton<ProvaViewStore>(ProvaViewStore());
     registerSingleton<ApresentacaoStore>(ApresentacaoStore());
     registerSingleton<OrientacaoInicialStore>(OrientacaoInicialStore());
+    registerSingleton<HomeProvasAnterioresStore>(HomeProvasAnterioresStore());
   }
 
   void registerSingletonAsync<T extends Object>(
