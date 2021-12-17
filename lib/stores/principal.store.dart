@@ -1,4 +1,5 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
@@ -55,15 +56,29 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
   @action
   Future<void> sair() async {
-    await _limparDadosLocais();
-
     AppDatabase db = GetIt.I.get();
 
-    List<int> ids = await db.obterProvasCacheIds();
+    try {
+      List<ProvaDb> provas = await db.obterProvas();
 
-    await ServiceLocator.get<ApiService>().download.removerDownloads(ids);
+      if (provas.isNotEmpty) {
+        List<int> downlodIds = provas
+            .where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO.index)
+            .toList()
+            .map((element) => element.idDownload!)
+            .toList();
+
+        await ServiceLocator.get<ApiService>().download.removerDownloads(downlodIds);
+      }
+    } catch (e, stack) {
+      severe('Erro ao remover downlodas');
+      severe(e);
+      severe(stack);
+    }
 
     await db.limpar();
+
+    await _limparDadosLocais();
 
     usuario.dispose();
   }

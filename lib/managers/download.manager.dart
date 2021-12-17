@@ -368,9 +368,10 @@ class GerenciadorDownload with Loggable {
           //TODO salvar id download
           // prova.idDownload = idDownload;
           prova.idDownload = idDownload;
-        } catch (e) {
+        } catch (e, stack) {
           severe('[Prova $idProva] - Erro ao informar download concluido');
           severe(e);
+          severe(stack);
         }
 
         await saveProva(prova);
@@ -404,6 +405,7 @@ class GerenciadorDownload with Loggable {
           dispositivoId: dispositivoId,
           modeloDispositivo: modeloDispositivo,
           versao: versao,
+          dataHora: DateTime.now().toIso8601String(),
         );
 
     if (response.isSuccessful) {
@@ -644,6 +646,7 @@ class GerenciadorDownload with Loggable {
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
         dataFimProvaAluno: prova.dataFimProvaAluno,
         senha: prova.senha,
+        idDownload: prova.idDownload,
       ),
     );
 

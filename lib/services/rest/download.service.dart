@@ -4,7 +4,7 @@ import 'package:chopper/chopper.dart';
 
 part 'download.service.chopper.dart';
 
-@ChopperApi(baseUrl: "/v1/download/")
+@ChopperApi(baseUrl: "/v1/downloads")
 abstract class DownloadService extends ChopperService {
   static DownloadService create([ChopperClient? client]) => _$DownloadService(client);
 
@@ -15,10 +15,11 @@ abstract class DownloadService extends ChopperService {
     @Field() required String dispositivoId,
     @Field() required String modeloDispositivo,
     @Field() required String versao,
+    @Field() required String dataHora,
   });
 
   @Delete()
   Future<Response<void>> removerDownloads(
-    List<int> ids,
+    @Body() List<int> ids,
   );
 }
