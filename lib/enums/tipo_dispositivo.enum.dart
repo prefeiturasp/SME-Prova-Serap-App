@@ -1,12 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
 
 enum EnumTipoDispositivo {
+  @JsonValue(0)
+  NAO_CADASTRADO,
+
   @JsonValue(1)
-  mobile,
+  MOBILE,
 
   @JsonValue(2)
-  tablet,
+  TABLET,
 
   @JsonValue(3)
-  web,
+  WEB,
 }

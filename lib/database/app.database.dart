@@ -110,7 +110,7 @@ class AppDatabase extends _$AppDatabase {
         if (from == 4) {
           await m.addColumn(arquivosDb, arquivosDb.legadoId);
         }
-        if (from == 4) {
+        if (from == 5) {
           await m.addColumn(provasDb, provasDb.idDownload);
         }
       }, beforeOpen: (details) async {
