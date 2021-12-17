@@ -23,6 +23,7 @@ class ProvasDb extends Table {
   DateTimeColumn get dataFimProvaAluno => dateTime().nullable()();
 
   TextColumn get senha => text().nullable()();
+  IntColumn get idDownload => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -91,7 +92,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -108,6 +109,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from == 4) {
           await m.addColumn(arquivosDb, arquivosDb.legadoId);
+        }
+        if (from == 5) {
+          await m.addColumn(provasDb, provasDb.idDownload);
         }
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = 1;');

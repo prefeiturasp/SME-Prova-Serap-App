@@ -15,7 +15,7 @@ class BaixarProvaJob with Job, Loggable {
     try {
       var _usuarioStore = ServiceLocator.get<UsuarioStore>();
       if (_usuarioStore.isRespondendoProva) return;
-      
+
       ProvaService provaService = ServiceLocator.get<ApiService>().prova;
 
       var provasResponse = await provaService.getProvas();

@@ -32,6 +32,7 @@ class Prova {
 
   EnumDownloadStatus downloadStatus;
   double downloadProgresso;
+  int? idDownload;
 
   EnumProvaStatus status;
 
@@ -51,6 +52,7 @@ class Prova {
     required this.questoes,
     this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
     this.downloadProgresso = 0,
+    this.idDownload,
     this.status = EnumProvaStatus.NAO_INICIADA,
     this.senha,
     this.dataInicioProvaAluno,
@@ -82,6 +84,7 @@ class Prova {
         questoes: [],
         status: EnumProvaStatus.values[provaDb.status],
         senha: provaDb.senha,
+        idDownload: provaDb.idDownload,
       );
 
       var contextosProvaDb = await db.obterContextoPorProvaId(prova.id);
@@ -160,6 +163,7 @@ class Prova {
       questoes: [],
       status: EnumProvaStatus.values[provaDb.status],
       senha: provaDb.senha,
+      idDownload: provaDb.idDownload,
     );
 
     return prova;
@@ -184,6 +188,7 @@ class Prova {
         dataFimProvaAluno: prova.dataFimProvaAluno,
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
         senha: prova.senha,
+        idDownload: prova.idDownload,
       ),
     );
   }
