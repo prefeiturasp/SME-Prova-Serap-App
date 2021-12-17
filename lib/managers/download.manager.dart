@@ -364,9 +364,6 @@ class GerenciadorDownload with Loggable {
 
         try {
           int idDownload = await informarDownloadConcluido(prova.id);
-
-          //TODO salvar id download
-          // prova.idDownload = idDownload;
           prova.idDownload = idDownload;
         } catch (e, stack) {
           severe('[Prova $idProva] - Erro ao informar download concluido');
