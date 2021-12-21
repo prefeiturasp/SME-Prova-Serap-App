@@ -5,11 +5,6 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
 class HomeViewUtil {
-  bool verificaProvaFinalizada(ProvaStore provaStore) {
-    return provaStore.prova.status == EnumProvaStatus.FINALIZADA ||
-        provaStore.prova.status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE;
-  }
-
   bool verificaProvaVigente(ProvaStore provaStore) {
     bool provaVigente = false;
 

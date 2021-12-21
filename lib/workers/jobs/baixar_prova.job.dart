@@ -27,11 +27,7 @@ class BaixarProvaJob with Job, Loggable {
       }
 
       List<ProvaResponseDTO> provasRemoto = provasResponse.body!;
-      List<int> idsProvasRemoto = provasRemoto
-          .filter(
-              (e) => (e.status != EnumProvaStatus.FINALIZADA && e.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE))
-          .map((e) => e.id)
-          .toList();
+      List<int> idsProvasRemoto = provasRemoto.filter((e) => !e.isFinalizada()).map((e) => e.id).toList();
 
       List<int> idsProvasLocal = await getProvasCacheIds();
       List<int> idsToDownload = idsProvasRemoto.toSet().difference(idsProvasLocal.toSet()).toList();

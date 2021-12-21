@@ -40,6 +40,10 @@ class ProvaResponseDTO {
     this.dataFimProvaAluno,
   });
 
+  bool isFinalizada() {
+    return status == EnumProvaStatus.FINALIZADA || status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE;
+  }
+
   static const fromJson = _$ProvaResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$ProvaResponseDTOToJson(this);
 

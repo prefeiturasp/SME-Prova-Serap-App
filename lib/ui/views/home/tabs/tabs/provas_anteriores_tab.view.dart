@@ -67,7 +67,7 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
   }
 
   _buildItens(ObservableMap<int, ProvaStore> provasStore) {
-    var listProvas = provasStore.filter((p) => verificaProvaFinalizada(p.value)).toMap();
+    var listProvas = provasStore.filter((p) => p.value.isFinalizada()).toMap();
 
     var mapEntries = listProvas.entries.toList()
       ..sort((a, b) => b.value.prova.dataFimProvaAluno!.compareTo(a.value.prova.dataFimProvaAluno!));

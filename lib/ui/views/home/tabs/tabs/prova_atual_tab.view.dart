@@ -82,8 +82,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   }
 
   _buildItens(ObservableMap<int, ProvaStore> provasStore) {
-    var listProvas =
-        provasStore.filter((p) => verificaProvaVigente(p.value) && !verificaProvaFinalizada(p.value)).toMap();
+    var listProvas = provasStore.filter((p) => verificaProvaVigente(p.value) && !p.value.isFinalizada()).toMap();
 
     if (listProvas.isEmpty) {
       return Center(
