@@ -142,10 +142,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     ];
   }
 
-  bool isFinalizada() {
-    return prova.status == EnumProvaStatus.FINALIZADA || prova.status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE;
-  }
-
   @action
   onChangeContadorQuestao(EnumTempoStatus finalizado) {
     if (finalizado == EnumTempoStatus.CORRENDO) {
