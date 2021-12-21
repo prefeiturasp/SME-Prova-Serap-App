@@ -55,7 +55,7 @@ Future setupAppConfig() async {
 
 void setupLogging() {
   if (kDebugMode) {
-    Logger.root.level = Level.FINER;
+    Logger.root.level = Level.FINE;
   } else {
     Logger.root.level = Level.WARNING;
   }

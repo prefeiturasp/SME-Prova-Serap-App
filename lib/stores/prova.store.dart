@@ -163,8 +163,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @action
   _onRespondendoProvaChange(bool isRepondendoProva) async {
     if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
-        downloadStatus = EnumDownloadStatus.PAUSADO;
-        gerenciadorDownload.pauseAllDownloads();
+      downloadStatus = EnumDownloadStatus.PAUSADO;
+      gerenciadorDownload.pauseAllDownloads();
     }
     if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
       await iniciarDownload();
@@ -177,13 +177,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       return;
     }
 
-    if (resultado == ConnectivityStatus.none && 
-      (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
-        downloadStatus = EnumDownloadStatus.PAUSADO;
-        gerenciadorDownload.pauseAllDownloads();
-    } else if (resultado != ConnectivityStatus.none && 
-      (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
-        await iniciarDownload();
+    if (resultado == ConnectivityStatus.none &&
+        (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
+      downloadStatus = EnumDownloadStatus.PAUSADO;
+      gerenciadorDownload.pauseAllDownloads();
+    } else if (resultado != ConnectivityStatus.none &&
+        (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
+      await iniciarDownload();
     }
   }
 

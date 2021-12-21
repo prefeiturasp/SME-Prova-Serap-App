@@ -4,18 +4,18 @@ import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-var kDeviceType = EnumTipoDispositivo.tablet;
+var kDeviceType = EnumTipoDispositivo.TABLET;
 
-var kIsMobile = kDeviceType == EnumTipoDispositivo.mobile;
-var kIsTablet = kDeviceType == EnumTipoDispositivo.tablet;
+var kIsMobile = kDeviceType == EnumTipoDispositivo.MOBILE;
+var kIsTablet = kDeviceType == EnumTipoDispositivo.TABLET;
 
 class TelaAdaptativaUtil {
   setup() {
     final tela = MediaQueryData.fromWindow(WidgetsBinding.instance!.window);
     if (kIsWeb) {
-      kDeviceType = EnumTipoDispositivo.web;
+      kDeviceType = EnumTipoDispositivo.WEB;
     } else if (Platform.isAndroid || Platform.isIOS) {
-      kDeviceType = tela.size.shortestSide < 600 ? EnumTipoDispositivo.mobile : EnumTipoDispositivo.tablet;
+      kDeviceType = tela.size.shortestSide < 600 ? EnumTipoDispositivo.MOBILE : EnumTipoDispositivo.TABLET;
     }
   }
 }

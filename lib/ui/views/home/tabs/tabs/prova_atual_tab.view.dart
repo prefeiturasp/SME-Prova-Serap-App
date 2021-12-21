@@ -4,6 +4,7 @@ import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/views/home/home.view.util.dart';
 import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
@@ -27,7 +28,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_tab.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialog_default.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
@@ -41,7 +42,7 @@ class ProvaAtualTabView extends BaseStatefulWidget {
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> with Loggable {
+class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore> with Loggable, HomeViewUtil {
   final _principalStore = GetIt.I.get<PrincipalStore>();
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
@@ -81,11 +82,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   _buildItens(ObservableMap<int, ProvaStore> provasStore) {
-    provasStore.forEach((key, value) {
-      value.isVisible = _verificaProvaVigente(value);
-    });
-
-    var listProvas = provasStore.filter((p) => p.value.isVisible).toMap();
+    var listProvas = provasStore.filter((p) => verificaProvaVigente(p.value) && !p.value.prova.isFinalizada()).toMap();
 
     if (listProvas.isEmpty) {
       return Center(
@@ -125,49 +122,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         return _buildProva(provaStore!);
       },
     );
-  }
-
-  bool _verificaProvaVigente(ProvaStore provaStore) {
-    bool provaVigente = false;
-
-    if (provaStore.prova.dataFim != null) {
-      DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-      provaVigente = dataAtual.isBetween(provaStore.prova.dataInicio, provaStore.prova.dataFim!);
-    }
-
-    if (!provaVigente) {
-      provaVigente = isSameDate(provaStore.prova.dataInicio);
-    }
-
-    return provaVigente;
-  }
-
-  bool _verificaProvaDisponivel(ProvaStore provaStore) {
-    bool isFinalDeSemanaEPossuiTempo = isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
-    bool isFinalDeSemanaENaoPossuiTempo = isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
-    bool naoEFinalDeSemanaEPossuiTempo = !isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
-    bool naoEFinalDeSemanaENaoPossuiTempo = !isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
-
-    bool podeIniciarProva = !isFinalDeSemanaEPossuiTempo ||
-        isFinalDeSemanaENaoPossuiTempo ||
-        naoEFinalDeSemanaEPossuiTempo ||
-        naoEFinalDeSemanaENaoPossuiTempo;
-
-    return podeIniciarProva;
-  }
-
-  bool _verificaProvaTurno(ProvaStore provaStore) {
-    bool vigente = false;
-
-    DateTime horaAtual = DateTime.now();
-    if (_usuarioStore.fimTurno != 0) {
-      vigente = horaAtual.hour >= _usuarioStore.inicioTurno && horaAtual.hour < _usuarioStore.fimTurno;
-    } else {
-      vigente = horaAtual.hour >= _usuarioStore.inicioTurno &&
-          (horaAtual.hour <= 23 && horaAtual.minute <= 59 && horaAtual.second <= 59);
-    }
-
-    return vigente;
   }
 
   _buildProva(ProvaStore provaStore) {
@@ -438,9 +392,10 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
     // Prova baixada -- iniciar
     if (provaStore.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
-      bool provaDisponivel =
-          _verificaProvaTurno(provaStore) && provaStore.possuiTempoExecucao() && _verificaProvaDisponivel(provaStore) ||
-              !provaStore.possuiTempoExecucao();
+      bool provaDisponivel = verificaProvaTurno(provaStore, _usuarioStore) &&
+              provaStore.possuiTempoExecucao() &&
+              verificaProvaDisponivel(provaStore) ||
+          !provaStore.possuiTempoExecucao();
 
       if (!provaDisponivel) {
         return _buildProvaTurnoIndisponivel(provaStore);
