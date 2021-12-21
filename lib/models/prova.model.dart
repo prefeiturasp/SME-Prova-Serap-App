@@ -60,6 +60,10 @@ class Prova {
     this.contextosProva,
   });
 
+  bool isFinalizada() {
+    return status == EnumProvaStatus.FINALIZADA || status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE;
+  }
+
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
   Map<String, dynamic> toJson() => _$ProvaToJson(this);
 

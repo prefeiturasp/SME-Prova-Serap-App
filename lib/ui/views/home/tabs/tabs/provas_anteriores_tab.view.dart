@@ -1,12 +1,16 @@
-import 'package:appserap/dtos/prova_anterior.response.dto.dart';
+import 'dart:collection';
+
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/stores/home_provas_anteriores.store.dart';
+import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/stores/home.store.dart';
+
+import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/views/home/home.view.util.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
-import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_tab.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
@@ -18,6 +22,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
+import 'package:supercharged_dart/supercharged_dart.dart';
 
 class ProvasAnterioresTabView extends BaseStatefulWidget {
   ProvasAnterioresTabView({Key? key}) : super(key: key);
@@ -26,36 +32,91 @@ class ProvasAnterioresTabView extends BaseStatefulWidget {
   _ProvasAnterioresTabViewState createState() => _ProvasAnterioresTabViewState();
 }
 
-class _ProvasAnterioresTabViewState extends BaseStatelessWidget<ProvasAnterioresTabView, HomeProvasAnterioresStore>
-    with Loggable {
+class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabView, HomeStore>
+    with Loggable, HomeViewUtil {
   final temaStore = GetIt.I<TemaStore>();
 
   @override
   void initState() {
     super.initState();
-    store.carregarProvasAnteriores();
   }
 
   @override
   Widget builder(BuildContext context) {
+    ObservableMap<int, ProvaStore> provasStore = store.provas;
+
     return Padding(
       padding: const EdgeInsets.only(top: 16, bottom: 8),
       child: Observer(
-        builder: (context) {
-          return ListView.builder(
-            itemCount: store.provasAnteriores.length,
-            itemBuilder: (context, index) {
-              var prova = store.provasAnteriores[index];
+        builder: (_) {
+          if (store.carregando) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-              return _buidCardProva(prova);
+          return RefreshIndicator(
+            onRefresh: () async {
+              await store.carregarProvas();
             },
+            child: _buildItens(provasStore),
           );
         },
       ),
     );
   }
 
-  _buidCardProva(ProvaAnteriorResponseDTO prova) {
+  _buildItens(ObservableMap<int, ProvaStore> provasStore) {
+    var listProvas = provasStore.filter((p) => p.value.prova.isFinalizada()).toMap();
+
+    var mapEntries = listProvas.entries.toList()
+      ..sort((a, b) => b.value.prova.dataFimProvaAluno!.compareTo(a.value.prova.dataFimProvaAluno!));
+
+    listProvas
+      ..clear()
+      ..addEntries(mapEntries);
+
+    if (listProvas.isEmpty) {
+      return Center(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - 400,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 28),
+                child: SvgPicture.asset(
+                  'assets/images/sem_prova.svg',
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: Texto(
+                  "Você não tem novas\nprovas para fazer.",
+                  fontSize: 18,
+                  center: true,
+                  fontWeight: FontWeight.w600,
+                  color: TemaUtil.pretoSemFoco3,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: listProvas.length,
+      itemBuilder: (_, index) {
+        var key = listProvas.keys.toList()[index];
+        var provaStore = listProvas[key];
+        return _buildProva(provaStore!.prova);
+      },
+    );
+  }
+
+  _buildProva(Prova prova) {
     return Padding(
       padding: getPadding(EdgeInsets.symmetric(horizontal: 8)),
       child: Card(
@@ -202,7 +263,7 @@ class _ProvasAnterioresTabViewState extends BaseStatelessWidget<ProvasAnteriores
     }
   }
 
-  Widget _formataDataAplicacao(ProvaAnteriorResponseDTO prova) {
+  Widget _formataDataAplicacao(Prova prova) {
     var tamanhoFonte = temaStore.tTexto14;
 
     if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
