@@ -13,6 +13,7 @@ import 'package:appserap/utils/extensions/date.extension.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
@@ -417,7 +418,6 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   Widget _buildSemConexao(ProvaStore provaStore) {
     return SizedBox(
       width: 350,
-      height: 40,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,36 +425,30 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           SizedBox(
             height: 10,
           ),
-          Expanded(
-            child: LinearPercentIndicator(
-              lineHeight: 4.0,
-              percent: provaStore.progressoDownload,
-              linearStrokeCap: LinearStrokeCap.roundAll,
-              progressColor: TemaUtil.vermelhoErro,
-            ),
+          LinearPercentIndicator(
+            lineHeight: 4.0,
+            percent: provaStore.progressoDownload,
+            linearStrokeCap: LinearStrokeCap.roundAll,
+            progressColor: TemaUtil.vermelhoErro,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Row(
-              children: [
-                Texto(
-                  "Download não iniciado",
+            child: Text.rich(
+              TextSpan(
+                text: "Download não iniciado",
+                style: TextStyle(
                   color: TemaUtil.vermelhoErro,
-                  bold: true,
-                  texStyle: TemaUtil.temaTextoErroNegrito.copyWith(
-                    fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  ),
+                  fontSize: temaStore.size(12),
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  fontWeight: FontWeight.bold,
                 ),
-                Texto(
-                  " - Sem conexão com a internet",
-                  color: TemaUtil.vermelhoErro,
-                  texStyle: TemaUtil.temaTextoErro.copyWith(
-                    fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                children: <TextSpan>[
+                  TextSpan(
+                    text: " - Sem conexão com a internet",
+                    style: TextStyle(fontWeight: FontWeight.normal, color: TemaUtil.vermelhoErro),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
