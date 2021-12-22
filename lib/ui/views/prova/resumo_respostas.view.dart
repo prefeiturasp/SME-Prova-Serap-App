@@ -305,6 +305,8 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Pro
         } else if (widget.provaStore.tempoExecucaoStore == null) {
           store.questoesParaRevisar.add(questao);
           store.quantidadeDeQuestoesSemRespostas++;
+        } else {
+          store.quantidadeDeQuestoesSemRespostas++;
         }
       } else {
         if (widget.provaStore.tempoExecucaoStore == null) {
