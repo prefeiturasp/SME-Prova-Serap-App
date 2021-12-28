@@ -1,5 +1,6 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/home.store.dart';
+import 'package:appserap/ui/views/home/tabs/tabs/provas_anteriores_tab.view.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -29,7 +30,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
     if (!isLoad) {
       tabController = TabController(
         initialIndex: 0,
-        length: 1,
+        length: 2,
         vsync: this,
       );
       super.initState();
@@ -51,51 +52,63 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
     return AppBarWidget(
       popView: true,
       mostrarBotaoVoltar: false,
+      exibirSair: true,
     );
   }
+
+  @override
+  double get defaultPadding => 0;
 
   @override
   Widget builder(BuildContext context) {
     return Observer(builder: (_) {
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TabBar(
-              controller: tabController,
-              labelStyle: TextStyle(
-                fontSize: temaStore.tTexto20,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                fontWeight: FontWeight.w600,
-              ),
-              indicatorSize: TabBarIndicatorSize.label,
-              labelColor: TemaUtil.preto,
-              unselectedLabelColor: TemaUtil.pretoSemFoco,
-              isScrollable: true,
-              indicator: UnderlineTabIndicator(
-                borderSide: BorderSide(
-                  width: 4,
-                  color: TemaUtil.laranja01,
+          Padding(
+            padding: getPadding(),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: TabBar(
+                controller: tabController,
+                labelStyle: TextStyle(
+                  fontSize: temaStore.tTexto20,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  fontWeight: FontWeight.w600,
                 ),
-              ),
-              tabs: [
-                Tab(
-                  child: Observer(
-                    builder: (_) {
-                      return Texto(
-                        'Prova atual',
-                        texStyle: TemaUtil.temaTextoNumeracao.copyWith(
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                          fontSize: temaStore.tTexto20,
-                        ),
-                      );
-                    },
+                indicatorSize: TabBarIndicatorSize.label,
+                labelColor: TemaUtil.preto,
+                unselectedLabelColor: TemaUtil.pretoSemFoco,
+                isScrollable: true,
+                indicator: UnderlineTabIndicator(
+                  borderSide: BorderSide(
+                    width: 4,
+                    color: TemaUtil.laranja01,
                   ),
                 ),
-                // Tab(
-                //   text: "Provas anteriores",
-                // ),
-              ],
+                tabs: [
+                  Tab(
+                    child: Observer(
+                      builder: (_) {
+                        return Texto(
+                          'Prova atual',
+                          texStyle: TemaUtil.temaTextoNumeracao.copyWith(
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                            fontSize: temaStore.tTexto20,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Tab(
+                    child: Texto(
+                      'Provas anteriores',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(
@@ -103,7 +116,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
               controller: tabController,
               children: [
                 ProvaAtualTabView(),
-                // Container(),
+                ProvasAnterioresTabView(),
               ],
             ),
           )

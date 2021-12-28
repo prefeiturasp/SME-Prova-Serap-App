@@ -28,16 +28,6 @@ Future<void> main() async {
 
   await setupFirebase();
 
-  print("Decifra-me, mas não me conclua, eu posso te surpreender");
-
-  // await SentryFlutter.init(
-  //   (options) => options
-  //     ..dsn = AppConfigReader.getSentryDsn()
-  //     ..environment = AppConfigReader.getEnvironment()
-  //     ..debug = true
-  //     ..diagnosticLevel = SentryLevel.warning,
-  //   appRunner: () => runApp(MyApp()),
-  // );
   runApp(MyApp());
 }
 
@@ -65,7 +55,7 @@ Future setupAppConfig() async {
 
 void setupLogging() {
   if (kDebugMode) {
-    Logger.root.level = Level.FINER;
+    Logger.root.level = Level.FINE;
   } else {
     Logger.root.level = Level.WARNING;
   }
@@ -111,6 +101,7 @@ class MyApp extends StatelessWidget {
           locale: Locale('pt', 'BR'),
           home: SplashScreenView(),
           scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+          onGenerateTitle: (context) => "SERAp Estudantes",
         );
       },
     );

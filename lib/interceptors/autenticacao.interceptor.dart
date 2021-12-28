@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/principal.store.dart';
 import 'package:chopper/chopper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,17 +11,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ServiceAuthenticator extends Authenticator with Loggable {
   @override
   FutureOr<Request?> authenticate(Request request, Response<dynamic> response) async {
+    SharedPreferences prefs = GetIt.I.get();
+
+    if (response.bodyString.contains("Token inválido")) {
+      final _principalStore = GetIt.I.get<PrincipalStore>();
+      await _principalStore.sair();
+      return throw ("Token inválido");
+    }
+
     if (response.statusCode == 401) {
-      SharedPreferences prefs = GetIt.I.get();
+      fine('401 - Não autorizado');
 
       String? token = prefs.getString('token');
       // String? expiration = prefs.getString('token_expiration');
 
       if (token == null) {
         fine('Token null - Redirecionando para o Login');
+        return null;
       }
 
-      var newToken = await refreshToken(token!);
+      var newToken = await refreshToken(token);
       token = newToken;
 
       // if (expiration == null || DateTime.parse(expiration).isBefore(DateTime.now())) {
@@ -47,17 +57,21 @@ class ServiceAuthenticator extends Authenticator with Loggable {
     ApiService service = GetIt.I.get();
 
     fine('Atualizando token');
-    Response<AutenticacaoResponseDTO> response = await service.auth.revalidar(token: oldToken);
+    try {
+      Response<AutenticacaoResponseDTO> response = await service.auth.revalidar(token: oldToken);
 
-    if (response.isSuccessful) {
-      String newToken = response.body!.token;
-      DateTime expiration = response.body!.dataHoraExpiracao;
-      fine('Novo token - Data Expiracao ($expiration) $newToken');
+      if (response.isSuccessful) {
+        String newToken = response.body!.token;
+        DateTime expiration = response.body!.dataHoraExpiracao;
+        fine('Novo token - Data Expiracao ($expiration) $newToken');
 
-      SharedPreferences prefs = GetIt.I.get();
-      await prefs.setString('token', newToken);
-      await prefs.setString('token_expiration', expiration.toIso8601String());
-      return newToken;
+        SharedPreferences prefs = GetIt.I.get();
+        await prefs.setString('token', newToken);
+        await prefs.setString('token_expiration', expiration.toIso8601String());
+        return newToken;
+      }
+    } catch (e) {
+      severe('Erro ao atualizar token: $e');
     }
 
     return null;

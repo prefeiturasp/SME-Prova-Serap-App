@@ -23,6 +23,7 @@ class ProvaResponseDTO {
   int tempoAlerta;
 
   DateTime? dataInicioProvaAluno;
+  DateTime? dataFimProvaAluno;
 
   ProvaResponseDTO({
     required this.id,
@@ -36,13 +37,18 @@ class ProvaResponseDTO {
     required this.tempoExtra,
     required this.tempoAlerta,
     required this.dataInicioProvaAluno,
+    this.dataFimProvaAluno,
   });
+
+  bool isFinalizada() {
+    return status == EnumProvaStatus.FINALIZADA || status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE;
+  }
 
   static const fromJson = _$ProvaResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$ProvaResponseDTOToJson(this);
 
   @override
   String toString() {
-    return 'ProvaResponseDTO(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, status: $status, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno)';
+    return 'ProvaResponseDTO(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, status: $status, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno, dataFimProvaAluno: $dataFimProvaAluno)';
   }
 }

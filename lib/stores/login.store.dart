@@ -141,7 +141,7 @@ abstract class _LoginStoreBase with Store, Loggable {
 
             await onPostLogin(usuarioDados);
           }
-
+          carregando = false;
           return true;
         }
       } else {
@@ -158,8 +158,10 @@ abstract class _LoginStoreBase with Store, Loggable {
       AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
       severe(e);
       severe(stack);
+    } finally {
+      carregando = false;
     }
-    carregando = false;
+
     return false;
   }
 }

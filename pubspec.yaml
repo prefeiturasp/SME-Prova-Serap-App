@@ -1,5 +1,5 @@
 name: appserap
-description: A new Flutter project.
+description: SERAp Estudantes.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.3.0+130
+version: 1.5.2+152
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -47,7 +47,7 @@ dependencies:
   firebase_core_web: ^1.1.0
 
   # Http api
-  chopper: ^4.0.1
+  chopper: ^4.0.3
 
   # Injecao de dependencias
   get_it: ^7.2.0
@@ -87,6 +87,9 @@ dependencies:
   path: ^1.8.0
   supercharged: ^2.1.1
   idb_shim: ^2.0.1
+
+  # Informações do dispoisitivo
+  device_info_plus: ^3.1.1
 
 dependency_overrides:
   flutter_colorpicker: ^0.6.0

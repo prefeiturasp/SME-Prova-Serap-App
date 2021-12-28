@@ -68,6 +68,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               tempoExtra: provaResponse.tempoExtra,
               tempoAlerta: provaResponse.tempoAlerta,
               dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
+              dataFimProvaAluno: provaResponse.dataFimProvaAluno,
               questoes: [],
               senha: provaResponse.senha,
             );
@@ -140,6 +141,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
       prova.status = provaStore.prova.status;
       prova.dataInicioProvaAluno = provaStore.prova.dataInicioProvaAluno;
+      prova.dataFimProvaAluno = provaStore.prova.dataFimProvaAluno;
 
       prova.dataInicio = provaStore.prova.dataInicio;
       prova.dataFim = provaStore.prova.dataFim;
@@ -154,10 +156,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     }
 
     await Prova.salvaProvaCache(provaStore.prova);
-
-    if (provaStore.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
-      provaStore.iniciarDownload();
-    }
   }
 
   @override

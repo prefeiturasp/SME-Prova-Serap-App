@@ -1,4 +1,8 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -10,7 +14,7 @@ part 'principal.store.g.dart';
 
 class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
-abstract class _PrincipalStoreBase with Store {
+abstract class _PrincipalStoreBase with Store, Loggable {
   final usuario = GetIt.I.get<UsuarioStore>();
 
   @observable
@@ -20,7 +24,7 @@ abstract class _PrincipalStoreBase with Store {
 
   setup() async {
     _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
-    obterVersaoDoApp();
+    await obterVersaoDoApp();
   }
 
   void dispose() {
@@ -52,12 +56,42 @@ abstract class _PrincipalStoreBase with Store {
 
   @action
   Future<void> sair() async {
-    SharedPreferences prefs = GetIt.I.get();
-    await prefs.clear();
-
     AppDatabase db = GetIt.I.get();
-    db.limpar();
+
+    try {
+      List<ProvaDb> provas = await db.obterProvas();
+
+      if (provas.isNotEmpty) {
+        List<int> downlodIds = provas
+            .where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO.index)
+            .toList()
+            .map((element) => element.idDownload!)
+            .toList();
+
+        await ServiceLocator.get<ApiService>().download.removerDownloads(downlodIds);
+      }
+    } catch (e, stack) {
+      severe('Erro ao remover downlodas');
+      severe(e);
+      severe(stack);
+    }
+
+    await db.limpar();
+
+    await _limparDadosLocais();
 
     usuario.dispose();
+  }
+
+  _limparDadosLocais() async {
+    SharedPreferences prefs = GetIt.I.get();
+
+    info(prefs.getKeys());
+
+    for (var key in prefs.getKeys()) {
+      if (!key.startsWith("resposta_")) {
+        await prefs.remove(key);
+      }
+    }
   }
 }

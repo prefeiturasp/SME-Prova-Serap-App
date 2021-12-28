@@ -22,6 +22,11 @@ String formatDateddMMyyykkmm(DateTime? dateTime) {
   return DateFormat("dd/MM/yyyy kk:mm", 'pt_BR').format(dateTime);
 }
 
+String formatDateddMMyyyaskkmm(DateTime? dateTime) {
+  if (dateTime == null) return "-";
+  return DateFormat("dd/MM/yyyy 'às' kk:mm", 'pt_BR').format(dateTime);
+}
+
 String formatDateddMMyyyy(DateTime? dateTime) {
   if (dateTime == null) return "-";
   return DateFormat("dd/MM/yyyy", 'pt_BR').format(dateTime);
@@ -123,4 +128,8 @@ String formatDuration(Duration d) {
   }
 
   return tokens.join(' ');
+}
+
+isFinalDeSemana(DateTime data) {
+  return data.weekday == DateTime.saturday || data.weekday == DateTime.sunday;
 }

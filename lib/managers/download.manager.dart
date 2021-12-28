@@ -10,11 +10,15 @@ import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:appserap/models/arquivo_video.model.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
@@ -40,6 +44,7 @@ typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
 class GerenciadorDownload with Loggable {
   int idProva;
   List<DownloadProva> downloads = [];
+  bool _isPauseAllDownloads = false;
   late DateTime inicio;
   late int downloadAtual;
 
@@ -51,6 +56,10 @@ class GerenciadorDownload with Loggable {
   GerenciadorDownload({
     required this.idProva,
   });
+
+  pauseAllDownloads() {
+    _isPauseAllDownloads = true;
+  }
 
   Future<void> configure() async {
     ApiService apiService = GetIt.I.get();
@@ -78,24 +87,24 @@ class GerenciadorDownload with Loggable {
         }
       }
 
-      for (var idArquivo in provaDetalhes.arquivosId) {
-        if (!containsId(idArquivo, EnumDownloadTipo.ARQUIVO)) {
-          downloads.add(
-            DownloadProva(
-              tipo: EnumDownloadTipo.ARQUIVO,
-              id: idArquivo,
-              dataHoraInicio: DateTime.now(),
-            ),
-          );
-        }
-      }
-
       for (var idAlternativa in provaDetalhes.alternativasId) {
         if (!containsId(idAlternativa, EnumDownloadTipo.ALTERNATIVA)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.ALTERNATIVA,
               id: idAlternativa,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+      for (var idArquivo in provaDetalhes.arquivosId) {
+        if (!containsId(idArquivo, EnumDownloadTipo.ARQUIVO)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.ARQUIVO,
+              id: idArquivo,
               dataHoraInicio: DateTime.now(),
             ),
           );
@@ -160,10 +169,15 @@ class GerenciadorDownload with Loggable {
 
     inicio = DateTime.now();
 
-    downloads.sort((a, b) => a.tipo.index.compareTo(b.tipo.index));
+    downloads.sort((a, b) => a.tipo.order.compareTo(b.tipo.order));
 
     for (var i = 0; i < downloads.length; i++) {
       var download = downloads[i];
+
+      if (_isPauseAllDownloads) {
+        _pause();
+        break;
+      }
 
       if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
         finer('[Prova $idProva] - Iniciando download TIPO: ${download.tipo} ID: ${download.id}');
@@ -233,37 +247,6 @@ class GerenciadorDownload with Loggable {
               }
               break;
 
-            case EnumDownloadTipo.ARQUIVO:
-              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
-
-              Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
-              Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
-
-              if (response.isSuccessful) {
-                ArquivoResponseDTO arquivo = response.body!;
-
-                http.Response arquivoResponse = await http.get(
-                  Uri.parse(
-                    arquivo.caminho.replaceFirst('http://', 'https://'),
-                  ),
-                );
-
-                // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
-                String base64 = base64Encode(arquivoResponse.bodyBytes);
-
-                await saveArquivo(
-                    Arquivo(
-                      id: arquivo.id,
-                      caminho: arquivo.caminho,
-                      base64: base64,
-                      questaoId: questao!.id,
-                    ),
-                    idProva);
-
-                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
-              }
-              break;
-
             case EnumDownloadTipo.CONTEXTO_PROVA:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
@@ -300,7 +283,40 @@ class GerenciadorDownload with Loggable {
 
             case EnumDownloadTipo.VIDEO:
               await sincronizarVideo();
+              break;
 
+            case EnumDownloadTipo.ARQUIVO:
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+              Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
+
+              questao ??= await obterQuestaoPorArquivoLegadoIdAlternativa(download.id, idProva);
+
+              Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
+
+              if (response.isSuccessful) {
+                ArquivoResponseDTO arquivo = response.body!;
+
+                http.Response arquivoResponse = await http.get(
+                  Uri.parse(
+                    arquivo.caminho.replaceFirst('http://', 'https://'),
+                  ),
+                );
+
+                // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
+                String base64 = base64Encode(arquivoResponse.bodyBytes);
+
+                await saveArquivo(
+                    Arquivo(
+                      id: arquivo.id,
+                      caminho: arquivo.caminho,
+                      base64: base64,
+                      questaoId: questao!.id,
+                    ),
+                    idProva);
+
+                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              }
               break;
           }
           downloadAtual = i;
@@ -357,6 +373,15 @@ class GerenciadorDownload with Loggable {
           onTempoPrevistoChangeCallback!(getTempoPrevisto());
         }
 
+        try {
+          int idDownload = await informarDownloadConcluido(prova.id);
+          prova.idDownload = idDownload;
+        } catch (e, stack) {
+          severe('[Prova $idProva] - Erro ao informar download concluido');
+          severe(e);
+          severe(stack);
+        }
+
         await saveProva(prova);
       }
     }
@@ -399,6 +424,40 @@ class GerenciadorDownload with Loggable {
     );
   }
 
+  Future<int> informarDownloadConcluido(int idProva) async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    String modeloDispositivo;
+    String dispositivoId = "";
+    String versao = "";
+
+    if (kIsWeb) {
+      WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+      modeloDispositivo = webBrowserInfo.userAgent!;
+      versao = webBrowserInfo.appVersion!;
+    } else {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      modeloDispositivo = "${androidInfo.manufacturer!} ${androidInfo.model!}";
+      dispositivoId = androidInfo.androidId!;
+      versao = "Android ${androidInfo.version.release} (SDK ${androidInfo.version.release})";
+    }
+
+    var response = await ServiceLocator.get<ApiService>().download.informarDownloadConcluido(
+          provaId: idProva,
+          tipoDispositivo: kDeviceType.index,
+          dispositivoId: dispositivoId,
+          modeloDispositivo: modeloDispositivo,
+          versao: versao,
+          dataHora: DateTime.now().toIso8601String(),
+        );
+
+    if (response.isSuccessful) {
+      return response.body!;
+    }
+
+    return -1;
+  }
+
   double getPorcentagem() {
     int baixado = downloads.where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO).length;
 
@@ -432,6 +491,28 @@ class GerenciadorDownload with Loggable {
   Future<Questao?> obterQuestaoPorArquivoLegadoId(int arquivoLegadoId, int provaId) async {
     AppDatabase db = GetIt.I.get();
     var questaoDb = await db.obterQuestaoPorArquivoLegadoId(arquivoLegadoId, provaId).getSingleOrNull();
+
+    questaoDb ??= await db.obterQuestaoPorArquivoLegadoIdAlternativa(arquivoLegadoId, provaId).getSingleOrNull();
+
+    if (questaoDb != null) {
+      return Questao(
+        id: questaoDb.id,
+        titulo: questaoDb.titulo,
+        tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == questaoDb!.tipo),
+        descricao: questaoDb.descricao,
+        alternativas: [],
+        arquivos: [],
+        ordem: questaoDb.ordem,
+        quantidadeAlternativas: questaoDb.quantidadeAlternativas!,
+      );
+    }
+  }
+
+  Future<Questao?> obterQuestaoPorArquivoLegadoIdAlternativa(int arquivoLegadoId, int provaId) async {
+    AppDatabase db = GetIt.I.get();
+    var questaoDb = await db.obterQuestaoPorArquivoLegadoIdAlternativa(arquivoLegadoId, provaId).getSingleOrNull();
+
+    //questaoDb ??= await db.obterQuestaoAlternativaPorArquivoLegadoId(arquivoLegadoId, provaId).getSingleOrNull();
 
     if (questaoDb != null) {
       return Questao(
@@ -491,7 +572,7 @@ class GerenciadorDownload with Loggable {
       questao.arquivos = arquivosDb
           .map(
             (e) => Arquivo(
-              id: e.id,
+              id: e.legadoId!,
               caminho: e.caminho,
               base64: e.base64,
               questaoId: e.questaoId,
@@ -558,7 +639,8 @@ class GerenciadorDownload with Loggable {
 
     await database.inserirOuAtualizarArquivo(
       ArquivoDb(
-        id: arquivo.id,
+        id: int.parse("${arquivo.id}${arquivo.questaoId}"),
+        legadoId: arquivo.id,
         caminho: arquivo.caminho,
         base64: arquivo.base64,
         questaoId: arquivo.questaoId,
@@ -623,6 +705,7 @@ class GerenciadorDownload with Loggable {
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
         dataFimProvaAluno: prova.dataFimProvaAluno,
         senha: prova.senha,
+        idDownload: prova.idDownload,
       ),
     );
 
@@ -635,19 +718,23 @@ class GerenciadorDownload with Loggable {
     prefs.remove('download_$idProva');
   }
 
-  Future<void> pause() async {
-    for (var download in downloads) {
-      if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
-        download.downloadStatus = EnumDownloadStatus.PAUSADO;
+  Future<void> _pause() async {
+    try {
+      for (var download in downloads) {
+        if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+          download.downloadStatus = EnumDownloadStatus.PAUSADO;
+        }
       }
+      var prova = await getProva();
+
+      prova.downloadStatus = EnumDownloadStatus.PAUSADO;
+
+      await saveProva(prova);
+
+      await saveDownloads();
+    } finally {
+      _isPauseAllDownloads = false;
     }
-    var prova = await getProva();
-
-    prova.downloadStatus = EnumDownloadStatus.PAUSADO;
-
-    await saveProva(prova);
-
-    await saveDownloads();
   }
 
   validarProva() async {

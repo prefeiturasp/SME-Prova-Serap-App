@@ -23,6 +23,7 @@ class ProvasDb extends Table {
   DateTimeColumn get dataFimProvaAluno => dateTime().nullable()();
 
   TextColumn get senha => text().nullable()();
+  IntColumn get idDownload => integer().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -75,6 +76,7 @@ class AlternativasDb extends Table {
 @DataClassName("ArquivoDb")
 class ArquivosDb extends Table {
   IntColumn get id => integer()();
+  IntColumn get legadoId => integer().nullable()();
   TextColumn get caminho => text()();
   TextColumn get base64 => text()();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
@@ -114,7 +116,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -127,8 +129,19 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(questoesDb, questoesDb.quantidadeAlternativas);
         }
         if (from == 3) {
+          await m.createTable(contextosProvaDb);
+        }
+        if (from == 4) {
+          await m.addColumn(arquivosDb, arquivosDb.legadoId);
+        }
+        if (from == 5) {
+          await m.addColumn(provasDb, provasDb.idDownload);
+        }
+        if (from == 6) {
           await m.createTable(arquivosVideoDb);
         }
+      }, beforeOpen: (details) async {
+        await customStatement('PRAGMA auto_vacuum = 1;');
       });
 
   Future limpar() {
@@ -169,6 +182,11 @@ class AppDatabase extends _$AppDatabase {
   Future removerProva(ProvaDb provaDb) => delete(provasDb).delete(provaDb);
   Future<ProvaDb?> obterProvaPorIdNull(int id) => (select(provasDb)..where((t) => t.id.equals(id))).getSingleOrNull();
   Future<ProvaDb> obterProvaPorId(int id) => (select(provasDb)..where((t) => t.id.equals(id))).getSingle();
+  Future<List<int>> obterProvasCacheIds() {
+    var query = select(provasDb);
+    return query.map((row) => row.id).get();
+  }
+
   Future<List<ProvaDb>> obterProvas() => (select(provasDb)).get();
 
   Future<List<ProvaDb>> obterProvasPendentes() => (select(provasDb)
@@ -183,10 +201,19 @@ class AppDatabase extends _$AppDatabase {
   Future removerQuestao(QuestaoDb questaoDb) => delete(questoesDb).delete(questaoDb);
   Selectable<QuestaoDb> obterQuestaoPorArquivoLegadoId(int arquivoLegadoId, int provaId) {
     return customSelect(
-        'select * from questoes_db where (titulo like \'%$arquivoLegadoId%\'\n or descricao like \'%$arquivoLegadoId%\') and prova_id = $provaId',
+        'select * from questoes_db where (titulo like \'%$arquivoLegadoId%\'\n or descricao like \'%$arquivoLegadoId%\') and prova_id = $provaId limit 1',
         readsFrom: {
           questoesDb,
         }).map(questoesDb.mapFromRow);
+  }
+
+  Selectable<QuestaoDb> obterQuestaoPorArquivoLegadoIdAlternativa(int arquivoLegadoId, int provaId) {
+    return customSelect('''select distinct questoes_db.* from questoes_db
+        inner join alternativas_db on
+        questoes_db.id = alternativas_db.questao_id and questoes_db.prova_id = alternativas_db.prova_id
+        where alternativas_db.descricao like '%$arquivoLegadoId%' and
+        alternativas_db.prova_id = $provaId limit 1''', readsFrom: {questoesDb, alternativasDb})
+        .map(questoesDb.mapFromRow);
   }
 
   Future<List<QuestaoDb>> obterQuestoesPorProvaId(int provaId) => (select(questoesDb)

@@ -6,9 +6,13 @@ import 'package:appserap/stores/principal.store.dart';
 
 import 'base_statefull.widget.dart';
 
-abstract class BaseStatelessWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget> {
+abstract class BaseTabWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget>
+    with AutomaticKeepAliveClientMixin {
   var store = GetIt.I.get<TBind>();
   var _principalStore = GetIt.I.get<PrincipalStore>();
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -26,6 +30,7 @@ abstract class BaseStatelessWidget<TWidget extends BaseStatefulWidget, TBind ext
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
 
     return builder(context);

@@ -3,6 +3,7 @@ import 'package:appserap/workers/jobs/baixar_prova.job.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:firebase_core/firebase_core.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 
 setupFirebase() async {
   try {
@@ -17,6 +18,10 @@ setupFirebase() async {
 inscreverTurmaFirebase(String ano) async {
   try {
     if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
+      return;
+    }
+
+    if (kIsWeb) {
       return;
     }
 

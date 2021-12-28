@@ -1,11 +1,15 @@
 import 'dart:convert';
 
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/views/home/home.view.util.dart';
 import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
+import 'package:appserap/utils/extensions/date.extension.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
@@ -24,7 +28,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_tab.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialog_default.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
@@ -38,7 +42,7 @@ class ProvaAtualTabView extends BaseStatefulWidget {
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> {
+class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore> with Loggable, HomeViewUtil {
   final _principalStore = GetIt.I.get<PrincipalStore>();
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
@@ -66,202 +70,199 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             );
           }
 
-          _verificaProvaVisivel(provasStore);
-
-          final listaProvas = provasStore.filter((p) => p.value.isVisible).toList();
-
-          if (provasStore.isEmpty || listaProvas.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height - 400,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 28),
-                      child: SvgPicture.asset(
-                        'assets/images/sem_prova.svg',
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 24),
-                      child: Texto(
-                        "Você não tem novas\nprovas para fazer.",
-                        fontSize: 18,
-                        center: true,
-                        fontWeight: FontWeight.w600,
-                        color: TemaUtil.pretoSemFoco3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
           return RefreshIndicator(
             onRefresh: () async {
               await store.carregarProvas();
             },
-            child: ListView.builder(
-              itemCount: listaProvas.length,
-              itemBuilder: (_, index) {
-                var provaStore = listaProvas[index];
-                return _buildProva(provaStore.value);
-              },
-            ),
+            child: _buildItens(provasStore),
           );
         },
       ),
     );
   }
 
-  _verificaProvaVisivel(ObservableMap<int, ProvaStore> provasStore) {
-    for (var entry in provasStore.entries) {
-      var provaStore = entry.value;
-      bool provaVigente = false;
+  _buildItens(ObservableMap<int, ProvaStore> provasStore) {
+    var listProvas = provasStore.filter((p) => verificaProvaVigente(p.value) && !p.value.prova.isFinalizada()).toMap();
 
-      if (provaStore.prova.dataFim != null) {
-        DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-        provaVigente = dataAtual.isBetween(provaStore.prova.dataInicio, provaStore.prova.dataFim!);
-      }
-
-      if (!provaVigente) {
-        provaVigente = isSameDate(provaStore.prova.dataInicio);
-      }
-
-      DateTime horaAtual = DateTime.now();
-      if (provaVigente) {
-        if (_usuarioStore.fimTurno != 0) {
-          provaVigente = horaAtual.hour >= _usuarioStore.inicioTurno && horaAtual.hour <= _usuarioStore.fimTurno;
-        } else {
-          provaVigente = horaAtual.hour >= _usuarioStore.inicioTurno &&
-              (horaAtual.hour <= 23 && horaAtual.minute <= 59 && horaAtual.second <= 59);
-        }
-      }
-      provaStore.isVisible = provaVigente;
+    if (listProvas.isEmpty) {
+      return Center(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - 400,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 28),
+                child: SvgPicture.asset(
+                  'assets/images/sem_prova.svg',
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: Texto(
+                  "Você não tem novas\nprovas para fazer.",
+                  fontSize: 18,
+                  center: true,
+                  fontWeight: FontWeight.w600,
+                  color: TemaUtil.pretoSemFoco3,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
+
+    return ListView.builder(
+      itemCount: listProvas.length,
+      itemBuilder: (_, index) {
+        var key = listProvas.keys.toList()[index];
+        var provaStore = listProvas[key];
+        return _buildProva(provaStore!);
+      },
+    );
   }
 
   _buildProva(ProvaStore provaStore) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: TemaUtil.cinza, width: 1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        child: Row(children: [
-          ..._buildProvaIcon(provaStore),
-          Expanded(
-            flex: 14,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Titulo
-                Texto(
-                  provaStore.prova.descricao,
-                  textOverflow: TextOverflow.visible,
-                  fontSize: 18,
-                  bold: true,
-                ),
-                SizedBox(height: 10),
-                // Quantidade de itens
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: TemaUtil.laranja02.withOpacity(0.1),
+    return Padding(
+      padding: getPadding(EdgeInsets.symmetric(horizontal: 8)),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: TemaUtil.cinza, width: 1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Row(children: [
+            ..._buildProvaIcon(provaStore),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Titulo
+                  Texto(
+                    provaStore.prova.descricao,
+                    textOverflow: TextOverflow.visible,
+                    fontSize: 18,
+                    bold: true,
+                  ),
+                  SizedBox(height: 10),
+                  // Quantidade de itens
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: TemaUtil.laranja02.withOpacity(0.1),
+                        ),
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.format_list_numbered,
+                          color: TemaUtil.laranja02,
+                          size: 24,
+                        ),
                       ),
-                      padding: EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.format_list_numbered,
-                        color: TemaUtil.laranja02,
-                        size: 24,
+                      SizedBox(
+                        width: 5,
                       ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    //
-                    Observer(builder: (_) {
-                      return AdaptativeWidget(
-                        mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC &&
-                                temaStore.incrementador > 22 &&
-                                kIsMobile
-                            ? AdaptativeWidgetMode.COLUMN
-                            : AdaptativeWidgetMode.ROW,
+                      //
+                      Observer(builder: (_) {
+                        return AdaptativeWidget(
+                          mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC &&
+                                  temaStore.incrementador > 22 &&
+                                  kIsMobile
+                              ? AdaptativeWidgetMode.COLUMN
+                              : AdaptativeWidgetMode.ROW,
+                          children: [
+                            Texto(
+                              "Quantidade de itens: ",
+                              fontSize: 14,
+                              color: TemaUtil.preto,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            Texto(
+                              provaStore.prova.itensQuantidade.toString(),
+                              fontSize: 14,
+                              color: TemaUtil.preto,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ],
+                        );
+                      }),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  // Data aplicacao
+                  Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: TemaUtil.verde02.withOpacity(0.1),
+                        ),
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.insert_invitation,
+                          color: TemaUtil.verde02,
+                          size: 24,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Texto(
-                            "Quantidade de itens: ",
+                            "Data de aplicação:",
                             fontSize: 14,
-                            color: TemaUtil.preto,
-                            fontWeight: FontWeight.normal,
                           ),
-                          Texto(
-                            provaStore.prova.itensQuantidade.toString(),
-                            fontSize: 14,
-                            color: TemaUtil.preto,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          Observer(builder: (_) {
+                            return _formataDataAplicacao(provaStore.prova);
+                          }),
                         ],
-                      );
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  // Botao
+                  AdaptativeCenter(
+                    center: kIsMobile,
+                    child: Observer(builder: (_) {
+                      return _buildBotao(provaStore);
                     }),
-                  ],
-                ),
-                SizedBox(height: 10),
-                // Data aplicacao
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: TemaUtil.verde02.withOpacity(0.1),
-                      ),
-                      padding: EdgeInsets.all(4),
-                      child: Icon(
-                        Icons.insert_invitation,
-                        color: TemaUtil.verde02,
-                        size: 24,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Texto(
-                          "Data de aplicação:",
-                          fontSize: 14,
-                        ),
-                        Observer(builder: (_) {
-                          return _formataDataAplicacao(provaStore.prova);
-                        }),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                // Botao
-                AdaptativeCenter(
-                  center: kIsMobile,
-                  child: Observer(builder: (_) {
-                    return _buildBotao(provaStore);
-                  }),
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
       ),
     );
+  }
+
+  List<Widget> _buildProvaIcon(ProvaStore provaStore) {
+    if (kIsTablet) {
+      return [
+        Container(
+          width: 128,
+          padding: EdgeInsets.only(
+            right: 16,
+          ),
+          child: Observer(builder: (_) {
+            return SvgPicture.asset(
+              provaStore.icone,
+            );
+          }),
+        ),
+      ];
+    } else {
+      return [];
+    }
   }
 
   Widget _formataDataAplicacao(Prova prova) {
@@ -374,6 +375,11 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
       return _buildPausado(provaStore);
     }
 
+    // Download prova error - Download pausado
+    if (provaStore.downloadStatus == EnumDownloadStatus.ERRO) {
+      return _buildPausado(provaStore);
+    }
+
     // Baixar prova
     if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && _principalStore.temConexao) {
       return _buildBaixarProva(provaStore);
@@ -386,12 +392,22 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
     // Prova baixada -- iniciar
     if (provaStore.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
-      if (provaStore.status == EnumProvaStatus.PENDENTE) {
-        // Prova finalizada - aguardando sincronização
-        return _buildProvaPendente(provaStore);
+      bool provaDisponivel = verificaProvaTurno(provaStore, _usuarioStore) &&
+              provaStore.possuiTempoExecucao() &&
+              verificaProvaDisponivel(provaStore) ||
+          !provaStore.possuiTempoExecucao();
+
+      if (!provaDisponivel) {
+        return _buildProvaTurnoIndisponivel(provaStore);
       } else {
-        // Prova não finalizada
-        return _buildIniciarProva(provaStore);
+        if (provaStore.status == EnumProvaStatus.PENDENTE) {
+          // Prova finalizada - aguardando sincronização
+          return _buildProvaPendente(provaStore);
+        } else {
+          //
+          //Prova não finalizada
+          return _buildIniciarProva(provaStore);
+        }
       }
     }
 
@@ -668,10 +684,8 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           } else {
             _navegarParaProvaPrimeiraVez(provaStore);
           }
-        }
-
-        if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
-          Navigator.pushReplacement(
+        } else if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ProvaView(
@@ -684,18 +698,36 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     );
   }
 
-  _navegarParaProvaPrimeiraVez(ProvaStore provaStore) {
-    if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ContextoProvaView(provaStore: provaStore),
-        ),
-      );
-    } else {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => ProvaView(provaStore: provaStore)),
-      );
+  _navegarParaProvaPrimeiraVez(ProvaStore provaStore) async {
+    bool iniciarProva = true;
+
+    if (provaStore.possuiTempoExecucao()) {
+      var fimTurno = ServiceLocator.get<UsuarioStore>().fimTurno;
+
+      var tempoTotalDisponivel = provaStore.prova.tempoExecucao;
+      var tempoDisponivel = DateTime.now().copyWith(hour: fimTurno, minute: 0, second: 0).difference(DateTime.now());
+
+      if (tempoDisponivel.inSeconds < tempoTotalDisponivel) {
+        iniciarProva = await mostrarDialogNaoPossuiTempoTotalDisponivel(context, tempoDisponivel) ?? false;
+      }
+    }
+
+    if (iniciarProva) {
+      if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContextoProvaView(provaStore: provaStore),
+          ),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ProvaView(provaStore: provaStore),
+          ),
+        );
+      }
     }
   }
 
@@ -753,23 +785,38 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
     );
   }
 
-  List<Widget> _buildProvaIcon(ProvaStore provaStore) {
-    if (kIsTablet) {
-      return [
-        Expanded(
-          flex: 4,
-          child: Observer(builder: (_) {
-            return SvgPicture.asset(
-              provaStore.icone,
-            );
-          }),
-        ),
-        Spacer(
-          flex: 1,
-        ),
-      ];
-    } else {
-      return [];
-    }
+  Widget _buildProvaTurnoIndisponivel(ProvaStore provaStore) {
+    return SizedBox(
+      width: 350,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+            child: Row(
+              children: [
+                Observer(
+                  builder: (_) {
+                    return Texto(
+                      "A execução da prova estará disponível no seu turno",
+                      color: TemaUtil.laranja01,
+                      bold: true,
+                      texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
+                        fontSize: temaStore.tTexto12,
+                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

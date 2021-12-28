@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -27,6 +28,7 @@ part 'prova.store.g.dart';
 class ProvaStore = _ProvaStoreBase with _$ProvaStore;
 
 abstract class _ProvaStoreBase with Store, Loggable, Disposable {
+  var _usuarioStore = ServiceLocator.get<UsuarioStore>();
   List<ReactionDisposer> _reactions = [];
 
   @observable
@@ -89,6 +91,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   bool foraDaPaginaDeRevisao = true;
 
   @action
+  setRespondendoProva(bool value) {
+    _usuarioStore.setRespondendoProva(value);
+  }
+
+  @action
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
@@ -131,6 +138,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         fireImmediately: false,
       ),
       reaction((_) => tempoCorrendo, onChangeContadorQuestao),
+      reaction((_) => _usuarioStore.isRespondendoProva, _onRespondendoProvaChange),
     ];
   }
 
@@ -153,16 +161,29 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
+  _onRespondendoProvaChange(bool isRepondendoProva) async {
+    if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
+      downloadStatus = EnumDownloadStatus.PAUSADO;
+      gerenciadorDownload.pauseAllDownloads();
+    }
+    if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
+      await iniciarDownload();
+    }
+  }
+
+  @action
   Future onChangeConexao(ConnectivityStatus? resultado) async {
     if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
-    if (resultado != ConnectivityStatus.none && downloadStatus != EnumDownloadStatus.BAIXANDO) {
-      await iniciarDownload();
-    } else {
+    if (resultado == ConnectivityStatus.none &&
+        (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
       downloadStatus = EnumDownloadStatus.PAUSADO;
-      gerenciadorDownload.pause();
+      gerenciadorDownload.pauseAllDownloads();
+    } else if (resultado != ConnectivityStatus.none &&
+        (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
+      await iniciarDownload();
     }
   }
 
@@ -221,6 +242,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       fine('[Prova $id] - Configurando controlador de tempo');
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
+        horaFinalTurno: ServiceLocator.get<UsuarioStore>().fimTurno,
         duracaoProva: Duration(seconds: prova.tempoExecucao),
         duracaoTempoExtra: Duration(seconds: prova.tempoExtra),
         duracaoTempoFinalizando: Duration(seconds: prova.tempoAlerta ?? 0),
@@ -264,6 +286,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     try {
       ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
       prova.dataFimProvaAluno = DateTime.now();
+      setRespondendoProva(false);
 
       if (resultado == ConnectivityStatus.none) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');
@@ -313,7 +336,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
               // Remove respostas da prova do cache
               for (var questoes in prova.questoes) {
-                await prefs.remove('resposta_${questoes.id}');
+                var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
+                await prefs.remove('resposta_${codigoEOL}_${questoes.id}');
               }
 
               mostrarDialogProvaJaEnviada(context);
@@ -335,5 +359,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       _reaction();
     }
     tempoExecucaoStore?.onDispose();
+  }
+
+  bool possuiTempoExecucao() {
+    return prova.tempoExecucao > 0;
   }
 }

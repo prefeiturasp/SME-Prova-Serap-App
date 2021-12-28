@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -69,6 +70,8 @@ class SincronizarRespostasWorker with Worker, Loggable {
 
     try {
       var response = await _service.postResposta(
+        chaveAPI: AppConfigReader.getChaveApi(),
+        alunoRa: resposta.codigoEOL,
         questaoId: idQuestao,
         alternativaId: resposta.alternativaId,
         resposta: resposta.resposta,
@@ -88,21 +91,11 @@ class SincronizarRespostasWorker with Worker, Loggable {
     }
   }
 
-  salvarCacheMap(Map<int, ProvaResposta> respostas) async {
-    List<Future<bool>> futures = [];
-
-    for (var respostaLocal in respostas.entries) {
-      futures.add(saveCahe(respostaLocal.value));
-    }
-
-    await Future.wait(futures);
-  }
-
   saveCahe(ProvaResposta resposta) async {
     SharedPreferences _pref = GetIt.I.get();
 
     return await _pref.setString(
-      'resposta_${resposta.questaoId}',
+      'resposta_${resposta.codigoEOL}_${resposta.questaoId}',
       jsonEncode(resposta.toJson()),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:appserap/dtos/prova.response.dto.dart';
+import 'package:appserap/dtos/prova_anterior.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
+import 'package:appserap/dtos/questao_resposta.response.dto.dart';
 import 'package:chopper/chopper.dart';
 
 part 'prova.service.chopper.dart';
@@ -27,4 +29,10 @@ abstract class ProvaService extends ChopperService {
     @Field() required int status,
     @Field() int? dataFim,
   });
+
+  @Get(path: '{idProva}/respostas')
+  Future<Response<List<QuestaoRespostaResponseDTO>>> getRespostasPorProvaId({@Path() required int idProva});
+
+  @Get(path: 'finalizadas')
+  Future<Response<List<ProvaAnteriorResponseDTO>>> getProvasAnteriores();
 }
