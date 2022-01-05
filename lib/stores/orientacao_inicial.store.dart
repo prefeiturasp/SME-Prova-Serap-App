@@ -4,7 +4,6 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/tema.store.dart';
-import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,8 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
         body!.sort((dica1, dica2) => dica1.ordem!.compareTo(dica2.ordem!));
 
         for (var dica in body) {
-          bool mostrarHtml = ((dica.imagem == null || dica.imagem!.isEmpty) && (dica.titulo == null || dica.titulo!.isEmpty));
+          bool mostrarHtml =
+              ((dica.imagem == null || dica.imagem!.isEmpty) && (dica.titulo == null || dica.titulo!.isEmpty));
 
           if (mostrarHtml) {
             listaPaginasOrientacoes.add(
@@ -46,9 +46,7 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
                   style: {
                     '*': Style.fromTextStyle(
                       TextStyle(
-                        fontFamily: ServiceLocator.get<TemaStore>()
-                            .fonteDoTexto
-                            .nomeFonte,
+                        fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
                         fontSize: ServiceLocator.get<TemaStore>().size(16),
                       ),
                     )

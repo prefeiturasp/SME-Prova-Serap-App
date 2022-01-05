@@ -1,6 +1,5 @@
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
-import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/job.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';

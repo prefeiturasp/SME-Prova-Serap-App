@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/main.route.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
@@ -87,8 +89,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   DateTime fimQuestao = DateTime.now();
 
-  @observable
-  bool foraDaPaginaDeRevisao = true;
 
   @action
   setRespondendoProva(bool value) {
@@ -214,7 +214,12 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     var connectionStatus = await Connectivity().checkConnectivity();
     if (connectionStatus != ConnectivityStatus.none) {
       try {
-        await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
+        await GetIt.I.get<ApiService>().prova.setStatusProva(
+              idProva: id,
+              tipoDispositivo: kDeviceType.index,
+              status: EnumProvaStatus.INICIADA.index,
+              dataFim: getTicks(DateTime.now()),
+            );
       } catch (e) {
         warning(e);
       }
@@ -282,8 +287,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  Future<bool> finalizarProva(BuildContext context, [bool automaticamente = false]) async {
+  Future<bool> finalizarProva([bool automaticamente = false]) async {
     try {
+      BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
+
       ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
       prova.dataFimProvaAluno = DateTime.now();
       setRespondendoProva(false);
@@ -308,6 +315,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         var response = await GetIt.I.get<ApiService>().prova.setStatusProva(
               idProva: id,
               status: EnumProvaStatus.FINALIZADA.index,
+              tipoDispositivo: kDeviceType.index,
               dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 

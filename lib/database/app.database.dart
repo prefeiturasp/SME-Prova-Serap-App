@@ -1,6 +1,6 @@
+import 'package:appserap/database/daos/arquivo_video.dao.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/foundation.dart';
 
 export 'core/shared.database.dart';
 
@@ -87,12 +87,36 @@ class ArquivosDb extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [ProvasDb, QuestoesDb, AlternativasDb, ArquivosDb, ContextosProvaDb])
+@DataClassName("ArquivoVideoDb")
+class ArquivosVideoDb extends Table {
+  IntColumn get id => integer()();
+  TextColumn get nome => text()();
+  TextColumn get path => text()();
+  IntColumn get questaoId => integer()();
+  IntColumn get provaId => integer()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DriftDatabase(
+  tables: [
+    ProvasDb,
+    QuestoesDb,
+    AlternativasDb,
+    ArquivosDb,
+    ContextosProvaDb,
+    ArquivosVideoDb,
+  ],
+  daos: [
+    ArquivosVideosDao,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -112,6 +136,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from == 5) {
           await m.addColumn(provasDb, provasDb.idDownload);
+        }
+        if (from == 6) {
+          await m.createTable(arquivosVideoDb);
         }
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = 1;');
