@@ -27,6 +27,7 @@ abstract class ProvaService extends ChopperService {
   Future<Response<bool>> setStatusProva({
     @Path() required int idProva,
     @Field() required int status,
+    @Field() required int tipoDispositivo,
     @Field() int? dataFim,
   });
 
