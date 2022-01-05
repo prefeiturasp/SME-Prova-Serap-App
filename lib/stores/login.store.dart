@@ -7,7 +7,6 @@ import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -143,6 +142,12 @@ abstract class _LoginStoreBase with Store, Loggable {
           }
           carregando = false;
           return true;
+        }else {
+          carregando = false;
+          if((responseMeusDados.error! as dynamic).existemErros){
+            severe((responseMeusDados.error! as dynamic).mensagens.toString());
+          }
+          return false;
         }
       } else {
         switch (responseLogin.statusCode) {
@@ -155,7 +160,7 @@ abstract class _LoginStoreBase with Store, Loggable {
         }
       }
     } catch (e, stack) {
-      AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
+      //AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
       severe(e);
       severe(stack);
     } finally {
