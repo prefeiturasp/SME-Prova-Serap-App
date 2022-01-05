@@ -30,8 +30,7 @@ class ResumoRespostasView extends BaseStatefulWidget {
 
   ResumoRespostasView({
     required this.idProva,
-  }) : super(title: "Resumo das respostas"){
-  }
+  }) : super(title: "Resumo das respostas");
 
   @override
   _ResumoRespostasViewState createState() => _ResumoRespostasViewState();
@@ -289,15 +288,13 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
           }
         }
 
-        bool podeAdicionarRespostaVazia = (resposta!.resposta == null ||
-                resposta.resposta!.isEmpty ||
-                alternativaSelecionada.isEmpty) &&
-            (provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido);
+        bool podeAdicionarRespostaVazia =
+            (resposta!.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
+                (provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido);
 
-        bool removeQuestaoQueNaoPodeRevisar = (resposta.resposta == null ||
-                resposta.resposta!.isEmpty ||
-                alternativaSelecionada.isEmpty) &&
-            (provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido);
+        bool removeQuestaoQueNaoPodeRevisar =
+            (resposta.resposta == null || resposta.resposta!.isEmpty || alternativaSelecionada.isEmpty) &&
+                (provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido);
 
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;

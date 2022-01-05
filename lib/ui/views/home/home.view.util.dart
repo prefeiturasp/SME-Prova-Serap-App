@@ -1,4 +1,3 @@
-import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';

@@ -52,7 +52,8 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
     super.initState();
     loadData();
   }
-  loadData(){
+
+  loadData() {
     provaStore = ServiceLocator.get<HomeStore>().provas.filter((prova) => prova.key == widget.idProva).first.value;
     questao = provaStore.prova.questoes.where((element) => element.ordem == widget.ordem).first;
   }
@@ -341,11 +342,11 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
       child: Column(
         children: alternativasQuestoes
             .map((e) => _buildAlternativa(
-          e.id,
-          e.numeracao,
-          questao,
-          e.descricao,
-        ))
+                  e.id,
+                  e.numeracao,
+                  questao,
+                  e.descricao,
+                ))
             .toList(),
       ),
     );
@@ -464,7 +465,6 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
               );
               await SincronizarRespostasWorker().sincronizar();
               context.go("/prova/${provaStore.id}/resumo");
-
             } catch (e) {
               fine(e);
             } finally {
@@ -474,13 +474,5 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
         ),
       ],
     );
-  }
-
-
-
-  Future<void> _iniciarRevisaoProva() async {
-    await SincronizarRespostasWorker().sincronizar();
-
-    context.go("/prova/${widget.idProva}/resumo");
   }
 }
