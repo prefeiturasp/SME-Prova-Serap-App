@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:appserap/dtos/download.response.dto.dart';
 import 'package:chopper/chopper.dart';
 
 part 'download.service.chopper.dart';

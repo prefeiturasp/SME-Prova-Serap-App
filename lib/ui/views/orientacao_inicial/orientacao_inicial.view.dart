@@ -1,7 +1,6 @@
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
-import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -18,9 +17,9 @@ class OrientacaoInicialView extends StatefulWidget {
 }
 
 class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
-  final store = GetIt.I.get<OrientacaoInicialStore>();
+  final _store = GetIt.I.get<OrientacaoInicialStore>();
   final _principalStore = GetIt.I.get<PrincipalStore>();
-  final usuario = GetIt.I.get<UsuarioStore>();
+  final _usuario = GetIt.I.get<UsuarioStore>();
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +31,12 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
           child: Observer(
             builder: (_) {
               return ApresentacaoWidget(
-                avancarParaPagina: HomeView(),
-                listaDePaginas: store.listaPaginasOrientacoes,
+                avancarParaPagina: "/",
+                listaDePaginas: _store.listaPaginasOrientacoes,
                 textoBotaoAvancar: "PRÓXIMA DICA",
                 textoBotaoPular: "IR PARA A PÁGINA INICIAL",
-                regraMostrarTodosOsBotoesAoIniciar: usuario.ultimoLogin != null,
-                regraMostrarApenasBotaoPoximo: usuario.ultimoLogin == null,
+                regraMostrarTodosOsBotoesAoIniciar: _usuario.ultimoLogin != null,
+                regraMostrarApenasBotaoPoximo: _usuario.ultimoLogin == null,
                 pularSeNaoTiverConexao: !_principalStore.temConexao,
               );
             },
