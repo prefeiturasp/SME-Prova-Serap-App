@@ -89,7 +89,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   DateTime fimQuestao = DateTime.now();
 
-
   @action
   setRespondendoProva(bool value) {
     _usuarioStore.setRespondendoProva(value);
@@ -218,7 +217,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               idProva: id,
               tipoDispositivo: kDeviceType.index,
               status: EnumProvaStatus.INICIADA.index,
-              dataFim: getTicks(DateTime.now()),
             );
       } catch (e) {
         warning(e);
