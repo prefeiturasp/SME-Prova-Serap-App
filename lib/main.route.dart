@@ -19,7 +19,7 @@ class AppRouter {
 
   late final GoRouter _goRouter = GoRouter(
     initialLocation: APP_PAGE.SPLASH.toPath,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: false,
     routes: <GoRoute>[
       GoRoute(
         path: APP_PAGE.ERRO.toPath,
@@ -130,4 +130,3 @@ class AppRouter {
 
   late final navigatorKey = router.routerDelegate.navigatorKey;
 }
-
