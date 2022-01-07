@@ -95,14 +95,14 @@ Future<bool?> mostrarDialogProvaFinalizadaAutomaticamente(BuildContext context) 
   );
 }
 
-mostrarDialogProvaEnviada(BuildContext context) {
+Future<bool?> mostrarDialogProvaEnviada(BuildContext context) {
   final temaStore = GetIt.I.get<TemaStore>();
 
   String mensagem = "Sua prova foi enviada com sucesso!";
   String icone = AssetsUtil.check;
   String mensagemBotao = "OK";
 
-  showDialog(
+  return showDialog(
     context: context,
     barrierColor: Colors.black87,
     builder: (context) {
@@ -123,7 +123,7 @@ mostrarDialogProvaEnviada(BuildContext context) {
         botoes: [
           BotaoDefaultWidget(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, true);
               return true;
             },
             textoBotao: mensagemBotao,
@@ -134,14 +134,14 @@ mostrarDialogProvaEnviada(BuildContext context) {
   );
 }
 
-mostrarDialogProvaJaEnviada(BuildContext context) {
+Future<bool?> mostrarDialogProvaJaEnviada(BuildContext context) {
   final temaStore = GetIt.I.get<TemaStore>();
 
   String mensagem = "Esta prova já foi finalizada";
   String icone = AssetsUtil.erro;
   String mensagemBotao = "OK";
 
-  showDialog(
+  return showDialog(
     context: context,
     barrierColor: Colors.black87,
     builder: (context) {
@@ -165,7 +165,7 @@ mostrarDialogProvaJaEnviada(BuildContext context) {
         botoes: [
           BotaoDefaultWidget(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, true);
               return true;
             },
             textoBotao: mensagemBotao,
@@ -310,10 +310,10 @@ _buildFontButton({
   );
 }
 
-mostrarDialogSenhaErrada(BuildContext context) {
+Future<bool?> mostrarDialogSenhaErrada(BuildContext context) {
   String mensagemCorpo = "O código está incorreto. Solicite o código para o professor.";
 
-  showDialog(
+  return showDialog(
     context: context,
     barrierColor: Colors.black87,
     builder: (context) {
@@ -344,7 +344,7 @@ mostrarDialogSenhaErrada(BuildContext context) {
         botoes: [
           BotaoDefaultWidget(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, true);
             },
             textoBotao: "ENTENDI",
           )
