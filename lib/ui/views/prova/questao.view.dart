@@ -101,67 +101,65 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         );
       }
 
-      return Scaffold(
-        body: Column(
-          children: [
-            TempoExecucaoWidget(provaStore: provaStore),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: getPadding(),
-                  child: Column(
-                    children: [
-                      Observer(builder: (_) {
-                        return Container(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    'Questão ${questao.ordem + 1} ',
-                                    style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                      fontSize: temaStore.tTexto20,
-                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    ),
+      return Column(
+        children: [
+          TempoExecucaoWidget(provaStore: provaStore),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: getPadding(),
+                child: Column(
+                  children: [
+                    Observer(builder: (_) {
+                      return Container(
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Questão ${questao.ordem + 1} ',
+                                  style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                    fontSize: temaStore.tTexto20,
+                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                   ),
-                                  Text(
-                                    'de ${provaStore.prova.questoes.length}',
-                                    style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                                      fontSize: temaStore.tTexto20,
-                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    ),
+                                ),
+                                Text(
+                                  'de ${provaStore.prova.questoes.length}',
+                                  style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                    fontSize: temaStore.tTexto20,
+                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: 8),
-                              QuestaoWidget(
-                                provaStore: provaStore,
-                                questao: questao,
-                              ),
-                              SizedBox(height: 8),
-                            ],
-                          ),
-                        );
-                      }),
-                      Observer(builder: (context) {
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                            left: 24,
-                            right: 24,
-                            bottom: 20,
-                          ),
-                          child: _buildBotoes(questao),
-                        );
-                      }),
-                    ],
-                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            QuestaoWidget(
+                              provaStore: provaStore,
+                              questao: questao,
+                            ),
+                            SizedBox(height: 8),
+                          ],
+                        ),
+                      );
+                    }),
+                    Observer(builder: (context) {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                          left: 24,
+                          right: 24,
+                          bottom: 20,
+                        ),
+                        child: _buildBotoes(questao),
+                      );
+                    }),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       );
     });
   }
