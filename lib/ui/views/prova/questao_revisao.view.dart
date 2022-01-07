@@ -77,112 +77,110 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
     var questoes = store.questoesParaRevisar.toList();
     store.totalDeQuestoesParaRevisar = questoes.length - 1;
 
-    return Scaffold(
-      body: Column(
-        children: [
-          TempoExecucaoWidget(provaStore: provaStore),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: getPadding(),
-                child: Column(
-                  children: [
-                    Observer(builder: (_) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Questão ${questao.ordem + 1} ',
-                                  style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                    fontSize: temaStore.tTexto20,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
+    return Column(
+      children: [
+        TempoExecucaoWidget(provaStore: provaStore),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: getPadding(),
+              child: Column(
+                children: [
+                  Observer(builder: (_) {
+                    return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Questão ${questao.ordem + 1} ',
+                                style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                  fontSize: temaStore.tTexto20,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                 ),
-                                Text(
-                                  'de ${provaStore.prova.questoes.length}',
-                                  style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                                    fontSize: temaStore.tTexto20,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
+                              ),
+                              Text(
+                                'de ${provaStore.prova.questoes.length}',
+                                style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                  fontSize: temaStore.tTexto20,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                 ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Html(
-                              data: tratarArquivos(questao.titulo, questao.arquivos, EnumTipoImagem.QUESTAO),
-                              style: {
-                                '*': Style.fromTextStyle(
-                                  TemaUtil.temaTextoHtmlPadrao.copyWith(
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Html(
+                            data: tratarArquivos(questao.titulo, questao.arquivos, EnumTipoImagem.QUESTAO),
+                            style: {
+                              '*': Style.fromTextStyle(
+                                TemaUtil.temaTextoHtmlPadrao.copyWith(
+                                  fontSize: temaStore.tTexto16,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                ),
+                              ),
+                              'span': Style.fromTextStyle(
+                                TextStyle(
                                     fontSize: temaStore.tTexto16,
                                     fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
-                                ),
-                                'span': Style.fromTextStyle(
-                                  TextStyle(
-                                      fontSize: temaStore.tTexto16,
-                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                      color: TemaUtil.pretoSemFoco3),
-                                ),
-                              },
-                              onImageTap: (url, _, attributes, element) {
-                                Uint8List imagem = base64.decode(url!.split(',').last);
+                                    color: TemaUtil.pretoSemFoco3),
+                              ),
+                            },
+                            onImageTap: (url, _, attributes, element) {
+                              Uint8List imagem = base64.decode(url!.split(',').last);
 
-                                _exibirImagem(context, imagem);
-                              },
-                            ),
-                            SizedBox(height: 8),
-                            Html(
-                              data: tratarArquivos(questao.descricao, questao.arquivos, EnumTipoImagem.QUESTAO),
-                              style: {
-                                '*': Style.fromTextStyle(
-                                  TemaUtil.temaTextoHtmlPadrao.copyWith(
-                                    fontSize: temaStore.tTexto16,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
+                              _exibirImagem(context, imagem);
+                            },
+                          ),
+                          SizedBox(height: 8),
+                          Html(
+                            data: tratarArquivos(questao.descricao, questao.arquivos, EnumTipoImagem.QUESTAO),
+                            style: {
+                              '*': Style.fromTextStyle(
+                                TemaUtil.temaTextoHtmlPadrao.copyWith(
+                                  fontSize: temaStore.tTexto16,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                 ),
-                                'span': Style.fromTextStyle(
-                                  TextStyle(
-                                    fontSize: temaStore.tTexto16,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    color: TemaUtil.pretoSemFoco3,
-                                  ),
+                              ),
+                              'span': Style.fromTextStyle(
+                                TextStyle(
+                                  fontSize: temaStore.tTexto16,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                  color: TemaUtil.pretoSemFoco3,
                                 ),
-                              },
-                              onImageTap: (url, _, attributes, element) {
-                                Uint8List imagem = base64.decode(url!.split(',').last);
+                              ),
+                            },
+                            onImageTap: (url, _, attributes, element) {
+                              Uint8List imagem = base64.decode(url!.split(',').last);
 
-                                _exibirImagem(context, imagem);
-                              },
-                            ),
-                            SizedBox(height: 16),
-                            Observer(builder: (_) {
-                              return _buildResposta(questao);
-                            }),
-                          ],
-                        ),
-                      );
-                    }),
-                    Observer(builder: (context) {
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                          left: 24,
-                          right: 24,
-                          bottom: 20,
-                        ),
-                        child: _buildBotoes(questao),
-                      );
-                    }),
-                  ],
-                ),
+                              _exibirImagem(context, imagem);
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          Observer(builder: (_) {
+                            return _buildResposta(questao);
+                          }),
+                        ],
+                      ),
+                    );
+                  }),
+                  Observer(builder: (context) {
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                        left: 24,
+                        right: 24,
+                        bottom: 20,
+                      ),
+                      child: _buildBotoes(questao),
+                    );
+                  }),
+                ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
