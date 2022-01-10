@@ -27,6 +27,10 @@ class ArquivosVideosDao extends DatabaseAccessor<AppDatabase> with _$ArquivosVid
     return (select(arquivosVideoDb)..where((t) => t.questaoId.equals(questaoId))).get();
   }
 
+  Future<List<ArquivoVideoDb>> listarTodos() {
+    return select(arquivosVideoDb).get();
+  }
+
   Future removerContextoPorProvaId(int provaId) {
     return transaction(() async {
       await (delete(arquivosVideoDb)..where((t) => t.provaId.equals(provaId))).go();

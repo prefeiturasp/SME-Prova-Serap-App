@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/database/idb_file.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
@@ -24,7 +23,9 @@ import 'package:appserap/models/download_prova.model.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:chopper/src/response.dart';
 import 'package:collection/collection.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -33,6 +34,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
@@ -68,7 +70,7 @@ class GerenciadorDownload with Loggable {
         return;
       }
 
-      var provaDetalhes = response.body!;
+      ProvaDetalhesResponseDTO provaDetalhes = response.body!;
 
       await loadDownloads();
 
@@ -101,6 +103,18 @@ class GerenciadorDownload with Loggable {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.ARQUIVO,
+              id: idArquivo,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+      for (var idArquivo in provaDetalhes.videosId) {
+        if (!containsId(idArquivo, EnumDownloadTipo.VIDEO)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.VIDEO,
               id: idArquivo,
               dataHoraInicio: DateTime.now(),
             ),
@@ -211,6 +225,7 @@ class GerenciadorDownload with Loggable {
                     ordem: questaoDTO.ordem,
                     alternativas: [],
                     arquivos: [],
+                    arquivosVideos: [],
                     tipo: questaoDTO.tipo,
                     quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
                   );
@@ -279,7 +294,9 @@ class GerenciadorDownload with Loggable {
               break;
 
             case EnumDownloadTipo.VIDEO:
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
               await sincronizarVideo();
+              download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               break;
 
             case EnumDownloadTipo.ARQUIVO:
@@ -388,37 +405,39 @@ class GerenciadorDownload with Loggable {
 
   sincronizarVideo() async {
     var response = ArquivoVideoResponseDTO(
-      id: 12,
-      urlVideo: 'http:/dajskldas',
+      id: 1,
+      urlVideo: 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1280_10MG.mp4',
       nomeArquivo: 'video.mp4',
-      idProva: 123,
-      idQuestao: 123,
+      idProva: 156,
+      idQuestao: 81144,
     );
 
     String path = join(
       'prova',
       idProva.toString(),
       'video',
-      response.id.toString(),
-      extension(response.nomeArquivo),
+      response.idQuestao.toString() + extension(response.nomeArquivo),
     );
 
-    var idbFileVideo = IdbFile(path);
+    if (kIsWeb) {
+      var idbFileVideo = IdbFile(path);
 
-    Uint8List contentes = await http.readBytes(Uri.parse(response.urlVideo));
+      Uint8List contentes = await http.readBytes(Uri.parse(response.urlVideo));
 
-    await idbFileVideo.writeAsBytes(contentes);
+      await idbFileVideo.writeAsBytes(contentes);
+    } else {
+      var file = await http.get(Uri.parse(response.urlVideo));
+      path = (await getApplicationDocumentsDirectory()).path + "/" + path;
+      await saveFile(path, file.bodyBytes);
+    }
 
-    await saveVideo(
-      ArquivoVideo(
-        id: response.id,
-        nome: response.nomeArquivo,
-        path: path,
-        idProva: idProva,
-        idQuestao: 1,
-      ),
-      idProva,
-    );
+    await saveVideo(ArquivoVideo(
+      id: response.id,
+      nome: response.nomeArquivo,
+      path: path,
+      idProva: idProva,
+      idQuestao: response.idQuestao,
+    ));
   }
 
   Future<int> informarDownloadConcluido(int idProva) async {
@@ -499,6 +518,7 @@ class GerenciadorDownload with Loggable {
         descricao: questaoDb.descricao,
         alternativas: [],
         arquivos: [],
+        arquivosVideos: [],
         ordem: questaoDb.ordem,
         quantidadeAlternativas: questaoDb.quantidadeAlternativas!,
       );
@@ -519,6 +539,7 @@ class GerenciadorDownload with Loggable {
         descricao: questaoDb.descricao,
         alternativas: [],
         arquivos: [],
+        arquivosVideos: [],
         ordem: questaoDb.ordem,
         quantidadeAlternativas: questaoDb.quantidadeAlternativas!,
       );
@@ -550,6 +571,7 @@ class GerenciadorDownload with Loggable {
             ordem: e.ordem,
             alternativas: [],
             arquivos: [],
+            arquivosVideos: [],
             tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
             quantidadeAlternativas: e.quantidadeAlternativas!,
           ),
@@ -573,6 +595,19 @@ class GerenciadorDownload with Loggable {
               caminho: e.caminho,
               base64: e.base64,
               questaoId: e.questaoId,
+            ),
+          )
+          .toList();
+
+      var arquivosVideosDb = await db.arquivosVideosDao.obterPorQuestaoId(questao.id);
+      questao.arquivosVideos = arquivosVideosDb
+          .map(
+            (e) => ArquivoVideo(
+              id: e.id,
+              nome: e.nome,
+              path: e.path,
+              idProva: e.provaId,
+              idQuestao: e.questaoId,
             ),
           )
           .toList();
@@ -667,7 +702,7 @@ class GerenciadorDownload with Loggable {
     finer('[CONTEXTO SALVO]');
   }
 
-  saveVideo(ArquivoVideo entity, int provaId) async {
+  saveVideo(ArquivoVideo entity) async {
     AppDatabase database = GetIt.I.get();
 
     await database.arquivosVideosDao.inserirOuAtualizar(

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:idb_shim/idb.dart';
-import 'package:idb_shim/idb_browser.dart';
+import 'idb/idb_factory.dart';
 
 ///
 /// A file using Indexed DB
@@ -17,11 +17,7 @@ class IdbFile {
   String _filePath;
 
   Future<Database> _openDb() async {
-    final idbFactory = getIdbFactory();
-    if (idbFactory == null) {
-      throw Exception('getIdbFactory() failed');
-    }
-    return idbFactory.open(
+    return await (await idbFactory).open(
       _dbName,
       version: _version,
       onUpgradeNeeded: (e) => e.database.createObjectStore(_objectStoreName, keyPath: _propNameFilePath),
@@ -65,10 +61,8 @@ class IdbFile {
     final db = await _openDb();
     final txn = db.transaction(_objectStoreName, idbModeReadWrite);
     final store = txn.objectStore(_objectStoreName);
-    await store.put({
-      _propNameFilePath: _filePath,
-      _propNameFileContents: contents,
-    }); // if the file exists, it will be replaced.
+    await store.put(
+        {_propNameFilePath: _filePath, _propNameFileContents: contents}); // if the file exists, it will be replaced.
     await txn.completed;
   }
 
