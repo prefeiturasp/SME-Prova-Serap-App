@@ -406,7 +406,7 @@ class GerenciadorDownload with Loggable {
   sincronizarVideo() async {
     var response = ArquivoVideoResponseDTO(
       id: 1,
-      urlVideo: 'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1280_10MG.mp4',
+      urlVideo: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       nomeArquivo: 'video.mp4',
       idProva: 156,
       idQuestao: 81144,
