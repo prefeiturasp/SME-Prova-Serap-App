@@ -15,4 +15,7 @@ enum EnumProvaStatus {
 
   @JsonValue(4)
   EM_REVISAO,
+
+  @JsonValue(5)
+  FINALIZADA_AUTOMATICAMENTE,
 }

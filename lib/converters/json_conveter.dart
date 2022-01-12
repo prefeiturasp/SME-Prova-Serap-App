@@ -7,6 +7,7 @@ import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/dtos/preferencias_usuario.response.dto.dart';
 import 'package:appserap/dtos/orientacao_inicial.response.dto.dart';
 import 'package:appserap/dtos/prova.response.dto.dart';
+import 'package:appserap/dtos/prova_anterior.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.response.dto.dart';
@@ -68,4 +69,5 @@ final jsonConverter = JsonSerializableConverter({
   "PreferenciasUsuarioResponseDTO": PreferenciasUsuarioResponseDTO.fromJson,
   "OrientacaoInicialResponseDTO": OrientacaoInicialResponseDTO.fromJson,
   "ContextoProvaResponseDTO": ContextoProvaResponseDTO.fromJson,
+  "ProvaAnteriorResponseDTO": ProvaAnteriorResponseDTO.fromJson,
 });

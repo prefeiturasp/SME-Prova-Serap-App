@@ -1,39 +1,38 @@
 import 'dart:convert';
 
+import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/stores/home.store.dart';
+import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
-import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/ui/views/home/home.view.util.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
+import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/bases/base_tab.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialog_default.widget.dart';
+import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/extensions/date.extension.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:appserap/utils/tema.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobx/mobx.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-
-import 'package:appserap/enums/download_status.enum.dart';
-import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/stores/home.store.dart';
-import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/ui/views/prova/prova.view.dart';
-import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
-import 'package:appserap/ui/widgets/bases/base_stateless.widget.dart';
-import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
-import 'package:appserap/ui/widgets/dialog/dialog_default.widget.dart';
-import 'package:appserap/ui/widgets/dialog/dialogs.dart';
-import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
-import 'package:appserap/utils/date.util.dart';
-import 'package:appserap/utils/tema.util.dart';
 import 'package:supercharged/supercharged.dart';
 
 class ProvaAtualTabView extends BaseStatefulWidget {
@@ -41,7 +40,7 @@ class ProvaAtualTabView extends BaseStatefulWidget {
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, HomeStore> with Loggable {
+class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore> with Loggable, HomeViewUtil {
   final _principalStore = GetIt.I.get<PrincipalStore>();
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
@@ -81,11 +80,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   }
 
   _buildItens(ObservableMap<int, ProvaStore> provasStore) {
-    provasStore.forEach((key, value) {
-      value.isVisible = _verificaProvaVigente(value);
-    });
-
-    var listProvas = provasStore.filter((p) => p.value.isVisible).toMap();
+    var listProvas = provasStore.filter((p) => verificaProvaVigente(p.value) && !p.value.prova.isFinalizada()).toMap();
 
     if (listProvas.isEmpty) {
       return Center(
@@ -125,49 +120,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
         return _buildProva(provaStore!);
       },
     );
-  }
-
-  bool _verificaProvaVigente(ProvaStore provaStore) {
-    bool provaVigente = false;
-
-    if (provaStore.prova.dataFim != null) {
-      DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-      provaVigente = dataAtual.isBetween(provaStore.prova.dataInicio, provaStore.prova.dataFim!);
-    }
-
-    if (!provaVigente) {
-      provaVigente = isSameDate(provaStore.prova.dataInicio);
-    }
-
-    return provaVigente;
-  }
-
-  bool _verificaProvaDisponivel(ProvaStore provaStore) {
-    bool isFinalDeSemanaEPossuiTempo = isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
-    bool isFinalDeSemanaENaoPossuiTempo = isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
-    bool naoEFinalDeSemanaEPossuiTempo = !isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
-    bool naoEFinalDeSemanaENaoPossuiTempo = !isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
-
-    bool podeIniciarProva = !isFinalDeSemanaEPossuiTempo ||
-        isFinalDeSemanaENaoPossuiTempo ||
-        naoEFinalDeSemanaEPossuiTempo ||
-        naoEFinalDeSemanaENaoPossuiTempo;
-
-    return podeIniciarProva;
-  }
-
-  bool _verificaProvaTurno(ProvaStore provaStore) {
-    bool vigente = false;
-
-    DateTime horaAtual = DateTime.now();
-    if (_usuarioStore.fimTurno != 0) {
-      vigente = horaAtual.hour >= _usuarioStore.inicioTurno && horaAtual.hour < _usuarioStore.fimTurno;
-    } else {
-      vigente = horaAtual.hour >= _usuarioStore.inicioTurno &&
-          (horaAtual.hour <= 23 && horaAtual.minute <= 59 && horaAtual.second <= 59);
-    }
-
-    return vigente;
   }
 
   _buildProva(ProvaStore provaStore) {
@@ -438,9 +390,10 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
     // Prova baixada -- iniciar
     if (provaStore.downloadStatus == EnumDownloadStatus.CONCLUIDO) {
-      bool provaDisponivel =
-          _verificaProvaTurno(provaStore) && provaStore.possuiTempoExecucao() && _verificaProvaDisponivel(provaStore) ||
-              !provaStore.possuiTempoExecucao();
+      bool provaDisponivel = verificaProvaTurno(provaStore, _usuarioStore) &&
+              provaStore.possuiTempoExecucao() &&
+              verificaProvaDisponivel(provaStore) ||
+          !provaStore.possuiTempoExecucao();
 
       if (!provaDisponivel) {
         return _buildProvaTurnoIndisponivel(provaStore);
@@ -462,7 +415,6 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
   Widget _buildSemConexao(ProvaStore provaStore) {
     return SizedBox(
       width: 350,
-      height: 40,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,36 +422,30 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
           SizedBox(
             height: 10,
           ),
-          Expanded(
-            child: LinearPercentIndicator(
-              lineHeight: 4.0,
-              percent: provaStore.progressoDownload,
-              linearStrokeCap: LinearStrokeCap.roundAll,
-              progressColor: TemaUtil.vermelhoErro,
-            ),
+          LinearPercentIndicator(
+            lineHeight: 4.0,
+            percent: provaStore.progressoDownload,
+            linearStrokeCap: LinearStrokeCap.roundAll,
+            progressColor: TemaUtil.vermelhoErro,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Row(
-              children: [
-                Texto(
-                  "Download não iniciado",
+            child: Text.rich(
+              TextSpan(
+                text: "Download não iniciado",
+                style: TextStyle(
                   color: TemaUtil.vermelhoErro,
-                  bold: true,
-                  texStyle: TemaUtil.temaTextoErroNegrito.copyWith(
-                    fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  ),
+                  fontSize: temaStore.size(12),
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  fontWeight: FontWeight.bold,
                 ),
-                Texto(
-                  " - Sem conexão com a internet",
-                  color: TemaUtil.vermelhoErro,
-                  texStyle: TemaUtil.temaTextoErro.copyWith(
-                    fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                children: <TextSpan>[
+                  TextSpan(
+                    text: " - Sem conexão com a internet",
+                    style: TextStyle(fontWeight: FontWeight.normal, color: TemaUtil.vermelhoErro),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -730,14 +676,7 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
             _navegarParaProvaPrimeiraVez(provaStore);
           }
         } else if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProvaView(
-                provaStore: provaStore,
-              ),
-            ),
-          );
+          context.go("/prova/${provaStore.id}");
         }
       },
     );
@@ -759,19 +698,9 @@ class _ProvaAtualTabViewState extends BaseStatelessWidget<ProvaAtualTabView, Hom
 
     if (iniciarProva) {
       if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ContextoProvaView(provaStore: provaStore),
-          ),
-        );
+        context.go("/prova/${provaStore.id}/contexto");
       } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ProvaView(provaStore: provaStore),
-          ),
-        );
+        context.go("/prova/${provaStore.id}");
       }
     }
   }

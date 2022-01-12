@@ -2,31 +2,38 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/dtos/contexto_prova.response.dto.dart';
-import 'package:appserap/enums/posicionamento_imagem.enum.dart';
-import 'package:appserap/enums/tipo_questao.enum.dart';
-import 'package:appserap/exceptions/prova_download.exception.dart';
-import 'package:appserap/models/contexto_prova.model.dart';
-import 'package:asuka/snackbars/asuka_snack_bar.dart';
-import 'package:chopper/src/response.dart';
-import 'package:collection/collection.dart';
-import 'package:get_it/get_it.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:appserap/database/idb_file.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
+import 'package:appserap/dtos/arquivo_video.response.dto.dart';
+import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
+import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/arquivo_video.model.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:appserap/models/download_prova.model.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:chopper/src/response.dart';
+import 'package:collection/collection.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
 typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
@@ -34,6 +41,7 @@ typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
 class GerenciadorDownload with Loggable {
   int idProva;
   List<DownloadProva> downloads = [];
+  bool _isPauseAllDownloads = false;
   late DateTime inicio;
   late int downloadAtual;
 
@@ -45,6 +53,10 @@ class GerenciadorDownload with Loggable {
   GerenciadorDownload({
     required this.idProva,
   });
+
+  pauseAllDownloads() {
+    _isPauseAllDownloads = true;
+  }
 
   Future<void> configure() async {
     ApiService apiService = GetIt.I.get();
@@ -114,7 +126,7 @@ class GerenciadorDownload with Loggable {
 
       await saveDownloads();
     } catch (e) {
-      AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
+      //AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
       return;
     }
   }
@@ -158,6 +170,11 @@ class GerenciadorDownload with Loggable {
 
     for (var i = 0; i < downloads.length; i++) {
       var download = downloads[i];
+
+      if (_isPauseAllDownloads) {
+        _pause();
+        break;
+      }
 
       if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
         finer('[Prova $idProva] - Iniciando download TIPO: ${download.tipo} ID: ${download.id}');
@@ -260,6 +277,11 @@ class GerenciadorDownload with Loggable {
                 download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               }
               break;
+
+            case EnumDownloadTipo.VIDEO:
+              await sincronizarVideo();
+              break;
+
             case EnumDownloadTipo.ARQUIVO:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
@@ -348,11 +370,89 @@ class GerenciadorDownload with Loggable {
           onTempoPrevistoChangeCallback!(getTempoPrevisto());
         }
 
+        try {
+          int idDownload = await informarDownloadConcluido(prova.id);
+          prova.idDownload = idDownload;
+        } catch (e, stack) {
+          severe('[Prova $idProva] - Erro ao informar download concluido');
+          severe(e);
+          severe(stack);
+        }
+
         await saveProva(prova);
       }
     }
 
     cancelTimer();
+  }
+
+  sincronizarVideo() async {
+    var response = ArquivoVideoResponseDTO(
+      id: 12,
+      urlVideo: 'http:/dajskldas',
+      nomeArquivo: 'video.mp4',
+      idProva: 123,
+      idQuestao: 123,
+    );
+
+    String path = join(
+      'prova',
+      idProva.toString(),
+      'video',
+      response.id.toString(),
+      extension(response.nomeArquivo),
+    );
+
+    var idbFileVideo = IdbFile(path);
+
+    Uint8List contentes = await http.readBytes(Uri.parse(response.urlVideo));
+
+    await idbFileVideo.writeAsBytes(contentes);
+
+    await saveVideo(
+      ArquivoVideo(
+        id: response.id,
+        nome: response.nomeArquivo,
+        path: path,
+        idProva: idProva,
+        idQuestao: 1,
+      ),
+      idProva,
+    );
+  }
+
+  Future<int> informarDownloadConcluido(int idProva) async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    String modeloDispositivo;
+    String dispositivoId = "";
+    String versao = "";
+
+    if (kIsWeb) {
+      WebBrowserInfo webBrowserInfo = await deviceInfo.webBrowserInfo;
+      modeloDispositivo = webBrowserInfo.userAgent!;
+      versao = webBrowserInfo.appVersion!;
+    } else {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      modeloDispositivo = "${androidInfo.manufacturer!} ${androidInfo.model!}";
+      dispositivoId = androidInfo.androidId!;
+      versao = "Android ${androidInfo.version.release} (SDK ${androidInfo.version.release})";
+    }
+
+    var response = await ServiceLocator.get<ApiService>().download.informarDownloadConcluido(
+          provaId: idProva,
+          tipoDispositivo: kDeviceType.index,
+          dispositivoId: dispositivoId,
+          modeloDispositivo: modeloDispositivo,
+          versao: versao,
+          dataHora: DateTime.now().toIso8601String(),
+        );
+
+    if (response.isSuccessful) {
+      return response.body!;
+    }
+
+    return -1;
   }
 
   double getPorcentagem() {
@@ -564,7 +664,23 @@ class GerenciadorDownload with Loggable {
       ),
     );
 
-    fine('[CONTEXTO SALVO]');
+    finer('[CONTEXTO SALVO]');
+  }
+
+  saveVideo(ArquivoVideo entity, int provaId) async {
+    AppDatabase database = GetIt.I.get();
+
+    await database.arquivosVideosDao.inserirOuAtualizar(
+      ArquivoVideoDb(
+        id: entity.id,
+        path: entity.path,
+        nome: entity.nome,
+        questaoId: entity.idQuestao,
+        provaId: entity.idProva,
+      ),
+    );
+
+    finer('[VIDEO SALVO]');
   }
 
   saveProva(Prova prova) async {
@@ -586,6 +702,7 @@ class GerenciadorDownload with Loggable {
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
         dataFimProvaAluno: prova.dataFimProvaAluno,
         senha: prova.senha,
+        idDownload: prova.idDownload,
       ),
     );
 
@@ -598,19 +715,23 @@ class GerenciadorDownload with Loggable {
     prefs.remove('download_$idProva');
   }
 
-  Future<void> pause() async {
-    for (var download in downloads) {
-      if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
-        download.downloadStatus = EnumDownloadStatus.PAUSADO;
+  Future<void> _pause() async {
+    try {
+      for (var download in downloads) {
+        if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+          download.downloadStatus = EnumDownloadStatus.PAUSADO;
+        }
       }
+      var prova = await getProva();
+
+      prova.downloadStatus = EnumDownloadStatus.PAUSADO;
+
+      await saveProva(prova);
+
+      await saveDownloads();
+    } finally {
+      _isPauseAllDownloads = false;
     }
-    var prova = await getProva();
-
-    prova.downloadStatus = EnumDownloadStatus.PAUSADO;
-
-    await saveProva(prova);
-
-    await saveDownloads();
   }
 
   validarProva() async {

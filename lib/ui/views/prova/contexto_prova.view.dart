@@ -8,11 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:supercharged/supercharged.dart';
 
 class ContextoProvaView extends StatefulWidget {
-  final ProvaStore provaStore;
+  late final ProvaStore provaStore;
 
-  const ContextoProvaView({required this.provaStore});
+  ContextoProvaView({required int idProva}) {
+    provaStore = GetIt.I.get<HomeStore>().provas.filter((prova) => prova.key == idProva).first.value;
+  }
 
   @override
   _ContextoProvaViewState createState() => _ContextoProvaViewState();
