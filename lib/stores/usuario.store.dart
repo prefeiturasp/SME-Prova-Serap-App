@@ -53,11 +53,6 @@ abstract class _UsuarioStoreBase with Store {
   bool get isLogado => codigoEOL != null;
 
   @action
-  setRespondendoProva(bool value) {
-    isRespondendoProva = value;
-  }
-
-  @action
   void dispose() {
     if (ano != null && ano!.isNotEmpty) {
       desinscreverTurmaFirebase(ano!);
