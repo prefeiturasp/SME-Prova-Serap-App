@@ -337,13 +337,6 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
               );
             },
           ),
-          // TextButton(
-          //   onPressed: () async {
-          //     context.go(
-          //         "/login/admin/123445/Lucas Didur/22366A3E-9E4C-E711-9541-782BCB3D218E/59A3DB6382FE4519886E859F71E06C1E");
-          //   },
-          //   child: Texto("Login Admin"),
-          // ),
         ],
       ),
     );

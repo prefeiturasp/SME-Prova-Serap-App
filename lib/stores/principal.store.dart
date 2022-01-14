@@ -86,7 +86,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     usuario.dispose();
 
     if (eraAdimin) {
-      await launch("https://serap.sme.prefeitura.sp.gov.br/", webOnlyWindowName: '_self');
+      await launch("https://hom-serap.sme.prefeitura.sp.gov.br/", webOnlyWindowName: '_self');
     }
   }
 
