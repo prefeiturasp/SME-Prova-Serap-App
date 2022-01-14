@@ -10,6 +10,7 @@ import 'package:appserap/utils/router.util.dart';
 import 'package:go_router/go_router.dart';
 
 import 'ui/views/error/error.view.dart';
+import 'ui/views/login/login_adm.view.dart';
 import 'ui/views/prova/questao_revisao.view.dart';
 
 class AppRouter {
@@ -35,6 +36,22 @@ class AppRouter {
         path: APP_PAGE.LOGIN.toPath,
         name: APP_PAGE.LOGIN.toName,
         builder: (context, state) => const LoginView(),
+      ),
+      GoRoute(
+        path: APP_PAGE.LOGIN_ADM.toPath,
+        name: APP_PAGE.LOGIN_ADM.toName,
+        builder: (context, state) {
+          var login = state.params['login']!;
+          var nome = state.params['nome']!;
+          var perfil = state.params['perfil']!;
+          var chaveApi = state.params['chaveApi']!;
+          return LoginAdmView(
+            login: login,
+            nome: nome,
+            perfil: perfil,
+            chaveApi: chaveApi,
+          );
+        },
       ),
       GoRoute(
         path: APP_PAGE.BOAS_VINDAS.toPath,

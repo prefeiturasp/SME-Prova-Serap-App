@@ -2,6 +2,7 @@ enum APP_PAGE {
   ERRO,
   SPLASH,
   LOGIN,
+  LOGIN_ADM,
   BOAS_VINDAS,
   HOME,
   PROVA,
@@ -20,6 +21,8 @@ extension AppPageExtension on APP_PAGE {
         return "/splash";
       case APP_PAGE.LOGIN:
         return "/login";
+      case APP_PAGE.LOGIN_ADM:
+        return "/login/admin/:login/:nome/:perfil/:chaveApi";
       case APP_PAGE.BOAS_VINDAS:
         return "/boasVindas";
       case APP_PAGE.HOME:
@@ -45,6 +48,8 @@ extension AppPageExtension on APP_PAGE {
         return "Carregando";
       case APP_PAGE.LOGIN:
         return "Login";
+      case APP_PAGE.LOGIN_ADM:
+        return "Login Administrador";
       case APP_PAGE.BOAS_VINDAS:
         return "Boas Vindas";
       case APP_PAGE.HOME:
@@ -70,6 +75,8 @@ extension AppPageExtension on APP_PAGE {
         return "SPLASH";
       case APP_PAGE.LOGIN:
         return "LOGIN";
+      case APP_PAGE.LOGIN_ADM:
+        return "LOGIN_ADM";
       case APP_PAGE.BOAS_VINDAS:
         return "BOAS_VINDAS";
       case APP_PAGE.HOME:
