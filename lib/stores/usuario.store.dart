@@ -49,6 +49,9 @@ abstract class _UsuarioStoreBase with Store {
   @observable
   bool isRespondendoProva = false;
 
+  @observable
+  bool isAdmin = false;
+
   @computed
   bool get isLogado => codigoEOL != null;
 
@@ -64,6 +67,7 @@ abstract class _UsuarioStoreBase with Store {
     ano = null;
     tamanhoFonte = 16;
     familiaFonte = FonteTipoEnum.POPPINS;
+    isAdmin = false;
   }
 
   @action
@@ -158,5 +162,29 @@ abstract class _UsuarioStoreBase with Store {
     await prefs.setInt('familiaFonte', familiaFonte.index);
 
     await inscreverTurmaFirebase(ano);
+  }
+
+  @action
+  Future<void> atualizarDadosAdm({
+    required String nome,
+    String? codigoEOL,
+    String? token,
+  }) async {
+    this.nome = nome;
+    this.codigoEOL = codigoEOL;
+    this.token = token;
+
+    SharedPreferences prefs = GetIt.I.get();
+    await prefs.setString('serapUsuarioNome', nome);
+
+    if (codigoEOL != null && codigoEOL.isNotEmpty) {
+      this.codigoEOL = codigoEOL;
+      await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
+    }
+
+    if (token != null && token.isNotEmpty) {
+      this.token = token;
+      await prefs.setString('serapUsuarioToken', token);
+    }
   }
 }

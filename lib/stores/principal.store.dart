@@ -9,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'principal.store.g.dart';
 
@@ -80,7 +81,13 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
     await _limparDadosLocais();
 
+    bool eraAdimin = usuario.isAdmin;
+
     usuario.dispose();
+
+    if (eraAdimin) {
+      await launch("https://serap.sme.prefeitura.sp.gov.br/", webOnlyWindowName: '_self');
+    }
   }
 
   _limparDadosLocais() async {

@@ -96,9 +96,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
         SizedBox(
           height: 150,
         ),
-        Image.asset(
-          AssetsUtil.logoSerapPng
-        ),
+        Image.asset(AssetsUtil.logoSerapPng),
         SizedBox(
           height: 48,
         ),
@@ -339,6 +337,13 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
               );
             },
           ),
+          // TextButton(
+          //   onPressed: () async {
+          //     context.go(
+          //         "/login/admin/123445/Lucas Didur/22366A3E-9E4C-E711-9541-782BCB3D218E/59A3DB6382FE4519886E859F71E06C1E");
+          //   },
+          //   child: Texto("Login Admin"),
+          // ),
         ],
       ),
     );
