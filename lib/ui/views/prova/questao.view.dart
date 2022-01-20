@@ -10,6 +10,7 @@ import 'package:appserap/stores/questao.store.dart';
 import 'package:appserap/ui/views/prova/widgets/questao.widget.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
+import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
@@ -104,6 +105,9 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       return Column(
         children: [
           TempoExecucaoWidget(provaStore: provaStore),
+          AudioPlayerWidget(
+            audioPath: "",
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
