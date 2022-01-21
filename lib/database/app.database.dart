@@ -152,6 +152,8 @@ class AppDatabase extends _$AppDatabase {
 
       await customUpdate("delete from arquivos_db;");
 
+      await customUpdate("delete from arquivos_video_db;");
+
       await customUpdate("delete from provas_db;");
     });
   }
@@ -167,6 +169,10 @@ class AppDatabase extends _$AppDatabase {
       ]);
 
       await customUpdate("delete from arquivos_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from arquivos_video_db where prova_id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
 

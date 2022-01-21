@@ -19,7 +19,7 @@ class Questao {
 
   List<Alternativa> alternativas;
   List<Arquivo> arquivos;
-  List<ArquivoVideo>? arquivosVideos;
+  List<ArquivoVideo> arquivosVideos;
 
   Questao({
     required this.id,
@@ -30,7 +30,7 @@ class Questao {
     required this.arquivos,
     required this.tipo,
     required this.quantidadeAlternativas,
-    this.arquivosVideos,
+    required this.arquivosVideos,
   });
 
   factory Questao.fromJson(Map<String, dynamic> json) => _$QuestaoFromJson(json);

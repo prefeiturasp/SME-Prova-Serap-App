@@ -96,6 +96,9 @@ dependencies:
 
   # Reprodução
   flutter_sound: ^8.5.0
+  
+  # Video player
+  chewie: ^1.2.2
 
 dependency_overrides:
   flutter_colorpicker: ^0.6.0
