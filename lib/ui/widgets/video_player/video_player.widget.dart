@@ -39,7 +39,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     }
 
     _chewieController = ChewieController(
-      showOptions: false,
       allowedScreenSleep: false,
       allowFullScreen: true,
       deviceOrientationsAfterFullScreen: [
