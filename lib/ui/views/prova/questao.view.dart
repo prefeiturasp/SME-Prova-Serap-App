@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -15,9 +17,13 @@ import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
+import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
@@ -37,6 +43,7 @@ class QuestaoView extends BaseStatefulWidget {
 class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable {
   late ProvaStore provaStore;
   late Questao questao;
+  late Map<int, Uint8List> arquivosVideo = {};
 
   final controller = HtmlEditorController();
 
@@ -53,6 +60,22 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   configure() async {
     provaStore = ServiceLocator.get<HomeStore>().provas.filter((prova) => prova.key == widget.idProva).first.value;
     questao = provaStore.prova.questoes.where((element) => element.ordem == widget.ordem).first;
+
+    if (kIsWeb) {
+      await loadVideos(questao);
+    }
+  }
+
+  loadVideos(Questao questao) async {
+    for (var arquivoVideo in questao.arquivosVideos) {
+      IdbFile idbFile = IdbFile(arquivoVideo.path);
+
+      if (await idbFile.exists()) {
+        Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
+        info('abrindo video ${readContents.lengthInBytes / 1024 / 1024}');
+        arquivosVideo[arquivoVideo.id] = readContents;
+      }
+    }
   }
 
   @override
@@ -268,5 +291,14 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     await SincronizarRespostasWorker().sincronizar();
 
     context.go("/prova/${widget.idProva}/resumo");
+  }
+
+  showVideoPlayer() {
+    if (kIsWeb) {
+      var file = arquivosVideo.entries.first.value;
+      return VideoPlayerWidget(videoUrl: buildUrl(file));
+    } else {
+      return VideoPlayerWidget(videoPath: questao.arquivosVideos.first.path);
+    }
   }
 }

@@ -94,6 +94,9 @@ dependencies:
   go_router: ^2.5.7
   url_launcher: ^6.0.18
 
+  # Video player
+  chewie: ^1.2.2
+
 dependency_overrides:
   flutter_colorpicker: ^0.6.0
 

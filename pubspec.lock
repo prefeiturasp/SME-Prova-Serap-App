@@ -135,12 +135,12 @@ packages:
     source: hosted
     version: "2.0.1"
   chewie:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: chewie
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.2"
   chewie_audio:
     dependency: transitive
     description:
@@ -460,7 +460,7 @@ packages:
       name: flutter_math_fork
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.1"
+    version: "0.3.3+1"
   flutter_mobx:
     dependency: "direct main"
     description:
@@ -897,7 +897,7 @@ packages:
       name: provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.0"
+    version: "5.0.0"
   pub_semver:
     dependency: transitive
     description:
