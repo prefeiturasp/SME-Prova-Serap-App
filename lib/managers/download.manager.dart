@@ -186,7 +186,7 @@ class GerenciadorDownload with Loggable {
       var download = downloads[i];
 
       if (_isPauseAllDownloads) {
-        _pause();
+        await _pause();
         break;
       }
 

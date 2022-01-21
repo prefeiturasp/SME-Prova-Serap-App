@@ -124,81 +124,65 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         );
       }
 
-      return Scaffold(
-        body: Column(
-          children: [
-            TempoExecucaoWidget(provaStore: provaStore),
-            Expanded(
-              child: Row(
-                children: [
-                  SingleChildScrollView(
-                    child: Padding(
-                      padding: questao.arquivosVideos.isEmpty ? getPadding() : EdgeInsets.zero,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: questao.arquivosVideos.isNotEmpty ? MediaQuery.of(context).size.width * 0.5 : null,
-                            child: Observer(builder: (_) {
-                              return Container(
-                                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Questão ${questao.ordem + 1} ',
-                                          style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                            fontSize: temaStore.tTexto20,
-                                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                          ),
-                                        ),
-                                        Text(
-                                          'de ${provaStore.prova.questoes.length}',
-                                          style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                                            fontSize: temaStore.tTexto20,
-                                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 8),
-                                    QuestaoWidget(
-                                      provaStore: provaStore,
-                                      questao: questao,
-                                    ),
-                                    SizedBox(height: 8),
-                                  ],
+      return Column(
+        children: [
+          TempoExecucaoWidget(provaStore: provaStore),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: getPadding(),
+                child: Column(
+                  children: [
+                    Observer(builder: (_) {
+                      return Container(
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Questão ${questao.ordem + 1} ',
+                                  style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                    fontSize: temaStore.tTexto20,
+                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                  ),
                                 ),
-                              );
-                            }),
-                          ),
-                          Observer(builder: (context) {
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                left: 24,
-                                right: 24,
-                                bottom: 20,
-                              ),
-                              child: _buildBotoes(questao),
-                            );
-                          }),
-                        ],
-                      ),
-                    ),
-                  ),
-                  questao.arquivosVideos.isEmpty
-                      ? SizedBox.shrink()
-                      : Container(
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          padding: EdgeInsets.only(right: 16),
-                          child: showVideoPlayer(),
+                                Text(
+                                  'de ${provaStore.prova.questoes.length}',
+                                  style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                    fontSize: temaStore.tTexto20,
+                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            QuestaoWidget(
+                              provaStore: provaStore,
+                              questao: questao,
+                            ),
+                            SizedBox(height: 8),
+                          ],
                         ),
-                ],
+                      );
+                    }),
+                    Observer(builder: (context) {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                          left: 24,
+                          right: 24,
+                          bottom: 20,
+                        ),
+                        child: _buildBotoes(questao),
+                      );
+                    }),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       );
     });
   }

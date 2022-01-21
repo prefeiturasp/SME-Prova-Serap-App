@@ -91,7 +91,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   setRespondendoProva(bool value) {
-    _usuarioStore.setRespondendoProva(value);
+    _usuarioStore.isRespondendoProva = value;
   }
 
   @action
@@ -161,11 +161,18 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   _onRespondendoProvaChange(bool isRepondendoProva) async {
+    if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
+      return;
+    }
+
     if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
+      info("[Prova $id] - Download Pausado");
       downloadStatus = EnumDownloadStatus.PAUSADO;
       gerenciadorDownload.pauseAllDownloads();
     }
     if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
+      info("[Prova $id] - Download Resumido");
+
       await iniciarDownload();
     }
   }

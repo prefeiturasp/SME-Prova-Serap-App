@@ -90,7 +90,9 @@ dependencies:
   # Informações do dispoisitivo
   device_info_plus: ^3.1.1
 
+  # Navegação
   go_router: ^2.5.7
+  url_launcher: ^6.0.18
 
   # Video player
   chewie: ^1.2.2
