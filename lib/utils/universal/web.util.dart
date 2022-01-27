@@ -1,6 +1,7 @@
-import 'dart:html' if (dart.library.io) 'dart:io';
-
+import 'dart:html';
 import 'dart:typed_data';
+
+import 'package:appserap/utils/idb_file.util.dart';
 
 String buildUrl(Uint8List file) {
   final blob = Blob([file]);
@@ -8,9 +9,14 @@ String buildUrl(Uint8List file) {
 }
 
 saveFile(String path, Uint8List bodyBytes) async {
-  throw UnimplementedError();
+  var idbFileVideo = IdbFile(path);
+  await idbFileVideo.writeAsBytes(bodyBytes);
 }
 
 apagarArquivo(String path) async {
   throw UnimplementedError();
+}
+
+Future<String?> buildPath(String? path) async {
+  return path;
 }

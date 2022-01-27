@@ -11,6 +11,7 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/questao.model.dart';
 
+import 'arquivo_audio.model.dart';
 import 'arquivo_video.model.dart';
 
 part 'prova.model.g.dart';
@@ -122,6 +123,7 @@ class Prova {
               alternativas: [],
               arquivos: [],
               arquivosVideos: [],
+              arquivosAudio: [],
               tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
               quantidadeAlternativas: e.quantidadeAlternativas!,
             ),
@@ -154,7 +156,18 @@ class Prova {
             .map(
               (e) => ArquivoVideo(
                 id: e.id,
-                nome: e.nome,
+                path: e.path,
+                idProva: e.provaId,
+                idQuestao: e.questaoId,
+              ),
+            )
+            .toList();
+
+        var arquivosAudiosDb = await db.arquivosAudioDao.obterPorQuestaoId(questao.id);
+        questao.arquivosAudio = arquivosAudiosDb
+            .map(
+              (e) => ArquivoAudio(
+                id: e.id,
                 path: e.path,
                 idProva: e.provaId,
                 idQuestao: e.questaoId,

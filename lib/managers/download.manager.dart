@@ -17,6 +17,7 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/arquivo_audio.model.dart';
 import 'package:appserap/models/arquivo_video.model.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:appserap/models/download_prova.model.dart';
@@ -110,12 +111,24 @@ class GerenciadorDownload with Loggable {
         }
       }
 
-      for (var idArquivo in provaDetalhes.videosId) {
-        if (!containsId(idArquivo, EnumDownloadTipo.VIDEO)) {
+      for (var idArquivoVideo in provaDetalhes.videosId) {
+        if (!containsId(idArquivoVideo, EnumDownloadTipo.VIDEO)) {
           downloads.add(
             DownloadProva(
               tipo: EnumDownloadTipo.VIDEO,
-              id: idArquivo,
+              id: idArquivoVideo,
+              dataHoraInicio: DateTime.now(),
+            ),
+          );
+        }
+      }
+
+      for (var idArquivoAudio in provaDetalhes.audiosId) {
+        if (!containsId(idArquivoAudio, EnumDownloadTipo.AUDIO)) {
+          downloads.add(
+            DownloadProva(
+              tipo: EnumDownloadTipo.AUDIO,
+              id: idArquivoAudio,
               dataHoraInicio: DateTime.now(),
             ),
           );
@@ -226,6 +239,7 @@ class GerenciadorDownload with Loggable {
                     alternativas: [],
                     arquivos: [],
                     arquivosVideos: [],
+                    arquivosAudio: [],
                     tipo: questaoDTO.tipo,
                     quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
                   );
@@ -278,14 +292,15 @@ class GerenciadorDownload with Loggable {
 
                 await saveContexto(
                   ContextoProva(
-                      id: contexto.id,
-                      imagem: contexto.imagem,
-                      imagemBase64: base64,
-                      ordem: contexto.ordem,
-                      posicionamento: contexto.posicionamento,
-                      provaId: contexto.provaId,
-                      texto: contexto.texto,
-                      titulo: contexto.titulo),
+                    id: contexto.id,
+                    imagem: contexto.imagem,
+                    imagemBase64: base64,
+                    ordem: contexto.ordem,
+                    posicionamento: contexto.posicionamento,
+                    provaId: contexto.provaId,
+                    texto: contexto.texto,
+                    titulo: contexto.titulo,
+                  ),
                   idProva,
                 );
 
@@ -295,20 +310,53 @@ class GerenciadorDownload with Loggable {
 
             case EnumDownloadTipo.VIDEO:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
-              await sincronizarVideo();
+              await baixarVideo();
               download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              break;
+
+            case EnumDownloadTipo.AUDIO:
+              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+              Response<ArquivoResponseDTO> response = await apiService.arquivo.getAudio(idArquivo: download.id);
+
+              if (response.isSuccessful) {
+                ArquivoResponseDTO arquivo = response.body!;
+
+                String path = join(
+                  'prova',
+                  idProva.toString(),
+                  'audio',
+                  arquivo.questaoId.toString() + extension(arquivo.caminho),
+                );
+
+                await salvarArquivoLocal(arquivo.caminho, path);
+
+                await saveAudio(
+                  ArquivoAudio(
+                    id: arquivo.id,
+                    path: path,
+                    idProva: idProva,
+                    idQuestao: arquivo.questaoId,
+                  ),
+                );
+
+                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              } else {
+                download.downloadStatus = EnumDownloadStatus.ERRO;
+              }
+
               break;
 
             case EnumDownloadTipo.ARQUIVO:
               download.downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-              Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
-
-              questao ??= await obterQuestaoPorArquivoLegadoIdAlternativa(download.id, idProva);
-
               Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
 
               if (response.isSuccessful) {
+                Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
+
+                questao ??= await obterQuestaoPorArquivoLegadoIdAlternativa(download.id, idProva);
+
                 ArquivoResponseDTO arquivo = response.body!;
 
                 http.Response arquivoResponse = await http.get(
@@ -317,7 +365,6 @@ class GerenciadorDownload with Loggable {
                   ),
                 );
 
-                // ByteData imageData = await NetworkAssetBundle(Uri.parse(arquivo.caminho)).load("");
                 String base64 = base64Encode(arquivoResponse.bodyBytes);
 
                 await saveArquivo(
@@ -330,7 +377,10 @@ class GerenciadorDownload with Loggable {
                     idProva);
 
                 download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              } else {
+                download.downloadStatus = EnumDownloadStatus.ERRO;
               }
+
               break;
           }
           downloadAtual = i;
@@ -403,13 +453,13 @@ class GerenciadorDownload with Loggable {
     cancelTimer();
   }
 
-  sincronizarVideo() async {
+  baixarVideo() async {
     var response = ArquivoVideoResponseDTO(
       id: 1,
       urlVideo: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
       nomeArquivo: 'video.mp4',
-      idProva: 156,
-      idQuestao: 81144,
+      idProva: -1,
+      idQuestao: -1,
     );
 
     String path = join(
@@ -419,25 +469,22 @@ class GerenciadorDownload with Loggable {
       response.idQuestao.toString() + extension(response.nomeArquivo),
     );
 
-    if (kIsWeb) {
-      var idbFileVideo = IdbFile(path);
+    await salvarArquivoLocal(response.urlVideo, path);
 
-      Uint8List contentes = await http.readBytes(Uri.parse(response.urlVideo));
+    await saveVideo(
+      ArquivoVideo(
+        id: response.id,
+        path: path,
+        idProva: idProva,
+        idQuestao: response.idQuestao,
+      ),
+    );
+  }
 
-      await idbFileVideo.writeAsBytes(contentes);
-    } else {
-      var file = await http.get(Uri.parse(response.urlVideo));
-      path = (await getApplicationDocumentsDirectory()).path + "/" + path;
-      await saveFile(path, file.bodyBytes);
-    }
+  salvarArquivoLocal(String url, String path) async {
+    Uint8List contentes = await http.readBytes(Uri.parse(url));
 
-    await saveVideo(ArquivoVideo(
-      id: response.id,
-      nome: response.nomeArquivo,
-      path: path,
-      idProva: idProva,
-      idQuestao: response.idQuestao,
-    ));
+    await saveFile(path, contentes);
   }
 
   Future<int> informarDownloadConcluido(int idProva) async {
@@ -519,6 +566,7 @@ class GerenciadorDownload with Loggable {
         alternativas: [],
         arquivos: [],
         arquivosVideos: [],
+        arquivosAudio: [],
         ordem: questaoDb.ordem,
         quantidadeAlternativas: questaoDb.quantidadeAlternativas!,
       );
@@ -540,6 +588,7 @@ class GerenciadorDownload with Loggable {
         alternativas: [],
         arquivos: [],
         arquivosVideos: [],
+        arquivosAudio: [],
         ordem: questaoDb.ordem,
         quantidadeAlternativas: questaoDb.quantidadeAlternativas!,
       );
@@ -572,6 +621,7 @@ class GerenciadorDownload with Loggable {
             alternativas: [],
             arquivos: [],
             arquivosVideos: [],
+            arquivosAudio: [],
             tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
             quantidadeAlternativas: e.quantidadeAlternativas!,
           ),
@@ -604,7 +654,18 @@ class GerenciadorDownload with Loggable {
           .map(
             (e) => ArquivoVideo(
               id: e.id,
-              nome: e.nome,
+              path: e.path,
+              idProva: e.provaId,
+              idQuestao: e.questaoId,
+            ),
+          )
+          .toList();
+
+      var arquivosAudiosDb = await db.arquivosAudioDao.obterPorQuestaoId(questao.id);
+      questao.arquivosAudio = arquivosAudiosDb
+          .map(
+            (e) => ArquivoAudio(
+              id: e.id,
               path: e.path,
               idProva: e.provaId,
               idQuestao: e.questaoId,
@@ -709,13 +770,27 @@ class GerenciadorDownload with Loggable {
       ArquivoVideoDb(
         id: entity.id,
         path: entity.path,
-        nome: entity.nome,
         questaoId: entity.idQuestao,
         provaId: entity.idProva,
       ),
     );
 
     finer('[VIDEO SALVO]');
+  }
+
+  saveAudio(ArquivoAudio entity) async {
+    AppDatabase database = GetIt.I.get();
+
+    await database.arquivosAudioDao.inserirOuAtualizar(
+      ArquivoAudioDb(
+        id: entity.id,
+        path: entity.path,
+        questaoId: entity.idQuestao,
+        provaId: entity.idProva,
+      ),
+    );
+
+    finer('[AUDIO SALVO]');
   }
 
   saveProva(Prova prova) async {
