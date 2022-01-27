@@ -107,7 +107,24 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   }
 
   Future<void> _apagarArquivos(AppDatabase db) async {
+    await _apagarArquivosVideos(db);
+    await _apagarArquivosAudios(db);
+  }
+
+  _apagarArquivosVideos(AppDatabase db) async {
     var arquivos = await db.arquivosVideosDao.listarTodos();
+
+    for (var arquivo in arquivos) {
+      if (kIsWeb) {
+        await IdbFile(arquivo.path).delete();
+      } else {
+        await apagarArquivo(arquivo.path);
+      }
+    }
+  }
+
+  _apagarArquivosAudios(AppDatabase db) async {
+    var arquivos = await db.arquivosAudioDao.listarTodos();
 
     for (var arquivo in arquivos) {
       if (kIsWeb) {
