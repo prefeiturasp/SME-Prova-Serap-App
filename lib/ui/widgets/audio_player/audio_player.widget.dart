@@ -40,14 +40,16 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: Offset(0, 2),
+        border: Border(
+          top: BorderSide(
+            color: Colors.grey.shade300,
+            width: 1,
           ),
-        ],
+          bottom: BorderSide(
+            color: Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
       ),
       height: 76,
       child: Observer(builder: (_) {
@@ -71,13 +73,10 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                 activeColor: TemaUtil.appBar,
                 thumbColor: TemaUtil.appBar,
                 inactiveColor: Colors.black.withOpacity(0.1),
-
                 value: controller.position + 0.0,
                 min: 0.0,
                 max: controller.duration!.inMilliseconds + 0.0,
-
                 onChanged: controller.seek,
-                //divisions: 100,
               ),
             ),
           ],
@@ -90,7 +89,10 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     if (controller.isPlaying) {
       return IconButton(
         iconSize: 50,
-        icon: Icon(Icons.pause_rounded),
+        icon: Icon(
+          Icons.pause_rounded,
+          color: TemaUtil.appBar,
+        ),
         onPressed: () async {
           await controller.pausePlayer();
         },
@@ -99,7 +101,10 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
 
     return IconButton(
       iconSize: 50,
-      icon: Icon(Icons.play_arrow_rounded),
+      icon: Icon(
+        Icons.play_arrow_rounded,
+        color: TemaUtil.appBar,
+      ),
       onPressed: () async {
         await controller.playFile();
       },

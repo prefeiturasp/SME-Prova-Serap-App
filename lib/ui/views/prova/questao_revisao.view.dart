@@ -17,13 +17,17 @@ import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao_revisao.store.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
+import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/utils/file.util.dart';
+import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -87,6 +91,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
     return Column(
       children: [
         TempoExecucaoWidget(provaStore: provaStore),
+        _buildAudioPlayer(),
         Expanded(
           child: SingleChildScrollView(
             child: Padding(
@@ -446,7 +451,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
                 textoBotao: 'Proximo item da revisão',
                 onPressed: () async {
                   store.posicaoQuestaoSendoRevisada++;
-                  context.go("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
+                  context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
                 },
               );
             }
@@ -479,5 +484,42 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
         ),
       ],
     );
+  }
+
+  Future<Uint8List?> loadAudio(Questao questao) async {
+    if (questao.arquivosAudio.isNotEmpty) {
+      IdbFile idbFile = IdbFile(questao.arquivosAudio.first.path);
+
+      if (await idbFile.exists()) {
+        Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
+        info('abrindo audio ${formatBytes(readContents.lengthInBytes, 2)}');
+        return readContents;
+      }
+    }
+  }
+
+  Widget _buildAudioPlayer() {
+    if (kIsWeb) {
+      return FutureBuilder<Uint8List?>(
+        future: loadAudio(questao),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return AudioPlayerWidget(
+              audioBytes: snapshot.data,
+            );
+          }
+
+          return SizedBox.shrink();
+        },
+      );
+    } else {
+      if (questao.arquivosAudio.isNotEmpty) {
+        return AudioPlayerWidget(
+          audioPath: questao.arquivosAudio.first.path,
+        );
+      }
+    }
+
+    return SizedBox.shrink();
   }
 }
