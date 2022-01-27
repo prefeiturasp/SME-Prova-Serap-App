@@ -49,7 +49,13 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
   @override
   void initState() {
     super.initState();
-    provaStore = ServiceLocator.get<HomeStore>().provas.filter((prova) => prova.key == widget.idProva).first.value;
+    var provas = ServiceLocator.get<HomeStore>().provas;
+
+    if (provas.isEmpty) {
+      ServiceLocator.get<AppRouter>().router.go("/");
+    }
+
+    provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
     popularMapaDeQuestoes();
   }
 

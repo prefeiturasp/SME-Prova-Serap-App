@@ -5,14 +5,12 @@ part 'arquivo_video.model.g.dart';
 @JsonSerializable()
 class ArquivoVideo {
   int id;
-  String nome;
   String path;
   int idQuestao;
   int idProva;
 
   ArquivoVideo({
     required this.id,
-    required this.nome,
     required this.path,
     required this.idQuestao,
     required this.idProva,
@@ -22,5 +20,5 @@ class ArquivoVideo {
   Map<String, dynamic> toJson() => _$ArquivoVideoToJson(this);
 
   @override
-  String toString() => 'ArquivoVideo(id: $id, nome: $nome, path: $path, idQuestao: $idQuestao, idProva: $idProva)';
+  String toString() => 'ArquivoVideo(id: $id, path: $path, idQuestao: $idQuestao, idProva: $idProva)';
 }

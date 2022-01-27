@@ -1,13 +1,17 @@
 import 'package:appserap/ui/widgets/audio_player/audio_player.controller.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class AudioPlayerWidget extends StatefulWidget {
-  String audioPath;
+  String? audioPath;
+  Uint8List? audioBytes;
 
   AudioPlayerWidget({
     Key? key,
-    required this.audioPath,
+    this.audioPath,
+    this.audioBytes,
   }) : super(key: key);
 
   @override
@@ -19,8 +23,10 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
 
   @override
   void initState() {
+    super.initState();
     controller.init();
     controller.setFilePlayer(widget.audioPath);
+    controller.setBytePlayer(widget.audioBytes);
   }
 
   @override
@@ -44,37 +50,39 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
         ],
       ),
       height: 76,
-      child: Row(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              border: Border(
-                right: BorderSide(
-                  color: Colors.grey.shade300,
-                  width: 1,
+      child: Observer(builder: (_) {
+        return Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(
+                    color: Colors.grey.shade300,
+                    width: 1,
+                  ),
                 ),
               ),
+              width: 72,
+              height: 75,
+              child: _buildControlButtons(),
             ),
-            width: 72,
-            height: 75,
-            child: _buildControlButtons(),
-          ),
-          Expanded(
-            child: Slider(
-              activeColor: TemaUtil.appBar,
-              thumbColor: TemaUtil.appBar,
-              inactiveColor: Colors.black.withOpacity(0.1),
+            Expanded(
+              child: Slider(
+                activeColor: TemaUtil.appBar,
+                thumbColor: TemaUtil.appBar,
+                inactiveColor: Colors.black.withOpacity(0.1),
 
-              value: controller.position + 0.0,
-              min: 0.0,
-              max: controller.duration!.inMilliseconds + 0.0,
+                value: controller.position + 0.0,
+                min: 0.0,
+                max: controller.duration!.inMilliseconds + 0.0,
 
-              onChanged: controller.seek,
-              //divisions: 100,
+                onChanged: controller.seek,
+                //divisions: 100,
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 

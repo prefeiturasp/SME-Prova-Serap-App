@@ -5,6 +5,7 @@ import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -19,6 +20,7 @@ import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
+import 'package:appserap/utils/file.util.dart';
 import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -59,7 +61,14 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   configure() async {
-    provaStore = ServiceLocator.get<HomeStore>().provas.filter((prova) => prova.key == widget.idProva).first.value;
+    var provas = ServiceLocator.get<HomeStore>().provas;
+
+    if (provas.isEmpty) {
+      ServiceLocator.get<AppRouter>().router.go("/");
+      return;
+    }
+
+    provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
     questao = provaStore.prova.questoes.where((element) => element.ordem == widget.ordem).first;
 
     if (kIsWeb) {
@@ -73,8 +82,20 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
       if (await idbFile.exists()) {
         Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
-        info('abrindo video ${readContents.lengthInBytes / 1024 / 1024}');
+        info('abrindo video ${formatBytes(readContents.lengthInBytes, 2)}');
         arquivosVideo[arquivoVideo.id] = readContents;
+      }
+    }
+  }
+
+  Future<Uint8List?> loadAudio(Questao questao) async {
+    if (questao.arquivosAudio.isNotEmpty) {
+      IdbFile idbFile = IdbFile(questao.arquivosAudio.first.path);
+
+      if (await idbFile.exists()) {
+        Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
+        info('abrindo audio ${formatBytes(readContents.lengthInBytes, 2)}');
+        return readContents;
       }
     }
   }
@@ -128,9 +149,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       return Column(
         children: [
           TempoExecucaoWidget(provaStore: provaStore),
-          AudioPlayerWidget(
-            audioPath: "",
-          ),
+          _buildAudioPlayer(),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -189,6 +208,31 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         ],
       );
     });
+  }
+
+  Widget _buildAudioPlayer() {
+    if (kIsWeb) {
+      return FutureBuilder<Uint8List?>(
+        future: loadAudio(questao),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return AudioPlayerWidget(
+              audioBytes: snapshot.data,
+            );
+          }
+
+          return SizedBox.shrink();
+        },
+      );
+    } else {
+      if (questao.arquivosAudio.isNotEmpty) {
+        return AudioPlayerWidget(
+          audioPath: questao.arquivosAudio.first.path,
+        );
+      }
+    }
+
+    return SizedBox.shrink();
   }
 
   Widget _buildBotoes(Questao questao) {

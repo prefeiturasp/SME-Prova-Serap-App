@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:appserap/utils/universal/universal.util.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -29,7 +31,8 @@ abstract class _AudioPlayerControllerBase with Store, Disposable {
   @observable
   bool isPaused = false;
 
-  late String filePath;
+  String? filePath;
+  Uint8List? fileByte;
 
   Future<void> init() async {
     await _audioPlayer.openAudioSession();
@@ -40,9 +43,15 @@ abstract class _AudioPlayerControllerBase with Store, Disposable {
   }
 
   @action
-  setFilePlayer(String filePath) async {
-    this.filePath = filePath;
-    duration = await flutterSoundHelper.duration(filePath) ?? Duration.zero;
+  setFilePlayer(String? filePath) async {
+    this.filePath = await buildPath(filePath);
+    // duration = await flutterSoundHelper.duration(filePath) ?? Duration.zero;
+  }
+
+  @action
+  setBytePlayer(Uint8List? fileByte) async {
+    this.fileByte = fileByte;
+    // duration = await flutterSoundHelper.duration(filePath) ?? Duration.zero;
   }
 
   @action
@@ -73,7 +82,7 @@ abstract class _AudioPlayerControllerBase with Store, Disposable {
     } else {
       duration = await _audioPlayer.startPlayer(
         fromURI: filePath,
-        codec: Codec.aacMP4,
+        fromDataBuffer: fileByte,
         whenFinished: () {
           isPlaying = false;
         },
