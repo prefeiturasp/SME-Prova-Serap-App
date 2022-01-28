@@ -14,7 +14,7 @@ saveFile(String path, Uint8List bodyBytes) async {
 }
 
 apagarArquivo(String path) async {
-  throw UnimplementedError();
+  await IdbFile(path).delete();
 }
 
 Future<String?> buildPath(String? path) async {

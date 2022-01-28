@@ -17,7 +17,7 @@ saveFile(String path, Uint8List bodyBytes) async {
 }
 
 apagarArquivo(String path) async {
-  await File(path).delete();
+  await File((await buildPath(path))!).delete();
 }
 
 Future<String?> buildPath(String? path) async {
