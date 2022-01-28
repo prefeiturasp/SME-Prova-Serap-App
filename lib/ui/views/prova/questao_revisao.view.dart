@@ -7,6 +7,7 @@ import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
@@ -16,13 +17,17 @@ import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao_revisao.store.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
+import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/utils/file.util.dart';
+import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -54,7 +59,13 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   loadData() {
-    provaStore = ServiceLocator.get<HomeStore>().provas.filter((prova) => prova.key == widget.idProva).first.value;
+    var provas = ServiceLocator.get<HomeStore>().provas;
+
+    if (provas.isEmpty) {
+      ServiceLocator.get<AppRouter>().router.go("/");
+    }
+
+    provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
     questao = provaStore.prova.questoes.where((element) => element.ordem == widget.ordem).first;
   }
 
@@ -77,112 +88,111 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
     var questoes = store.questoesParaRevisar.toList();
     store.totalDeQuestoesParaRevisar = questoes.length - 1;
 
-    return Scaffold(
-      body: Column(
-        children: [
-          TempoExecucaoWidget(provaStore: provaStore),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: getPadding(),
-                child: Column(
-                  children: [
-                    Observer(builder: (_) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Questão ${questao.ordem + 1} ',
-                                  style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                    fontSize: temaStore.tTexto20,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
+    return Column(
+      children: [
+        TempoExecucaoWidget(provaStore: provaStore),
+        _buildAudioPlayer(),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: getPadding(),
+              child: Column(
+                children: [
+                  Observer(builder: (_) {
+                    return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Questão ${questao.ordem + 1} ',
+                                style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                  fontSize: temaStore.tTexto20,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                 ),
-                                Text(
-                                  'de ${provaStore.prova.questoes.length}',
-                                  style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                                    fontSize: temaStore.tTexto20,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
+                              ),
+                              Text(
+                                'de ${provaStore.prova.questoes.length}',
+                                style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                  fontSize: temaStore.tTexto20,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                 ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Html(
-                              data: tratarArquivos(questao.titulo, questao.arquivos, EnumTipoImagem.QUESTAO),
-                              style: {
-                                '*': Style.fromTextStyle(
-                                  TemaUtil.temaTextoHtmlPadrao.copyWith(
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Html(
+                            data: tratarArquivos(questao.titulo, questao.arquivos, EnumTipoImagem.QUESTAO),
+                            style: {
+                              '*': Style.fromTextStyle(
+                                TemaUtil.temaTextoHtmlPadrao.copyWith(
+                                  fontSize: temaStore.tTexto16,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                ),
+                              ),
+                              'span': Style.fromTextStyle(
+                                TextStyle(
                                     fontSize: temaStore.tTexto16,
                                     fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
-                                ),
-                                'span': Style.fromTextStyle(
-                                  TextStyle(
-                                      fontSize: temaStore.tTexto16,
-                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                      color: TemaUtil.pretoSemFoco3),
-                                ),
-                              },
-                              onImageTap: (url, _, attributes, element) {
-                                Uint8List imagem = base64.decode(url!.split(',').last);
+                                    color: TemaUtil.pretoSemFoco3),
+                              ),
+                            },
+                            onImageTap: (url, _, attributes, element) {
+                              Uint8List imagem = base64.decode(url!.split(',').last);
 
-                                _exibirImagem(context, imagem);
-                              },
-                            ),
-                            SizedBox(height: 8),
-                            Html(
-                              data: tratarArquivos(questao.descricao, questao.arquivos, EnumTipoImagem.QUESTAO),
-                              style: {
-                                '*': Style.fromTextStyle(
-                                  TemaUtil.temaTextoHtmlPadrao.copyWith(
-                                    fontSize: temaStore.tTexto16,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
+                              _exibirImagem(context, imagem);
+                            },
+                          ),
+                          SizedBox(height: 8),
+                          Html(
+                            data: tratarArquivos(questao.descricao, questao.arquivos, EnumTipoImagem.QUESTAO),
+                            style: {
+                              '*': Style.fromTextStyle(
+                                TemaUtil.temaTextoHtmlPadrao.copyWith(
+                                  fontSize: temaStore.tTexto16,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                 ),
-                                'span': Style.fromTextStyle(
-                                  TextStyle(
-                                    fontSize: temaStore.tTexto16,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    color: TemaUtil.pretoSemFoco3,
-                                  ),
+                              ),
+                              'span': Style.fromTextStyle(
+                                TextStyle(
+                                  fontSize: temaStore.tTexto16,
+                                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                  color: TemaUtil.pretoSemFoco3,
                                 ),
-                              },
-                              onImageTap: (url, _, attributes, element) {
-                                Uint8List imagem = base64.decode(url!.split(',').last);
+                              ),
+                            },
+                            onImageTap: (url, _, attributes, element) {
+                              Uint8List imagem = base64.decode(url!.split(',').last);
 
-                                _exibirImagem(context, imagem);
-                              },
-                            ),
-                            SizedBox(height: 16),
-                            Observer(builder: (_) {
-                              return _buildResposta(questao);
-                            }),
-                          ],
-                        ),
-                      );
-                    }),
-                    Observer(builder: (context) {
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                          left: 24,
-                          right: 24,
-                          bottom: 20,
-                        ),
-                        child: _buildBotoes(questao),
-                      );
-                    }),
-                  ],
-                ),
+                              _exibirImagem(context, imagem);
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          Observer(builder: (_) {
+                            return _buildResposta(questao);
+                          }),
+                        ],
+                      ),
+                    );
+                  }),
+                  Observer(builder: (context) {
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                        left: 24,
+                        right: 24,
+                        bottom: 20,
+                      ),
+                      child: _buildBotoes(questao),
+                    );
+                  }),
+                ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -441,7 +451,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
                 textoBotao: 'Proximo item da revisão',
                 onPressed: () async {
                   store.posicaoQuestaoSendoRevisada++;
-                  context.go("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
+                  context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
                 },
               );
             }
@@ -474,5 +484,42 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
         ),
       ],
     );
+  }
+
+  Future<Uint8List?> loadAudio(Questao questao) async {
+    if (questao.arquivosAudio.isNotEmpty) {
+      IdbFile idbFile = IdbFile(questao.arquivosAudio.first.path);
+
+      if (await idbFile.exists()) {
+        Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
+        info('abrindo audio ${formatBytes(readContents.lengthInBytes, 2)}');
+        return readContents;
+      }
+    }
+  }
+
+  Widget _buildAudioPlayer() {
+    if (kIsWeb) {
+      return FutureBuilder<Uint8List?>(
+        future: loadAudio(questao),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return AudioPlayerWidget(
+              audioBytes: snapshot.data,
+            );
+          }
+
+          return SizedBox.shrink();
+        },
+      );
+    } else {
+      if (questao.arquivosAudio.isNotEmpty) {
+        return AudioPlayerWidget(
+          audioPath: questao.arquivosAudio.first.path,
+        );
+      }
+    }
+
+    return SizedBox.shrink();
   }
 }

@@ -4,11 +4,15 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/idb_file.util.dart';
+import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'principal.store.g.dart';
 
@@ -76,11 +80,18 @@ abstract class _PrincipalStoreBase with Store, Loggable {
       severe(stack);
     }
 
+    await _limparDadosLocais();
+    await _apagarArquivos(db);
+
     await db.limpar();
 
-    await _limparDadosLocais();
+    bool eraAdimin = usuario.isAdmin;
 
     usuario.dispose();
+
+    if (eraAdimin) {
+      await launch("https://hom-serap.sme.prefeitura.sp.gov.br/", webOnlyWindowName: '_self');
+    }
   }
 
   _limparDadosLocais() async {
@@ -91,6 +102,35 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     for (var key in prefs.getKeys()) {
       if (!key.startsWith("resposta_")) {
         await prefs.remove(key);
+      }
+    }
+  }
+
+  Future<void> _apagarArquivos(AppDatabase db) async {
+    await _apagarArquivosVideos(db);
+    await _apagarArquivosAudios(db);
+  }
+
+  _apagarArquivosVideos(AppDatabase db) async {
+    var arquivos = await db.arquivosVideosDao.listarTodos();
+
+    for (var arquivo in arquivos) {
+      if (kIsWeb) {
+        await IdbFile(arquivo.path).delete();
+      } else {
+        await apagarArquivo(arquivo.path);
+      }
+    }
+  }
+
+  _apagarArquivosAudios(AppDatabase db) async {
+    var arquivos = await db.arquivosAudioDao.listarTodos();
+
+    for (var arquivo in arquivos) {
+      if (kIsWeb) {
+        await IdbFile(arquivo.path).delete();
+      } else {
+        await apagarArquivo(arquivo.path);
       }
     }
   }

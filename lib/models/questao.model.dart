@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'alternativa.model.dart';
 import 'arquivo.model.dart';
+import 'arquivo_audio.model.dart';
 import 'arquivo_video.model.dart';
 
 part 'questao.model.g.dart';
@@ -19,7 +20,8 @@ class Questao {
 
   List<Alternativa> alternativas;
   List<Arquivo> arquivos;
-  List<ArquivoVideo>? arquivosVideos;
+  List<ArquivoVideo> arquivosVideos;
+  List<ArquivoAudio> arquivosAudio;
 
   Questao({
     required this.id,
@@ -30,7 +32,8 @@ class Questao {
     required this.arquivos,
     required this.tipo,
     required this.quantidadeAlternativas,
-    this.arquivosVideos,
+    required this.arquivosVideos,
+    required this.arquivosAudio,
   });
 
   factory Questao.fromJson(Map<String, dynamic> json) => _$QuestaoFromJson(json);

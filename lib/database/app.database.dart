@@ -2,6 +2,8 @@ import 'package:appserap/database/daos/arquivo_video.dao.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:drift/drift.dart';
 
+import 'daos/arquivo_audio.dao.dart';
+
 export 'core/shared.database.dart';
 
 part 'app.database.g.dart';
@@ -90,7 +92,17 @@ class ArquivosDb extends Table {
 @DataClassName("ArquivoVideoDb")
 class ArquivosVideoDb extends Table {
   IntColumn get id => integer()();
-  TextColumn get nome => text()();
+  TextColumn get path => text()();
+  IntColumn get questaoId => integer()();
+  IntColumn get provaId => integer()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName("ArquivoAudioDb")
+class ArquivosAudioDb extends Table {
+  IntColumn get id => integer()();
   TextColumn get path => text()();
   IntColumn get questaoId => integer()();
   IntColumn get provaId => integer()();
@@ -107,16 +119,18 @@ class ArquivosVideoDb extends Table {
     ArquivosDb,
     ContextosProvaDb,
     ArquivosVideoDb,
+    ArquivosAudioDb,
   ],
   daos: [
     ArquivosVideosDao,
+    ArquivosAudioDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -140,6 +154,9 @@ class AppDatabase extends _$AppDatabase {
         if (from == 6) {
           await m.createTable(arquivosVideoDb);
         }
+        if (from == 7) {
+          await m.createTable(arquivosAudioDb);
+        }
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = 1;');
       });
@@ -151,6 +168,9 @@ class AppDatabase extends _$AppDatabase {
       await customUpdate("delete from questoes_db;");
 
       await customUpdate("delete from arquivos_db;");
+
+      await customUpdate("delete from arquivos_video_db;");
+      await customUpdate("delete from arquivos_audio_db;");
 
       await customUpdate("delete from provas_db;");
     });
@@ -167,6 +187,13 @@ class AppDatabase extends _$AppDatabase {
       ]);
 
       await customUpdate("delete from arquivos_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from arquivos_video_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+      await customUpdate("delete from arquivos_audio_db where prova_id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
 

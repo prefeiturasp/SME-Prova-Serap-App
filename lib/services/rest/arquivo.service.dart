@@ -9,4 +9,7 @@ abstract class ArquivoService extends ChopperService {
 
   @Get(path: '{idArquivo}/legado')
   Future<Response<ArquivoResponseDTO>> getArquivo({@Path() required int idArquivo});
+
+  @Get(path: 'audio/{idArquivo}')
+  Future<Response<ArquivoResponseDTO>> getAudio({@Path() required int idArquivo});
 }

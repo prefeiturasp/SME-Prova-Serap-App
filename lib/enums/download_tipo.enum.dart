@@ -4,6 +4,7 @@ enum EnumDownloadTipo {
   ALTERNATIVA,
   CONTEXTO_PROVA,
   VIDEO,
+  AUDIO,
 }
 
 extension EnumDownloadTipoExtension on EnumDownloadTipo {
@@ -13,6 +14,7 @@ extension EnumDownloadTipoExtension on EnumDownloadTipo {
     EnumDownloadTipo.CONTEXTO_PROVA: 3,
     EnumDownloadTipo.ARQUIVO: 4,
     EnumDownloadTipo.VIDEO: 5,
+    EnumDownloadTipo.AUDIO: 6,
   };
 
   int get order => orderValues[this]!;

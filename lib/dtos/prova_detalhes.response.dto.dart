@@ -7,6 +7,8 @@ class ProvaDetalhesResponseDTO {
   int provaId;
   List<int> questoesId;
   List<int> arquivosId;
+  List<int> videosId;
+  List<int> audiosId;
   List<int> alternativasId;
   int tamanhoTotalArquivos;
   List<int> contextoProvaIds;
@@ -15,6 +17,8 @@ class ProvaDetalhesResponseDTO {
     required this.provaId,
     required this.questoesId,
     required this.arquivosId,
+    this.videosId = const [],
+    this.audiosId = const [],
     required this.alternativasId,
     required this.tamanhoTotalArquivos,
     required this.contextoProvaIds,
@@ -25,6 +29,6 @@ class ProvaDetalhesResponseDTO {
 
   @override
   String toString() {
-    return 'ProvaDetalhesResponseDTO(provaId: $provaId, questoesId: $questoesId, arquivosId: $arquivosId, alternativasId: $alternativasId, tamanhoTotalArquivos: $tamanhoTotalArquivos)';
+    return 'ProvaDetalhesResponseDTO(provaId: $provaId, questoesId: $questoesId, arquivosId: $arquivosId, videosId: $videosId, audiosId: $audiosId, alternativasId: $alternativasId, tamanhoTotalArquivos: $tamanhoTotalArquivos)';
   }
 }

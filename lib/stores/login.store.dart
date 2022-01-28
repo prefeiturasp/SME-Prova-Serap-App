@@ -115,6 +115,7 @@ abstract class _LoginStoreBase with Store, Loggable {
         _usuarioStore.token = body.token;
         _usuarioStore.tokenDataHoraExpiracao = body.dataHoraExpiracao;
         _usuarioStore.ultimoLogin = body.ultimoLogin;
+        _usuarioStore.isAdmin = false;
 
         SharedPreferences prefs = GetIt.I.get();
         await prefs.setString('token', body.token);
@@ -142,9 +143,9 @@ abstract class _LoginStoreBase with Store, Loggable {
           }
           carregando = false;
           return true;
-        }else {
+        } else {
           carregando = false;
-          if((responseMeusDados.error! as dynamic).existemErros){
+          if ((responseMeusDados.error! as dynamic).existemErros) {
             severe((responseMeusDados.error! as dynamic).mensagens.toString());
           }
           return false;

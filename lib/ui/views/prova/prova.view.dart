@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -15,7 +14,6 @@ import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
-
 
 class ProvaView extends BaseStatefulWidget {
   final int idProva;
@@ -41,10 +39,17 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   @override
   void initState() {
     store.isLoading = true;
-    provaStore = ServiceLocator.get<HomeStore>().provas.filter((prova) => prova.key == widget.idProva).first.value;
+
+    var provas = ServiceLocator.get<HomeStore>().provas;
+
+    if (provas.isEmpty) {
+      ServiceLocator.get<AppRouter>().router.go("/");
+    }
+
+    provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
 
     configure().then((_) async {
-      Timer(Duration(milliseconds: 500), (){
+      Timer(Duration(milliseconds: 500), () {
         store.isLoading = false;
         ServiceLocator.get<AppRouter>().router.go("/prova/${provaStore.id}/questao/0");
       });
@@ -103,8 +108,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     store.dispose();
     super.dispose();
   }
-
-
 
   @override
   Widget builder(BuildContext context) {

@@ -68,24 +68,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       leading: leading,
       actions: [
-        TextButton(
-          onPressed: () {
-            mostrarDialogMudancaTema(context);
-          },
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.appBar),
-          ),
-          child: Observer(builder: (_) {
-            return Text(
-              "Aa",
-              style: TextStyle(
-                color: TemaUtil.laranja02,
-                fontSize: temaStore.tTexto20,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-              ),
-            );
-          }),
-        ),
+        _buildAlterarFonte(context),
         exibirSair ? _buildBotaoSair(context) : Container(),
       ],
     );
@@ -138,6 +121,31 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           }
         }
       },
+    );
+  }
+
+  _buildAlterarFonte(BuildContext context) {
+    if (_principalStore.usuario.isAdmin) {
+      return SizedBox.shrink();
+    }
+
+    return TextButton(
+      onPressed: () {
+        mostrarDialogMudancaTema(context);
+      },
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.appBar),
+      ),
+      child: Observer(builder: (_) {
+        return Text(
+          "Aa",
+          style: TextStyle(
+            color: TemaUtil.laranja02,
+            fontSize: temaStore.tTexto20,
+            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+          ),
+        );
+      }),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/home.store.dart';
@@ -48,7 +49,13 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
   @override
   void initState() {
     super.initState();
-    provaStore = ServiceLocator.get<HomeStore>().provas.filter((prova) => prova.key == widget.idProva).first.value;
+    var provas = ServiceLocator.get<HomeStore>().provas;
+
+    if (provas.isEmpty) {
+      ServiceLocator.get<AppRouter>().router.go("/");
+    }
+
+    provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
     popularMapaDeQuestoes();
   }
 
@@ -458,8 +465,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     finalizar = await checarFinalizacaoComTempo();
 
     if (finalizar) {
-      await provaStore.finalizarProva();
-      context.go("/");
+      bool provaFinalizada = await provaStore.finalizarProva();
+      if (provaFinalizada) {
+        ServiceLocator.get<AppRouter>().router.go("/");
+      }
     }
   }
 
