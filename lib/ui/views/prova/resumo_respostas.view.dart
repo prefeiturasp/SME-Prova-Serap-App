@@ -92,63 +92,65 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
       child: Column(
         children: [
           TempoExecucaoWidget(provaStore: provaStore),
-          SingleChildScrollView(
-            child: Padding(
-              padding: getPadding(),
-              child: Observer(
-                builder: (_) {
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            //
-                            Observer(
-                              builder: (_) {
-                                return Text(
-                                  'Resumo das respostas',
-                                  textAlign: TextAlign.start,
-                                  style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                    fontSize: temaStore.tTexto20,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
-                                );
-                              },
-                            ),
-                            //
-                            Observer(
-                              builder: (context) {
-                                return mensagemDeQuestoesSemRespostas();
-                              },
-                            ),
-                            //
-                            Column(
-                              children: [
-                                _buildCabecalho(),
-                                divider(),
-                                ..._buildListaRespostas(),
-                              ],
-                            ),
-
-                            SizedBox(height: 32),
-                            Center(
-                              child: BotaoDefaultWidget(
-                                textoBotao: 'FINALIZAR E ENVIAR',
-                                largura: 392,
-                                onPressed: () async {
-                                  await finalizarProva();
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: getPadding(),
+                child: Observer(
+                  builder: (_) {
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              //
+                              Observer(
+                                builder: (_) {
+                                  return Text(
+                                    'Resumo das respostas',
+                                    textAlign: TextAlign.start,
+                                    style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                      fontSize: temaStore.tTexto20,
+                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                    ),
+                                  );
                                 },
                               ),
-                            )
-                          ],
+                              //
+                              Observer(
+                                builder: (context) {
+                                  return mensagemDeQuestoesSemRespostas();
+                                },
+                              ),
+                              //
+                              Column(
+                                children: [
+                                  _buildCabecalho(),
+                                  divider(),
+                                  ..._buildListaRespostas(),
+                                ],
+                              ),
+
+                              SizedBox(height: 32),
+                              Center(
+                                child: BotaoDefaultWidget(
+                                  textoBotao: 'FINALIZAR E ENVIAR',
+                                  largura: 392,
+                                  onPressed: () async {
+                                    await finalizarProva();
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                },
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
