@@ -115,11 +115,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     var arquivos = await db.arquivosVideosDao.listarTodos();
 
     for (var arquivo in arquivos) {
-      if (kIsWeb) {
-        await IdbFile(arquivo.path).delete();
-      } else {
-        await apagarArquivo(arquivo.path);
-      }
+      await apagarArquivo(arquivo.path);
     }
   }
 
@@ -127,11 +123,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     var arquivos = await db.arquivosAudioDao.listarTodos();
 
     for (var arquivo in arquivos) {
-      if (kIsWeb) {
-        await IdbFile(arquivo.path).delete();
-      } else {
-        await apagarArquivo(arquivo.path);
-      }
+      await apagarArquivo(arquivo.path);
     }
   }
 }
