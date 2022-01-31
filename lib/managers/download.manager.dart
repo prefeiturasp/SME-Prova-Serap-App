@@ -35,7 +35,6 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
@@ -482,7 +481,9 @@ class GerenciadorDownload with Loggable {
   }
 
   salvarArquivoLocal(String url, String path) async {
-    Uint8List contentes = await http.readBytes(Uri.parse(url));
+    Uint8List contentes = await http.readBytes(Uri.parse(
+      path.replaceFirst('http://', 'https://'),
+    ));
 
     await saveFile(path, contentes);
   }
