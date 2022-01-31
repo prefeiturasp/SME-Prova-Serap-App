@@ -482,7 +482,7 @@ class GerenciadorDownload with Loggable {
 
   salvarArquivoLocal(String url, String path) async {
     Uint8List contentes = await http.readBytes(Uri.parse(
-      path.replaceFirst('http://', 'https://'),
+      url.replaceFirst('http://', 'https://'),
     ));
 
     await saveFile(path, contentes);
