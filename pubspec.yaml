@@ -47,7 +47,7 @@ dependencies:
   firebase_core_web: ^1.1.0
 
   # Http api
-  chopper: ^4.0.3
+  chopper: ^4.0.5
 
   # Injecao de dependencias
   get_it: ^7.2.0
