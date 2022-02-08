@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
@@ -35,6 +36,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
+import 'package:retry/retry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 typedef StatusChangeCallback = void Function(EnumDownloadStatus downloadStatus, double porcentagem);
@@ -61,90 +63,15 @@ class GerenciadorDownload with Loggable {
   }
 
   Future<void> configure() async {
-    ApiService apiService = GetIt.I.get();
-
     try {
-      Response<ProvaDetalhesResponseDTO> response = await apiService.prova.getResumoProva(idProva: idProva);
-
-      if (!response.isSuccessful) {
-        return;
-      }
-
-      ProvaDetalhesResponseDTO provaDetalhes = response.body!;
-
-      await loadDownloads();
-
-      for (var idQuestao in provaDetalhes.questoesId) {
-        if (!containsId(idQuestao, EnumDownloadTipo.QUESTAO)) {
-          downloads.add(
-            DownloadProva(
-              tipo: EnumDownloadTipo.QUESTAO,
-              id: idQuestao,
-              dataHoraInicio: DateTime.now(),
-            ),
-          );
-        }
-      }
-
-      for (var idAlternativa in provaDetalhes.alternativasId) {
-        if (!containsId(idAlternativa, EnumDownloadTipo.ALTERNATIVA)) {
-          downloads.add(
-            DownloadProva(
-              tipo: EnumDownloadTipo.ALTERNATIVA,
-              id: idAlternativa,
-              dataHoraInicio: DateTime.now(),
-            ),
-          );
-        }
-      }
-
-      for (var idArquivo in provaDetalhes.arquivosId) {
-        if (!containsId(idArquivo, EnumDownloadTipo.ARQUIVO)) {
-          downloads.add(
-            DownloadProva(
-              tipo: EnumDownloadTipo.ARQUIVO,
-              id: idArquivo,
-              dataHoraInicio: DateTime.now(),
-            ),
-          );
-        }
-      }
-
-      for (var idArquivoVideo in provaDetalhes.videosId) {
-        if (!containsId(idArquivoVideo, EnumDownloadTipo.VIDEO)) {
-          downloads.add(
-            DownloadProva(
-              tipo: EnumDownloadTipo.VIDEO,
-              id: idArquivoVideo,
-              dataHoraInicio: DateTime.now(),
-            ),
-          );
-        }
-      }
-
-      for (var idArquivoAudio in provaDetalhes.audiosId) {
-        if (!containsId(idArquivoAudio, EnumDownloadTipo.AUDIO)) {
-          downloads.add(
-            DownloadProva(
-              tipo: EnumDownloadTipo.AUDIO,
-              id: idArquivoAudio,
-              dataHoraInicio: DateTime.now(),
-            ),
-          );
-        }
-      }
-
-      for (var idContexto in provaDetalhes.contextoProvaIds) {
-        if (!containsId(idContexto, EnumDownloadTipo.CONTEXTO_PROVA)) {
-          downloads.add(
-            DownloadProva(
-              tipo: EnumDownloadTipo.CONTEXTO_PROVA,
-              id: idContexto,
-              dataHoraInicio: DateTime.now(),
-            ),
-          );
-        }
-      }
+      await retry(
+        () async => await carregarDadosProva(),
+        retryIf: (e) => e is Exception,
+        onRetry: (e) {
+          fine(e);
+          fine('[Prova $idProva] - Tentativa de Obter informações da prova');
+        },
+      );
 
       finer('** Total Downloads ${downloads.length}');
       finer('** Downloads concluidos ${getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO).length}');
@@ -154,6 +81,91 @@ class GerenciadorDownload with Loggable {
     } catch (e) {
       //AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
       return;
+    }
+  }
+
+  carregarDadosProva() async {
+    Response<ProvaDetalhesResponseDTO> response =
+        await ServiceLocator.get<ApiService>().prova.getResumoProva(idProva: idProva);
+
+    if (!response.isSuccessful) {
+      return;
+    }
+
+    ProvaDetalhesResponseDTO provaDetalhes = response.body!;
+
+    await loadDownloads();
+
+    for (var idQuestao in provaDetalhes.questoesId) {
+      if (!containsId(idQuestao, EnumDownloadTipo.QUESTAO)) {
+        downloads.add(
+          DownloadProva(
+            tipo: EnumDownloadTipo.QUESTAO,
+            id: idQuestao,
+            dataHoraInicio: DateTime.now(),
+          ),
+        );
+      }
+    }
+
+    for (var idAlternativa in provaDetalhes.alternativasId) {
+      if (!containsId(idAlternativa, EnumDownloadTipo.ALTERNATIVA)) {
+        downloads.add(
+          DownloadProva(
+            tipo: EnumDownloadTipo.ALTERNATIVA,
+            id: idAlternativa,
+            dataHoraInicio: DateTime.now(),
+          ),
+        );
+      }
+    }
+
+    for (var idArquivo in provaDetalhes.arquivosId) {
+      if (!containsId(idArquivo, EnumDownloadTipo.ARQUIVO)) {
+        downloads.add(
+          DownloadProva(
+            tipo: EnumDownloadTipo.ARQUIVO,
+            id: idArquivo,
+            dataHoraInicio: DateTime.now(),
+          ),
+        );
+      }
+    }
+
+    for (var idArquivoVideo in provaDetalhes.videosId) {
+      if (!containsId(idArquivoVideo, EnumDownloadTipo.VIDEO)) {
+        downloads.add(
+          DownloadProva(
+            tipo: EnumDownloadTipo.VIDEO,
+            id: idArquivoVideo,
+            dataHoraInicio: DateTime.now(),
+          ),
+        );
+      }
+    }
+
+    for (var idArquivoAudio in provaDetalhes.audiosId) {
+      if (!containsId(idArquivoAudio, EnumDownloadTipo.AUDIO)) {
+        downloads.add(
+          DownloadProva(
+            tipo: EnumDownloadTipo.AUDIO,
+            id: idArquivoAudio,
+            dataHoraInicio: DateTime.now(),
+          ),
+        );
+      }
+    }
+
+    for (var idContexto in provaDetalhes.contextoProvaIds) {
+      if (!containsId(idContexto, EnumDownloadTipo.CONTEXTO_PROVA)) {
+        downloads.add(
+          DownloadProva(
+            tipo: EnumDownloadTipo.CONTEXTO_PROVA,
+            id: idContexto,
+            dataHoraInicio: DateTime.now(),
+          ),
+        );
+      }
     }
   }
 
@@ -203,7 +215,7 @@ class GerenciadorDownload with Loggable {
       }
 
       if (download.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
-        finer('[Prova $idProva] - Iniciando download TIPO: ${download.tipo} ID: ${download.id}');
+        fine('[Prova $idProva] - Iniciando download TIPO: ${download.tipo} ID: ${download.id}');
 
         startTimer();
         try {
@@ -220,166 +232,66 @@ class GerenciadorDownload with Loggable {
 
           switch (download.tipo) {
             case EnumDownloadTipo.QUESTAO:
-              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+              await retry(
+                () async => await baixarQuestao(prova, download, apiService),
+                retryIf: (e) => e is Exception,
+                onRetry: (e) {
+                  fine('[Prova $idProva] - Tentativa de download da Questão ID: ${download.id}');
+                },
+              );
 
-              Questao? questao = prova.questoes.firstWhereOrNull((element) => element.id == download.id);
-
-              if (questao == null) {
-                Response<QuestaoResponseDTO> response = await apiService.questao.getQuestao(idQuestao: download.id);
-
-                if (response.isSuccessful) {
-                  QuestaoResponseDTO questaoDTO = response.body!;
-
-                  Questao questao = Questao(
-                    id: questaoDTO.id,
-                    titulo: questaoDTO.titulo,
-                    descricao: questaoDTO.descricao,
-                    ordem: questaoDTO.ordem,
-                    alternativas: [],
-                    arquivos: [],
-                    arquivosVideos: [],
-                    arquivosAudio: [],
-                    tipo: questaoDTO.tipo,
-                    quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
-                  );
-
-                  await saveQuestao(questao, idProva);
-                }
-              }
-              download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
               break;
 
             case EnumDownloadTipo.ALTERNATIVA:
-              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
-
-              Response<AlternativaResponseDTO> response =
-                  await apiService.alternativa.getAlternativa(idAlternativa: download.id);
-
-              if (response.isSuccessful) {
-                AlternativaResponseDTO alternativaDTO = response.body!;
-
-                Alternativa alternativa = Alternativa(
-                  id: alternativaDTO.id,
-                  descricao: alternativaDTO.descricao,
-                  ordem: alternativaDTO.ordem,
-                  numeracao: alternativaDTO.numeracao,
-                  questaoId: alternativaDTO.questaoId,
-                );
-
-                await saveAlternativa(alternativa, idProva);
-
-                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
-              }
+              await retry(
+                () async => await baixarAlternativa(download, apiService),
+                retryIf: (e) => e is Exception,
+                onRetry: (e) {
+                  fine('[Prova $idProva] - Tentativa de download da Alternativa ID: ${download.id}');
+                },
+              );
               break;
 
             case EnumDownloadTipo.CONTEXTO_PROVA:
-              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
-
-              Response<ContextoProvaResponseDTO> response =
-                  await apiService.contextoProva.getContextoProva(id: download.id);
-
-              if (response.isSuccessful) {
-                ContextoProvaResponseDTO contexto = response.body!;
-
-                http.Response contextoResponse = await http.get(
-                  Uri.parse(
-                    contexto.imagem!.replaceFirst('http://', 'https://'),
-                  ),
-                );
-
-                String base64 = base64Encode(contextoResponse.bodyBytes);
-
-                await saveContexto(
-                  ContextoProva(
-                    id: contexto.id,
-                    imagem: contexto.imagem,
-                    imagemBase64: base64,
-                    ordem: contexto.ordem,
-                    posicionamento: contexto.posicionamento,
-                    provaId: contexto.provaId,
-                    texto: contexto.texto,
-                    titulo: contexto.titulo,
-                  ),
-                  idProva,
-                );
-
-                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
-              }
+              await retry(
+                () async => await contextoProva(download, apiService),
+                retryIf: (e) => e is Exception,
+                onRetry: (e) {
+                  fine('[Prova $idProva] - Tentativa de download do Contexto ID: ${download.id}');
+                },
+              );
               break;
 
             case EnumDownloadTipo.VIDEO:
-              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
-              await baixarVideo();
-              download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              await retry(
+                () async => await baixarVideo(download),
+                retryIf: (e) => e is Exception,
+                onRetry: (e) {
+                  fine('[Prova $idProva] - Tentativa de download do arquivo de Video ID: ${download.id}');
+                },
+              );
+
               break;
 
             case EnumDownloadTipo.AUDIO:
-              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
-
-              Response<ArquivoResponseDTO> response = await apiService.arquivo.getAudio(idArquivo: download.id);
-
-              if (response.isSuccessful) {
-                ArquivoResponseDTO arquivo = response.body!;
-
-                String path = join(
-                  'prova',
-                  idProva.toString(),
-                  'audio',
-                  arquivo.questaoId.toString() + extension(arquivo.caminho),
-                );
-
-                await salvarArquivoLocal(arquivo.caminho, path);
-
-                await saveAudio(
-                  ArquivoAudio(
-                    id: arquivo.id,
-                    path: path,
-                    idProva: idProva,
-                    idQuestao: arquivo.questaoId,
-                  ),
-                );
-
-                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
-              } else {
-                download.downloadStatus = EnumDownloadStatus.ERRO;
-              }
+              await retry(
+                () async => await baixarArquivoAudio(download, apiService),
+                retryIf: (e) => e is Exception,
+                onRetry: (e) {
+                  fine('[Prova $idProva] - Tentativa de download do arquivo de Audio ID: ${download.id}');
+                },
+              );
 
               break;
 
             case EnumDownloadTipo.ARQUIVO:
-              download.downloadStatus = EnumDownloadStatus.BAIXANDO;
-
-              Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
-
-              if (response.isSuccessful) {
-                Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
-
-                questao ??= await obterQuestaoPorArquivoLegadoIdAlternativa(download.id, idProva);
-
-                ArquivoResponseDTO arquivo = response.body!;
-
-                http.Response arquivoResponse = await http.get(
-                  Uri.parse(
-                    arquivo.caminho.replaceFirst('http://', 'https://'),
-                  ),
-                );
-
-                String base64 = base64Encode(arquivoResponse.bodyBytes);
-
-                await saveArquivo(
-                    Arquivo(
-                      id: arquivo.id,
-                      caminho: arquivo.caminho,
-                      base64: base64,
-                      questaoId: questao!.id,
-                    ),
-                    idProva);
-
-                download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
-              } else {
-                download.downloadStatus = EnumDownloadStatus.ERRO;
-              }
-
+              await retry(
+                () async => await baixarArquivoImagem(download, apiService),
+                retryIf: (e) => e is Exception,
+                onRetry: (e) {
+                  fine('[Prova $idProva] - Tentativa de download do arquivo de Imagemideo ID: ${download.id}');
+                },
+              );
               break;
           }
           downloadAtual = i;
@@ -452,7 +364,9 @@ class GerenciadorDownload with Loggable {
     cancelTimer();
   }
 
-  baixarVideo() async {
+  baixarVideo(DownloadProva download) async {
+    download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
     var response = ArquivoVideoResponseDTO(
       id: 1,
       urlVideo: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
@@ -478,6 +392,8 @@ class GerenciadorDownload with Loggable {
         idQuestao: response.idQuestao,
       ),
     );
+
+    download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
   }
 
   salvarArquivoLocal(String url, String path) async {
@@ -873,5 +789,158 @@ class GerenciadorDownload with Loggable {
           break;
       }
     }
+  }
+
+  baixarArquivoImagem(DownloadProva download, ApiService apiService) async {
+    download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+    Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
+
+    if (response.isSuccessful) {
+      Questao? questao = await obterQuestaoPorArquivoLegadoId(download.id, idProva);
+
+      questao ??= await obterQuestaoPorArquivoLegadoIdAlternativa(download.id, idProva);
+
+      ArquivoResponseDTO arquivo = response.body!;
+
+      http.Response arquivoResponse = await http.get(
+        Uri.parse(
+          arquivo.caminho.replaceFirst('http://', 'https://'),
+        ),
+      );
+
+      String base64 = base64Encode(arquivoResponse.bodyBytes);
+
+      await saveArquivo(
+          Arquivo(
+            id: arquivo.id,
+            caminho: arquivo.caminho,
+            base64: base64,
+            questaoId: questao!.id,
+          ),
+          idProva);
+
+      download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+    } else {
+      download.downloadStatus = EnumDownloadStatus.ERRO;
+    }
+  }
+
+  baixarArquivoAudio(DownloadProva download, ApiService apiService) async {
+    download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+    Response<ArquivoResponseDTO> response = await apiService.arquivo.getAudio(idArquivo: download.id);
+
+    if (response.isSuccessful) {
+      ArquivoResponseDTO arquivo = response.body!;
+
+      String path = join(
+        'prova',
+        idProva.toString(),
+        'audio',
+        arquivo.questaoId.toString() + extension(arquivo.caminho),
+      );
+
+      await salvarArquivoLocal(arquivo.caminho, path);
+
+      await saveAudio(
+        ArquivoAudio(
+          id: arquivo.id,
+          path: path,
+          idProva: idProva,
+          idQuestao: arquivo.questaoId,
+        ),
+      );
+
+      download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+    } else {
+      download.downloadStatus = EnumDownloadStatus.ERRO;
+    }
+  }
+
+  contextoProva(DownloadProva download, ApiService apiService) async {
+    download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+    Response<ContextoProvaResponseDTO> response = await apiService.contextoProva.getContextoProva(id: download.id);
+
+    if (response.isSuccessful) {
+      ContextoProvaResponseDTO contexto = response.body!;
+
+      http.Response contextoResponse = await http.get(
+        Uri.parse(
+          contexto.imagem!.replaceFirst('http://', 'https://'),
+        ),
+      );
+
+      String base64 = base64Encode(contextoResponse.bodyBytes);
+
+      await saveContexto(
+        ContextoProva(
+          id: contexto.id,
+          imagem: contexto.imagem,
+          imagemBase64: base64,
+          ordem: contexto.ordem,
+          posicionamento: contexto.posicionamento,
+          provaId: contexto.provaId,
+          texto: contexto.texto,
+          titulo: contexto.titulo,
+        ),
+        idProva,
+      );
+
+      download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+    }
+  }
+
+  baixarAlternativa(DownloadProva download, ApiService apiService) async {
+    download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+    Response<AlternativaResponseDTO> response = await apiService.alternativa.getAlternativa(idAlternativa: download.id);
+
+    if (response.isSuccessful) {
+      AlternativaResponseDTO alternativaDTO = response.body!;
+
+      Alternativa alternativa = Alternativa(
+        id: alternativaDTO.id,
+        descricao: alternativaDTO.descricao,
+        ordem: alternativaDTO.ordem,
+        numeracao: alternativaDTO.numeracao,
+        questaoId: alternativaDTO.questaoId,
+      );
+
+      await saveAlternativa(alternativa, idProva);
+
+      download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+    }
+  }
+
+  baixarQuestao(Prova prova, DownloadProva download, ApiService apiService) async {
+    download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+    Questao? questao = prova.questoes.firstWhereOrNull((element) => element.id == download.id);
+
+    if (questao == null) {
+      Response<QuestaoResponseDTO> response = await apiService.questao.getQuestao(idQuestao: download.id);
+
+      if (response.isSuccessful) {
+        QuestaoResponseDTO questaoDTO = response.body!;
+
+        Questao questao = Questao(
+          id: questaoDTO.id,
+          titulo: questaoDTO.titulo,
+          descricao: questaoDTO.descricao,
+          ordem: questaoDTO.ordem,
+          alternativas: [],
+          arquivos: [],
+          arquivosVideos: [],
+          arquivosAudio: [],
+          tipo: questaoDTO.tipo,
+          quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
+        );
+
+        await saveQuestao(questao, idProva);
+      }
+    }
+    download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
   }
 }
