@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ServiceAuthenticator extends Authenticator with Loggable {
   @override
-  FutureOr<Request?> authenticate(Request request, Response<dynamic> response) async {
+  FutureOr<Request?> authenticate(Request request, Response<dynamic> response, [Request? originalRequest]) async {
     SharedPreferences prefs = GetIt.I.get();
 
     if (response.bodyString.contains("Token inválido")) {
