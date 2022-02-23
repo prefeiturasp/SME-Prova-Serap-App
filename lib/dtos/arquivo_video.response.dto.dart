@@ -5,17 +5,17 @@ part 'arquivo_video.response.dto.g.dart';
 @JsonSerializable()
 class ArquivoVideoResponseDTO {
   int id;
-  String urlVideo;
-  String nomeArquivo;
-  int idProva;
-  int idQuestao;
+  String caminho;
+  String caminhoVideoConvertido;
+  String caminhoVideoThumbinail;
+  int questaoId;
 
   ArquivoVideoResponseDTO({
     required this.id,
-    required this.urlVideo,
-    required this.nomeArquivo,
-    required this.idProva,
-    required this.idQuestao,
+    required this.caminho,
+    required this.caminhoVideoConvertido,
+    required this.caminhoVideoThumbinail,
+    required this.questaoId,
   });
 
   static const fromJson = _$ArquivoVideoResponseDTOFromJson;
