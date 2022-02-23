@@ -20,8 +20,7 @@ abstract class AutenticacaoService extends ChopperService {
     @Field() required String token,
   });
 
-  //@Get(path: 'meus-dados')
-  @Get(path: 'https://mocki.io/v1/eecbdb3a-fa5f-49f9-86ce-eb5b63d85a65')
+  @Get(path: 'meus-dados')
   Future<Response<AutenticacaoDadosResponseDTO>> meusDados();
 
   @Post(path: 'adm')
