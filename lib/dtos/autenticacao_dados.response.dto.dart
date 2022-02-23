@@ -1,4 +1,5 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'autenticacao_dados.response.dto.g.dart';
@@ -10,9 +11,13 @@ class AutenticacaoDadosResponseDTO {
   String tipoTurno;
   double tamanhoFonte;
   FonteTipoEnum familiaFonte;
-  int modalidade;
+  ModalidadeEnum modalidade;
   int inicioTurno;
   int fimTurno;
+
+  String dreAbreviacao;
+  String escola;
+  String turma;
 
   AutenticacaoDadosResponseDTO(
     this.nome,
@@ -23,6 +28,9 @@ class AutenticacaoDadosResponseDTO {
     this.modalidade,
     this.inicioTurno,
     this.fimTurno,
+    this.dreAbreviacao,
+    this.escola,
+    this.turma,
   );
 
   static const fromJson = _$AutenticacaoDadosResponseDTOFromJson;

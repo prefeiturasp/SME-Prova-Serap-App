@@ -1,4 +1,3 @@
-import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -53,7 +52,10 @@ class _SplashScreenViewState extends State<SplashScreenView> {
               familiaFonte: usuarioDados.familiaFonte,
               inicioTurno: usuarioDados.inicioTurno,
               fimTurno: usuarioDados.fimTurno,
-              modalidade: ModalidadeEnum.values[usuarioDados.modalidade],
+              modalidade: usuarioDados.modalidade,
+              dreAbreviacao: usuarioDados.dreAbreviacao,
+              escola: usuarioDados.escola,
+              turma: usuarioDados.turma,
             );
           }
         }

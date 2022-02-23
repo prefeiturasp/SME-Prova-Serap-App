@@ -120,12 +120,6 @@ abstract class TemaUtil {
     color: TemaUtil.appBar,
   );
 
-  //TEMA TEXTO APPBAR
-  static const temaTextoAppBar = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.bold,
-  );
-
   //TEMA TEXTO BOTAO SECUNDARIO
   static const temaTextoBotaoSecundario = TextStyle(
     color: TemaUtil.pretoSemFoco,
