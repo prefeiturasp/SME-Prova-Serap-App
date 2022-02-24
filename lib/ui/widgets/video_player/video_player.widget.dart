@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:appserap/utils/tema.util.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

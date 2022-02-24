@@ -44,6 +44,15 @@ abstract class _UsuarioStoreBase with Store {
   int fimTurno = 17;
 
   @observable
+  String? dreAbreviacao;
+
+  @observable
+  String? escola;
+
+  @observable
+  String? turma;
+
+  @observable
   FonteTipoEnum? familiaFonte = FonteTipoEnum.POPPINS;
 
   @observable
@@ -65,6 +74,10 @@ abstract class _UsuarioStoreBase with Store {
     token = null;
     codigoEOL = null;
     ano = null;
+    dreAbreviacao = null;
+    escola = null;
+    turma = null;
+
     tamanhoFonte = 16;
     familiaFonte = FonteTipoEnum.POPPINS;
     isAdmin = false;
@@ -78,6 +91,10 @@ abstract class _UsuarioStoreBase with Store {
     codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
     ano = prefs.getString("serapUsuarioAno");
     tipoTurno = prefs.getString("serapUsuarioTipoTurno");
+
+    dreAbreviacao = prefs.getString("serapUsuarioDreAbreviacao");
+    escola = prefs.getString("serapUsuarioEscola");
+    turma = prefs.getString("serapUsuarioTurma");
 
     if (prefs.getInt("serapUsuarioInicioTurno") != null) {
       inicioTurno = prefs.getInt("serapUsuarioInicioTurno")!;
@@ -112,18 +129,22 @@ abstract class _UsuarioStoreBase with Store {
   }
 
   @action
-  atualizarDados(
-      {required String nome,
-      String? codigoEOL,
-      String? token,
-      required String ano,
-      required String tipoTurno,
-      DateTime? ultimoLogin,
-      required double tamanhoFonte,
-      required FonteTipoEnum familiaFonte,
-      required ModalidadeEnum modalidade,
-      required int inicioTurno,
-      required int fimTurno}) async {
+  atualizarDados({
+    required String nome,
+    String? codigoEOL,
+    String? token,
+    required String ano,
+    required String tipoTurno,
+    DateTime? ultimoLogin,
+    required double tamanhoFonte,
+    required FonteTipoEnum familiaFonte,
+    required ModalidadeEnum modalidade,
+    required int inicioTurno,
+    required int fimTurno,
+    required String dreAbreviacao,
+    required String escola,
+    required String turma,
+  }) async {
     this.nome = nome;
     this.ano = ano;
     this.tipoTurno = tipoTurno;
@@ -133,6 +154,10 @@ abstract class _UsuarioStoreBase with Store {
     this.modalidade = modalidade;
     this.inicioTurno = inicioTurno;
     this.fimTurno = fimTurno;
+
+    this.dreAbreviacao = dreAbreviacao;
+    this.escola = escola;
+    this.turma = turma;
 
     SharedPreferences prefs = GetIt.I.get();
     await prefs.setString('serapUsuarioNome', nome);
@@ -153,6 +178,10 @@ abstract class _UsuarioStoreBase with Store {
     await prefs.setInt('serapUsuarioModalidade', modalidade.index);
     await prefs.setInt('serapUsuarioInicioTurno', inicioTurno);
     await prefs.setInt('serapUsuarioFimTurno', fimTurno);
+
+    await prefs.setString('serapUsuarioDreAbreviacao', dreAbreviacao);
+    await prefs.setString('serapUsuarioEscola', escola);
+    await prefs.setString('serapUsuarioTurma', turma);
 
     if (this.ultimoLogin != null) {
       await prefs.setString('ultimoLogin', ultimoLogin.toString());
