@@ -48,9 +48,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         builder: (_) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
+              Container(
+                padding: const EdgeInsets.only(top: 15),
                 child: Texto(
                   "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
                   fontSize: 16,
@@ -60,11 +61,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               ),
               Texto(
                 "${_principalStore.usuario.modalidade.abreviacao} - ${_principalStore.usuario.turma} - ${_principalStore.usuario.escola} (${_principalStore.usuario.dreAbreviacao})",
-                fontSize: 16,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
-              Padding(
+              Container(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: _buildSubtitulo(),
               ),
