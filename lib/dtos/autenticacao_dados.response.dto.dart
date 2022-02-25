@@ -1,3 +1,4 @@
+import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -19,6 +20,8 @@ class AutenticacaoDadosResponseDTO {
   String escola;
   String turma;
 
+  List<DeficienciaEnum> deficiencias;
+
   AutenticacaoDadosResponseDTO(
     this.nome,
     this.ano,
@@ -31,6 +34,7 @@ class AutenticacaoDadosResponseDTO {
     this.dreAbreviacao,
     this.escola,
     this.turma,
+    this.deficiencias,
   );
 
   static const fromJson = _$AutenticacaoDadosResponseDTOFromJson;

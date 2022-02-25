@@ -56,6 +56,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
               dreAbreviacao: usuarioDados.dreAbreviacao,
               escola: usuarioDados.escola,
               turma: usuarioDados.turma,
+              deficiencias: usuarioDados.deficiencias,
             );
           }
         }

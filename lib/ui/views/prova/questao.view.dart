@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -146,71 +147,99 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         );
       }
 
-      return Column(
-        children: [
-          TempoExecucaoWidget(provaStore: provaStore),
-          _buildAudioPlayer(),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: getPadding(),
-                child: Column(
-                  children: [
-                    Observer(builder: (_) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Questão ${questao.ordem + 1} ',
-                                  style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                    fontSize: temaStore.tTexto20,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+      return Scaffold(
+        body: Column(
+          children: [
+            TempoExecucaoWidget(provaStore: provaStore),
+            _buildAudioPlayer(),
+            Expanded(
+              child: _builLayout(
+                body: SingleChildScrollView(
+                  child: Padding(
+                    padding: questao.arquivosVideos.isEmpty ? getPadding() : EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: questao.arquivosVideos.isNotEmpty ? MediaQuery.of(context).size.width * 0.5 : null,
+                          child: Observer(builder: (_) {
+                            return Container(
+                              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Questão ${questao.ordem + 1} ',
+                                        style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                          fontSize: temaStore.tTexto20,
+                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                        ),
+                                      ),
+                                      Text(
+                                        'de ${provaStore.prova.questoes.length}',
+                                        style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                          fontSize: temaStore.tTexto20,
+                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                Text(
-                                  'de ${provaStore.prova.questoes.length}',
-                                  style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                                    fontSize: temaStore.tTexto20,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                  SizedBox(height: 8),
+                                  QuestaoWidget(
+                                    provaStore: provaStore,
+                                    questao: questao,
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            QuestaoWidget(
-                              provaStore: provaStore,
-                              questao: questao,
-                            ),
-                            SizedBox(height: 8),
-                          ],
+                                  SizedBox(height: 8),
+                                ],
+                              ),
+                            );
+                          }),
                         ),
-                      );
-                    }),
-                    Observer(builder: (context) {
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                          left: 24,
-                          right: 24,
-                          bottom: 20,
-                        ),
-                        child: _buildBotoes(questao),
-                      );
-                    }),
-                  ],
+                        Observer(builder: (context) {
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                              left: 24,
+                              right: 24,
+                              bottom: 20,
+                            ),
+                            child: _buildBotoes(questao),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     });
   }
 
+  _builLayout({required Widget body}) {
+    if (exibirVideo()) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: body,
+          ),
+          _buildVideoPlayer(),
+        ],
+      );
+    } else {
+      return body;
+    }
+  }
+
   Widget _buildAudioPlayer() {
+    if (!exibirAudio()) {
+      return SizedBox.shrink();
+    }
+
     if (kIsWeb) {
       return FutureBuilder<Uint8List?>(
         future: loadAudio(questao),
@@ -235,6 +264,19 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     return SizedBox.shrink();
   }
 
+  Widget _buildVideoPlayer() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.5,
+      padding: EdgeInsets.only(right: 16),
+      child: FutureBuilder<Widget>(
+        future: showVideoPlayer(),
+        builder: (context, snapshot) {
+          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
+        },
+      ),
+    );
+  }
+
   Widget _buildBotoes(Questao questao) {
     Widget botoesRespondendoProva = Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -245,7 +287,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       ],
     );
 
-    if (kIsMobile) {
+    if (kIsMobile || kIsTablet && questao.arquivosVideos.isNotEmpty) {
       botoesRespondendoProva = Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -341,12 +383,40 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     context.go("/prova/${widget.idProva}/resumo");
   }
 
-  showVideoPlayer() {
+  Future<Widget> showVideoPlayer() async {
     if (kIsWeb) {
       var file = arquivosVideo.entries.first.value;
       return VideoPlayerWidget(videoUrl: buildUrl(file));
     } else {
-      return VideoPlayerWidget(videoPath: questao.arquivosVideos.first.path);
+      String path = (await buildPath(questao.arquivosVideos.first.path))!;
+      return VideoPlayerWidget(videoPath: path);
     }
+  }
+
+  bool exibirAudio() {
+    if (questao.arquivosAudio.isEmpty) {
+      return false;
+    }
+
+    for (var deficiencia in principalStore.usuario.deficiencias) {
+      if (grupoCegos.contains(deficiencia)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool exibirVideo() {
+    if (questao.arquivosVideos.isEmpty) {
+      return false;
+    }
+
+    for (var deficiencia in principalStore.usuario.deficiencias) {
+      if (grupoSurdos.contains(deficiencia)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }

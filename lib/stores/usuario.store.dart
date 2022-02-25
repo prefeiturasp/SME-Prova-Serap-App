@@ -1,3 +1,4 @@
+import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/utils/firebase.util.dart';
@@ -56,6 +57,9 @@ abstract class _UsuarioStoreBase with Store {
   FonteTipoEnum? familiaFonte = FonteTipoEnum.POPPINS;
 
   @observable
+  ObservableList<DeficienciaEnum> deficiencias = ObservableList<DeficienciaEnum>();
+
+  @observable
   bool isRespondendoProva = false;
 
   @observable
@@ -77,6 +81,7 @@ abstract class _UsuarioStoreBase with Store {
     dreAbreviacao = null;
     escola = null;
     turma = null;
+    deficiencias = ObservableList<DeficienciaEnum>();
 
     tamanhoFonte = 16;
     familiaFonte = FonteTipoEnum.POPPINS;
@@ -92,9 +97,20 @@ abstract class _UsuarioStoreBase with Store {
     ano = prefs.getString("serapUsuarioAno");
     tipoTurno = prefs.getString("serapUsuarioTipoTurno");
 
-    dreAbreviacao = prefs.getString("serapUsuarioDreAbreviacao");
-    escola = prefs.getString("serapUsuarioEscola");
-    turma = prefs.getString("serapUsuarioTurma");
+    if (prefs.containsKey("serapUsuarioDreAbreviacao")) {
+      dreAbreviacao = prefs.getString("serapUsuarioDreAbreviacao");
+    }
+    if (prefs.containsKey("serapUsuarioEscola")) {
+      escola = prefs.getString("serapUsuarioEscola");
+    }
+    if (prefs.containsKey("serapUsuarioTurma")) {
+      turma = prefs.getString("serapUsuarioTurma");
+    }
+
+    if (prefs.containsKey("serapUsuarioDeficiencia")) {
+      deficiencias = ObservableList.of(
+          prefs.getStringList("serapUsuarioDeficiencia")!.map((e) => DeficienciaEnum.values[int.parse(e)]).toList());
+    }
 
     if (prefs.getInt("serapUsuarioInicioTurno") != null) {
       inicioTurno = prefs.getInt("serapUsuarioInicioTurno")!;
@@ -144,6 +160,7 @@ abstract class _UsuarioStoreBase with Store {
     required String dreAbreviacao,
     required String escola,
     required String turma,
+    required List<DeficienciaEnum> deficiencias,
   }) async {
     this.nome = nome;
     this.ano = ano;
@@ -189,6 +206,9 @@ abstract class _UsuarioStoreBase with Store {
 
     await prefs.setDouble('tamanhoFonte', tamanhoFonte);
     await prefs.setInt('familiaFonte', familiaFonte.index);
+
+    this.deficiencias = ObservableList.of(deficiencias);
+    await prefs.setStringList('serapUsuarioDeficiencia', deficiencias.map((e) => e.index.toString()).toList());
 
     await inscreverTurmaFirebase(ano);
   }
