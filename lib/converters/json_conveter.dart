@@ -1,5 +1,6 @@
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
+import 'package:appserap/dtos/arquivo_video.response.dto.dart';
 import 'package:appserap/dtos/autenticacao.dto.dart';
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
@@ -70,4 +71,5 @@ final jsonConverter = JsonSerializableConverter({
   "OrientacaoInicialResponseDTO": OrientacaoInicialResponseDTO.fromJson,
   "ContextoProvaResponseDTO": ContextoProvaResponseDTO.fromJson,
   "ProvaAnteriorResponseDTO": ProvaAnteriorResponseDTO.fromJson,
+  "ArquivoVideoResponseDTO": ArquivoVideoResponseDTO.fromJson,
 });

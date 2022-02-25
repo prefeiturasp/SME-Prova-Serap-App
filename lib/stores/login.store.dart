@@ -139,6 +139,7 @@ abstract class _LoginStoreBase with Store, Loggable {
               dreAbreviacao: usuarioDados.dreAbreviacao,
               escola: usuarioDados.escola,
               turma: usuarioDados.turma,
+              deficiencias: usuarioDados.deficiencias,
             );
 
             await onPostLogin(usuarioDados);
