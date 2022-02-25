@@ -25,7 +25,7 @@ enum DeficienciaEnum {
   @JsonValue(11)
   CEGUEIRA,
 
-  @JsonValue(11)
+  @JsonValue(12)
   BAIXA_VISAO_OU_VISAO_SUBNORMAL,
 
   @JsonValue(14)
@@ -50,15 +50,20 @@ enum DeficienciaEnum {
   DEFICIENCIA_FiSICA_CADEIRANTE,
 }
 
-extension ModalidadeEnumExtension on DeficienciaEnum {
+extension DeficienciaEnumExtension on DeficienciaEnum {
   static const nomes = {
     DeficienciaEnum.NAO_CADASTRADO: 'Não Cadastrado',
   };
 
   String get nome => nomes[this]!;
-
-  List<DeficienciaEnum> get grupoSurdos => [
-        DeficienciaEnum.SURDEZ_LEVE_OU_MODERADA,
-        DeficienciaEnum.SURDEZ_SEVERA_OU_PROFUNDA,
-      ];
 }
+
+List<DeficienciaEnum> get grupoSurdos => [
+      DeficienciaEnum.SURDEZ_LEVE_OU_MODERADA,
+      DeficienciaEnum.SURDEZ_SEVERA_OU_PROFUNDA,
+    ];
+
+List<DeficienciaEnum> get grupoCegos => [
+      DeficienciaEnum.CEGUEIRA,
+      DeficienciaEnum.BAIXA_VISAO_OU_VISAO_SUBNORMAL,
+    ];

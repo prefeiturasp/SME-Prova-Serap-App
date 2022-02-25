@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -153,7 +154,6 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
             _buildAudioPlayer(),
             Expanded(
               child: _builLayout(
-                questao.arquivosVideos.isNotEmpty,
                 body: SingleChildScrollView(
                   child: Padding(
                     padding: questao.arquivosVideos.isEmpty ? getPadding() : EdgeInsets.zero,
@@ -218,8 +218,8 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     });
   }
 
-  _builLayout(bool hasVideo, {required Widget body}) {
-    if (hasVideo) {
+  _builLayout({required Widget body}) {
+    if (exibirVideo()) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -227,16 +227,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
           Expanded(
             child: body,
           ),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.5,
-            padding: EdgeInsets.only(right: 16),
-            child: FutureBuilder<Widget>(
-              future: showVideoPlayer(),
-              builder: (context, snapshot) {
-                return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
-              },
-            ),
-          )
+          _buildVideoPlayer(),
         ],
       );
     } else {
@@ -245,6 +236,10 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   Widget _buildAudioPlayer() {
+    if (!exibirAudio()) {
+      return SizedBox.shrink();
+    }
+
     if (kIsWeb) {
       return FutureBuilder<Uint8List?>(
         future: loadAudio(questao),
@@ -267,6 +262,19 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     }
 
     return SizedBox.shrink();
+  }
+
+  Widget _buildVideoPlayer() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.5,
+      padding: EdgeInsets.only(right: 16),
+      child: FutureBuilder<Widget>(
+        future: showVideoPlayer(),
+        builder: (context, snapshot) {
+          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
+        },
+      ),
+    );
   }
 
   Widget _buildBotoes(Questao questao) {
@@ -383,5 +391,32 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       String path = (await buildPath(questao.arquivosVideos.first.path))!;
       return VideoPlayerWidget(videoPath: path);
     }
+  }
+
+  bool exibirAudio() {
+    if (questao.arquivosAudio.isEmpty) {
+      return false;
+    }
+
+    for (var deficiencia in principalStore.usuario.deficiencias) {
+      if (grupoCegos.contains(deficiencia)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool exibirVideo() {
+    if (questao.arquivosVideos.isEmpty) {
+      return false;
+    }
+
+    for (var deficiencia in principalStore.usuario.deficiencias) {
+      if (grupoSurdos.contains(deficiencia)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
