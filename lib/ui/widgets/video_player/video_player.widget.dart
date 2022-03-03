@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:appserap/utils/tema.util.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,12 +40,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     _chewieController = ChewieController(
       allowedScreenSleep: false,
       allowFullScreen: true,
-      deviceOrientationsAfterFullScreen: [
-        DeviceOrientation.landscapeRight,
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ],
+
       videoPlayerController: _videoPlayerController,
       aspectRatio: _aspectRatio,
       autoInitialize: true,
@@ -57,33 +51,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       //   bufferedColor: kTextColorVariant,
       // ),
     );
-
-    _chewieController.addListener(() {
-      if (_chewieController.isFullScreen) {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.landscapeRight,
-          DeviceOrientation.landscapeLeft,
-        ]);
-      } else {
-        SystemChrome.setPreferredOrientations([
-          DeviceOrientation.portraitUp,
-          DeviceOrientation.portraitDown,
-        ]);
-      }
-    });
   }
 
   @override
   void dispose() {
     _videoPlayerController.pause();
     _chewieController.dispose();
-
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.landscapeRight,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
 
     super.dispose();
   }

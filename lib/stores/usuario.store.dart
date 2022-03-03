@@ -1,3 +1,4 @@
+import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/utils/firebase.util.dart';
@@ -44,7 +45,19 @@ abstract class _UsuarioStoreBase with Store {
   int fimTurno = 17;
 
   @observable
+  String? dreAbreviacao;
+
+  @observable
+  String? escola;
+
+  @observable
+  String? turma;
+
+  @observable
   FonteTipoEnum? familiaFonte = FonteTipoEnum.POPPINS;
+
+  @observable
+  ObservableList<DeficienciaEnum> deficiencias = ObservableList<DeficienciaEnum>();
 
   @observable
   bool isRespondendoProva = false;
@@ -65,6 +78,11 @@ abstract class _UsuarioStoreBase with Store {
     token = null;
     codigoEOL = null;
     ano = null;
+    dreAbreviacao = null;
+    escola = null;
+    turma = null;
+    deficiencias = ObservableList<DeficienciaEnum>();
+
     tamanhoFonte = 16;
     familiaFonte = FonteTipoEnum.POPPINS;
     isAdmin = false;
@@ -78,6 +96,21 @@ abstract class _UsuarioStoreBase with Store {
     codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
     ano = prefs.getString("serapUsuarioAno");
     tipoTurno = prefs.getString("serapUsuarioTipoTurno");
+
+    if (prefs.containsKey("serapUsuarioDreAbreviacao")) {
+      dreAbreviacao = prefs.getString("serapUsuarioDreAbreviacao");
+    }
+    if (prefs.containsKey("serapUsuarioEscola")) {
+      escola = prefs.getString("serapUsuarioEscola");
+    }
+    if (prefs.containsKey("serapUsuarioTurma")) {
+      turma = prefs.getString("serapUsuarioTurma");
+    }
+
+    if (prefs.containsKey("serapUsuarioDeficiencia")) {
+      deficiencias = ObservableList.of(
+          prefs.getStringList("serapUsuarioDeficiencia")!.map((e) => DeficienciaEnum.values[int.parse(e)]).toList());
+    }
 
     if (prefs.getInt("serapUsuarioInicioTurno") != null) {
       inicioTurno = prefs.getInt("serapUsuarioInicioTurno")!;
@@ -112,18 +145,23 @@ abstract class _UsuarioStoreBase with Store {
   }
 
   @action
-  atualizarDados(
-      {required String nome,
-      String? codigoEOL,
-      String? token,
-      required String ano,
-      required String tipoTurno,
-      DateTime? ultimoLogin,
-      required double tamanhoFonte,
-      required FonteTipoEnum familiaFonte,
-      required ModalidadeEnum modalidade,
-      required int inicioTurno,
-      required int fimTurno}) async {
+  atualizarDados({
+    required String nome,
+    String? codigoEOL,
+    String? token,
+    required String ano,
+    required String tipoTurno,
+    DateTime? ultimoLogin,
+    required double tamanhoFonte,
+    required FonteTipoEnum familiaFonte,
+    required ModalidadeEnum modalidade,
+    required int inicioTurno,
+    required int fimTurno,
+    required String dreAbreviacao,
+    required String escola,
+    required String turma,
+    required List<DeficienciaEnum> deficiencias,
+  }) async {
     this.nome = nome;
     this.ano = ano;
     this.tipoTurno = tipoTurno;
@@ -133,6 +171,10 @@ abstract class _UsuarioStoreBase with Store {
     this.modalidade = modalidade;
     this.inicioTurno = inicioTurno;
     this.fimTurno = fimTurno;
+
+    this.dreAbreviacao = dreAbreviacao;
+    this.escola = escola;
+    this.turma = turma;
 
     SharedPreferences prefs = GetIt.I.get();
     await prefs.setString('serapUsuarioNome', nome);
@@ -154,12 +196,19 @@ abstract class _UsuarioStoreBase with Store {
     await prefs.setInt('serapUsuarioInicioTurno', inicioTurno);
     await prefs.setInt('serapUsuarioFimTurno', fimTurno);
 
+    await prefs.setString('serapUsuarioDreAbreviacao', dreAbreviacao);
+    await prefs.setString('serapUsuarioEscola', escola);
+    await prefs.setString('serapUsuarioTurma', turma);
+
     if (this.ultimoLogin != null) {
       await prefs.setString('ultimoLogin', ultimoLogin.toString());
     }
 
     await prefs.setDouble('tamanhoFonte', tamanhoFonte);
     await prefs.setInt('familiaFonte', familiaFonte.index);
+
+    this.deficiencias = ObservableList.of(deficiencias);
+    await prefs.setStringList('serapUsuarioDeficiencia', deficiencias.map((e) => e.index.toString()).toList());
 
     await inscreverTurmaFirebase(ano);
   }

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
@@ -25,7 +24,6 @@ import 'package:appserap/models/download_prova.model.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:chopper/src/response.dart';
@@ -264,7 +262,7 @@ class GerenciadorDownload with Loggable {
 
             case EnumDownloadTipo.VIDEO:
               await retry(
-                () async => await baixarVideo(download),
+                () async => await baixarArquivoVideo(download, apiService),
                 retryIf: (e) => e is Exception,
                 onRetry: (e) {
                   fine('[Prova $idProva] - Tentativa de download do arquivo de Video ID: ${download.id}');
@@ -362,38 +360,6 @@ class GerenciadorDownload with Loggable {
     }
 
     cancelTimer();
-  }
-
-  baixarVideo(DownloadProva download) async {
-    download.downloadStatus = EnumDownloadStatus.BAIXANDO;
-
-    var response = ArquivoVideoResponseDTO(
-      id: 1,
-      urlVideo: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      nomeArquivo: 'video.mp4',
-      idProva: -1,
-      idQuestao: -1,
-    );
-
-    String path = join(
-      'prova',
-      idProva.toString(),
-      'video',
-      response.idQuestao.toString() + extension(response.nomeArquivo),
-    );
-
-    await salvarArquivoLocal(response.urlVideo, path);
-
-    await saveVideo(
-      ArquivoVideo(
-        id: response.id,
-        path: path,
-        idProva: idProva,
-        idQuestao: response.idQuestao,
-      ),
-    );
-
-    download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
   }
 
   salvarArquivoLocal(String url, String path) async {
@@ -819,6 +785,45 @@ class GerenciadorDownload with Loggable {
             questaoId: questao!.id,
           ),
           idProva);
+
+      download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+    } else {
+      download.downloadStatus = EnumDownloadStatus.ERRO;
+    }
+  }
+
+  baixarArquivoVideo(DownloadProva download, ApiService apiService) async {
+    download.downloadStatus = EnumDownloadStatus.BAIXANDO;
+
+    // var response = ArquivoVideoResponseDTO(
+    //   id: 1,
+    //   caminho: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    //   caminhoVideoConvertido: 'video.mp4',
+    //   caminhoVideoThumbinail: '-1',
+    //   idQuestao: -1,
+    // );
+    Response<ArquivoVideoResponseDTO> response = await apiService.arquivo.getVideo(idArquivo: download.id);
+
+    if (response.isSuccessful) {
+      ArquivoVideoResponseDTO arquivo = response.body!;
+
+      String path = join(
+        'prova',
+        idProva.toString(),
+        'video',
+        arquivo.questaoId.toString() + extension(arquivo.caminho),
+      );
+
+      await salvarArquivoLocal(arquivo.caminho, path);
+
+      await saveVideo(
+        ArquivoVideo(
+          id: arquivo.id,
+          path: path,
+          idProva: idProva,
+          idQuestao: arquivo.questaoId,
+        ),
+      );
 
       download.downloadStatus = EnumDownloadStatus.CONCLUIDO;
     } else {

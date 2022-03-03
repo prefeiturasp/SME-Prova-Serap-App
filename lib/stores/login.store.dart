@@ -1,7 +1,6 @@
 import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
 import 'package:appserap/dtos/error.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -136,7 +135,11 @@ abstract class _LoginStoreBase with Store, Loggable {
               familiaFonte: usuarioDados.familiaFonte,
               inicioTurno: usuarioDados.inicioTurno,
               fimTurno: usuarioDados.fimTurno,
-              modalidade: ModalidadeEnum.values[usuarioDados.modalidade],
+              modalidade: usuarioDados.modalidade,
+              dreAbreviacao: usuarioDados.dreAbreviacao,
+              escola: usuarioDados.escola,
+              turma: usuarioDados.turma,
+              deficiencias: usuarioDados.deficiencias,
             );
 
             await onPostLogin(usuarioDados);

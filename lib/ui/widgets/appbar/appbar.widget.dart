@@ -1,4 +1,5 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
@@ -6,6 +7,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
   @override
-  Size get preferredSize => Size.fromHeight(68);
+  Size get preferredSize => Size.fromHeight(78);
 
   @override
   Widget build(BuildContext context) {
@@ -46,18 +48,24 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         builder: (_) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Text(
+              Container(
+                padding: const EdgeInsets.only(top: 15),
+                child: Texto(
                   "${_principalStore.usuario.nome} (${_principalStore.usuario.codigoEOL})",
-                  style: TemaUtil.temaTextoAppBar.copyWith(
-                    fontSize: temaStore.tTexto16,
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  ),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-              Padding(
+              Texto(
+                "${_principalStore.usuario.modalidade.abreviacao} - ${_principalStore.usuario.turma} - ${_principalStore.usuario.escola} (${_principalStore.usuario.dreAbreviacao})",
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              Container(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: _buildSubtitulo(),
               ),

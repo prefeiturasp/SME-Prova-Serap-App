@@ -32,6 +32,10 @@ class FinalizarProvaWorker with Worker, Loggable {
             networkType: NetworkType.connected,
           ),
         );
+      } else {
+        return Timer.periodic(Duration(minutes: 15), (timer) {
+          sincronizar();
+        });
       }
     }
 
