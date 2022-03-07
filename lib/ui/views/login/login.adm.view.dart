@@ -28,7 +28,7 @@ class _LoginAdmViewState extends BaseStateWidget<LoginAdmView, LoginAdmStore> {
     super.initState();
     store.loginByToken(widget.login, widget.nome, widget.perfil, widget.chaveApi).then((logou) {
       if (logou) {
-        context.go("/");
+        context.go("/admin");
       }
     });
   }

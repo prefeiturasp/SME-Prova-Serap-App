@@ -10,6 +10,7 @@ enum APP_PAGE {
   QUESTAO,
   RESUMO,
   REVISAO_QUESTAO,
+  ADMIN_HOME,
 }
 
 extension AppPageExtension on APP_PAGE {
@@ -37,6 +38,8 @@ extension AppPageExtension on APP_PAGE {
         return "/prova/:idProva/resumo";
       case APP_PAGE.REVISAO_QUESTAO:
         return "/prova/:idProva/revisao/:ordem";
+      case APP_PAGE.ADMIN_HOME:
+        return "/admin";
     }
   }
 
@@ -64,6 +67,8 @@ extension AppPageExtension on APP_PAGE {
         return "Resumo";
       case APP_PAGE.REVISAO_QUESTAO:
         return "Revisão da questão";
+      case APP_PAGE.ADMIN_HOME:
+        return "Administrador - Listagem de Provas";
     }
   }
 
@@ -91,6 +96,8 @@ extension AppPageExtension on APP_PAGE {
         return "RESUMO";
       case APP_PAGE.REVISAO_QUESTAO:
         return "REVISAO_QUESTAO";
+      case APP_PAGE.ADMIN_HOME:
+        return "ADMIN_HOME";
     }
   }
 }

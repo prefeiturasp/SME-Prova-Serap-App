@@ -10,7 +10,8 @@ import 'package:appserap/utils/router.util.dart';
 import 'package:go_router/go_router.dart';
 
 import 'ui/views/error/error.view.dart';
-import 'ui/views/login/login_adm.view.dart';
+import 'ui/views/admin/home.admin.view.dart';
+import 'ui/views/login/login.adm.view.dart';
 import 'ui/views/prova/questao_revisao.view.dart';
 
 class AppRouter {
@@ -106,6 +107,13 @@ class AppRouter {
           var idProva = int.tryParse(state.params['idProva']!);
           var ordem = int.tryParse(state.params['ordem']!);
           return QuestaoRevisaoView(idProva: idProva!, ordem: ordem!);
+        },
+      ),
+      GoRoute(
+        path: APP_PAGE.ADMIN_HOME.toPath,
+        name: APP_PAGE.ADMIN_HOME.toName,
+        builder: (context, state) {
+          return HomeAdminView();
         },
       ),
     ],
