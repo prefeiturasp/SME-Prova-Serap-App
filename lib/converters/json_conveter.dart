@@ -1,3 +1,4 @@
+import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
@@ -8,9 +9,10 @@ import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/dtos/listagem_prova.admin.response.dto.dart';
 import 'package:appserap/dtos/preferencias_usuario.response.dto.dart';
 import 'package:appserap/dtos/orientacao_inicial.response.dto.dart';
-import 'package:appserap/dtos/prova.admin.response.dto.dart';
+import 'package:appserap/dtos/admin_prova.response.dto.dart';
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/dtos/prova_anterior.response.dto.dart';
+import 'package:appserap/dtos/admin_prova_caderno.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.response.dto.dart';
@@ -74,6 +76,8 @@ final jsonConverter = JsonSerializableConverter({
   "ContextoProvaResponseDTO": ContextoProvaResponseDTO.fromJson,
   "ProvaAnteriorResponseDTO": ProvaAnteriorResponseDTO.fromJson,
   "ArquivoVideoResponseDTO": ArquivoVideoResponseDTO.fromJson,
-  "ListagemProvaAdminResponseDTO": ListagemProvaAdminResponseDTO.fromJson,
-  "ProvaAdminResponseDTO": ProvaAdminResponseDTO.fromJson,
+  "ListagemAdminProvaResponseDTO": ListagemAdminProvaResponseDTO.fromJson,
+  "AdminProvaResponseDTO": AdminProvaResponseDTO.fromJson,
+  "AdminProvaCadernoResponseDTO": AdminProvaCadernoResponseDTO.fromJson,
+  "AdminProvaResumoResponseDTO": AdminProvaResumoResponseDTO.fromJson,
 });

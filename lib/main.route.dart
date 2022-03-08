@@ -9,6 +9,8 @@ import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/router.util.dart';
 import 'package:go_router/go_router.dart';
 
+import 'ui/views/admin/prova_resumo.admin.view.dart';
+import 'ui/views/admin/prova_resumo_caderno.admin.view.dart';
 import 'ui/views/error/error.view.dart';
 import 'ui/views/admin/home.admin.view.dart';
 import 'ui/views/login/login.adm.view.dart';
@@ -114,6 +116,31 @@ class AppRouter {
         name: APP_PAGE.ADMIN_HOME.toName,
         builder: (context, state) {
           return HomeAdminView();
+        },
+      ),
+      GoRoute(
+        path: APP_PAGE.ADMIN_PROVA_CADERNO.toPath,
+        name: APP_PAGE.ADMIN_PROVA_CADERNO.toName,
+        builder: (context, state) {
+          int? idProva = int.tryParse(state.params['idProva']!);
+          return AdminProvaCadernoView(idProva: idProva!);
+        },
+      ),
+      GoRoute(
+        path: APP_PAGE.ADMIN_PROVA_RESUMO.toPath,
+        name: APP_PAGE.ADMIN_PROVA_RESUMO.toName,
+        builder: (context, state) {
+          int? idProva = int.tryParse(state.params['idProva']!);
+          return AdminProvaResumoView(idProva: idProva!, nomeCaderno: null);
+        },
+      ),
+      GoRoute(
+        path: APP_PAGE.ADMIN_PROVA_RESUMO_CADERNO.toPath,
+        name: APP_PAGE.ADMIN_PROVA_RESUMO_CADERNO.toName,
+        builder: (context, state) {
+          int? idProva = int.tryParse(state.params['idProva']!);
+          String? nomeCaderno = state.params['nomeCaderno']!;
+          return AdminProvaResumoView(idProva: idProva!, nomeCaderno: nomeCaderno);
         },
       ),
     ],

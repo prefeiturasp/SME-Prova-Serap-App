@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:appserap/dtos/prova.admin.response.dto.dart';
+import 'package:appserap/dtos/admin_prova.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/home.admin.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
@@ -34,6 +34,12 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
   FocusNode _codigoProvaFocus = FocusNode();
 
   @override
+  bool get exibirSair => true;
+
+  @override
+  bool get exibirVoltar => false;
+
+  @override
   void initState() {
     super.initState();
     store.carregarProvas();
@@ -45,7 +51,7 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
       padding: const EdgeInsets.only(top: 16, bottom: 8),
       child: Observer(
         builder: (_) {
-          ObservableList<ProvaAdminResponseDTO> provasStore = store.provas;
+          ObservableList<AdminProvaResponseDTO> provasStore = store.provas;
 
           if (store.carregando) {
             return Center(
@@ -64,7 +70,7 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     );
   }
 
-  _buildItens(ObservableList<ProvaAdminResponseDTO> listProvas) {
+  _buildItens(ObservableList<AdminProvaResponseDTO> listProvas) {
     if (listProvas.isEmpty) {
       return Center(
         child: SizedBox(
@@ -103,7 +109,7 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     );
   }
 
-  _buildProva(ProvaAdminResponseDTO prova) {
+  _buildProva(AdminProvaResponseDTO prova) {
     return Padding(
       padding: getPadding(EdgeInsets.symmetric(horizontal: 8)),
       child: Card(
@@ -222,7 +228,7 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     );
   }
 
-  List<Widget> _buildProvaIcon(ProvaAdminResponseDTO prova) {
+  List<Widget> _buildProvaIcon(AdminProvaResponseDTO prova) {
     if (kIsTablet) {
       return [
         Container(
@@ -240,7 +246,7 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     }
   }
 
-  Widget _formataDataAplicacao(ProvaAdminResponseDTO prova) {
+  Widget _formataDataAplicacao(AdminProvaResponseDTO prova) {
     var tamanhoFonte = temaStore.tTexto14;
 
     if (prova.dataFim == null || prova.dataInicio == prova.dataFim) {
@@ -339,7 +345,7 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     return SizedBox();
   }
 
-  _buildBotao(ProvaAdminResponseDTO prova) {
+  _buildBotao(AdminProvaResponseDTO prova) {
     String texto = 'VISUALIZAR PROVA';
 
     var tamanhoFonte = 14.0;
@@ -378,13 +384,11 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                     left: 16,
                     right: 16,
                   ),
-                  child: Observer(builder: (_) {
-                    return Texto(
-                      "Insira a senha informada para iniciar a prova",
-                      center: true,
-                      fontSize: tamanhoFonte,
-                    );
-                  }),
+                  child: Texto(
+                    "Insira a senha informada para iniciar a prova",
+                    center: true,
+                    fontSize: tamanhoFonte,
+                  ),
                 ),
                 corpo: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -404,21 +408,14 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                           color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                         ),
                       ),
+                      onSubmitted: (value) => _confirmarSenha(prova),
                     ),
                   ),
                 ),
                 botoes: [
                   BotaoDefaultWidget(
                     onPressed: () {
-                      String senhaCriptografada = md5.convert(utf8.encode(store.codigoIniciarProva)).toString();
-
-                      if (prova.senha == senhaCriptografada) {
-                        Navigator.pop(context);
-
-                        _navegarProva(prova);
-                      } else {
-                        mostrarDialogSenhaErrada(context);
-                      }
+                      _confirmarSenha(prova);
                     },
                     textoBotao: "ENVIAR CODIGO",
                   ),
@@ -433,13 +430,25 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     );
   }
 
-  _navegarProva(ProvaAdminResponseDTO prova) {
-    // if (prova.contextosProva != null && prova.contextosProva!.isNotEmpty) {
-    //   context.go("/prova/${prova.id}/contexto");
-    // } else {
-    //   context.go("/prova/${prova.id}");
-    // }
+  _navegarProva(AdminProvaResponseDTO prova) {
+    // TODO verificar se possui contexto para mostrar
 
-    context.go("/prova/${prova.id}");
+    if (prova.possuiBIB) {
+      context.push("/admin/prova/${prova.id}/caderno");
+    } else {
+      context.push("/admin/prova/${prova.id}/resumo");
+    }
+  }
+
+  void _confirmarSenha(AdminProvaResponseDTO prova) {
+    String senhaCriptografada = md5.convert(utf8.encode(store.codigoIniciarProva)).toString();
+
+    if (prova.senha == senhaCriptografada) {
+      Navigator.pop(context);
+
+      _navegarProva(prova);
+    } else {
+      mostrarDialogSenhaErrada(context);
+    }
   }
 }

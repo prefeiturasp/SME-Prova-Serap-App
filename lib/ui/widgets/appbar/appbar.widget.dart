@@ -27,7 +27,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   AppBarWidget({
     required this.popView,
     this.subtitulo,
-    this.mostrarBotaoVoltar = true,
+    this.mostrarBotaoVoltar = false,
     this.exibirSair = false,
     this.leading,
   });
@@ -81,11 +81,20 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         },
       ),
       automaticallyImplyLeading: false,
-      leading: leading,
+      leading: leading ?? (mostrarBotaoVoltar ? _buildBotaoVoltarLeading(context) : null),
       actions: [
         _buildAlterarFonte(context),
         exibirSair ? _buildBotaoSair(context) : Container(),
       ],
+    );
+  }
+
+  Widget? _buildBotaoVoltarLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () async {
+        context.pop();
+      },
     );
   }
 
