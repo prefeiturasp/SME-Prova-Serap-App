@@ -33,8 +33,8 @@ abstract class AdminService extends ChopperService {
     @Path() required String caderno,
   });
 
-  @Get(path: "provas/{idProva}/questoes/{questaoId}/detalhes")
-  Future<Response<List<AdminQuestaoDetalhesResponseDTO>>> getDetalhes({
+  @Get(path: "provas/{idProva}/questoes/{idQuestao}/detalhes")
+  Future<Response<AdminQuestaoDetalhesResponseDTO>> getDetalhes({
     @Path() required int idProva,
     @Path() required int idQuestao,
   });

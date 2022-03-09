@@ -40,48 +40,44 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
     return SingleChildScrollView(
       child: Padding(
         padding: getPadding(),
-        child: Observer(
-          builder: (_) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      //
-                      Texto(
-                        'Listagem de questões',
-                        textAlign: TextAlign.start,
-                        color: TemaUtil.preto,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      //
-                      SizedBox(height: 20),
-                      Observer(builder: (_) {
-                        if (store.carregando) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        return Column(
-                          children: [
-                            _buildCabecalho(),
-                            _divider(),
-                            ..._buildListaRespostas(),
-                          ],
-                        );
-                      }),
-                    ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //
+                  Texto(
+                    'Listagem de questões',
+                    textAlign: TextAlign.start,
+                    color: TemaUtil.preto,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
                   ),
-                ),
-              ],
-            );
-          },
+                  //
+                  SizedBox(height: 20),
+                  Observer(builder: (_) {
+                    if (store.carregando) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    return Column(
+                      children: [
+                        _buildCabecalho(),
+                        _divider(),
+                        ..._buildListaRespostas(),
+                      ],
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -185,7 +181,7 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
         Radius.circular(10),
       ),
       onTap: () {
-        context.pushNamed("/admin/prova/${widget.idProva}/questao/${questaoOrdem}/visualizar", extra: store.resumo);
+        context.push("/admin/prova/${widget.idProva}/questao/$questaoOrdem", extra: store.resumo.toList());
       },
       child: SvgPicture.asset(
         AssetsUtil.iconeRevisarQuestao,

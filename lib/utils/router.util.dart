@@ -15,6 +15,7 @@ enum APP_PAGE {
   ADMIN_PROVA_CADERNO,
   ADMIN_PROVA_RESUMO,
   ADMIN_PROVA_RESUMO_CADERNO,
+  ADMIN_PROVA_QUESTAO,
 }
 
 extension AppPageExtension on APP_PAGE {
@@ -52,6 +53,8 @@ extension AppPageExtension on APP_PAGE {
         return "/admin/prova/:idProva/resumo";
       case APP_PAGE.ADMIN_PROVA_RESUMO_CADERNO:
         return "/admin/prova/:idProva/caderno/:nomeCaderno/resumo";
+      case APP_PAGE.ADMIN_PROVA_QUESTAO:
+        return "/admin/prova/:idProva/questao/:ordem";
     }
   }
 
@@ -89,6 +92,8 @@ extension AppPageExtension on APP_PAGE {
         return "Administrador - Resumo da Prova";
       case APP_PAGE.ADMIN_PROVA_RESUMO_CADERNO:
         return "Administrador - Resumo da Prova";
+      case APP_PAGE.ADMIN_PROVA_QUESTAO:
+        return "Administrador - Questão da Prova";
     }
   }
 
@@ -126,6 +131,8 @@ extension AppPageExtension on APP_PAGE {
         return "ADMIN_PROVA_RESUMO";
       case APP_PAGE.ADMIN_PROVA_RESUMO_CADERNO:
         return "ADMIN_PROVA_RESUMO_CADERNO";
+      case APP_PAGE.ADMIN_PROVA_QUESTAO:
+        return "ADMIN_PROVA_QUESTAO";
     }
   }
 }

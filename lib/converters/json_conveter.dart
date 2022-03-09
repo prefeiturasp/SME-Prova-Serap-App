@@ -1,4 +1,5 @@
 import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
+import 'package:appserap/dtos/admin_questao_detalhes.response.dto.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
@@ -80,4 +81,5 @@ final jsonConverter = JsonSerializableConverter({
   "AdminProvaResponseDTO": AdminProvaResponseDTO.fromJson,
   "AdminProvaCadernoResponseDTO": AdminProvaCadernoResponseDTO.fromJson,
   "AdminProvaResumoResponseDTO": AdminProvaResumoResponseDTO.fromJson,
+  "AdminQuestaoDetalhesResponseDTO": AdminQuestaoDetalhesResponseDTO.fromJson,
 });

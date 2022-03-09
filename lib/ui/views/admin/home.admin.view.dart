@@ -47,26 +47,39 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
 
   @override
   Widget builder(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 8),
-      child: Observer(
-        builder: (_) {
-          ObservableList<AdminProvaResponseDTO> provasStore = store.provas;
+    return Column(
+      children: [
+        TextFormField(
+          initialValue: "LÍNGUA PORTUGUESA",
+          onChanged: (value) {
+            store.desricao = value;
+          },
+          onFieldSubmitted: (value) => store.carregarProvas(),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16, bottom: 8),
+            child: Observer(
+              builder: (_) {
+                ObservableList<AdminProvaResponseDTO> provasStore = store.provas;
 
-          if (store.carregando) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+                if (store.carregando) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              await store.carregarProvas();
-            },
-            child: _buildItens(provasStore),
-          );
-        },
-      ),
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await store.carregarProvas();
+                  },
+                  child: _buildItens(provasStore),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 

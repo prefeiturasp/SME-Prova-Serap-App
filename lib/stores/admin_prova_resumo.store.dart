@@ -34,7 +34,7 @@ abstract class _AdminProvaResumoViewStoreBase with Store, Loggable {
       },
       retryIf: (e) => e is Exception,
       onRetry: (e) {
-        fine('[Prova $idProva] - Tentativa de carregamento Resumo Prova');
+        fine('[Prova $idProva] - Tentativa de carregamento Resumo Prova - ${e.toString()}');
       },
     );
 

@@ -8,7 +8,6 @@ class AdminQuestaoDetalhesResponseDTO {
   int questaoId;
   List<int> arquivosId;
   List<int> alternativasId;
-  List<int> contextosProvaId;
   List<int> audiosId;
   List<int> videosId;
 
@@ -17,7 +16,6 @@ class AdminQuestaoDetalhesResponseDTO {
     required this.questaoId,
     required this.arquivosId,
     required this.alternativasId,
-    required this.contextosProvaId,
     required this.audiosId,
     required this.videosId,
   });

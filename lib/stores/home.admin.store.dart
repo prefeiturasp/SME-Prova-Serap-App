@@ -16,6 +16,9 @@ abstract class _HomeAdminStoreBase with Store, Loggable {
   String codigoIniciarProva = "";
 
   @observable
+  String desricao = "";
+
+  @observable
   ObservableList<AdminProvaResponseDTO> provas = ObservableList<AdminProvaResponseDTO>();
 
   @action
@@ -24,7 +27,9 @@ abstract class _HomeAdminStoreBase with Store, Loggable {
 
     await retry(
       () async {
-        var provasResponse = await ServiceLocator.get<ApiService>().admin.getProvas();
+        var provasResponse = await ServiceLocator.get<ApiService>().admin.getProvas(
+              descricao: desricao,
+            );
 
         if (provasResponse.isSuccessful) {
           var provas = provasResponse.body;
