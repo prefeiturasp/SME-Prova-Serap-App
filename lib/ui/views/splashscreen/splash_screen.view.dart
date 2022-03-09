@@ -69,7 +69,11 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!, update: false);
 
     if (_principalStore.usuario.isLogado) {
-      context.go("/");
+      if (_principalStore.usuario.isAdmin) {
+        context.go("/admin");
+      } else {
+        context.go("/");
+      }
     } else {
       context.go("/login");
     }

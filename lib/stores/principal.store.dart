@@ -2,6 +2,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
@@ -89,6 +90,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
     if (eraAdimin) {
       await launch("https://hom-serap.sme.prefeitura.sp.gov.br/", webOnlyWindowName: '_self');
+      ServiceLocator.get<AppRouter>().router.go("/login");
     }
   }
 

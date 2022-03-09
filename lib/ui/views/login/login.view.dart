@@ -64,7 +64,6 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
               );
             },
           ),
-
           //
           _buildFormularioLogin(),
           //

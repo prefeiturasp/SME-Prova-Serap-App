@@ -46,6 +46,13 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
   void initState() {
     super.initState();
     store.carregarProvas();
+    store.setupReactions();
+  }
+
+  @override
+  void dispose() {
+    store.onDispose();
+    super.dispose();
   }
 
   @override
@@ -149,23 +156,13 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(top: 16, bottom: 8),
-            child: Observer(
-              builder: (_) {
-                ObservableList<AdminProvaResponseDTO> provasStore = store.provas;
-
-                if (store.carregando) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    await store.carregarProvas();
-                  },
-                  child: _buildItens(provasStore),
-                );
+            child: RefreshIndicator(
+              onRefresh: () async {
+                await store.carregarProvas(refresh: true);
               },
+              child: Observer(builder: (_) {
+                return _buildItens();
+              }),
             ),
           ),
         ),
@@ -173,41 +170,51 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     );
   }
 
-  _buildItens(ObservableList<AdminProvaResponseDTO> listProvas) {
-    if (listProvas.isEmpty) {
-      return Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height - 400,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 28),
-                child: SvgPicture.asset(
-                  'assets/images/sem_prova.svg',
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 24),
-                child: Texto(
-                  "Você não tem novas\nprovas para fazer.",
-                  fontSize: 18,
-                  center: true,
-                  fontWeight: FontWeight.w600,
-                  color: TemaUtil.pretoSemFoco3,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
+  _buildItens() {
     return ListView.builder(
-      itemCount: listProvas.length,
+      itemCount: store.provas.length + 1,
       itemBuilder: (_, index) {
-        return _buildProva(listProvas[index]);
+        if (store.provas.isEmpty) {
+          return Center(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height - 400,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 28),
+                    child: SvgPicture.asset(
+                      'assets/images/sem_prova.svg',
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24),
+                    child: Texto(
+                      "Você não tem novas\nprovas para fazer.",
+                      fontSize: 18,
+                      center: true,
+                      fontWeight: FontWeight.w600,
+                      color: TemaUtil.pretoSemFoco3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        if (index == store.provas.length) {
+          if (store.totalPaginas > store.pagina) {
+            store.carregarProvas();
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return SizedBox.shrink();
+          }
+        }
+        return _buildProva(store.provas[index]);
       },
     );
   }
@@ -536,10 +543,13 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
   _navegarProva(AdminProvaResponseDTO prova) {
     // TODO verificar se possui contexto para mostrar
 
-    if (prova.possuiBIB) {
-      context.push("/admin/prova/${prova.id}/caderno");
+    if (prova.possuiContexto) {
     } else {
-      context.push("/admin/prova/${prova.id}/resumo");
+      if (prova.possuiBIB) {
+        context.push("/admin/prova/${prova.id}/caderno");
+      } else {
+        context.push("/admin/prova/${prova.id}/resumo");
+      }
     }
   }
 
