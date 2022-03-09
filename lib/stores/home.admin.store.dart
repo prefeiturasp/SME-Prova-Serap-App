@@ -1,4 +1,5 @@
 import 'package:appserap/dtos/admin_prova.response.dto.dart';
+import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
@@ -16,7 +17,16 @@ abstract class _HomeAdminStoreBase with Store, Loggable {
   String codigoIniciarProva = "";
 
   @observable
-  String desricao = "";
+  String? codigoSerap = "";
+
+  @observable
+  String? desricao = "";
+
+  @observable
+  ModalidadeEnum? modalidade;
+
+  @observable
+  String? ano;
 
   @observable
   ObservableList<AdminProvaResponseDTO> provas = ObservableList<AdminProvaResponseDTO>();
@@ -29,6 +39,9 @@ abstract class _HomeAdminStoreBase with Store, Loggable {
       () async {
         var provasResponse = await ServiceLocator.get<ApiService>().admin.getProvas(
               descricao: desricao,
+              ano: ano,
+              modalidade: modalidade?.codigo,
+              provaLegadoId: codigoSerap != null ? int.tryParse(codigoSerap!) : null,
             );
 
         if (provasResponse.isSuccessful) {

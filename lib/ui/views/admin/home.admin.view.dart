@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:appserap/dtos/admin_prova.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/stores/home.admin.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
@@ -17,11 +18,13 @@ import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobx/src/api/observable_collections.dart';
+import 'package:supercharged_dart/supercharged_dart.dart';
 
 class HomeAdminView extends BaseStatefulWidget {
   HomeAdminView({Key? key}) : super(key: key);
@@ -49,12 +52,99 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
   Widget builder(BuildContext context) {
     return Column(
       children: [
-        TextFormField(
-          initialValue: "LÍNGUA PORTUGUESA",
-          onChanged: (value) {
-            store.desricao = value;
-          },
-          onFieldSubmitted: (value) => store.carregarProvas(),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Row(
+            children: [
+              Flexible(
+                flex: 4,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Observer(builder: (_) {
+                    return TextFormField(
+                      initialValue: store.codigoSerap,
+                      decoration: InputDecoration(
+                        labelText: "Código da prova",
+                        labelStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                      onChanged: (value) {
+                        store.codigoSerap = value;
+                      },
+                      onFieldSubmitted: (value) => store.carregarProvas(),
+                    );
+                  }),
+                ),
+              ),
+              Expanded(
+                flex: 10,
+                child: Observer(builder: (_) {
+                  return TextFormField(
+                    initialValue: store.desricao,
+                    decoration: InputDecoration(
+                      labelText: "Descrição da prova",
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      store.desricao = value;
+                    },
+                    onFieldSubmitted: (value) => store.carregarProvas(),
+                  );
+                }),
+              ),
+            ],
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              flex: 8,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: DropdownSearch<ModalidadeEnum>(
+                  mode: Mode.MENU,
+                  showClearButton: true,
+                  items: ModalidadeEnum.values.filter((element) => element.codigo != 0).toList(),
+                  itemAsString: (item) => item?.nome ?? "",
+                  dropdownSearchDecoration: InputDecoration(
+                    hintText: "Selecione a modalidade",
+                    labelText: "Modalidade",
+                    contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                  ),
+                  onChanged: (ModalidadeEnum? newValue) {
+                    store.modalidade = newValue;
+                    store.carregarProvas();
+                  },
+                ),
+              ),
+            ),
+
+            //Ano
+
+            Expanded(
+              flex: 4,
+              child: DropdownSearch<String>(
+                mode: Mode.MENU,
+                showClearButton: true,
+                items: List<String>.generate(9, (i) => (i + 1).toString()),
+                itemAsString: (item) => item! + "º",
+                dropdownSearchDecoration: InputDecoration(
+                  hintText: "Selecione o ano de aplicação da prova",
+                  labelText: "Ano",
+                  contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                ),
+                onChanged: (String? newValue) {
+                  store.ano = newValue;
+                  store.carregarProvas();
+                },
+              ),
+            ),
+          ],
         ),
         Expanded(
           child: Padding(
