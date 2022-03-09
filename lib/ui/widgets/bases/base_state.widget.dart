@@ -47,6 +47,9 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
 
   bool? resizeToAvoidBottomInset;
 
+  bool exibirSair = false;
+  bool exibirVoltar = true;
+
   onAfterBuild(BuildContext context) {}
 
   @override
@@ -99,6 +102,8 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   PreferredSizeWidget buildAppBar() {
     return AppBarWidget(
       popView: false,
+      exibirSair: exibirSair,
+      mostrarBotaoVoltar: exibirVoltar,
     );
   }
 

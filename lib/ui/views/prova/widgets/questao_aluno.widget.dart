@@ -20,14 +20,14 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
-class QuestaoWidget extends StatelessWidget {
+class QuestaoAlunoWidget extends StatelessWidget {
   final TemaStore temaStore = ServiceLocator.get<TemaStore>();
   final controller = HtmlEditorController();
 
   final ProvaStore provaStore;
   final Questao questao;
 
-  QuestaoWidget({
+  QuestaoAlunoWidget({
     Key? key,
     required this.provaStore,
     required this.questao,
@@ -47,7 +47,10 @@ class QuestaoWidget extends StatelessWidget {
               ),
             ),
             'span': Style.fromTextStyle(
-              TextStyle(fontSize: temaStore.tTexto16, fontFamily: temaStore.fonteDoTexto.nomeFonte, color: TemaUtil.pretoSemFoco3),
+              TextStyle(
+                  fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  color: TemaUtil.pretoSemFoco3),
             ),
           },
           onImageTap: (url, _, attributes, element) {
@@ -322,7 +325,8 @@ class QuestaoWidget extends StatelessWidget {
 
     for (var arquivo in arquivos) {
       var obterTipo = arquivo.caminho.split(".");
-      texto = texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto =
+          texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
 
     texto = texto.replaceAll("#0#", AssetsUtil.notfound);
