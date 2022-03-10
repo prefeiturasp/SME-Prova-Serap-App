@@ -28,6 +28,9 @@ class AdminProvaResumoView extends BaseStatefulWidget {
 
 class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, AdminProvaResumoViewStore> {
   @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
   void initState() {
     super.initState();
     store.carregarResumo(widget.idProva, caderno: widget.nomeCaderno);
@@ -114,7 +117,7 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
           ),
         ),
         Flexible(
-          flex: 2,
+          flex: 3,
           child: Center(
             child: Texto(
               "Visualizar item",
@@ -185,7 +188,7 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
           ),
         ),
         Flexible(
-          flex: 2,
+          flex: 3,
           child: Center(
             child: _buildVisualizar(questaoResumo.ordem, questaoResumo.id),
           ),
