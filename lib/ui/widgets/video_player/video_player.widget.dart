@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatefulWidget {

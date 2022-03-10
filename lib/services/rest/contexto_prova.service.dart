@@ -13,7 +13,7 @@ abstract class ContextoProvaService extends ChopperService {
     @Path() required int id,
   });
 
-  @Get(path: '/provas/{id}')
+  @Get(path: '/provas/{idProva}')
   Future<Response<List<ContextoProvaResponseDTO>>> getContextosPorProva({
     @Path() required int idProva,
   });

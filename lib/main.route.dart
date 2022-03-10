@@ -1,4 +1,4 @@
-import 'package:appserap/stores/admin_prova_questao.store.dart';
+import 'package:appserap/ui/views/admin/prova_contexto.admin.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/views/login/login.view.dart';
 import 'package:appserap/ui/views/orientacao_inicial/orientacao_inicial.view.dart';
@@ -122,6 +122,15 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: APP_PAGE.ADMIN_PROVA_CONTEXTO.toPath,
+        name: APP_PAGE.ADMIN_PROVA_CONTEXTO.toName,
+        builder: (context, state) {
+          int? idProva = int.tryParse(state.params['idProva']!);
+
+          return AdminProvaContextoView(idProva: idProva!);
+        },
+      ),
+      GoRoute(
         path: APP_PAGE.ADMIN_PROVA_CADERNO.toPath,
         name: APP_PAGE.ADMIN_PROVA_CADERNO.toName,
         builder: (context, state) {
@@ -154,6 +163,18 @@ class AppRouter {
           int? ordem = int.tryParse(state.params['ordem']!);
           List<AdminProvaResumoResponseDTO> resumo = state.extra as List<AdminProvaResumoResponseDTO>;
           return AdminProvaQuestaoView(idProva: idProva!, ordem: ordem!, resumo: resumo);
+        },
+      ),
+      GoRoute(
+        path: APP_PAGE.ADMIN_PROVA_QUESTAO_CADERNO.toPath,
+        name: APP_PAGE.ADMIN_PROVA_QUESTAO_CADERNO.toName,
+        builder: (context, state) {
+          int? idProva = int.tryParse(state.params['idProva']!);
+          String? nomeCaderno = state.params['nomeCaderno']!;
+          int? ordem = int.tryParse(state.params['ordem']!);
+
+          List<AdminProvaResumoResponseDTO> resumo = state.extra as List<AdminProvaResumoResponseDTO>;
+          return AdminProvaQuestaoView(idProva: idProva!, nomeCaderno: nomeCaderno, ordem: ordem!, resumo: resumo);
         },
       ),
     ],

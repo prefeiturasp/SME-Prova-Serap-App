@@ -1,4 +1,5 @@
 import 'package:appserap/stores/admin_prova_caderno.store.dart';
+import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
@@ -18,12 +19,26 @@ class AdminProvaCadernoView extends BaseStatefulWidget {
 
 class _AdminProvaCadernoViewState extends BaseStateWidget<AdminProvaCadernoView, AdminProvaCadernoViewStore> {
   @override
-  bool get exibirVoltar => true;
-
-  @override
   void initState() {
     super.initState();
     store.carregarCadernos(widget.idProva);
+  }
+
+  @override
+  PreferredSizeWidget buildAppBar() {
+    return AppBarWidget(
+      popView: true,
+      leading: _buildBotaoVoltarLeading(context),
+    );
+  }
+
+  Widget? _buildBotaoVoltarLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () async {
+        context.go("/admin");
+      },
+    );
   }
 
   @override
@@ -71,13 +86,16 @@ class _AdminProvaCadernoViewState extends BaseStateWidget<AdminProvaCadernoView,
   }
 
   _buildCadernos(String nomeCaderno) {
-    return TextButton(
-      onPressed: () {
-        context.push("/admin/prova/${widget.idProva}/caderno/$nomeCaderno/resumo");
-      },
-      child: Texto(
-        "Caderno $nomeCaderno",
-        fontSize: 16,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: TextButton(
+        onPressed: () {
+          context.push("/admin/prova/${widget.idProva}/caderno/$nomeCaderno/resumo");
+        },
+        child: Texto(
+          "Caderno $nomeCaderno",
+          fontSize: 16,
+        ),
       ),
     );
   }

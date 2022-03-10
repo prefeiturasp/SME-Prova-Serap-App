@@ -11,7 +11,7 @@ part 'home.admin.store.g.dart';
 class HomeAdminStore = _HomeAdminStoreBase with _$HomeAdminStore;
 
 abstract class _HomeAdminStoreBase with Store, Loggable, Disposable {
-  late List<ReactionDisposer> _disposers;
+  List<ReactionDisposer> _disposers = [];
 
   @observable
   bool carregando = false;
@@ -83,19 +83,11 @@ abstract class _HomeAdminStoreBase with Store, Loggable, Disposable {
     carregando = false;
   }
 
-  setupReactions() {
-    _disposers = [
-      reaction((_) => desricao, resetarPagina),
-      reaction((_) => ano, resetarPagina),
-      reaction((_) => modalidade, resetarPagina),
-      reaction((_) => codigoSerap, resetarPagina),
-    ];
-  }
-
   @action
-  resetarPagina([Object? value]) {
-    pagina = 1;
+  filtrar() async {
     provas.clear();
+    pagina = 1;
+    await carregarProvas();
   }
 
   @action
@@ -111,7 +103,8 @@ abstract class _HomeAdminStoreBase with Store, Loggable, Disposable {
     for (var disposer in _disposers) {
       disposer();
     }
-    resetarPagina();
+    pagina = 1;
+    provas.clear();
     limparFiltros();
   }
 }
