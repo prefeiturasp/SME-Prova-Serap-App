@@ -58,7 +58,7 @@ class ApresentacaoContextoAdminWidget extends StatelessWidget {
                   context,
                   listaDePaginasContexto[index].titulo!,
                   listaDePaginasContexto[index].texto!,
-                  listaDePaginasContexto[index].imagem!.replaceFirst("http", "https"),
+                  listaDePaginasContexto[index].imagem!.replaceFirst('http://', 'https://'),
                   listaDePaginasContexto[index].posicionamento!.index,
                 ),
               );
