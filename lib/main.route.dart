@@ -126,8 +126,9 @@ class AppRouter {
         name: APP_PAGE.ADMIN_PROVA_CONTEXTO.toName,
         builder: (context, state) {
           int? idProva = int.tryParse(state.params['idProva']!);
+          bool? possuiBIB = (state.extra as Map)['possuiBIB'];
 
-          return AdminProvaContextoView(idProva: idProva!);
+          return AdminProvaContextoView(idProva: idProva!, possuiBIB: possuiBIB!);
         },
       ),
       GoRoute(

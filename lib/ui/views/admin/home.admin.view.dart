@@ -553,10 +553,8 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
   }
 
   _navegarProva(AdminProvaResponseDTO prova) {
-    // TODO verificar se possui contexto para mostrar
-
     if (prova.possuiContexto) {
-      context.push("/admin/prova/${prova.id}/contexto");
+      context.push("/admin/prova/${prova.id}/contexto", extra: {'possuiBIB': prova.possuiBIB});
     } else {
       if (prova.possuiBIB) {
         context.push("/admin/prova/${prova.id}/caderno");

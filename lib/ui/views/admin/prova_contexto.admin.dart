@@ -10,7 +10,12 @@ import 'package:go_router/go_router.dart';
 
 class AdminProvaContextoView extends StatefulWidget {
   final int idProva;
-  AdminProvaContextoView({Key? key, required this.idProva}) : super(key: key);
+  final bool possuiBIB;
+  AdminProvaContextoView({
+    Key? key,
+    required this.idProva,
+    required this.possuiBIB,
+  }) : super(key: key);
 
   @override
   State<AdminProvaContextoView> createState() => _AdminProvaContextoViewState();
@@ -47,7 +52,11 @@ class _AdminProvaContextoViewState extends State<AdminProvaContextoView> {
                 regraMostrarTodosOsBotoesAoIniciar: false,
                 regraMostrarApenasBotaoPoximo: true,
                 onDone: () {
-                  context.go("/admin/prova/${widget.idProva}/dicas");
+                  if (widget.possuiBIB) {
+                    context.push("/admin/prova/${widget.idProva}/caderno");
+                  } else {
+                    context.push("/admin/prova/${widget.idProva}/resumo");
+                  }
                 },
               );
             },
