@@ -54,9 +54,7 @@ class QuestaoAdminWidget extends StatelessWidget {
             ),
           },
           onImageTap: (url, _, attributes, element) {
-            Uint8List imagem = base64.decode(url!.split(',').last);
-
-            _exibirImagem(context, imagem);
+            _exibirImagem(context, url!);
           },
         ),
         SizedBox(height: 8),
@@ -78,9 +76,7 @@ class QuestaoAdminWidget extends StatelessWidget {
             ),
           },
           onImageTap: (url, _, attributes, element) {
-            Uint8List imagem = base64.decode(url!.split(',').last);
-
-            _exibirImagem(context, imagem);
+            _exibirImagem(context, url!);
           },
         ),
         SizedBox(height: 16),
@@ -89,7 +85,7 @@ class QuestaoAdminWidget extends StatelessWidget {
     );
   }
 
-  Future<T?> _exibirImagem<T>(BuildContext context, Uint8List image) async {
+  Future<T?> _exibirImagem<T>(BuildContext context, String urlImagem) async {
     return await showDialog<T>(
       context: context,
       builder: (_) {
@@ -109,7 +105,7 @@ class QuestaoAdminWidget extends StatelessWidget {
                     alignment: Alignment.center,
                     child: PhotoView(
                       backgroundDecoration: BoxDecoration(color: background),
-                      imageProvider: MemoryImage(image),
+                      imageProvider: NetworkImage(urlImagem),
                     ),
                   ),
                 ),
@@ -255,8 +251,7 @@ class QuestaoAdminWidget extends StatelessWidget {
     }
 
     for (var arquivo in arquivos) {
-      var obterTipo = arquivo.caminho.split(".");
-      texto = texto.replaceAll("#${arquivo.id}#", arquivo.caminho);
+      texto = texto.replaceAll("#${arquivo.id}#", arquivo.caminho.replaceFirst('http://', 'https://'));
     }
 
     texto = texto.replaceAll("#0#", AssetsUtil.notfound);

@@ -139,6 +139,10 @@ abstract class _UsuarioStoreBase with Store {
       tamanhoFonte = prefs.getDouble("tamanhoFonte")!;
     }
 
+    if (prefs.containsKey('serapIsAdmin')) {
+      isAdmin = prefs.getBool("serapIsAdmin")!;
+    }
+
     if (ano != null && ano!.isNotEmpty) {
       await inscreverTurmaFirebase(ano!);
     }
@@ -216,6 +220,7 @@ abstract class _UsuarioStoreBase with Store {
   @action
   Future<void> atualizarDadosAdm({
     required String nome,
+    required bool isAdmin,
     String? codigoEOL,
     String? token,
   }) async {
@@ -225,6 +230,7 @@ abstract class _UsuarioStoreBase with Store {
 
     SharedPreferences prefs = GetIt.I.get();
     await prefs.setString('serapUsuarioNome', nome);
+    await prefs.setBool('serapIsAdmin', isAdmin);
 
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;

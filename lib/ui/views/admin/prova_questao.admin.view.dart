@@ -18,12 +18,14 @@ import 'package:go_router/go_router.dart';
 
 class AdminProvaQuestaoView extends BaseStatefulWidget {
   final int idProva;
+  final String? nomeCaderno;
   final int ordem;
   final List<AdminProvaResumoResponseDTO> resumo;
 
   AdminProvaQuestaoView({
     Key? key,
     required this.idProva,
+    this.nomeCaderno,
     required this.ordem,
     required this.resumo,
   }) : super(key: key);
@@ -43,7 +45,20 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
   PreferredSizeWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
-      mostrarBotaoVoltar: true,
+      leading: _buildBotaoVoltarLeading(context),
+    );
+  }
+
+  Widget? _buildBotaoVoltarLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () async {
+        if (widget.nomeCaderno != null) {
+          context.go("/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/resumo");
+        } else {
+          context.go("/admin/prova/${widget.idProva}/resumo");
+        }
+      },
     );
   }
 
@@ -202,7 +217,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
     }
 
     return BotaoSecundarioWidget(
-      textoBotao: 'Questão anterior',
+      textoBotao: 'Item anterior',
       onPressed: () async {
         context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem - 1}", extra: widget.resumo.toList());
       },
@@ -212,7 +227,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
   Widget _buildBotaoProximo() {
     if (widget.ordem < widget.resumo.length - 1) {
       return BotaoDefaultWidget(
-        textoBotao: 'Próxima questão',
+        textoBotao: 'Próximo item',
         onPressed: () async {
           context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem + 1}", extra: widget.resumo.toList());
         },
@@ -220,8 +235,14 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
     }
 
     return BotaoDefaultWidget(
-      textoBotao: 'Finalizar prova',
-      onPressed: () async {},
+      textoBotao: 'Voltar para o resumo',
+      onPressed: () async {
+        if (widget.nomeCaderno != null) {
+          context.go("/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/resumo");
+        } else {
+          context.go("/admin/prova/${widget.idProva}/resumo");
+        }
+      },
     );
   }
 

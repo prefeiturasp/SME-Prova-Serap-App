@@ -1,5 +1,6 @@
 import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
 import 'package:appserap/stores/admin_prova_resumo.store.dart';
+import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
@@ -27,12 +28,30 @@ class AdminProvaResumoView extends BaseStatefulWidget {
 
 class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, AdminProvaResumoViewStore> {
   @override
-  bool get exibirVoltar => true;
-
-  @override
   void initState() {
     super.initState();
     store.carregarResumo(widget.idProva, caderno: widget.nomeCaderno);
+  }
+
+  @override
+  PreferredSizeWidget buildAppBar() {
+    return AppBarWidget(
+      popView: true,
+      leading: _buildBotaoVoltarLeading(context),
+    );
+  }
+
+  Widget? _buildBotaoVoltarLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () async {
+        if (widget.nomeCaderno != null) {
+          context.go("/admin/prova/${widget.idProva}/caderno");
+        } else {
+          context.go("/admin");
+        }
+      },
+    );
   }
 
   @override
@@ -51,7 +70,7 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
                 children: [
                   //
                   Texto(
-                    'Listagem de questões',
+                    'Resumo da prova',
                     textAlign: TextAlign.start,
                     color: TemaUtil.preto,
                     fontSize: 20,
@@ -98,7 +117,7 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
           flex: 2,
           child: Center(
             child: Texto(
-              "Visualizar",
+              "Visualizar item",
               fontSize: 14,
               color: TemaUtil.appBar,
             ),
@@ -181,7 +200,14 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
         Radius.circular(10),
       ),
       onTap: () {
-        context.push("/admin/prova/${widget.idProva}/questao/$questaoOrdem", extra: store.resumo.toList());
+        if (widget.nomeCaderno != null) {
+          context.push(
+            "/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/questao/$questaoOrdem",
+            extra: store.resumo.toList(),
+          );
+        } else {
+          context.push("/admin/prova/${widget.idProva}/questao/$questaoOrdem", extra: store.resumo.toList());
+        }
       },
       child: SvgPicture.asset(
         AssetsUtil.iconeRevisarQuestao,

@@ -23,7 +23,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobx/src/api/observable_collections.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
 class HomeAdminView extends BaseStatefulWidget {
@@ -43,10 +42,12 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
   bool get exibirVoltar => false;
 
   @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
   void initState() {
     super.initState();
     store.carregarProvas();
-    store.setupReactions();
   }
 
   @override
@@ -80,7 +81,9 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                       onChanged: (value) {
                         store.codigoSerap = value;
                       },
-                      onFieldSubmitted: (value) => store.carregarProvas(),
+                      onFieldSubmitted: (value) async {
+                        await store.filtrar();
+                      },
                     );
                   }),
                 ),
@@ -100,7 +103,11 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                     onChanged: (value) {
                       store.desricao = value;
                     },
-                    onFieldSubmitted: (value) => store.carregarProvas(),
+                    onFieldSubmitted: (value) async {
+                      if (value.length > 3 || value.isEmpty) {
+                        await store.filtrar();
+                      }
+                    },
                   );
                 }),
               ),
@@ -123,9 +130,9 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                     labelText: "Modalidade",
                     contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
                   ),
-                  onChanged: (ModalidadeEnum? newValue) {
+                  onChanged: (ModalidadeEnum? newValue) async {
                     store.modalidade = newValue;
-                    store.carregarProvas();
+                    await store.filtrar();
                   },
                 ),
               ),
@@ -145,9 +152,9 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                   labelText: "Ano",
                   contentPadding: EdgeInsets.fromLTRB(12, 12, 0, 0),
                 ),
-                onChanged: (String? newValue) {
+                onChanged: (String? newValue) async {
                   store.ano = newValue;
-                  store.carregarProvas();
+                  await store.filtrar();
                 },
               ),
             ),
@@ -161,6 +168,11 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                 await store.carregarProvas(refresh: true);
               },
               child: Observer(builder: (_) {
+                if (store.carregando) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
                 return _buildItens();
               }),
             ),
@@ -544,6 +556,7 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     // TODO verificar se possui contexto para mostrar
 
     if (prova.possuiContexto) {
+      context.push("/admin/prova/${prova.id}/contexto");
     } else {
       if (prova.possuiBIB) {
         context.push("/admin/prova/${prova.id}/caderno");
