@@ -29,12 +29,15 @@ abstract class _LoginAdmStoreBase with Store, Loggable {
 
         _usuarioStore.atualizarDadosAdm(
           codigoEOL: login,
+          isAdmin: true,
           token: body.token,
           nome: nome,
         );
 
         var prefs = ServiceLocator.get<SharedPreferences>();
         await prefs.setString('token', body.token);
+        fine('Login realizado com sucesso');
+        fine('Token: ${body.token}');
 
         return true;
       }

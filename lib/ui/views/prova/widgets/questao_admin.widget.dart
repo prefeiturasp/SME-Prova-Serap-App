@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:appserap/dtos/alternativa.response.dto.dart';
+import 'package:appserap/dtos/arquivo.response.dto.dart';
+import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/models/alternativa.model.dart';
-import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
-import 'package:appserap/models/questao.model.dart';
-import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
@@ -20,17 +18,19 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
-class QuestaoWidget extends StatelessWidget {
+class QuestaoAdminWidget extends StatelessWidget {
   final TemaStore temaStore = ServiceLocator.get<TemaStore>();
   final controller = HtmlEditorController();
 
-  final ProvaStore provaStore;
-  final Questao questao;
+  final QuestaoResponseDTO questao;
+  final List<ArquivoResponseDTO> imagens;
+  final List<AlternativaResponseDTO> alternativas;
 
-  QuestaoWidget({
+  QuestaoAdminWidget({
     Key? key,
-    required this.provaStore,
     required this.questao,
+    required this.imagens,
+    required this.alternativas,
   }) : super(key: key);
 
   @override
@@ -38,7 +38,7 @@ class QuestaoWidget extends StatelessWidget {
     return Column(
       children: [
         Html(
-          data: tratarArquivos(questao.titulo, questao.arquivos, EnumTipoImagem.QUESTAO),
+          data: tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO),
           style: {
             '*': Style.fromTextStyle(
               TemaUtil.temaTextoHtmlPadrao.copyWith(
@@ -47,18 +47,19 @@ class QuestaoWidget extends StatelessWidget {
               ),
             ),
             'span': Style.fromTextStyle(
-              TextStyle(fontSize: temaStore.tTexto16, fontFamily: temaStore.fonteDoTexto.nomeFonte, color: TemaUtil.pretoSemFoco3),
+              TextStyle(
+                  fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  color: TemaUtil.pretoSemFoco3),
             ),
           },
           onImageTap: (url, _, attributes, element) {
-            Uint8List imagem = base64.decode(url!.split(',').last);
-
-            _exibirImagem(context, imagem);
+            _exibirImagem(context, url!);
           },
         ),
         SizedBox(height: 8),
         Html(
-          data: tratarArquivos(questao.descricao, questao.arquivos, EnumTipoImagem.QUESTAO),
+          data: tratarArquivos(questao.descricao, imagens, EnumTipoImagem.QUESTAO),
           style: {
             '*': Style.fromTextStyle(
               TemaUtil.temaTextoHtmlPadrao.copyWith(
@@ -75,20 +76,16 @@ class QuestaoWidget extends StatelessWidget {
             ),
           },
           onImageTap: (url, _, attributes, element) {
-            Uint8List imagem = base64.decode(url!.split(',').last);
-
-            _exibirImagem(context, imagem);
+            _exibirImagem(context, url!);
           },
         ),
         SizedBox(height: 16),
-        Observer(builder: (_) {
-          return _buildResposta(questao);
-        }),
+        _buildResposta(),
       ],
     );
   }
 
-  Future<T?> _exibirImagem<T>(BuildContext context, Uint8List image) async {
+  Future<T?> _exibirImagem<T>(BuildContext context, String urlImagem) async {
     return await showDialog<T>(
       context: context,
       builder: (_) {
@@ -108,7 +105,7 @@ class QuestaoWidget extends StatelessWidget {
                     alignment: Alignment.center,
                     child: PhotoView(
                       backgroundDecoration: BoxDecoration(color: background),
-                      imageProvider: MemoryImage(image),
+                      imageProvider: NetworkImage(urlImagem),
                     ),
                   ),
                 ),
@@ -152,24 +149,21 @@ class QuestaoWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildResposta(Questao questao) {
+  Widget _buildResposta() {
     switch (questao.tipo) {
       case EnumTipoQuestao.MULTIPLA_ESCOLHA:
-        return _buildAlternativas(questao);
+        return _buildAlternativas();
       case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
-        return _buildRespostaConstruida(questao);
+        return _buildRespostaConstruida();
 
       default:
         return SizedBox.shrink();
     }
   }
 
-  _buildRespostaConstruida(Questao questao) {
-    ProvaResposta? provaResposta = provaStore.respostas.obterResposta(questao.id);
-
+  _buildRespostaConstruida() {
     return Column(
       children: [
-        //
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Container(
@@ -177,76 +171,25 @@ class QuestaoWidget extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Observer(builder: (_) {
-              return HtmlEditor(
-                controller: controller,
-                callbacks: Callbacks(
-                  onInit: () {
-                    controller.execCommand('fontName', argument: temaStore.fonteDoTexto.nomeFonte);
-                    controller.setText(provaResposta?.resposta ?? "");
-                  },
-                  onChangeContent: (String? textoDigitado) {
-                    provaStore.respostas.definirResposta(questao.id, textoResposta: textoDigitado);
-                  },
-                ),
-                htmlToolbarOptions: HtmlToolbarOptions(
-                  toolbarPosition: ToolbarPosition.belowEditor,
-                  defaultToolbarButtons: [
-                    FontButtons(
-                      subscript: false,
-                      superscript: false,
-                      strikethrough: false,
-                    ),
-                    ParagraphButtons(
-                      lineHeight: false,
-                      caseConverter: false,
-                      decreaseIndent: true,
-                      increaseIndent: true,
-                      textDirection: false,
-                      alignRight: false,
-                    ),
-                    ListButtons(
-                      listStyles: false,
-                    ),
-                  ],
-                ),
-                htmlEditorOptions: HtmlEditorOptions(
-                  autoAdjustHeight: false,
-                  hint: "Digite sua resposta aqui...",
-                ),
-                otherOptions: OtherOptions(
-                  height: 400,
-                ),
-              );
-            }),
-          ),
-        ),
-        //
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 15),
-          width: double.infinity,
-          child: Texto(
-            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length}',
-            textAlign: TextAlign.end,
-            fontSize: 16,
+            child: Texto(
+              "Resposta Construida",
+              fontSize: 16,
+            ),
           ),
         ),
       ],
     );
   }
 
-  _buildAlternativas(Questao questao) {
-    List<Alternativa> alternativasQuestoes = questao.alternativas;
-
-    alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
+  _buildAlternativas() {
+    alternativas.sort((a, b) => a.ordem.compareTo(b.ordem));
     return ListTileTheme.merge(
       horizontalTitleGap: 0,
       child: Column(
-        children: alternativasQuestoes
+        children: alternativas
             .map((e) => _buildAlternativa(
                   e.id,
                   e.numeracao,
-                  questao,
                   e.descricao,
                 ))
             .toList(),
@@ -254,9 +197,7 @@ class QuestaoWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    ProvaResposta? resposta = provaStore.respostas.obterResposta(questao.id);
-
+  Widget _buildAlternativa(int idAlternativa, String numeracao, String descricao) {
     return Observer(
       builder: (_) {
         return Container(
@@ -270,19 +211,8 @@ class QuestaoWidget extends StatelessWidget {
               Radius.circular(12),
             ),
           ),
-          child: RadioListTile<int>(
-            contentPadding: EdgeInsets.all(0),
-            toggleable: true,
+          child: ListTile(
             dense: true,
-            value: idAlternativa,
-            groupValue: resposta?.alternativaId,
-            onChanged: (value) async {
-              await provaStore.respostas.definirResposta(
-                questao.id,
-                alternativaId: value,
-                tempoQuestao: null,
-              );
-            },
             title: Row(
               children: [
                 Text(
@@ -294,7 +224,7 @@ class QuestaoWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: Html(
-                    data: tratarArquivos(descricao, questao.arquivos, EnumTipoImagem.ALTERNATIVA),
+                    data: tratarArquivos(descricao, imagens, EnumTipoImagem.ALTERNATIVA),
                     style: {
                       '*': Style.fromTextStyle(
                         TemaUtil.temaTextoPadrao.copyWith(
@@ -313,7 +243,7 @@ class QuestaoWidget extends StatelessWidget {
     );
   }
 
-  String tratarArquivos(String texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
+  String tratarArquivos(String texto, List<ArquivoResponseDTO> arquivos, EnumTipoImagem tipoImagem) {
     if (tipoImagem == EnumTipoImagem.QUESTAO) {
       texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
         return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
@@ -321,8 +251,7 @@ class QuestaoWidget extends StatelessWidget {
     }
 
     for (var arquivo in arquivos) {
-      var obterTipo = arquivo.caminho.split(".");
-      texto = texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto.replaceAll("#${arquivo.id}#", arquivo.caminho.replaceFirst('http://', 'https://'));
     }
 
     texto = texto.replaceAll("#0#", AssetsUtil.notfound);

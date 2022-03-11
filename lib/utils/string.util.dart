@@ -202,3 +202,17 @@ String? formtNumberMask(String telefone, {bool useSpace = false}) {
 
   return null;
 }
+
+String tratarTexto(String texto) {
+  RegExp r = RegExp(r"<[^>]*>");
+  String textoNovo = texto.replaceAll(r, '');
+  textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
+  return textoNovo;
+}
+
+bool isNumeric(String? s) {
+  if (s == null) {
+    return false;
+  }
+  return double.tryParse(s) != null;
+}

@@ -10,6 +10,13 @@ enum APP_PAGE {
   QUESTAO,
   RESUMO,
   REVISAO_QUESTAO,
+  ADMIN_HOME,
+  ADMIN_PROVA_CONTEXTO,
+  ADMIN_PROVA_CADERNO,
+  ADMIN_PROVA_RESUMO,
+  ADMIN_PROVA_RESUMO_CADERNO,
+  ADMIN_PROVA_QUESTAO,
+  ADMIN_PROVA_QUESTAO_CADERNO,
 }
 
 extension AppPageExtension on APP_PAGE {
@@ -37,6 +44,20 @@ extension AppPageExtension on APP_PAGE {
         return "/prova/:idProva/resumo";
       case APP_PAGE.REVISAO_QUESTAO:
         return "/prova/:idProva/revisao/:ordem";
+      case APP_PAGE.ADMIN_HOME:
+        return "/admin";
+      case APP_PAGE.ADMIN_PROVA_CONTEXTO:
+        return "/admin/prova/:idProva/contexto";
+      case APP_PAGE.ADMIN_PROVA_CADERNO:
+        return "/admin/prova/:idProva/caderno";
+      case APP_PAGE.ADMIN_PROVA_RESUMO:
+        return "/admin/prova/:idProva/resumo";
+      case APP_PAGE.ADMIN_PROVA_RESUMO_CADERNO:
+        return "/admin/prova/:idProva/caderno/:nomeCaderno/resumo";
+      case APP_PAGE.ADMIN_PROVA_QUESTAO:
+        return "/admin/prova/:idProva/questao/:ordem";
+      case APP_PAGE.ADMIN_PROVA_QUESTAO_CADERNO:
+        return "/admin/prova/:idProva/caderno/:nomeCaderno/questao/:ordem";
     }
   }
 
@@ -64,6 +85,20 @@ extension AppPageExtension on APP_PAGE {
         return "Resumo";
       case APP_PAGE.REVISAO_QUESTAO:
         return "Revisão da questão";
+      case APP_PAGE.ADMIN_HOME:
+        return "Administrador - Listagem de Provas";
+      case APP_PAGE.ADMIN_PROVA_CONTEXTO:
+        return "Administrador - Contexto da Prova";
+      case APP_PAGE.ADMIN_PROVA_CADERNO:
+        return "Administrador - Seleção de Caderno";
+      case APP_PAGE.ADMIN_PROVA_RESUMO:
+        return "Administrador - Resumo da Prova";
+      case APP_PAGE.ADMIN_PROVA_RESUMO_CADERNO:
+        return "Administrador - Resumo da Prova";
+      case APP_PAGE.ADMIN_PROVA_QUESTAO:
+        return "Administrador - Questão da Prova";
+      case APP_PAGE.ADMIN_PROVA_QUESTAO_CADERNO:
+        return "Administrador - Questão da Prova";
     }
   }
 
@@ -91,6 +126,20 @@ extension AppPageExtension on APP_PAGE {
         return "RESUMO";
       case APP_PAGE.REVISAO_QUESTAO:
         return "REVISAO_QUESTAO";
+      case APP_PAGE.ADMIN_HOME:
+        return "ADMIN_HOME";
+      case APP_PAGE.ADMIN_PROVA_CONTEXTO:
+        return "ADMIN_PROVA_CONTEXTO";
+      case APP_PAGE.ADMIN_PROVA_CADERNO:
+        return "ADMIN_PROVA_CADERNO";
+      case APP_PAGE.ADMIN_PROVA_RESUMO:
+        return "ADMIN_PROVA_RESUMO";
+      case APP_PAGE.ADMIN_PROVA_RESUMO_CADERNO:
+        return "ADMIN_PROVA_RESUMO_CADERNO";
+      case APP_PAGE.ADMIN_PROVA_QUESTAO:
+        return "ADMIN_PROVA_QUESTAO";
+      case APP_PAGE.ADMIN_PROVA_QUESTAO_CADERNO:
+        return "ADMIN_PROVA_QUESTAO_CADERNO";
     }
   }
 }

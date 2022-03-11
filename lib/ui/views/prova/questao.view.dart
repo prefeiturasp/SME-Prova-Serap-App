@@ -11,7 +11,7 @@ import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao.store.dart';
-import 'package:appserap/ui/views/prova/widgets/questao.widget.dart';
+import 'package:appserap/ui/views/prova/widgets/questao_aluno.widget.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
@@ -186,7 +186,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                                     ],
                                   ),
                                   SizedBox(height: 8),
-                                  QuestaoWidget(
+                                  QuestaoAlunoWidget(
                                     provaStore: provaStore,
                                     questao: questao,
                                   ),
