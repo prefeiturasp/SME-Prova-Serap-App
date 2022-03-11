@@ -168,11 +168,6 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                 await store.carregarProvas(refresh: true);
               },
               child: Observer(builder: (_) {
-                if (store.carregando) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
                 return _buildItens();
               }),
             ),
