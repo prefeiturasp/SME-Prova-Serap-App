@@ -21,6 +21,9 @@ class AdminProvaCadernoView extends BaseStatefulWidget {
 
 class _AdminProvaCadernoViewState extends BaseStateWidget<AdminProvaCadernoView, AdminProvaCadernoViewStore> {
   @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
   void initState() {
     super.initState();
     store.carregarCadernos(widget.idProva);

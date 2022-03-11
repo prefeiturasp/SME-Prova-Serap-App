@@ -36,6 +36,9 @@ class AdminProvaQuestaoView extends BaseStatefulWidget {
 
 class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView, AdminProvaQuestaoViewStore> {
   @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
   void initState() {
     super.initState();
     store.carregarDetalhesQuestao(widget.idProva, widget.resumo.firstWhere((e) => e.ordem == widget.ordem).id);
