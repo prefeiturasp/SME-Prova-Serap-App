@@ -32,6 +32,7 @@ pipeline {
             sh 'mkdir config && cp $APPCONFIGDEV config/app_config.json'
             sh 'cp $GOOGLEJSONDEV android/app/google-services.json'
             sh 'rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --release'
+            stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
           }
         }
       }
@@ -74,6 +75,27 @@ pipeline {
 	        }
         }
       }
+
+      stage('Release Github') {
+        agent { label 'master' }
+        when { anyOf {  branch 'release';  branch 'development'; branch 'master';} }
+        steps{
+          script{
+            try {
+                withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
+                    dir('/tmp'){
+                        unstash 'appConfig'
+                    }
+                    sh 'echo $token > /tmp/teste'
+                }
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }  
+
   }
 
   post {
