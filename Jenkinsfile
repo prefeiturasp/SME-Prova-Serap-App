@@ -83,10 +83,12 @@ pipeline {
           script{
             try {
                 withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
-                    dir('/tmp'){
-                        unstash 'appConfig'
+                    dir('tmp'){
+                        unstash 'appbuild'
                     }
-                    sh 'echo $token > /tmp/teste'
+		    sh 'pwd'
+		    sh 'ls -ltra'
+                    sh 'echo $token > tmp/teste'
                 }
             } 
             catch (err) {
