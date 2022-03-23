@@ -1,4 +1,7 @@
-pipeline {
+pipeline {	
+    environment {
+      branchname =  env.BRANCH_NAME.toLowerCase()
+    }
     agent {
       node { 
         label 'flutter-android'
@@ -51,6 +54,7 @@ pipeline {
             sh 'mkdir config && cp $APPCONFIGHOM config/app_config.json'
             sh 'cp $GOOGLEJSONHOM android/app/google-services.json'
             sh 'rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --release'
+            stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
           }
         }
       }
@@ -72,6 +76,7 @@ pipeline {
 	          sh 'cp ${GOOGLEJSONPROD} android/app/google-services.json'
             sh 'rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --release'
             sh "cd ~/ && ./android-sdk-linux/build-tools/29.0.2/apksigner sign --ks ~/key.jks --ks-pass file:/home/cirrus/key.pass ${WORKSPACE}/build/app/outputs/apk/release/app-release.apk"
+            stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
 	        }
         }
       }
@@ -83,12 +88,14 @@ pipeline {
           script{
             try {
                 withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
+	            sh 'rm -Rf tmp'
                     dir('tmp'){
                         unstash 'appbuild'
                     }
-		    sh 'pwd'
-		    sh 'ls -ltra'
-                    sh 'echo $token > tmp/teste'
+		    sh "export GITHUB_TOKEN=$token"
+		    sh "github-release delete --user prefeiturasp --repo SME-Prova-Serap-App --tag ${env.branchname}"
+		    sh "github-release release --user prefeiturasp --repo SME-Prova-Serap-App --tag ${env.branchname} --name app-${env.branchname}"
+	            sh 'github-release upload --user prefeiturasp --repo SME-Prova-Serap-App --tag ${env.branchname} --name "app-${env.branchname}.apk" --file /tmp/build/app/outputs/apk/release/app-release.apk'
                 }
             } 
             catch (err) {
