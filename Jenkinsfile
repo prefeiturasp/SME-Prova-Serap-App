@@ -24,7 +24,7 @@ pipeline {
       stage('Build APK Dev') {
 	      when { 
           anyOf { 
-            branch 'development_'; 
+            branch 'development'; 
           } 
         }       
         steps {
@@ -88,12 +88,12 @@ pipeline {
           script{
             try {
                 withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
-                    //dir('tmp'){
-                   //     unstash 'appbuild'
-                   // }
+                    dir('tmp'){
+                        unstash 'appbuild'
+                    }
 		    sh ('export GITHUB_TOKEN=$token')
                     sh ("echo \"app-${env.branchname}.apk\"")
-	            sh ("github-release upload --user prefeiturasp --repo SME-Prova-Serap-App --tag ${env.branchname} --name \"app-${env.branchname}.apk\" --file tmp/build/app/outputs/apk/release/app-release.apk --release")
+	            sh ("github-release upload --user prefeiturasp --repo SME-Prova-Serap-App --tag ${env.branchname} --name \"app-${env.branchname}.apk\" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
                 }
             } 
             catch (err) {
