@@ -5,17 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginAdmView extends BaseStatefulWidget {
-  String login;
-  String nome;
-  String perfil;
-  String chaveApi;
+  String codigo;
 
   LoginAdmView({
     Key? key,
-    required this.login,
-    required this.nome,
-    required this.perfil,
-    required this.chaveApi,
+    required this.codigo,
   }) : super(key: key);
 
   @override
@@ -26,7 +20,7 @@ class _LoginAdmViewState extends BaseStateWidget<LoginAdmView, LoginAdmStore> {
   @override
   void initState() {
     super.initState();
-    store.loginByToken(widget.login, widget.nome, widget.perfil, widget.chaveApi).then((logou) {
+    store.loginByToken(widget.codigo).then((logou) {
       if (logou) {
         context.go("/admin");
       }
@@ -43,7 +37,6 @@ class _LoginAdmViewState extends BaseStateWidget<LoginAdmView, LoginAdmStore> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text('Logando como administrador...'),
-        Text('RF ${widget.login}'),
         SizedBox(height: 20),
         //CircularProgressIndicator(),
       ],

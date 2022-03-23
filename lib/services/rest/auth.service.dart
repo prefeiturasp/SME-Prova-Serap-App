@@ -22,11 +22,4 @@ abstract class AutenticacaoService extends ChopperService {
 
   @Get(path: 'meus-dados')
   Future<Response<AutenticacaoDadosResponseDTO>> meusDados();
-
-  @Post(path: 'adm')
-  Future<Response<AutenticacaoResponseDTO>> loginByAuthToken({
-    @Field() required String login,
-    @Field() required String perfil,
-    @Field() required String chaveApi,
-  });
 }
