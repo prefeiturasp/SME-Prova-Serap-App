@@ -92,7 +92,7 @@ pipeline {
                  //       unstash 'appbuild'
                   //  }
                     sh ("echo \"app-${env.branchname}.apk\"")
-	            sh ('github-release upload --security-token $token --user prefeiturasp --repo SME-Prova-Serap-App --tag ${env.branchname} --name "app-${env.branchname}.apk" --file tmp/build/app/outputs/apk/release/app-release.apk --replace')
+	            sh ('github-release upload --security-token $token --user prefeiturasp --repo SME-Prova-Serap-App --tag ${env.branchname} --name '+"app-${env.branchname}.apk"+' --file tmp/build/app/outputs/apk/release/app-release.apk --replace')
                 }
             } 
             catch (err) {
