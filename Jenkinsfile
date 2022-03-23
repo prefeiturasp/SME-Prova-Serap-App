@@ -87,7 +87,7 @@ pipeline {
         steps{
           script{
             try {
-                //withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
+                withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
                  //   dir('tmp'){
                  //       unstash 'appbuild'
                   //  }
