@@ -23,6 +23,7 @@ pipeline {
             sh("ls -ltra")
             APP_VERSION = sh(returnStdout: true, script: "cat pubspec.yaml | grep version: | awk '{print \$2}'") .trim()
             sh("echo ${APP_VERSION}")
+            sh("echo ${BUILD_NUMBER}")
             }
         }
       }
@@ -40,7 +41,7 @@ pipeline {
           ]) {
             sh 'mkdir config && cp $APPCONFIGDEV config/app_config.json'
             sh 'cp $GOOGLEJSONDEV android/app/google-services.json'
-            sh 'rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --release'
+            sh "rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION}+${BUILD_NUMBER} --build-number=${BUILD_NUMBER} --release"
             stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
           }
         }
@@ -128,12 +129,12 @@ pipeline {
           script{
             try {
                 withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
-	            sh ("rm -Rf tmp")
+	                  sh ("rm -Rf tmp")
                     dir('tmp'){
                         unstash 'appbuild'
                     }
                     sh ("echo \"app-${env.branchname}.apk\"")
-	            sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name "+"app-${APP_VERSION}-dev.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
+	                  sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name "+"app-${APP_VERSION}-dev.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
                 }
             } 
             catch (err) {
@@ -150,12 +151,12 @@ pipeline {
           script{
             try {
                 withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
-	            sh ("rm -Rf tmp")
+	                  sh ("rm -Rf tmp")
                     dir('tmp'){
                         unstash 'appbuild'
                     }
                     sh ("echo \"app-${env.branchname}.apk\"")
-	            sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
+	                  sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
                 }
             } 
             catch (err) {
