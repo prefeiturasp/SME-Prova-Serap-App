@@ -83,7 +83,7 @@ pipeline {
 
       stage('Release Github') {
         agent { label 'master' }
-        when { anyOf {  branch 'release';  branch 'development'; }
+	      when { anyOf {  branch 'release';  branch 'development'; }}
         steps{
           script{
             try {
