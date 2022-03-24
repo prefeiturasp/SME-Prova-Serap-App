@@ -59,7 +59,7 @@ pipeline {
           ]) {
             sh 'mkdir config && cp $APPCONFIGHOM config/app_config.json'
             sh 'cp $GOOGLEJSONHOM android/app/google-services.json'
-            sh 'rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --release'
+            sh "rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION}+${BUILD_NUMBER} --build-number=${BUILD_NUMBER} --release"
             stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
           }
         }
