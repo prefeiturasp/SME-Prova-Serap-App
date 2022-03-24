@@ -18,6 +18,12 @@ pipeline {
        stage('CheckOut') {
         steps {
           checkout scm
+          script {
+            sh("pwd")
+            sh("ls -ltra")
+            APP_VERSION = sh(returnStdout: true, script: "cat pubspec.yaml | grep version: | awk '{print \$2}'") .trim()
+            sh("echo ${APP_VERSION}")
+            }
         }
       }
 
@@ -74,16 +80,46 @@ pipeline {
             sh 'cat ${WORKSPACE}/android/key.properties | grep keyPassword | cut -d\'=\' -f2 > /home/cirrus/key.pass'
             sh 'cd ${WORKSPACE} && mkdir config && cp $APPCONFIGPROD config/app_config.json'
 	          sh 'cp ${GOOGLEJSONPROD} android/app/google-services.json'
-            sh 'rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --release'
+            sh "rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION}+${BUILD_NUMBER} --build-number=${BUILD_NUMBER} --release"
             sh "cd ~/ && ./android-sdk-linux/build-tools/29.0.2/apksigner sign --ks ~/key.jks --ks-pass file:/home/cirrus/key.pass ${WORKSPACE}/build/app/outputs/apk/release/app-release.apk"
             stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
 	        }
         }
       }
 
-      stage('Release Github') {
+      stage('Tag Github Dev') {
         agent { label 'master' }
-	      when { anyOf {  branch 'release';  branch 'development'; }}
+	      when { anyOf {  branch 'development'; }}
+        steps{
+          script{
+            try {
+              sh("github-release release --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name app-${APP_VERSION}-dev")
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }
+
+      stage('Tag Github Hom') {
+        agent { label 'master' }
+	      when { anyOf {  branch 'release'; }}
+        steps{
+          script{
+            try {
+              sh("github-release release --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name app-${APP_VERSION}-hom")
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }    
+
+      stage('Release Github Dev') {
+        agent { label 'master' }
+	      when { anyOf {  branch 'development'; }}
         steps{
           script{
             try {
@@ -93,7 +129,29 @@ pipeline {
                         unstash 'appbuild'
                     }
                     sh ("echo \"app-${env.branchname}.apk\"")
-	            sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${env.branchname} --name "+"app-${env.branchname}.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
+	            sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name "+"app-${APP_VERSION}-dev.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
+                }
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }  
+
+      stage('Release Github Hom') {
+        agent { label 'master' }
+	      when { anyOf {  branch 'release'; }}
+        steps{
+          script{
+            try {
+                withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
+	            sh ("rm -Rf tmp")
+                    dir('tmp'){
+                        unstash 'appbuild'
+                    }
+                    sh ("echo \"app-${env.branchname}.apk\"")
+	            sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
                 }
             } 
             catch (err) {
