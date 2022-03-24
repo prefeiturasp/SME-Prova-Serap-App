@@ -9,11 +9,22 @@ import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
+import 'package:appserap/stores/questao_revisao.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'main.route.dart';
+import 'stores/admin_prova_caderno.store.dart';
+import 'stores/admin_prova_contexto.store.dart';
+import 'stores/admin_prova_questao.store.dart';
+import 'stores/admin_prova_resumo.store.dart';
+import 'stores/home.admin.store.dart';
+import 'stores/home_provas_anteriores.store.dart';
+import 'stores/login_adm.store.dart';
+import 'stores/questao.store.dart';
 
 // ignore: non_constant_identifier_names
 GetIt ServiceLocator = GetIt.instance;
@@ -35,6 +46,7 @@ class DependenciasIoC with Loggable {
         baseUrl: AppConfigReader.getApiHost(),
       ),
     ));
+    registerSingleton<AppRouter>(AppRouter());
   }
 
   registrarStores() {
@@ -46,6 +58,15 @@ class DependenciasIoC with Loggable {
     registerSingleton<ProvaViewStore>(ProvaViewStore());
     registerSingleton<ApresentacaoStore>(ApresentacaoStore());
     registerSingleton<OrientacaoInicialStore>(OrientacaoInicialStore());
+    registerSingleton<HomeProvasAnterioresStore>(HomeProvasAnterioresStore());
+    registerSingleton<QuestaoStore>(QuestaoStore());
+    registerSingleton<QuestaoRevisaoStore>(QuestaoRevisaoStore());
+    registerSingleton<LoginAdmStore>(LoginAdmStore());
+    registerSingleton<HomeAdminStore>(HomeAdminStore());
+    registerSingleton<AdminProvaCadernoViewStore>(AdminProvaCadernoViewStore());
+    registerSingleton<AdminProvaResumoViewStore>(AdminProvaResumoViewStore());
+    registerSingleton<AdminProvaQuestaoViewStore>(AdminProvaQuestaoViewStore());
+    registerSingleton<AdminProvaContextoViewStore>(AdminProvaContextoViewStore());
   }
 
   void registerSingletonAsync<T extends Object>(

@@ -1,7 +1,8 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/login.store.dart';
+import 'package:appserap/stores/login_adm.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
-import 'package:appserap/ui/views/orientacao_inicial/orientacao_inicial.view.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
@@ -12,8 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginView extends BaseStatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -26,7 +26,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
   FocusNode _codigoEOLFocus = FocusNode();
   FocusNode _senhaFocus = FocusNode();
 
-  final _orientacaoStore = GetIt.I.get<OrientacaoInicialStore>();
+  final _orientacaoStore = ServiceLocator.get<OrientacaoInicialStore>();
 
   @override
   void initState() {
@@ -97,9 +97,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
         SizedBox(
           height: 150,
         ),
-        Image.asset(
-          AssetsUtil.logoSerapPng
-        ),
+        Image.asset(AssetsUtil.logoSerapPng),
         SizedBox(
           height: 48,
         ),
@@ -354,12 +352,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
       if (await store.autenticar()) {
         await _orientacaoStore.popularListaDeOrientacoes();
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OrientacaoInicialView(),
-          ),
-        );
+        context.go("/boasVindas");
       }
     }
   }

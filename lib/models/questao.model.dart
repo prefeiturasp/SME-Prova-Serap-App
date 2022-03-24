@@ -3,6 +3,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 import 'alternativa.model.dart';
 import 'arquivo.model.dart';
+import 'arquivo_audio.model.dart';
+import 'arquivo_video.model.dart';
 
 part 'questao.model.g.dart';
 
@@ -18,22 +20,27 @@ class Questao {
 
   List<Alternativa> alternativas;
   List<Arquivo> arquivos;
+  List<ArquivoVideo> arquivosVideos;
+  List<ArquivoAudio> arquivosAudio;
 
-  Questao(
-      {required this.id,
-      required this.titulo,
-      required this.descricao,
-      required this.ordem,
-      required this.alternativas,
-      required this.arquivos,
-      required this.tipo,
-      required this.quantidadeAlternativas});
+  Questao({
+    required this.id,
+    required this.titulo,
+    required this.descricao,
+    required this.ordem,
+    required this.alternativas,
+    required this.arquivos,
+    required this.tipo,
+    required this.quantidadeAlternativas,
+    required this.arquivosVideos,
+    required this.arquivosAudio,
+  });
 
   factory Questao.fromJson(Map<String, dynamic> json) => _$QuestaoFromJson(json);
   Map<String, dynamic> toJson() => _$QuestaoToJson(this);
 
   @override
   String toString() {
-    return 'Questao(id: $id, titulo: $titulo, descricao: $descricao, ordem: $ordem, alternativas: $alternativas, arquivos: $arquivos)';
+    return 'Questao(id: $id, titulo: $titulo, descricao: $descricao, ordem: $ordem, alternativas: $alternativas, arquivos: $arquivos, videos: $arquivosVideos)';
   }
 }

@@ -5,6 +5,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -46,6 +47,7 @@ class SincronizarProvaFinalizadaJob with Job, Loggable {
         await ServiceLocator.get<ApiService>().prova.setStatusProva(
               idProva: prova.id,
               status: EnumProvaStatus.FINALIZADA.index,
+              tipoDispositivo: kDeviceType.index,
               dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 

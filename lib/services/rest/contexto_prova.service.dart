@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
-import 'package:appserap/dtos/orientacao_inicial.response.dto.dart';
 import 'package:chopper/chopper.dart';
 
 part 'contexto_prova.service.chopper.dart';
@@ -14,9 +13,8 @@ abstract class ContextoProvaService extends ChopperService {
     @Path() required int id,
   });
 
-  @Get(path: '/provas/{id}')
+  @Get(path: '/provas/{idProva}')
   Future<Response<List<ContextoProvaResponseDTO>>> getContextosPorProva({
     @Path() required int idProva,
   });
-
 }

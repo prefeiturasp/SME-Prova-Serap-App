@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,6 +32,10 @@ class FinalizarProvaWorker with Worker, Loggable {
             networkType: NetworkType.connected,
           ),
         );
+      } else {
+        return Timer.periodic(Duration(minutes: 15), (timer) {
+          sincronizar();
+        });
       }
     }
 
@@ -71,6 +76,7 @@ class FinalizarProvaWorker with Worker, Loggable {
         await ServiceLocator.get<ApiService>().prova.setStatusProva(
               idProva: prova.id,
               status: EnumProvaStatus.FINALIZADA.index,
+              tipoDispositivo: kDeviceType.index,
               dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 

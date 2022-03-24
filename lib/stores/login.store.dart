@@ -1,13 +1,11 @@
 import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
 import 'package:appserap/dtos/error.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:asuka/snackbars/asuka_snack_bar.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -116,6 +114,7 @@ abstract class _LoginStoreBase with Store, Loggable {
         _usuarioStore.token = body.token;
         _usuarioStore.tokenDataHoraExpiracao = body.dataHoraExpiracao;
         _usuarioStore.ultimoLogin = body.ultimoLogin;
+        _usuarioStore.isAdmin = false;
 
         SharedPreferences prefs = GetIt.I.get();
         await prefs.setString('token', body.token);
@@ -136,13 +135,23 @@ abstract class _LoginStoreBase with Store, Loggable {
               familiaFonte: usuarioDados.familiaFonte,
               inicioTurno: usuarioDados.inicioTurno,
               fimTurno: usuarioDados.fimTurno,
-              modalidade: ModalidadeEnum.values[usuarioDados.modalidade],
+              modalidade: usuarioDados.modalidade,
+              dreAbreviacao: usuarioDados.dreAbreviacao,
+              escola: usuarioDados.escola,
+              turma: usuarioDados.turma,
+              deficiencias: usuarioDados.deficiencias,
             );
 
             await onPostLogin(usuarioDados);
           }
           carregando = false;
           return true;
+        } else {
+          carregando = false;
+          if ((responseMeusDados.error! as dynamic).existemErros) {
+            severe((responseMeusDados.error! as dynamic).mensagens.toString());
+          }
+          return false;
         }
       } else {
         switch (responseLogin.statusCode) {
@@ -155,7 +164,7 @@ abstract class _LoginStoreBase with Store, Loggable {
         }
       }
     } catch (e, stack) {
-      AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
+      //AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
       severe(e);
       severe(stack);
     } finally {

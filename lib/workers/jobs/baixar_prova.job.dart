@@ -8,6 +8,7 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/provas.util.dart';
+import 'package:supercharged_dart/supercharged_dart.dart';
 
 class BaixarProvaJob with Job, Loggable {
   @override
@@ -15,7 +16,7 @@ class BaixarProvaJob with Job, Loggable {
     try {
       var _usuarioStore = ServiceLocator.get<UsuarioStore>();
       if (_usuarioStore.isRespondendoProva) return;
-      
+
       ProvaService provaService = ServiceLocator.get<ApiService>().prova;
 
       var provasResponse = await provaService.getProvas();
@@ -25,7 +26,7 @@ class BaixarProvaJob with Job, Loggable {
       }
 
       List<ProvaResponseDTO> provasRemoto = provasResponse.body!;
-      List<int> idsProvasRemoto = provasRemoto.map((e) => e.id).toList();
+      List<int> idsProvasRemoto = provasRemoto.filter((e) => !e.isFinalizada()).map((e) => e.id).toList();
 
       List<int> idsProvasLocal = await getProvasCacheIds();
       List<int> idsToDownload = idsProvasRemoto.toSet().difference(idsProvasLocal.toSet()).toList();

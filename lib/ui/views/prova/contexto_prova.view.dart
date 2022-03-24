@@ -1,4 +1,5 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao_contexto.widget.dart';
@@ -8,11 +9,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:supercharged/supercharged.dart';
+
+import '../../../main.route.dart';
 
 class ContextoProvaView extends StatefulWidget {
-  final ProvaStore provaStore;
+  late final ProvaStore provaStore;
 
-  const ContextoProvaView({required this.provaStore});
+  ContextoProvaView({required int idProva}) {
+    var provas = ServiceLocator.get<HomeStore>().provas;
+
+    if (provas.isEmpty) {
+      ServiceLocator.get<AppRouter>().router.go("/");
+    }
+
+    provaStore = provas.filter((prova) => prova.key == idProva).first.value;
+  }
 
   @override
   _ContextoProvaViewState createState() => _ContextoProvaViewState();

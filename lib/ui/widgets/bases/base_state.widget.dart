@@ -14,19 +14,19 @@ import 'base_statefull.widget.dart';
 abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget>
     with Loggable {
   var store = GetIt.I.get<TBind>();
-  var _principalStore = GetIt.I.get<PrincipalStore>();
+  var principalStore = GetIt.I.get<PrincipalStore>();
 
   TemaStore temaStore = GetIt.I.get<TemaStore>();
 
   @override
   void initState() {
     super.initState();
-    _principalStore.setup();
+    principalStore.setup();
   }
 
   @override
   void dispose() {
-    _principalStore.dispose();
+    principalStore.dispose();
     super.dispose();
   }
 
@@ -46,6 +46,9 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   bool willPop = true;
 
   bool? resizeToAvoidBottomInset;
+
+  bool exibirSair = false;
+  bool exibirVoltar = true;
 
   onAfterBuild(BuildContext context) {}
 
@@ -99,6 +102,8 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
   PreferredSizeWidget buildAppBar() {
     return AppBarWidget(
       popView: false,
+      exibirSair: exibirSair,
+      mostrarBotaoVoltar: exibirVoltar,
     );
   }
 
@@ -125,12 +130,12 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
           builder: (_) {
             var cor = TemaUtil.preto;
 
-            if (!_principalStore.temConexao) {
+            if (!principalStore.temConexao) {
               cor = TemaUtil.vermelhoErro;
             }
 
             return Text(
-              _principalStore.versao,
+              principalStore.versao,
               style: TextStyle(
                 color: cor,
                 fontSize: temaStore.tTexto14,
