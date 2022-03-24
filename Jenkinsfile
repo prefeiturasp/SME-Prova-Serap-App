@@ -41,7 +41,7 @@ pipeline {
           ]) {
             sh 'mkdir config && cp $APPCONFIGDEV config/app_config.json'
             sh 'cp $GOOGLEJSONDEV android/app/google-services.json'
-            sh "rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION}+${BUILD_NUMBER} --build-number=${BUILD_NUMBER} --release"
+            sh "rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION}+ --build-number=${BUILD_NUMBER} --release"
             stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
           }
         }
@@ -60,7 +60,7 @@ pipeline {
           ]) {
             sh 'mkdir config && cp $APPCONFIGHOM config/app_config.json'
             sh 'cp $GOOGLEJSONHOM android/app/google-services.json'
-            sh "rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION}+${BUILD_NUMBER} --build-number=${BUILD_NUMBER} --release"
+            sh "rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION}+ --build-number=${BUILD_NUMBER} --release"
             stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
           }
         }
@@ -81,7 +81,7 @@ pipeline {
             sh 'cat ${WORKSPACE}/android/key.properties | grep keyPassword | cut -d\'=\' -f2 > /home/cirrus/key.pass'
             sh 'cd ${WORKSPACE} && mkdir config && cp $APPCONFIGPROD config/app_config.json'
 	          sh 'cp ${GOOGLEJSONPROD} android/app/google-services.json'
-            sh "rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION}+${BUILD_NUMBER} --build-number=${BUILD_NUMBER} --release"
+            sh "rm pubspec.lock && flutter channel stable && flutter upgrade && flutter clean && flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION}+ --build-number=${BUILD_NUMBER} --release"
             sh "cd ~/ && ./android-sdk-linux/build-tools/29.0.2/apksigner sign --ks ~/key.jks --ks-pass file:/home/cirrus/key.pass ${WORKSPACE}/build/app/outputs/apk/release/app-release.apk"
             stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
 	        }
