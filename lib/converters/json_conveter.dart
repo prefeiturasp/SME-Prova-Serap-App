@@ -17,6 +17,7 @@ import 'package:appserap/dtos/admin_prova_caderno.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.response.dto.dart';
+import 'package:appserap/dtos/versao_atualizacao.respose.dto.dart';
 import 'package:chopper/chopper.dart' hide Post;
 import 'package:logging/logging.dart';
 
@@ -82,4 +83,5 @@ final jsonConverter = JsonSerializableConverter({
   "AdminProvaCadernoResponseDTO": AdminProvaCadernoResponseDTO.fromJson,
   "AdminProvaResumoResponseDTO": AdminProvaResumoResponseDTO.fromJson,
   "AdminQuestaoDetalhesResponseDTO": AdminQuestaoDetalhesResponseDTO.fromJson,
+  "VersaoAtualizacaoResponseDTO": VersaoAtualizacaoResponseDTO.fromJson,
 });
