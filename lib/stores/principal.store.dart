@@ -54,7 +54,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   @action
   Future<void> obterVersaoDoApp() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    versaoApp = "Versão ${packageInfo.version}";
+    versaoApp = "Versão ${packageInfo.version}.${packageInfo.buildNumber}";
   }
 
   @action
