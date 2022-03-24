@@ -93,7 +93,9 @@ pipeline {
         steps{
           script{
             try {
-              sh("github-release release --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name app-${APP_VERSION}-dev")
+              withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
+                sh("github-release release --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name app-${APP_VERSION}-dev")
+              }
             } 
             catch (err) {
                 echo err.getMessage()
@@ -108,7 +110,9 @@ pipeline {
         steps{
           script{
             try {
-              sh("github-release release --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name app-${APP_VERSION}-hom")
+              withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
+                sh("github-release release --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name app-${APP_VERSION}-hom")
+              }
             } 
             catch (err) {
                 echo err.getMessage()
