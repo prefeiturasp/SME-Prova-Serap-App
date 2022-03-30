@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:chopper/chopper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,7 +60,13 @@ class ServiceAuthenticator extends Authenticator with Loggable {
 
     fine('Atualizando token');
     try {
-      Response<AutenticacaoResponseDTO> response = await service.auth.revalidar(token: oldToken);
+      Response<AutenticacaoResponseDTO> response;
+
+      if (ServiceLocator.get<UsuarioStore>().isAdmin) {
+        response = await service.adminAuth.revalidar(token: oldToken);
+      } else {
+        response = await service.auth.revalidar(token: oldToken);
+      }
 
       if (response.isSuccessful) {
         String newToken = response.body!.token;

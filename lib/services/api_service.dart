@@ -5,6 +5,7 @@ import 'package:appserap/converters/json_conveter.dart';
 import 'package:appserap/interceptors/autenticacao.interceptor.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/services/rest/admin.service.dart';
+import 'package:appserap/services/rest/auth.admin.service.dart';
 import 'package:appserap/services/rest/usuario.service.dart';
 import 'package:appserap/services/rest/orientacao_inicial.service.dart';
 import 'package:appserap/services/rest/versao.service.dart';
@@ -53,6 +54,7 @@ class ApiService {
         ContextoProvaService.create(),
         DownloadService.create(),
         AdminService.create(),
+        AutenticacaoAdminService.create(),
       ],
       interceptors: [
         CustomAuthInterceptor(),
@@ -76,4 +78,5 @@ class ApiService {
   ContextoProvaService get contextoProva => chopper.getService<ContextoProvaService>();
   DownloadService get download => chopper.getService<DownloadService>();
   AdminService get admin => chopper.getService<AdminService>();
+  AutenticacaoAdminService get adminAuth => chopper.getService<AutenticacaoAdminService>();
 }

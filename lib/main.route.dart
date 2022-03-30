@@ -47,15 +47,9 @@ class AppRouter {
         path: APP_PAGE.LOGIN_ADM.toPath,
         name: APP_PAGE.LOGIN_ADM.toName,
         builder: (context, state) {
-          var login = state.params['login']!;
-          var nome = state.params['nome']!;
-          var perfil = state.params['perfil']!;
-          var chaveApi = state.params['chaveApi']!;
+          var codigo = state.params['codigo']!;
           return LoginAdmView(
-            login: login,
-            nome: nome,
-            perfil: perfil,
-            chaveApi: chaveApi,
+            codigo: codigo,
           );
         },
       ),

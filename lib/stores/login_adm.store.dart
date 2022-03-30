@@ -2,6 +2,7 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'login_adm.store.g.dart';
@@ -9,15 +10,13 @@ part 'login_adm.store.g.dart';
 class LoginAdmStore = _LoginAdmStoreBase with _$LoginAdmStore;
 
 abstract class _LoginAdmStoreBase with Store, Loggable {
-  Future<bool> loginByToken(String login, String nome, String perfil, String chaveApi) async {
-    final _autenticacaoService = ServiceLocator.get<ApiService>().auth;
+  Future<bool> loginByToken(String codigo) async {
+    final _autenticacaoService = ServiceLocator.get<ApiService>().adminAuth;
     final _usuarioStore = ServiceLocator.get<UsuarioStore>();
 
     try {
-      var responseLogin = await _autenticacaoService.loginByAuthToken(
-        login: login,
-        perfil: perfil,
-        chaveApi: chaveApi,
+      var responseLogin = await _autenticacaoService.loginByCodigoAutenticacao(
+        codigo: codigo,
       );
 
       if (responseLogin.isSuccessful) {
@@ -27,11 +26,13 @@ abstract class _LoginAdmStoreBase with Store, Loggable {
         _usuarioStore.ultimoLogin = body.ultimoLogin;
         _usuarioStore.isAdmin = true;
 
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(body.token);
+
         _usuarioStore.atualizarDadosAdm(
-          codigoEOL: login,
-          isAdmin: true,
+          codigoEOL: decodedToken['LOGIN'],
+          nome: decodedToken['NOME'],
           token: body.token,
-          nome: nome,
+          isAdmin: true,
         );
 
         var prefs = ServiceLocator.get<SharedPreferences>();
