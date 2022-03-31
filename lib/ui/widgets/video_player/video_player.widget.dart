@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -18,7 +19,7 @@ class VideoPlayerWidget extends StatefulWidget {
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
 }
 
-class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
+class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
   // BetterPlayerController _betterPlayerController;
 
   late VideoPlayerController _videoPlayerController;
@@ -28,7 +29,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   @override
   initState() {
     super.initState();
-    print(widget.videoPath);
+    info(widget.videoPath);
 
     if (widget.videoUrl != null) {
       _videoPlayerController = VideoPlayerController.network(widget.videoUrl!);

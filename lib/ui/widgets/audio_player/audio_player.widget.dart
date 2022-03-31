@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 class AudioPlayerWidget extends StatefulWidget {
-  String? audioPath;
-  Uint8List? audioBytes;
+  final String? audioPath;
+  final Uint8List? audioBytes;
 
   AudioPlayerWidget({
     Key? key,
