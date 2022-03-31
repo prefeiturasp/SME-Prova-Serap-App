@@ -1,6 +1,5 @@
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/admin_prova_contexto.store.dart';
-import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao_contexto.admin.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';

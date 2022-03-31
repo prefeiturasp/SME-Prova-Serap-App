@@ -1,3 +1,4 @@
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -18,7 +19,7 @@ class SplashScreenView extends StatefulWidget {
   State<SplashScreenView> createState() => _SplashScreenViewState();
 }
 
-class _SplashScreenViewState extends State<SplashScreenView> {
+class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
   final _principalStore = GetIt.I.get<PrincipalStore>();
   final _temaStore = GetIt.I.get<TemaStore>();
 
@@ -116,7 +117,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     int buildNumber = int.parse(packageInfo.buildNumber);
 
-    print("Versão: ${packageInfo.version} Build: $buildNumber");
+    info("Versão: ${packageInfo.version} Build: $buildNumber");
 
     bool isAvailable = await Updater(
       context: context,
@@ -126,7 +127,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
       backgroundDownload: false,
       allowSkip: false,
       callBack: (versionName, versionCode, contentText, minSupport, downloadUrl) {
-        print("Ultima Versão: $versionName Build: $versionCode");
+        info("Ultima Versão: $versionName Build: $versionCode");
       },
       controller: controller,
     ).check();

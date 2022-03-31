@@ -18,7 +18,8 @@ abstract class DownloadService extends ChopperService {
   });
 
   @Delete()
-  Future<Response<void>> removerDownloads(
-    @Body() List<int> ids,
-  );
+  Future<Response<void>> removerDownloads({
+    @Header('chave-api') required String chaveAPI,
+    @Body() required List<int> ids,
+  });
 }
