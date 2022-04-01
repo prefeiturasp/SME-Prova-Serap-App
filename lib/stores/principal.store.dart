@@ -5,6 +5,7 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -71,7 +72,10 @@ abstract class _PrincipalStoreBase with Store, Loggable {
             .map((element) => element.idDownload!)
             .toList();
 
-        await ServiceLocator.get<ApiService>().download.removerDownloads(downlodIds);
+        await ServiceLocator.get<ApiService>().download.removerDownloads(
+              chaveAPI: AppConfigReader.getChaveApi(),
+              ids: downlodIds,
+            );
       }
     } catch (e, stack) {
       severe('Erro ao remover downlodas');
