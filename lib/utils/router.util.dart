@@ -29,7 +29,7 @@ extension AppPageExtension on APP_PAGE {
       case APP_PAGE.LOGIN:
         return "/login";
       case APP_PAGE.LOGIN_ADM:
-        return "/login/admin/:login/:nome/:perfil/:chaveApi";
+        return "/login/admin/:codigo";
       case APP_PAGE.BOAS_VINDAS:
         return "/boasVindas";
       case APP_PAGE.HOME:

@@ -67,7 +67,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
                       color: Colors.white,
                     )
                   : Texto(
-                      "Administrador",
+                      "",
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
