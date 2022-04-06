@@ -1,3 +1,4 @@
+import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -25,6 +26,10 @@ class ProvaResponseDTO {
   DateTime? dataInicioProvaAluno;
   DateTime? dataFimProvaAluno;
 
+  ModalidadeEnum modalidade;
+
+  int quantidadeRespostaSincronizacao;
+
   ProvaResponseDTO({
     required this.id,
     required this.descricao,
@@ -38,6 +43,8 @@ class ProvaResponseDTO {
     required this.tempoAlerta,
     required this.dataInicioProvaAluno,
     this.dataFimProvaAluno,
+    required this.modalidade,
+    required this.quantidadeRespostaSincronizacao,
   });
 
   bool isFinalizada() {

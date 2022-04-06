@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:flutter/foundation.dart';
 
@@ -61,38 +62,47 @@ class SincronizarRespostasWorker with Worker, Loggable {
       return;
     }
 
-    for (ProvaResposta resposta in respostasNaoSincronizadas) {
-      await sincronizarResposta(resposta);
-    }
+    var respostasDTO = respostasNaoSincronizadas
+        .map((e) => QuestaoRespostaDTO(
+              alunoRa: e.codigoEOL,
+              questaoId: e.questaoId,
+              alternativaId: e.alternativaId,
+              resposta: e.resposta,
+              dataHoraRespostaTicks: getTicks(e.dataHoraResposta!),
+              tempoRespostaAluno: e.tempoRespostaAluno,
+            ))
+        .toList();
 
-    fine('Sincronização com o servidor servidor concluida');
-  }
-
-  sincronizarResposta(ProvaResposta resposta) async {
-    int idQuestao = resposta.questaoId;
     final _service = ServiceLocator.get<ApiService>().questaoResposta;
 
     try {
       var response = await _service.postResposta(
         chaveAPI: AppConfigReader.getChaveApi(),
-        alunoRa: resposta.codigoEOL,
-        questaoId: idQuestao,
-        alternativaId: resposta.alternativaId,
-        resposta: resposta.resposta,
-        dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
-        tempoRespostaAluno: resposta.tempoRespostaAluno,
+        respostas: respostasDTO,
       );
 
       if (response.isSuccessful) {
-        fine("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
-
-        resposta.sincronizado = true;
-
-        await saveCahe(resposta);
+        for (var resposta in respostasNaoSincronizadas) {
+          fine("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
+          resposta.sincronizado = true;
+          await saveCahe(resposta);
+        }
       }
     } catch (e) {
       severe(e);
     }
+
+    fine('Sincronização com o servidor servidor concluida');
+  }
+
+  salvarCacheMap(Map<int, ProvaResposta> respostas) async {
+    List<Future<bool>> futures = [];
+
+    for (var respostaLocal in respostas.entries) {
+      futures.add(saveCahe(respostaLocal.value));
+    }
+
+    await Future.wait(futures);
   }
 
   saveCahe(ProvaResposta resposta) async {

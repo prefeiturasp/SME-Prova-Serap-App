@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
@@ -91,30 +92,41 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     fine('[$idProva] - Sincronizando respostas para o servidor');
     var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
 
-    for (MapEntry<int, ProvaResposta> item in respostasNaoSincronizadas) {
-      int idQuestao = item.key;
-      ProvaResposta resposta = item.value;
+    if (respostasNaoSincronizadas.length == 2) {
+      List<QuestaoRespostaDTO> respostas = [];
 
-      try {
-        var response = await _service.postResposta(
-          chaveAPI: AppConfigReader.getChaveApi(),
-          alunoRa: codigoEOL,
-          questaoId: idQuestao,
-          alternativaId: resposta.alternativaId,
-          resposta: resposta.resposta,
-          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
-          tempoRespostaAluno: resposta.tempoRespostaAluno,
+      for (var item in respostasNaoSincronizadas) {
+        int idQuestao = item.key;
+        ProvaResposta resposta = item.value;
+
+        respostas.add(
+          QuestaoRespostaDTO(
+            alunoRa: codigoEOL,
+            questaoId: idQuestao,
+            alternativaId: resposta.alternativaId,
+            resposta: resposta.resposta,
+            dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+            tempoRespostaAluno: resposta.tempoRespostaAluno,
+          ),
         );
 
-        if (response.isSuccessful) {
-          fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
+        try {
+          var response = await _service.postResposta(
+            chaveAPI: AppConfigReader.getChaveApi(),
+            respostas: respostas,
+          );
 
-          resposta.sincronizado = true;
+          if (response.isSuccessful) {
+            fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
+
+            resposta.sincronizado = true;
+          }
+        } catch (e) {
+          severe(e);
         }
-      } catch (e) {
-        severe(e);
       }
     }
+
     fine('[$idProva] - Sincronização com o servidor servidor concluida');
 
     salvarAllCache();

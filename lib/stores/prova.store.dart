@@ -285,6 +285,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
         dataFimProvaAluno: prova.dataFimProvaAluno,
         senha: prova.senha,
+        quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
       ),
     );
     var provaSalva = await db.obterProvaPorId(prova.id);
