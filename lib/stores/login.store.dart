@@ -1,11 +1,14 @@
 import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
 import 'package:appserap/dtos/error.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/exceptions/sem_conexao.exeption.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -103,6 +106,10 @@ abstract class _LoginStoreBase with Store, Loggable {
   Future<bool> autenticar() async {
     carregando = true;
     try {
+      if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
+        throw SemConexaoException();
+      }
+
       var responseLogin = await _autenticacaoService.login(
         login: codigoEOL,
         senha: senha,
@@ -163,8 +170,10 @@ abstract class _LoginStoreBase with Store, Loggable {
             break;
         }
       }
+    } on SemConexaoException catch (e) {
+      NotificacaoUtil.showSnackbarError(e.toString());
     } catch (e, stack) {
-      //AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
+      NotificacaoUtil.showSnackbarError("Não foi possível estabelecer uma conexão com o servidor.");
       severe(e);
       severe(stack);
     } finally {

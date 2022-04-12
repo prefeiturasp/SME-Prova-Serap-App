@@ -4,6 +4,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -82,7 +83,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
     _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!, update: false);
 
     try {
-      if (!(await checkUpdate())) {
+      if (!kDebugMode ? !(await checkUpdate()) : true) {
         _navegar();
       }
     } catch (e) {

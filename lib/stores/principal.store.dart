@@ -67,7 +67,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
       if (provas.isNotEmpty) {
         List<int> downlodIds = provas
-            .where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO.index)
+            .where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO)
             .toList()
             .map((element) => element.idDownload!)
             .toList();
@@ -100,8 +100,6 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
   _limparDadosLocais() async {
     SharedPreferences prefs = GetIt.I.get();
-
-    info(prefs.getKeys());
 
     for (var key in prefs.getKeys()) {
       if (!key.startsWith("resposta_")) {

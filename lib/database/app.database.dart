@@ -1,8 +1,18 @@
 import 'package:appserap/database/daos/arquivo_video.dao.dart';
+import 'package:appserap/database/daos/download_prova.dao.dart';
+import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/enums/download_tipo.enum.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:drift/drift.dart';
 
+import 'daos/alternativa.dao.dart';
+import 'daos/arquivo.dao.dart';
 import 'daos/arquivo_audio.dao.dart';
+import 'daos/contexto_prova.dao.dart';
+import 'daos/prova.dao.dart';
+import 'daos/questao.dao.dart';
 
 export 'core/shared.database.dart';
 
@@ -13,7 +23,7 @@ class ProvasDb extends Table {
   IntColumn get id => integer()();
   TextColumn get descricao => text().withLength(min: 1, max: 150)();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
-  IntColumn get downloadStatus => integer()();
+  IntColumn get downloadStatus => intEnum<EnumDownloadStatus>()();
   IntColumn get itensQuantidade => integer()();
   IntColumn get tempoAlerta => integer().nullable()();
   IntColumn get tempoExecucao => integer()();
@@ -37,7 +47,7 @@ class QuestoesDb extends Table {
   TextColumn get titulo => text()();
   TextColumn get descricao => text()();
   IntColumn get ordem => integer()();
-  IntColumn get tipo => integer()();
+  IntColumn get tipo => intEnum<EnumTipoQuestao>()();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get provaId => integer()();
   IntColumn get quantidadeAlternativas => integer().nullable()();
@@ -54,7 +64,7 @@ class ContextosProvaDb extends Table {
   TextColumn get imagemBase64 => text().nullable()();
   IntColumn get ordem => integer()();
   TextColumn get imagem => text().nullable()();
-  IntColumn get posicionamento => integer().nullable()();
+  IntColumn get posicionamento => intEnum<PosicionamentoImagemEnum>().nullable()();
   IntColumn get provaId => integer()();
 
   @override
@@ -111,6 +121,22 @@ class ArquivosAudioDb extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName("DownloadProvaDb")
+class DownloadProvasDb extends Table {
+  IntColumn get id => integer()();
+
+  IntColumn get provaId => integer()();
+
+  IntColumn get tipo => intEnum<EnumDownloadTipo>()();
+  IntColumn get downloadStatus => intEnum<EnumDownloadStatus>()();
+
+  DateTimeColumn get dataHoraInicio => dateTime()();
+  DateTimeColumn get dataHoraFim => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id, provaId};
+}
+
 @DriftDatabase(
   tables: [
     ProvasDb,
@@ -120,17 +146,24 @@ class ArquivosAudioDb extends Table {
     ContextosProvaDb,
     ArquivosVideoDb,
     ArquivosAudioDb,
+    DownloadProvasDb,
   ],
   daos: [
     ArquivosVideosDao,
     ArquivosAudioDao,
+    DownloadProvaDAO,
+    QuestaoDAO,
+    AlternativaDAO,
+    ArquivoDAO,
+    ContextoProvaDAO,
+    ProvaDAO,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -157,6 +190,9 @@ class AppDatabase extends _$AppDatabase {
         if (from == 7) {
           await m.createTable(arquivosAudioDb);
         }
+        if (from == 8) {
+          await m.createTable(downloadProvasDb);
+        }
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = 1;');
       });
@@ -169,8 +205,12 @@ class AppDatabase extends _$AppDatabase {
 
       await customUpdate("delete from arquivos_db;");
 
+      await customUpdate("delete from contextos_prova_db;");
+
       await customUpdate("delete from arquivos_video_db;");
       await customUpdate("delete from arquivos_audio_db;");
+
+      await customUpdate("delete from download_provas_db;");
 
       await customUpdate("delete from provas_db;");
     });
@@ -190,10 +230,18 @@ class AppDatabase extends _$AppDatabase {
         Variable.withInt(provaId),
       ]);
 
+      await customUpdate("delete from contextos_prova_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
       await customUpdate("delete from arquivos_video_db where prova_id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
       await customUpdate("delete from arquivos_audio_db where prova_id = ?;", variables: [
+        Variable.withInt(provaId),
+      ]);
+
+      await customUpdate("delete from download_provas_db where prova_id = ?;", variables: [
         Variable.withInt(provaId),
       ]);
 
@@ -291,7 +339,7 @@ class AppDatabase extends _$AppDatabase {
       (select(contextosProvaDb)..where((t) => t.provaId.equals(provaId))).get();
   Future removerContextoPorProvaId(int id) {
     return transaction(() async {
-      await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
+      await customUpdate("delete from contextos_prova_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });
   }
 }

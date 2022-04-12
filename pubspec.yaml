@@ -90,6 +90,7 @@ dependencies:
   path: ^1.8.0
   supercharged: ^2.1.1
   idb_shim: ^2.0.1
+  sqlite_viewer: ^1.0.5
 
   # Informações do dispoisitivo
   device_info_plus: ^3.1.1

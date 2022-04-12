@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -15,7 +16,6 @@ import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/managers/download.manager.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
@@ -27,7 +27,15 @@ import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 
 part 'prova.store.g.dart';
 
-class ProvaStore = _ProvaStoreBase with _$ProvaStore;
+class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
+  ProvaStore({
+    required int id,
+    required Prova prova,
+    required ProvaRespostaStore respostas,
+  }) : super(id: id, prova: prova, respostas: respostas) {
+    downloadManagerStore = DownloadManagerStore(this);
+  }
+}
 
 abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   var _usuarioStore = ServiceLocator.get<UsuarioStore>();
@@ -36,7 +44,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
-  late GerenciadorDownload gerenciadorDownload;
+  // late GerenciadorDownload gerenciadorDownload;
+
+  late DownloadManagerStore downloadManagerStore;
 
   int id;
 
@@ -51,7 +61,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     required this.prova,
     required this.respostas,
   }) {
-    gerenciadorDownload = GerenciadorDownload(idProva: id);
     status = prova.status;
   }
 
@@ -100,24 +109,23 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     fine("[Prova $id] - Configurando Download");
 
-    await gerenciadorDownload.configure();
-
-    gerenciadorDownload.onStatusChange((downloadStatus, progressoDownload) {
+    downloadManagerStore.listen((downloadStatus, progressoDownload, tempoPrevisto) {
       this.downloadStatus = downloadStatus;
       this.progressoDownload = progressoDownload;
-    });
-
-    gerenciadorDownload.onTempoPrevistoChange((tempoPrevisto) {
       this.tempoPrevisto = tempoPrevisto;
     });
 
-    await gerenciadorDownload.startDownload();
+    downloadManagerStore.onTempoPrevistoChange((tempoPrevisto) {
+      this.tempoPrevisto = tempoPrevisto;
+    });
+
+    await downloadManagerStore.iniciarDownload();
 
     await respostas.carregarRespostasServidor(prova);
 
-    var obterProva = await gerenciadorDownload.getProva();
+    var obterProva = await Prova.carregaProvaCache(id);
 
-    prova = obterProva;
+    prova = obterProva!;
 
     fine("[Prova $id] - Download Concluído");
   }
@@ -168,7 +176,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
       info("[Prova $id] - Download Pausado");
       downloadStatus = EnumDownloadStatus.PAUSADO;
-      gerenciadorDownload.pauseAllDownloads();
+      downloadManagerStore.pauseAllDownloads();
     }
     if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
       info("[Prova $id] - Download Resumido");
@@ -186,7 +194,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     if (resultado == ConnectivityStatus.none &&
         (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
       downloadStatus = EnumDownloadStatus.PAUSADO;
-      gerenciadorDownload.pauseAllDownloads();
+      downloadManagerStore.pauseAllDownloads();
     } else if (resultado != ConnectivityStatus.none &&
         (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
       await iniciarDownload();
@@ -273,7 +281,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
-        downloadStatus: prova.downloadStatus.index,
+        downloadStatus: prova.downloadStatus,
         tempoExtra: prova.tempoExtra,
         tempoExecucao: prova.tempoExecucao,
         tempoAlerta: prova.tempoAlerta,

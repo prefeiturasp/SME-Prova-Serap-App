@@ -10,7 +10,6 @@ import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
-import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -78,6 +77,7 @@ class GerenciadorDownload with Loggable {
       await saveDownloads();
     } catch (e) {
       //AsukaSnackbar.alert("Não foi possível obter os detalhes da prova").show();
+
       return;
     }
   }
@@ -235,6 +235,7 @@ class GerenciadorDownload with Loggable {
                 retryIf: (e) => e is Exception,
                 onRetry: (e) {
                   fine('[Prova $idProva] - Tentativa de download da Questão ID: ${download.id}');
+                  severe(e);
                 },
               );
 
@@ -246,6 +247,7 @@ class GerenciadorDownload with Loggable {
                 retryIf: (e) => e is Exception,
                 onRetry: (e) {
                   fine('[Prova $idProva] - Tentativa de download da Alternativa ID: ${download.id}');
+                  severe(e);
                 },
               );
               break;
@@ -256,6 +258,7 @@ class GerenciadorDownload with Loggable {
                 retryIf: (e) => e is Exception,
                 onRetry: (e) {
                   fine('[Prova $idProva] - Tentativa de download do Contexto ID: ${download.id}');
+                  severe(e);
                 },
               );
               break;
@@ -266,6 +269,7 @@ class GerenciadorDownload with Loggable {
                 retryIf: (e) => e is Exception,
                 onRetry: (e) {
                   fine('[Prova $idProva] - Tentativa de download do arquivo de Video ID: ${download.id}');
+                  severe(e);
                 },
               );
 
@@ -277,6 +281,7 @@ class GerenciadorDownload with Loggable {
                 retryIf: (e) => e is Exception,
                 onRetry: (e) {
                   fine('[Prova $idProva] - Tentativa de download do arquivo de Audio ID: ${download.id}');
+                  severe(e);
                 },
               );
 
@@ -287,7 +292,8 @@ class GerenciadorDownload with Loggable {
                 () async => await baixarArquivoImagem(download, apiService),
                 retryIf: (e) => e is Exception,
                 onRetry: (e) {
-                  fine('[Prova $idProva] - Tentativa de download do arquivo de Imagemideo ID: ${download.id}');
+                  fine('[Prova $idProva] - Tentativa de download do arquivo de Imagem ID: ${download.id}');
+                  severe(e);
                 },
               );
               break;
@@ -444,7 +450,7 @@ class GerenciadorDownload with Loggable {
       return Questao(
         id: questaoDb.id,
         titulo: questaoDb.titulo,
-        tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == questaoDb!.tipo),
+        tipo: EnumTipoQuestao.values.firstWhere((element) => element == questaoDb!.tipo),
         descricao: questaoDb.descricao,
         alternativas: [],
         arquivos: [],
@@ -466,7 +472,7 @@ class GerenciadorDownload with Loggable {
       return Questao(
         id: questaoDb.id,
         titulo: questaoDb.titulo,
-        tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == questaoDb.tipo),
+        tipo: EnumTipoQuestao.values.firstWhere((element) => element == questaoDb.tipo),
         descricao: questaoDb.descricao,
         alternativas: [],
         arquivos: [],
@@ -505,7 +511,7 @@ class GerenciadorDownload with Loggable {
             arquivos: [],
             arquivosVideos: [],
             arquivosAudio: [],
-            tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+            tipo: EnumTipoQuestao.values.firstWhere((element) => element == e.tipo),
             quantidadeAlternativas: e.quantidadeAlternativas!,
           ),
         )
@@ -564,7 +570,7 @@ class GerenciadorDownload with Loggable {
               imagem: e.imagem,
               imagemBase64: e.imagemBase64,
               ordem: e.ordem,
-              posicionamento: PosicionamentoImagemEnum.values[e.posicionamento!],
+              posicionamento: e.posicionamento,
               provaId: e.provaId,
               texto: e.texto,
               titulo: e.titulo,
@@ -585,7 +591,7 @@ class GerenciadorDownload with Loggable {
         titulo: questao.titulo,
         descricao: questao.descricao,
         ordem: questao.ordem,
-        tipo: questao.tipo.index,
+        tipo: questao.tipo,
         provaId: provaId,
         quantidadeAlternativas: questao.quantidadeAlternativas,
       ),
@@ -636,7 +642,7 @@ class GerenciadorDownload with Loggable {
         ordem: contexto.ordem!,
         imagem: contexto.imagem,
         imagemBase64: contexto.imagemBase64,
-        posicionamento: contexto.posicionamento!.index,
+        posicionamento: contexto.posicionamento,
         texto: contexto.texto,
         titulo: contexto.titulo,
         provaId: provaId,
@@ -683,7 +689,7 @@ class GerenciadorDownload with Loggable {
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
-        downloadStatus: prova.downloadStatus.index,
+        downloadStatus: prova.downloadStatus,
         tempoExtra: prova.tempoExtra,
         tempoExecucao: prova.tempoExecucao,
         tempoAlerta: prova.tempoAlerta,

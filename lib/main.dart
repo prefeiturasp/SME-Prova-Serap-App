@@ -91,7 +91,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           routeInformationParser: goRouter.routeInformationParser,
           routerDelegate: goRouter.routerDelegate,
-          debugShowCheckedModeBanner: kDebugMode,
+          debugShowCheckedModeBanner: false,
           theme: ThemeData.light().copyWith(
             appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
             textButtonTheme: TextButtonThemeData(

@@ -78,7 +78,7 @@ class Prova {
     if (provaDb != null) {
       var prova = Prova(
         id: provaDb.id,
-        downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
+        downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element == provaDb.downloadStatus),
         itensQuantidade: provaDb.itensQuantidade,
         tempoAlerta: provaDb.tempoAlerta,
         tempoExecucao: provaDb.tempoExecucao,
@@ -103,8 +103,7 @@ class Prova {
                   provaId: e.provaId,
                   imagem: e.imagem,
                   imagemBase64: e.imagemBase64,
-                  posicionamento:
-                      PosicionamentoImagemEnum.values.firstWhere((element) => element.index == e.posicionamento),
+                  posicionamento: PosicionamentoImagemEnum.values.firstWhere((element) => element == e.posicionamento),
                   ordem: e.ordem,
                   titulo: e.titulo,
                   texto: e.texto,
@@ -112,7 +111,7 @@ class Prova {
             .toList();
       }
 
-      var questoesDb = await db.obterQuestoesPorProvaId(prova.id);
+      var questoesDb = await db.questaoDAO.obterPorProvaId(prova.id);
       prova.questoes = questoesDb
           .map(
             (e) => Questao(
@@ -124,7 +123,7 @@ class Prova {
               arquivos: [],
               arquivosVideos: [],
               arquivosAudio: [],
-              tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+              tipo: EnumTipoQuestao.values.firstWhere((element) => element == e.tipo),
               quantidadeAlternativas: e.quantidadeAlternativas!,
             ),
           )
@@ -183,7 +182,7 @@ class Prova {
   static Prova fromProvaDb(ProvaDb provaDb) {
     Prova prova = Prova(
       id: provaDb.id,
-      downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
+      downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element == provaDb.downloadStatus),
       itensQuantidade: provaDb.itensQuantidade,
       tempoAlerta: provaDb.tempoAlerta,
       tempoExecucao: provaDb.tempoExecucao,
@@ -209,7 +208,7 @@ class Prova {
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
-        downloadStatus: prova.downloadStatus.index,
+        downloadStatus: prova.downloadStatus,
         tempoExtra: prova.tempoExtra,
         tempoExecucao: prova.tempoExecucao,
         tempoAlerta: prova.tempoAlerta,
