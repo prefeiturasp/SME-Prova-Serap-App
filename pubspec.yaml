@@ -71,7 +71,7 @@ dependencies:
   lottie: ^1.1.0
 
   # Editor de texto
-  html_editor_enhanced: ^2.3.0
+  html_editor_enhanced: ^2.4.0+1
 
   # Workmanager
   # background   _fetch: ^1.0.1
@@ -84,9 +84,9 @@ dependencies:
   flutter_screenutil: ^5.0.0+2
 
   # Database
-  drift: ^1.0.1
+  drift: ^1.5.0
   sqlite3_flutter_libs: ^0.5.5
-  path_provider: ^2.0.0
+  path_provider: ^2.0.9
   path: ^1.8.0
   supercharged: ^2.1.1
   idb_shim: ^2.0.1
