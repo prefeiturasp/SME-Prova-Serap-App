@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/prova_resposta.model.dart';
@@ -85,36 +86,46 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  sincronizarResposta() async {
-    //TODO carregar cache local
-
+  sincronizarResposta({bool force = false}) async {
     fine('[$idProva] - Sincronizando respostas para o servidor');
     var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
 
-    for (MapEntry<int, ProvaResposta> item in respostasNaoSincronizadas) {
-      int idQuestao = item.key;
-      ProvaResposta resposta = item.value;
+    if (respostasNaoSincronizadas.length == 2 || force) {
+      List<QuestaoRespostaDTO> respostas = [];
+
+      for (var item in respostasNaoSincronizadas) {
+        int idQuestao = item.key;
+        ProvaResposta resposta = item.value;
+
+        respostas.add(
+          QuestaoRespostaDTO(
+            alunoRa: codigoEOL,
+            questaoId: idQuestao,
+            alternativaId: resposta.alternativaId,
+            resposta: resposta.resposta,
+            dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+            tempoRespostaAluno: resposta.tempoRespostaAluno,
+          ),
+        );
+      }
 
       try {
         var response = await _service.postResposta(
           chaveAPI: AppConfigReader.getChaveApi(),
-          alunoRa: codigoEOL,
-          questaoId: idQuestao,
-          alternativaId: resposta.alternativaId,
-          resposta: resposta.resposta,
-          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
-          tempoRespostaAluno: resposta.tempoRespostaAluno,
+          respostas: respostas,
         );
 
         if (response.isSuccessful) {
-          fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
-
-          resposta.sincronizado = true;
+          for (var resposta in respostas) {
+            fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
+            respostasLocal[resposta.questaoId]!.sincronizado = true;
+          }
         }
       } catch (e) {
         severe(e);
       }
     }
+
     fine('[$idProva] - Sincronização com o servidor servidor concluida');
 
     salvarAllCache();
@@ -160,7 +171,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     await Future.wait(futures);
   }
 
-  salvarCache(ProvaResposta resposta) async {
+  Future<bool> salvarCache(ProvaResposta resposta) async {
     SharedPreferences _pref = GetIt.I.get();
 
     var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;

@@ -403,6 +403,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
       ),
       onTap: () {
         provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
+        store.posicaoQuestaoSendoRevisada = questaoOrdem;
         if ((provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido) &&
             resposta == "") {
           store.quantidadeDeQuestoesSemRespostas = 0;

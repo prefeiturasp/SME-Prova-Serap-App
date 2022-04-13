@@ -4,16 +4,20 @@ part 'questao_resposta.dto.g.dart';
 
 @JsonSerializable()
 class QuestaoRespostaDTO {
+  String alunoRa;
   int questaoId;
   int? alternativaId;
   String? resposta;
-  int dataHoraRespostaTicks = 0;
+  int dataHoraRespostaTicks;
+  int? tempoRespostaAluno;
 
   QuestaoRespostaDTO({
+    required this.alunoRa,
     required this.questaoId,
     this.alternativaId,
     this.resposta,
     required this.dataHoraRespostaTicks,
+    this.tempoRespostaAluno,
   });
 
   static const fromJson = _$QuestaoRespostaDTOFromJson;

@@ -43,6 +43,8 @@ class Prova {
 
   List<ContextoProva>? contextosProva;
 
+  int quantidadeRespostaSincronizacao;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -61,6 +63,7 @@ class Prova {
     this.dataInicioProvaAluno,
     this.dataFimProvaAluno,
     this.contextosProva,
+    required this.quantidadeRespostaSincronizacao,
   });
 
   bool isFinalizada() {
@@ -92,6 +95,7 @@ class Prova {
         status: EnumProvaStatus.values[provaDb.status],
         senha: provaDb.senha,
         idDownload: provaDb.idDownload,
+        quantidadeRespostaSincronizacao: provaDb.quantidadeRespostaSincronizacao,
       );
 
       var contextosProvaDb = await db.obterContextoPorProvaId(prova.id);
@@ -196,6 +200,7 @@ class Prova {
       status: EnumProvaStatus.values[provaDb.status],
       senha: provaDb.senha,
       idDownload: provaDb.idDownload,
+      quantidadeRespostaSincronizacao: provaDb.quantidadeRespostaSincronizacao,
     );
 
     return prova;
@@ -221,6 +226,7 @@ class Prova {
         dataInicioProvaAluno: prova.dataInicioProvaAluno,
         senha: prova.senha,
         idDownload: prova.idDownload,
+        quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
       ),
     );
   }

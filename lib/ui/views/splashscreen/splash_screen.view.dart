@@ -83,7 +83,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
     _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!, update: false);
 
     try {
-      if (!kDebugMode ? !(await checkUpdate()) : true) {
+      if (kDebugMode || !(await checkUpdate())) {
         _navegar();
       }
     } catch (e) {
