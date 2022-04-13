@@ -86,13 +86,11 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  sincronizarResposta() async {
-    //TODO carregar cache local
-
+  sincronizarResposta({bool force = false}) async {
     fine('[$idProva] - Sincronizando respostas para o servidor');
     var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
 
-    if (respostasNaoSincronizadas.length == 2) {
+    if (respostasNaoSincronizadas.length == 2 || force) {
       List<QuestaoRespostaDTO> respostas = [];
 
       for (var item in respostasNaoSincronizadas) {
@@ -109,21 +107,22 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
             tempoRespostaAluno: resposta.tempoRespostaAluno,
           ),
         );
+      }
 
-        try {
-          var response = await _service.postResposta(
-            chaveAPI: AppConfigReader.getChaveApi(),
-            respostas: respostas,
-          );
+      try {
+        var response = await _service.postResposta(
+          chaveAPI: AppConfigReader.getChaveApi(),
+          respostas: respostas,
+        );
 
-          if (response.isSuccessful) {
+        if (response.isSuccessful) {
+          for (var resposta in respostas) {
             fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
-
-            resposta.sincronizado = true;
+            respostasLocal[resposta.questaoId]!.sincronizado = true;
           }
-        } catch (e) {
-          severe(e);
         }
+      } catch (e) {
+        severe(e);
       }
     }
 
@@ -172,7 +171,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     await Future.wait(futures);
   }
 
-  salvarCache(ProvaResposta resposta) async {
+  Future<bool> salvarCache(ProvaResposta resposta) async {
     SharedPreferences _pref = GetIt.I.get();
 
     var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;

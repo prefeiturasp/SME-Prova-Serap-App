@@ -23,7 +23,6 @@ import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 
 part 'prova.store.g.dart';
 
@@ -315,7 +314,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         setStatusProva(EnumProvaStatus.FINALIZADA);
         await saveProva();
 
-        await SincronizarRespostasWorker().sincronizar();
+        await respostas.sincronizarResposta(force: true);
 
         // Sincroniza com a api
         var response = await GetIt.I.get<ApiService>().prova.setStatusProva(
