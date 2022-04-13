@@ -696,6 +696,7 @@ class GerenciadorDownload with Loggable {
         dataFimProvaAluno: prova.dataFimProvaAluno,
         senha: prova.senha,
         idDownload: prova.idDownload,
+        quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
       ),
     );
 

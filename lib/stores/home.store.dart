@@ -71,6 +71,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               dataFimProvaAluno: provaResponse.dataFimProvaAluno,
               questoes: [],
               senha: provaResponse.senha,
+              quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
             );
 
             var provaStore = ProvaStore(

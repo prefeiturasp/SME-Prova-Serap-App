@@ -26,7 +26,6 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/file.util.dart';
 import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -448,10 +447,27 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
           builder: (context) {
             if (store.posicaoQuestaoSendoRevisada != store.totalDeQuestoesParaRevisar) {
               return BotaoDefaultWidget(
-                textoBotao: 'Proximo item da revisão',
+                textoBotao: 'Próximo item da revisão',
                 onPressed: () async {
-                  store.posicaoQuestaoSendoRevisada++;
-                  context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
+                  try {
+                    if (store.botaoOcupado) return;
+
+                    store.botaoOcupado = true;
+
+                    provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                    await provaStore.respostas.definirTempoResposta(
+                      questao.id,
+                      tempoQuestao: provaStore.segundos,
+                    );
+
+                    await provaStore.respostas.sincronizarResposta();
+                    store.posicaoQuestaoSendoRevisada++;
+                    context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
+                  } catch (e) {
+                    fine(e);
+                  } finally {
+                    store.botaoOcupado = false;
+                  }
                 },
               );
             }
@@ -468,12 +484,15 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
               if (store.botaoOcupado) return;
 
               store.botaoOcupado = true;
+
               provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
               await provaStore.respostas.definirTempoResposta(
                 questao.id,
                 tempoQuestao: provaStore.segundos,
               );
-              await SincronizarRespostasWorker().sincronizar();
+
+              await provaStore.respostas.sincronizarResposta();
+
               context.go("/prova/${provaStore.id}/resumo");
             } catch (e) {
               fine(e);
