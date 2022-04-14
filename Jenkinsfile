@@ -4,7 +4,7 @@ pipeline {
     }
     agent {
       node { 
-        label 'flutter-android-258'
+        label 'flutter-android'
 	    }
     }
     
