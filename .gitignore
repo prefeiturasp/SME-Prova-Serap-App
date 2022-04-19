@@ -40,6 +40,10 @@ google-services.json
 /build/
 /ios/build/
 
+# Windows related
+**/generated_plugin_registrant.*
+**/generated_plugins.cmake
+
 # Web related
 lib/generated_plugin_registrant.dart
 
