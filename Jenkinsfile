@@ -41,6 +41,7 @@ pipeline {
             file(credentialsId: 'app-key-jks', variable: 'APPKEYJKS'),
             file(credentialsId: 'app-key-properties', variable: 'APPKEYPROPERTIES'),
 	  ]) {
+            sh 'env'
             sh 'cp ${APPKEYJKS} ~/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cat ${WORKSPACE}/android/key.properties | grep keyPassword | cut -d\'=\' -f2 > /home/cirrus/key.pass'
             sh 'cd ${WORKSPACE} && mkdir config && cp $APPCONFIGDEV config/app_config.json'

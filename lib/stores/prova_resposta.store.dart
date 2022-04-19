@@ -90,7 +90,9 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     fine('[$idProva] - Sincronizando respostas para o servidor');
     var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
 
-    if (respostasNaoSincronizadas.length == 2 || force) {
+    var prova = await Prova.carregaProvaCache(idProva);
+
+    if (respostasNaoSincronizadas.length == prova!.quantidadeRespostaSincronizacao || force) {
       List<QuestaoRespostaDTO> respostas = [];
 
       for (var item in respostasNaoSincronizadas) {
