@@ -10,7 +10,6 @@ import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
@@ -131,7 +130,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   }
 
   Future<void> _iniciarRevisaoProva() async {
-    await SincronizarRespostasWorker().sincronizar();
+    await provaStore.respostas.sincronizarResposta(force: true);
 
     ServiceLocator.get<AppRouter>().router.go("/prova/${widget.idProva}/resumo");
   }

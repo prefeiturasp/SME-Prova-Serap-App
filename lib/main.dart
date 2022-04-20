@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
         960,
         600,
       ),
-      builder: () {
+      builder: (context) {
         final GoRouter goRouter = ServiceLocator.get<AppRouter>().router;
 
         return MaterialApp.router(

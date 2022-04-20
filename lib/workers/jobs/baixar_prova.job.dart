@@ -79,6 +79,7 @@ class BaixarProvaJob with Job, Loggable {
       dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
       questoes: [],
       senha: provaResponse.senha,
+      quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
     );
 
     await Prova.salvaProvaCache(prova);

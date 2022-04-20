@@ -27,6 +27,8 @@ class ProvasDb extends Table {
   TextColumn get senha => text().nullable()();
   IntColumn get idDownload => integer().nullable()();
 
+  IntColumn get quantidadeRespostaSincronizacao => integer()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -130,7 +132,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -156,6 +158,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from == 7) {
           await m.createTable(arquivosAudioDb);
+        }
+        if (from == 8) {
+          await m.addColumn(provasDb, provasDb.quantidadeRespostaSincronizacao);
         }
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = 1;');
