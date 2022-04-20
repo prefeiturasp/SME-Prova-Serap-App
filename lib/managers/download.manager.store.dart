@@ -689,6 +689,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       }
 
       cancelTimer();
+      await deleteDownload();
 
       if (onStatusChangeCallback != null) {
         onStatusChangeCallback!(
@@ -698,6 +699,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         );
       }
     }
+  }
+
+  deleteDownload() async {
+    await db.downloadProvaDAO.deleteByProva(provaStore.id);
   }
 
   _validarQuestoes() async {

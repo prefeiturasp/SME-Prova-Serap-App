@@ -20,6 +20,10 @@ class DownloadProvaDAO extends DatabaseAccessor<AppDatabase> with _$DownloadProv
     return delete(downloadProvasDb).delete(entity);
   }
 
+  Future deleteByProva(int provaId) {
+    return (delete(downloadProvasDb)..where((t) => t.provaId.equals(provaId))).go();
+  }
+
   Future<List<DownloadProvaDb>> getByProva(int provaId) {
     return (select(downloadProvasDb)..where((t) => t.provaId.equals(provaId))).get();
   }
