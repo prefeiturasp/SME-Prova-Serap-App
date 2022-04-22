@@ -7,8 +7,6 @@ import 'package:appserap/services/api.dart';
 import 'package:appserap/services/rest/admin.service.dart';
 import 'package:appserap/services/rest/auth.admin.service.dart';
 import 'package:appserap/services/rest/usuario.service.dart';
-import 'package:appserap/services/rest/orientacao_inicial.service.dart';
-import 'package:appserap/services/rest/versao.service.dart';
 import 'package:chopper/chopper.dart';
 import 'package:http/io_client.dart' as httpio;
 import 'package:http/http.dart' as http;

@@ -103,17 +103,6 @@ class FinalizarProvaWorker with Worker, Loggable {
     fine('Sincronização com o servidor servidor concluida');
   }
 
-  List<int> listProvasCache() {
-    SharedPreferences prefs = ServiceLocator.get();
-
-    var ids = prefs.getKeys().toList().where((element) => element.startsWith('prova_'));
-
-    if (ids.isNotEmpty) {
-      return ids.map((e) => e.replaceAll('prova_', '')).map((e) => int.parse(e)).toList();
-    }
-    return [];
-  }
-
   List<ProvaResposta> getRespostas(Prova prova) {
     SharedPreferences prefs = ServiceLocator.get();
 

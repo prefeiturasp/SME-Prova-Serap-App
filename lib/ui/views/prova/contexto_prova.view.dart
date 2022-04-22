@@ -6,7 +6,6 @@ import 'package:appserap/ui/widgets/apresentacao/apresentacao_contexto.widget.da
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supercharged/supercharged.dart';

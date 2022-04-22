@@ -56,6 +56,7 @@ desinscreverTurmaFirebase(String ano) async {
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   logger.info('RECEBEU UMA MENSAGEM:');
-  await await configure();
+  registerPluginsForIsolate();
+  await configure();
   await BaixarProvaJob().run();
 }

@@ -32,7 +32,7 @@ class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
     required Prova prova,
     required ProvaRespostaStore respostas,
   }) : super(id: id, prova: prova, respostas: respostas) {
-    downloadManagerStore = DownloadManagerStore(this);
+    downloadManagerStore = DownloadManagerStore(provaStore: this);
   }
 }
 

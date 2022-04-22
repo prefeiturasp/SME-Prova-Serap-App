@@ -29,7 +29,6 @@ abstract class _AdminProvaContextoViewStoreBase with Store, Loggable {
           severe(res.error);
         }
       },
-      retryIf: (e) => e is Exception,
       onRetry: (e) {
         fine('[Prova $idProva] - Tentativa de carregamento lista de cadernos - ${e.toString()}');
       },
