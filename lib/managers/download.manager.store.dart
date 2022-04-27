@@ -700,7 +700,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         getTempoPrevisto(downloads),
       );
     }
-    fine("[Prova $provaId] - Porcentagem concluida: ${porcentagem.toStringAsFixed(2)}%");
+    fine("[Prova $provaId] - Porcentagem concluida: ${(porcentagem * 100).toStringAsFixed(2)}%");
   }
 
   deleteDownload() async {

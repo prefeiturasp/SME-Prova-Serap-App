@@ -1193,9 +1193,11 @@ packages:
   sqlite_viewer:
     dependency: "direct main"
     description:
-      name: sqlite_viewer
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "3dcd2460b2eb21f861c934c0f35b844f1320f3b8"
+      url: "https://github.com/frgmt/flutter-sqlite-viewer"
+    source: git
     version: "1.0.5"
   sqlparser:
     dependency: transitive

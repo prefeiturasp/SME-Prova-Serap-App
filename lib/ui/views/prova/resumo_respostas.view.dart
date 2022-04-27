@@ -3,8 +3,8 @@ import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
@@ -281,7 +281,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     store.questoesParaRevisar.clear();
 
     for (Questao questao in provaStore.prova.questoes) {
-      ProvaResposta? resposta = provaStore.respostas.obterResposta(questao.id);
+      RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
 
       String alternativaSelecionada = "";
       String respostaNaTela = "";

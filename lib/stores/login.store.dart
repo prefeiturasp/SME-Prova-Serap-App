@@ -168,6 +168,9 @@ abstract class _LoginStoreBase with Store, Loggable {
           case 412:
             autenticacaoErroStore.senha = (responseLogin.error! as ErrorResponseDTO).mensagens.first;
             break;
+          case 500:
+            NotificacaoUtil.showSnackbarError("Ocorreu um erro interno. Favor contatar o suporte.");
+            break;
         }
       }
     } on SemConexaoException catch (e) {

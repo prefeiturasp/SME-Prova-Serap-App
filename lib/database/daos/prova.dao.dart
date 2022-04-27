@@ -17,8 +17,8 @@ class ProvaDAO extends DatabaseAccessor<AppDatabase> with _$ProvaDAOMixin {
     return into(provasDb).insertOnConflictUpdate(entity);
   }
 
-  Future remover(ProvaDb entity) {
-    return delete(provasDb).delete(entity);
+  Future deleteByProva(int provaId) {
+    return (delete(provasDb)..where((t) => t.id.equals(provaId))).go();
   }
 
   Future<List<ProvaDb>> obterPorProvaId(int provaId) {

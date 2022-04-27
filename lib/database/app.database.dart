@@ -5,6 +5,7 @@ import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:drift/drift.dart';
 
 import 'daos/alternativa.dao.dart';
@@ -13,6 +14,7 @@ import 'daos/arquivo_audio.dao.dart';
 import 'daos/contexto_prova.dao.dart';
 import 'daos/prova.dao.dart';
 import 'daos/questao.dao.dart';
+import 'daos/resposta_prova.dao.dart';
 
 export 'core/shared.database.dart';
 
@@ -139,6 +141,25 @@ class DownloadProvasDb extends Table {
   Set<Column> get primaryKey => {id, provaId};
 }
 
+@UseRowClass(RespostaProva)
+class RespostaProvaTable extends Table {
+  TextColumn get codigoEOL => text()();
+
+  IntColumn get questaoId => integer()();
+  IntColumn get provaId => integer()();
+
+  IntColumn get alternativaId => integer().nullable()();
+  TextColumn get resposta => text().nullable()();
+
+  IntColumn get tempoRespostaAluno => integer().nullable()();
+  DateTimeColumn get dataHoraResposta => dateTime().withDefault(currentDateAndTime).nullable()();
+
+  BoolColumn get sincronizado => boolean()();
+
+  @override
+  Set<Column> get primaryKey => {codigoEOL, provaId, questaoId};
+}
+
 @DriftDatabase(
   tables: [
     ProvasDb,
@@ -149,6 +170,7 @@ class DownloadProvasDb extends Table {
     ArquivosVideoDb,
     ArquivosAudioDb,
     DownloadProvasDb,
+    RespostaProvaTable,
   ],
   daos: [
     ArquivosVideosDao,
@@ -159,13 +181,14 @@ class DownloadProvasDb extends Table {
     ArquivoDAO,
     ContextoProvaDAO,
     ProvaDAO,
+    RespostaProvaDAO,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -197,6 +220,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from == 9) {
           await m.createTable(downloadProvasDb);
+        }
+        if (from == 10) {
+          await m.createTable(respostaProvaTable);
         }
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = 1;');

@@ -9,7 +9,6 @@ import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -136,6 +135,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   _setupReactions() {
+    fine('[Prova $id] - Configurando reactions');
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction(
@@ -347,19 +347,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
           switch (response.statusCode) {
             // Prova ja finalizada
             case 411:
-              // Remove prova do cache
-              SharedPreferences prefs = ServiceLocator.get();
               AppDatabase db = GetIt.I.get();
 
-              await prefs.remove('prova_${prova.id}');
-              await prefs.remove('download_${prova.id}');
-              await db.limpar();
+              // Remove prova do banco local
+              await db.provaDAO.deleteByProva(prova.id);
 
-              // Remove respostas da prova do cache
-              for (var questoes in prova.questoes) {
-                var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
-                await prefs.remove('resposta_${codigoEOL}_${questoes.id}');
-              }
+              // Remove respostas do banco local
+              await db.respostaProvaDAO.removerSincronizadasPorProva(prova.id);
 
               mostrarDialogProvaJaEnviada(context);
               break;

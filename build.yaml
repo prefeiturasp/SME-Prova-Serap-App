@@ -14,4 +14,4 @@ targets:
                 enabled: true
                 generate_for:
                     - lib/**/*.dto.dart 
-                    - lib/**/*.model.dart 
+                    - lib/**/*.model.dart

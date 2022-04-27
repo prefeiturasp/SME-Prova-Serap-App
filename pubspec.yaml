@@ -94,7 +94,9 @@ dependencies:
   path: ^1.8.0
   supercharged: ^2.1.1
   idb_shim: ^2.0.1
-  sqlite_viewer: ^1.0.5
+  sqlite_viewer:
+    git: 
+      url: https://github.com/frgmt/flutter-sqlite-viewer
 
   # Informações do dispoisitivo
   device_info_plus: ^3.1.1

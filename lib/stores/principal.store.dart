@@ -86,6 +86,8 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     await _limparDadosLocais();
     await _apagarArquivos(db);
 
+    await db.respostaProvaDAO.removerSincronizadas();
+
     await db.limpar();
 
     bool eraAdimin = usuario.isAdmin;
@@ -100,12 +102,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
   _limparDadosLocais() async {
     SharedPreferences prefs = GetIt.I.get();
-
-    for (var key in prefs.getKeys()) {
-      if (!key.startsWith("resposta_")) {
-        await prefs.remove(key);
-      }
-    }
+    await prefs.clear();
   }
 
   Future<void> _apagarArquivos(AppDatabase db) async {
