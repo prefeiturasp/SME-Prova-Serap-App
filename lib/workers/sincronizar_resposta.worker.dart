@@ -82,7 +82,7 @@ class SincronizarRespostasWorker with Worker, Loggable {
         for (var resposta in respostasParaSincronizar) {
           fine("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
 
-          await db.respostaProvaDAO.definirSincronizado(resposta, true);
+          await db.respostaProvaDao.definirSincronizado(resposta, true);
         }
       }
     } catch (e) {
@@ -94,6 +94,6 @@ class SincronizarRespostasWorker with Worker, Loggable {
 
   Future<List> carregaRespostasNaoSincronizadas() async {
     AppDatabase db = ServiceLocator.get();
-    return await db.respostaProvaDAO.obterTodasNaoSincronizadas();
+    return await db.respostaProvaDao.obterTodasNaoSincronizadas();
   }
 }

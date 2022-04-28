@@ -1,12 +1,13 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/tables/download_prova.table.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:drift/drift.dart';
 
 part 'download_prova.dao.g.dart';
 
 @DriftAccessor(tables: [DownloadProvasDb])
-class DownloadProvaDAO extends DatabaseAccessor<AppDatabase> with _$DownloadProvaDAOMixin {
-  DownloadProvaDAO(AppDatabase db) : super(db);
+class DownloadProvaDao extends DatabaseAccessor<AppDatabase> with _$DownloadProvaDaoMixin {
+  DownloadProvaDao(AppDatabase db) : super(db);
 
   Future inserir(DownloadProvaDb entity) {
     return into(downloadProvasDb).insert(entity);

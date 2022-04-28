@@ -63,7 +63,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     AppDatabase db = GetIt.I.get();
 
     try {
-      List<ProvaDb> provas = await db.obterProvas();
+      List<ProvaDb> provas = await db.provaDao.listarTodos();
 
       if (provas.isNotEmpty) {
         List<int> downlodIds = provas
@@ -86,7 +86,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     await _limparDadosLocais();
     await _apagarArquivos(db);
 
-    await db.respostaProvaDAO.removerSincronizadas();
+    await db.respostaProvaDao.removerSincronizadas();
 
     await db.limpar();
 

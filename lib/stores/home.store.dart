@@ -33,7 +33,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     AppDatabase db = GetIt.I.get();
 
-    List<ProvaDb> provasDb = await db.obterProvas();
+    List<ProvaDb> provasDb = await db.provaDao.listarTodos();
     if (provasDb.isNotEmpty) {
       List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
 
@@ -72,6 +72,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               questoes: [],
               senha: provaResponse.senha,
               quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
+              ultimaAlteracao: provaResponse.ultimaAlteracao,
             );
 
             var provaStore = ProvaStore(

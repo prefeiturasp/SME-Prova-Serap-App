@@ -54,7 +54,7 @@ class FinalizarProvaWorker with Worker, Loggable {
 
     fine('Sincronizando provas para o servidor');
 
-    List<ProvaDb> provasDb = await db.obterProvasPendentes();
+    List<ProvaDb> provasDb = await db.provaDao.obterPendentes();
 
     List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
 
@@ -77,15 +77,15 @@ class FinalizarProvaWorker with Worker, Loggable {
             );
 
         // Sincroniza respostas
-        var respostasProva = await db.respostaProvaDAO.obterNaoSincronizadasPorProva(prova.id);
+        var respostasProva = await db.respostaProvaDao.obterNaoSincronizadasPorProva(prova.id);
         info('Sincronizando ${respostasProva.length} respostas');
         await SincronizarRespostasWorker().sincronizar(respostasProva);
 
         // Remove prova do banco local
-        await db.provaDAO.deleteByProva(prova.id);
+        await db.provaDao.deleteByProva(prova.id);
 
         // Remove respostas do banco local
-        await db.respostaProvaDAO.removerSincronizadasPorProva(prova.id);
+        await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
       } catch (e) {
         severe(e);
       }

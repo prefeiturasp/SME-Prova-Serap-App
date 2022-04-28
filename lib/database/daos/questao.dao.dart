@@ -1,11 +1,13 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/tables/alternativa.table.dart';
+import 'package:appserap/database/tables/questao.table.dart';
 import 'package:drift/drift.dart';
 
 part 'questao.dao.g.dart';
 
 @DriftAccessor(tables: [QuestoesDb, AlternativasDb])
-class QuestaoDAO extends DatabaseAccessor<AppDatabase> with _$QuestaoDAOMixin {
-  QuestaoDAO(AppDatabase db) : super(db);
+class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
+  QuestaoDao(AppDatabase db) : super(db);
 
   Future inserir(QuestaoDb entity) {
     return into(questoesDb).insert(entity);

@@ -105,11 +105,11 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
   _carregarProva() async {
     salvarBanco(DownloadProvaDb download) async {
-      await db.downloadProvaDAO.inserirOuAtualizar(download);
+      await db.downloadProvaDao.inserirOuAtualizar(download);
     }
 
     // carregar do banco
-    var downloads = await db.downloadProvaDAO.getByProva(provaId);
+    var downloads = await db.downloadProvaDao.getByProva(provaId);
 
     info(' [Prova $provaId] - Carregando informações da prova');
     // carregar da url
@@ -212,7 +212,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       }
     }
 
-    downloads = await db.downloadProvaDAO.getByProva(provaId);
+    downloads = await db.downloadProvaDao.getByProva(provaId);
 
     info('''[Prova $provaId] - Carregando informações da prova - Finalizado
 
@@ -228,7 +228,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   _salvarProva() async {
-    var downloads = await db.downloadProvaDAO.getByProva(provaId);
+    var downloads = await db.downloadProvaDao.getByProva(provaId);
 
     var downloadsNaoConcluidos =
         downloads.filter((element) => element.downloadStatus != EnumDownloadStatus.CONCLUIDO).toList();
@@ -388,7 +388,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
   Future<void> _pause() async {
     try {
-      var downloads = await db.downloadProvaDAO.getByProva(provaId);
+      var downloads = await db.downloadProvaDao.getByProva(provaId);
 
       int downloadsPendentes = 0;
 
@@ -414,7 +414,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       if (onTempoPrevistoChangeCallback != null) {
-        var downloads = await db.downloadProvaDAO.getByProva(provaId);
+        var downloads = await db.downloadProvaDao.getByProva(provaId);
         onTempoPrevistoChangeCallback!(getTempoPrevisto(downloads));
       }
     });
@@ -425,7 +425,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   Future<double> getPorcentagem(List<DownloadProvaDb> downloads) async {
-    var downloadsDb = await db.downloadProvaDAO.getByProva(provaId);
+    var downloadsDb = await db.downloadProvaDao.getByProva(provaId);
     int baixado = downloadsDb.where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO).length;
 
     return baixado / downloads.length;
@@ -437,7 +437,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
   Future<List<DownloadProvaDb>> getDownlodsByStatus(EnumDownloadStatus status,
       [List<DownloadProvaDb>? downloads]) async {
-    downloads ??= await db.downloadProvaDAO.getByProva(provaId);
+    downloads ??= await db.downloadProvaDao.getByProva(provaId);
     return downloads.where((element) => element.downloadStatus == status).toList();
   }
 
@@ -459,7 +459,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
       );
 
-      await db.questaoDAO.inserirOuAtualizar(questao);
+      await db.questaoDao.inserirOuAtualizar(questao);
     }
 
     await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
@@ -482,7 +482,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         questaoId: alternativaDTO.questaoId,
       );
 
-      db.alternativaDAO.inserirOuAtualizar(alternativa);
+      db.alternativaDao.inserirOuAtualizar(alternativa);
 
       await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
     }
@@ -515,7 +515,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         titulo: contexto.titulo,
       );
 
-      await db.contextoProvaDAO.inserirOuAtualizar(contextoProva);
+      await db.contextoProvaDao.inserirOuAtualizar(contextoProva);
 
       await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
     }
@@ -527,9 +527,9 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
 
     if (response.isSuccessful) {
-      QuestaoDb? questao = await db.questaoDAO.obterQuestaoPorArquivoLegadoId(download.id, provaId);
+      QuestaoDb? questao = await db.questaoDao.obterQuestaoPorArquivoLegadoId(download.id, provaId);
 
-      questao ??= await db.questaoDAO.obterQuestaoPorArquivoLegadoIdAlternativa(download.id, provaId);
+      questao ??= await db.questaoDao.obterQuestaoPorArquivoLegadoIdAlternativa(download.id, provaId);
 
       ArquivoResponseDTO arquivoDTO = response.body!;
 
@@ -551,7 +551,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
           questaoId: questao!.id,
         );
 
-        await db.arquivoDAO.inserirOuAtualizar(arquivo);
+        await db.arquivoDao.inserirOuAtualizar(arquivo);
 
         await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
       } else {
@@ -646,21 +646,21 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   _updateDownloadStatus(DownloadProvaDb download, EnumDownloadStatus status) async {
-    await db.downloadProvaDAO.updateStatus(download, status);
+    await db.downloadProvaDao.updateStatus(download, status);
   }
 
   _updateProvaDownloadStatus(int provaId, EnumDownloadStatus status) async {
-    await db.provaDAO.updateDownloadStatus(provaId, status);
+    await db.provaDao.updateDownloadStatus(provaId, status);
     provaStore?.downloadStatus = status;
   }
 
   _updateProvaDownloadId(int provaId, int downloadId) async {
-    await db.provaDAO.updateDownloadId(provaId, downloadId);
+    await db.provaDao.updateDownloadId(provaId, downloadId);
     provaStore?.prova.idDownload = downloadId;
   }
 
   _validarProva() async {
-    var downloads = await db.downloadProvaDAO.getByProva(provaId);
+    var downloads = await db.downloadProvaDao.getByProva(provaId);
 
     if ((await getDownlodsByStatus(EnumDownloadStatus.ERRO)).isNotEmpty) {
       throw ProvaDownloadException(
@@ -704,14 +704,14 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   deleteDownload() async {
-    await db.downloadProvaDAO.deleteByProva(provaId);
+    await db.downloadProvaDao.deleteByProva(provaId);
   }
 
   _validarQuestoes() async {
-    var questoes = await db.questaoDAO.obterQuestoesPorProvaId(provaId);
+    var questoes = await db.questaoDao.obterQuestoesPorProvaId(provaId);
 
     for (var questao in questoes) {
-      var alternativas = await db.alternativaDAO.obterPorQuestaoId(questao.id);
+      var alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
       switch (questao.tipo) {
         case EnumTipoQuestao.MULTIPLA_ESCOLHA:
           if (alternativas.length != questao.quantidadeAlternativas) {

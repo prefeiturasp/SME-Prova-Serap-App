@@ -1,11 +1,12 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/tables/alternativa.table.dart';
 import 'package:drift/drift.dart';
 
 part 'alternativa.dao.g.dart';
 
 @DriftAccessor(tables: [AlternativasDb])
-class AlternativaDAO extends DatabaseAccessor<AppDatabase> with _$AlternativaDAOMixin {
-  AlternativaDAO(AppDatabase db) : super(db);
+class AlternativaDao extends DatabaseAccessor<AppDatabase> with _$AlternativaDaoMixin {
+  AlternativaDao(AppDatabase db) : super(db);
 
   Future inserir(AlternativaDb entity) {
     return into(alternativasDb).insert(entity);
@@ -29,6 +30,10 @@ class AlternativaDAO extends DatabaseAccessor<AppDatabase> with _$AlternativaDAO
 
   Future<List<AlternativaDb>> listarTodos() {
     return select(alternativasDb).get();
+  }
+
+  Future<List<AlternativaDb>> obterAlternativasPorProvaId(int provaId) {
+    return (select(alternativasDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
   Future removerAlternativasPorProvaId(int id) {

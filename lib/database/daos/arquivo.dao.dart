@@ -1,11 +1,12 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/tables/arquivo.table.dart';
 import 'package:drift/drift.dart';
 
 part 'arquivo.dao.g.dart';
 
 @DriftAccessor(tables: [ArquivosDb])
-class ArquivoDAO extends DatabaseAccessor<AppDatabase> with _$ArquivoDAOMixin {
-  ArquivoDAO(AppDatabase db) : super(db);
+class ArquivoDao extends DatabaseAccessor<AppDatabase> with _$ArquivoDaoMixin {
+  ArquivoDao(AppDatabase db) : super(db);
 
   Future inserir(ArquivoDb entity) {
     return into(arquivosDb).insert(entity);
@@ -21,6 +22,10 @@ class ArquivoDAO extends DatabaseAccessor<AppDatabase> with _$ArquivoDAOMixin {
 
   Future<List<ArquivoDb>> obterPorProvaId(int provaId) {
     return (select(arquivosDb)..where((t) => t.provaId.equals(provaId))).get();
+  }
+
+  Future<List<ArquivoDb>> obterPorQuestaoId(int questaoId) {
+    return (select(arquivosDb)..where((t) => t.questaoId.equals(questaoId))).get();
   }
 
   Future<List<ArquivoDb>> listarTodos() {

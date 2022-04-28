@@ -64,7 +64,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
             sincronizado: true,
           );
 
-          await db.respostaProvaDAO.inserirOuAtualizar(entity);
+          await db.respostaProvaDao.inserirOuAtualizar(entity);
           respostasLocal[questaoResponse.questaoId] = entity;
 
           finer(
@@ -92,7 +92,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   @action
   sincronizarResposta({bool force = false}) async {
     fine('[$idProva] - Sincronizando respostas para o servidor');
-    var respostasNaoSincronizadas = await db.respostaProvaDAO.obterTodasNaoSincronizadasPorCodigoEProva(
+    var respostasNaoSincronizadas = await db.respostaProvaDao.obterTodasNaoSincronizadasPorCodigoEProva(
       codigoEOL,
       idProva,
     );
@@ -124,7 +124,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
         if (response.isSuccessful) {
           for (var resposta in respostasNaoSincronizadas) {
             fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
-            await db.respostaProvaDAO.definirSincronizado(resposta, true);
+            await db.respostaProvaDao.definirSincronizado(resposta, true);
             respostasLocal[resposta.questaoId]!.sincronizado = true;
           }
         }
@@ -149,7 +149,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       dataHoraResposta: DateTime.now(),
     );
 
-    await db.respostaProvaDAO.inserirOuAtualizar(resposta);
+    await db.respostaProvaDao.inserirOuAtualizar(resposta);
     respostasLocal[questaoId] = resposta;
   }
 
@@ -161,14 +161,14 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       resposta.sincronizado = false;
       resposta.tempoRespostaAluno = tempoQuestao;
 
-      await db.respostaProvaDAO.inserirOuAtualizar(resposta);
+      await db.respostaProvaDao.inserirOuAtualizar(resposta);
     } else {
       await definirResposta(questaoId, tempoQuestao: tempoQuestao);
     }
   }
 
   Future<Map<int, RespostaProva>> carregarRespostasLocal() async {
-    var respostasBanco = await db.respostaProvaDAO.obterPorProvaIdECodigoEOL(idProva, codigoEOL);
+    var respostasBanco = await db.respostaProvaDao.obterPorProvaIdECodigoEOL(idProva, codigoEOL);
 
     Map<int, RespostaProva> respostas = {};
 

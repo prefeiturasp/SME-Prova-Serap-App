@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/managers/download.manager.store.dart';
+import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -252,6 +253,71 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     }
   }
 
+  @action
+  configurarProva() async {
+    info("[Prova $id] - Configurando prova");
+
+    setRespondendoProva(true);
+
+    await respostas.carregarRespostasServidor(prova);
+    await _configureControlesTempoProva();
+
+    if (prova.status == EnumProvaStatus.NAO_INICIADA) {
+      await iniciarProva();
+    } else {
+      await continuarProva();
+    }
+
+    info("[Prova $id] - Configuração concluida");
+  }
+
+  _configureControlesTempoProva() async {
+    info("[Prova $id] - Configurando controles de tempo");
+    if (tempoExecucaoStore != null) {
+      switch (tempoExecucaoStore!.status) {
+        case EnumProvaTempoEventType.EXTENDIDO:
+          await _iniciarRevisaoProva();
+          break;
+        case EnumProvaTempoEventType.FINALIZADO:
+          await _finalizarProva();
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    if (tempoExecucaoStore != null) {
+      tempoExecucaoStore!.onFinalizandoProva(() {
+        fine('Prova quase acabando');
+      });
+
+      tempoExecucaoStore!.onExtenderProva(() async {
+        fine('Prova extendida');
+        await _iniciarRevisaoProva();
+      });
+
+      tempoExecucaoStore!.onFinalizarlProva(() async {
+        fine('Prova finalizada');
+        await _finalizarProva();
+      });
+    }
+  }
+
+  Future<void> _iniciarRevisaoProva() async {
+    await respostas.sincronizarResposta(force: true);
+
+    ServiceLocator.get<AppRouter>().router.go("/prova/$id/resumo");
+  }
+
+  Future<void> _finalizarProva() async {
+    var confirm = await finalizarProva(true);
+    if (confirm) {
+      onDispose();
+      ServiceLocator.get<AppRouter>().router.go("/");
+    }
+  }
+
   /// Configura o tempo de execução da prova
   @action
   _configurarTempoExecucao() {
@@ -276,7 +342,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   saveProva() async {
     AppDatabase db = GetIt.I.get();
 
-    await db.inserirOuAtualizarProva(
+    await db.provaDao.inserirOuAtualizar(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
@@ -293,9 +359,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         dataFimProvaAluno: prova.dataFimProvaAluno,
         senha: prova.senha,
         quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
+        ultimaAlteracao: prova.ultimaAlteracao,
+        idDownload: prova.idDownload,
       ),
     );
-    var provaSalva = await db.obterProvaPorId(prova.id);
+    var provaSalva = await db.provaDao.obterPorProvaId(prova.id);
     fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }
 
@@ -350,10 +418,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               AppDatabase db = GetIt.I.get();
 
               // Remove prova do banco local
-              await db.provaDAO.deleteByProva(prova.id);
+              await db.provaDao.deleteByProva(prova.id);
 
               // Remove respostas do banco local
-              await db.respostaProvaDAO.removerSincronizadasPorProva(prova.id);
+              await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
 
               mostrarDialogProvaJaEnviada(context);
               break;

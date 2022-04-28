@@ -1,11 +1,12 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/tables/contexto_prova.table.dart';
 import 'package:drift/drift.dart';
 
 part 'contexto_prova.dao.g.dart';
 
 @DriftAccessor(tables: [ContextosProvaDb])
-class ContextoProvaDAO extends DatabaseAccessor<AppDatabase> with _$ContextoProvaDAOMixin {
-  ContextoProvaDAO(AppDatabase db) : super(db);
+class ContextoProvaDao extends DatabaseAccessor<AppDatabase> with _$ContextoProvaDaoMixin {
+  ContextoProvaDao(AppDatabase db) : super(db);
 
   Future inserir(ContextoProvaDb entity) {
     return into(contextosProvaDb).insert(entity);

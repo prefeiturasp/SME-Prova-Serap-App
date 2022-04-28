@@ -20,7 +20,7 @@ List<int> getProvasCache() {
 
 Future<List<int>> getProvasCacheIds() async {
   AppDatabase db = GetIt.I.get();
-  var provas = await db.obterProvasCacheIds();
+  var provas = await db.provaDao.obterIds();
   if (provas.isNotEmpty) {
     return provas;
   }

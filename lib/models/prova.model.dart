@@ -44,6 +44,7 @@ class Prova {
   List<ContextoProva>? contextosProva;
 
   int quantidadeRespostaSincronizacao;
+  DateTime ultimaAlteracao;
 
   Prova({
     required this.id,
@@ -64,6 +65,7 @@ class Prova {
     this.dataFimProvaAluno,
     this.contextosProva,
     required this.quantidadeRespostaSincronizacao,
+    required this.ultimaAlteracao,
   });
 
   bool isFinalizada() {
@@ -76,7 +78,7 @@ class Prova {
   static Future<Prova?> carregaProvaCache(int idProva) async {
     AppDatabase db = GetIt.I.get();
 
-    ProvaDb? provaDb = await db.obterProvaPorIdNull(idProva);
+    ProvaDb? provaDb = await db.provaDao.obterPorIdNull(idProva);
 
     if (provaDb != null) {
       var prova = Prova(
@@ -96,9 +98,10 @@ class Prova {
         senha: provaDb.senha,
         idDownload: provaDb.idDownload,
         quantidadeRespostaSincronizacao: provaDb.quantidadeRespostaSincronizacao,
+        ultimaAlteracao: provaDb.ultimaAlteracao,
       );
 
-      var contextosProvaDb = await db.obterContextoPorProvaId(prova.id);
+      var contextosProvaDb = await db.contextoProvaDao.obterPorProvaId(prova.id);
 
       if (contextosProvaDb.isNotEmpty) {
         prova.contextosProva = contextosProvaDb
@@ -115,7 +118,7 @@ class Prova {
             .toList();
       }
 
-      var questoesDb = await db.questaoDAO.obterPorProvaId(prova.id);
+      var questoesDb = await db.questaoDao.obterPorProvaId(prova.id);
       prova.questoes = questoesDb
           .map(
             (e) => Questao(
@@ -134,7 +137,7 @@ class Prova {
           .toList();
 
       for (var questao in prova.questoes) {
-        var alternativasDb = await db.obterAlternativasPorQuestaoId(questao.id);
+        var alternativasDb = await db.alternativaDao.obterPorQuestaoId(questao.id);
         questao.alternativas = alternativasDb
             .map(
               (e) => Alternativa(
@@ -142,7 +145,7 @@ class Prova {
             )
             .toList();
 
-        var arquivosDb = await db.obterArquivosPorQuestaoId(questao.id);
+        var arquivosDb = await db.arquivoDao.obterPorQuestaoId(questao.id);
         questao.arquivos = arquivosDb
             .map(
               (e) => Arquivo(
@@ -201,6 +204,7 @@ class Prova {
       senha: provaDb.senha,
       idDownload: provaDb.idDownload,
       quantidadeRespostaSincronizacao: provaDb.quantidadeRespostaSincronizacao,
+      ultimaAlteracao: provaDb.ultimaAlteracao,
     );
 
     return prova;
@@ -209,7 +213,7 @@ class Prova {
   static salvaProvaCache(Prova prova) async {
     AppDatabase db = GetIt.I.get();
 
-    await db.inserirOuAtualizarProva(
+    await db.provaDao.inserirOuAtualizar(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
@@ -227,6 +231,7 @@ class Prova {
         senha: prova.senha,
         idDownload: prova.idDownload,
         quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
+        ultimaAlteracao: prova.ultimaAlteracao,
       ),
     );
   }
