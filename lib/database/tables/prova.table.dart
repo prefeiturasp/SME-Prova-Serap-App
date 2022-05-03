@@ -21,7 +21,7 @@ class ProvasDb extends Table {
   IntColumn get idDownload => integer().nullable()();
 
   IntColumn get quantidadeRespostaSincronizacao => integer()();
-  DateTimeColumn get ultimaAlteracao => dateTime()();
+  DateTimeColumn get ultimaAlteracao => dateTime().withDefault(currentDateAndTime)();
 
   @override
   Set<Column> get primaryKey => {id};
