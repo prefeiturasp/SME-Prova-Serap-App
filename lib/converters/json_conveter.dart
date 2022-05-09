@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
 import 'package:appserap/dtos/admin_questao_detalhes.response.dto.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
@@ -18,6 +21,7 @@ import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.response.dto.dart';
 import 'package:appserap/dtos/versao_atualizacao.respose.dto.dart';
+import 'package:brotli/brotli.dart';
 import 'package:chopper/chopper.dart' hide Post;
 import 'package:logging/logging.dart';
 
@@ -54,6 +58,21 @@ class JsonSerializableConverter extends JsonConverter {
       return _decodeMap<T>(entity as Map<String, dynamic>);
     }
     return entity;
+  }
+
+  @override
+  Response decodeJson<BodyType, InnerType>(Response response) {
+    final supportedContentTypes = [jsonHeaders, jsonApiHeaders];
+    final contentType = response.headers[contentTypeKey];
+    final contentEncoding = response.headers[HttpHeaders.contentEncodingHeader];
+
+    if (supportedContentTypes.contains(contentType) && contentEncoding?.contains("br") == true) {
+      final body = brotli.decodeToString(response.bodyBytes);
+      final newResponse = response.copyWith(body: json.decode(body));
+      return newResponse;
+    }
+
+    return super.decodeJson(response);
   }
 
   @override
