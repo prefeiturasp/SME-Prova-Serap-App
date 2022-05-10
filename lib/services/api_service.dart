@@ -58,7 +58,7 @@ class ApiService {
         AutenticacaoAdminService.create(),
       ],
       interceptors: [
-        CompressaoResponseInterceptor(),
+        CompressaoInterceptor(),
         CustomAuthInterceptor(),
         // CurlInterceptor(),
         // HttpLoggingInterceptor(),

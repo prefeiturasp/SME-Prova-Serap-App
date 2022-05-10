@@ -52,8 +52,6 @@ dependencies:
 
   # Http api
   chopper: ^4.0.5
-  es_compression: ^2.0.5
-  brotli: ^0.5.0
 
   # Injecao de dependencias
   get_it: ^7.2.0
