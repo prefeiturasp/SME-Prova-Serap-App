@@ -36,7 +36,7 @@ dependencies:
   
 
   # Conexão
-  cross_connectivity: ^3.0.3
+  cross_connectivity: ^3.0.5
   # connectivity_plus: ^1.1.0
   retry: ^3.1.0
 

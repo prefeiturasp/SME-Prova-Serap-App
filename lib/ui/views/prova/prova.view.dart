@@ -37,7 +37,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
   @override
   void initState() {
     store.isLoading = true;
-    store.setup(provaStore);
 
     var provas = ServiceLocator.get<HomeStore>().provas;
 
@@ -53,6 +52,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
         ServiceLocator.get<AppRouter>().router.go("/prova/${provaStore.id}/questao/0");
       });
     });
+
+    store.setup(provaStore);
 
     super.initState();
   }

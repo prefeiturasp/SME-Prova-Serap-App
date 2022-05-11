@@ -4,14 +4,16 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
-import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:drift/drift.dart';
 
+import '../models/prova_aluno.model.dart';
+import '../models/resposta_prova.model.dart';
 import 'daos/alternativa.dao.dart';
 import 'daos/arquivo.dao.dart';
 import 'daos/arquivo_audio.dao.dart';
 import 'daos/contexto_prova.dao.dart';
 import 'daos/prova.dao.dart';
+import 'daos/prova_aluno.dao.dart';
 import 'daos/questao.dao.dart';
 import 'daos/resposta_prova.dao.dart';
 import 'tables/alternativa.table.dart';
@@ -21,6 +23,7 @@ import 'tables/arquivo_video.table.dart';
 import 'tables/contexto_prova.table.dart';
 import 'tables/download_prova.table.dart';
 import 'tables/prova.table.dart';
+import 'tables/prova_aluno.table.dart';
 import 'tables/questao.table.dart';
 import 'tables/resposta_prova.table.dart';
 
@@ -39,6 +42,7 @@ part 'app.database.g.dart';
     ArquivosAudioDb,
     DownloadProvasDb,
     RespostaProvaTable,
+    ProvaAlunoTable,
   ],
   daos: [
     ArquivosVideosDao,
@@ -50,13 +54,14 @@ part 'app.database.g.dart';
     ContextoProvaDao,
     ProvaDao,
     RespostaProvaDao,
+    ProvaAlunoDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -95,61 +100,29 @@ class AppDatabase extends _$AppDatabase {
         if (from == 11) {
           await m.addColumn(provasDb, provasDb.ultimaAlteracao);
         }
+        if (from == 12) {
+          await m.createTable(provaAlunoTable);
+        }
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = 1;');
       });
 
   Future limpar() {
     return transaction(() async {
-      await customUpdate("delete from alternativas_db;");
+      // await customUpdate("delete from alternativas_db;");
 
-      await customUpdate("delete from questoes_db;");
+      // await customUpdate("delete from questoes_db;");
 
-      await customUpdate("delete from arquivos_db;");
+      // await customUpdate("delete from arquivos_db;");
 
-      await customUpdate("delete from contextos_prova_db;");
+      // await customUpdate("delete from contextos_prova_db;");
 
-      await customUpdate("delete from arquivos_video_db;");
-      await customUpdate("delete from arquivos_audio_db;");
+      // await customUpdate("delete from arquivos_video_db;");
+      // await customUpdate("delete from arquivos_audio_db;");
+
+      // await customUpdate("delete from provas_db;");
 
       await customUpdate("delete from download_provas_db;");
-
-      await customUpdate("delete from provas_db;");
-    });
-  }
-
-  Future limparPorProvaId(int provaId) {
-    return transaction(() async {
-      await customUpdate("delete from alternativas_db where prova_id = ?;", variables: [
-        Variable.withInt(provaId),
-      ]);
-
-      await customUpdate("delete from questoes_db where prova_id = ?;", variables: [
-        Variable.withInt(provaId),
-      ]);
-
-      await customUpdate("delete from arquivos_db where prova_id = ?;", variables: [
-        Variable.withInt(provaId),
-      ]);
-
-      await customUpdate("delete from contextos_prova_db where prova_id = ?;", variables: [
-        Variable.withInt(provaId),
-      ]);
-
-      await customUpdate("delete from arquivos_video_db where prova_id = ?;", variables: [
-        Variable.withInt(provaId),
-      ]);
-      await customUpdate("delete from arquivos_audio_db where prova_id = ?;", variables: [
-        Variable.withInt(provaId),
-      ]);
-
-      await customUpdate("delete from download_provas_db where prova_id = ?;", variables: [
-        Variable.withInt(provaId),
-      ]);
-
-      await customUpdate("delete from provas_db where id = ?;", variables: [
-        Variable.withInt(provaId),
-      ]);
     });
   }
 }

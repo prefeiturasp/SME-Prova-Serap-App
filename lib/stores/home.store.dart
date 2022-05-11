@@ -1,4 +1,7 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/models/prova_aluno.model.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:chopper/src/response.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -12,7 +15,6 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
-import 'package:appserap/utils/provas.util.dart';
 
 part 'home.store.g.dart';
 
@@ -28,12 +30,13 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   @action
   carregarProvas() async {
     carregando = true;
+    String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
 
     Map<int, ProvaStore> provasStore = {};
 
     AppDatabase db = GetIt.I.get();
 
-    List<ProvaDb> provasDb = await db.provaDao.listarTodos();
+    List<ProvaDb> provasDb = await db.provaDao.listarTodosPorAluno(codigoEOL);
     if (provasDb.isNotEmpty) {
       List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
 
@@ -56,7 +59,14 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
         if (response.isSuccessful) {
           var provasResponse = response.body!;
 
+          await db.provaAlunoDao.apagarPorUsuario(codigoEOL);
+
           for (var provaResponse in provasResponse) {
+            await db.provaAlunoDao.inserirOuAtualizar(ProvaAluno(
+              codigoEOL: codigoEOL,
+              provaId: provaResponse.id,
+            ));
+
             var prova = Prova(
               id: provaResponse.id,
               descricao: provaResponse.descricao,
@@ -102,11 +112,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
           var idsRemote = provasResponse.map((e) => e.id).toList();
 
-          for (var provaDb in provasDb) {
-            if (!idsRemote.contains(provaDb.id)) {
-              await removerProvaLocal(provasStore[provaDb.id]!);
-            }
-          }
           provasStore.removeWhere((idProva, prova) => !idsRemote.contains(idProva));
         }
       } catch (e, stacktrace) {

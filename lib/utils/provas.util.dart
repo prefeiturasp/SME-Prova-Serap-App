@@ -1,11 +1,6 @@
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/stores/usuario.store.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:appserap/stores/prova.store.dart';
-
-import '../main.ioc.dart';
 
 List<int> getProvasCache() {
   SharedPreferences prefs = GetIt.I.get();
@@ -25,20 +20,4 @@ Future<List<int>> getProvasCacheIds() async {
     return provas;
   }
   return [];
-}
-
-removerProvaLocal(ProvaStore provaStore) async {
-  AppDatabase db = GetIt.I.get();
-
-  await db.limparPorProvaId(provaStore.prova.id);
-
-  // Remove prova do cache
-  SharedPreferences prefs = ServiceLocator.get();
-  await prefs.remove('prova_${provaStore.prova.id}');
-
-  // Remove respostas da prova do cache
-  for (var questoes in provaStore.prova.questoes) {
-    var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
-    await prefs.remove('resposta_${codigoEOL}_${questoes.id}');
-  }
 }

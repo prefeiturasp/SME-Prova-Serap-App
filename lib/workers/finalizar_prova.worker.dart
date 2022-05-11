@@ -81,9 +81,6 @@ class FinalizarProvaWorker with Worker, Loggable {
         info('Sincronizando ${respostasProva.length} respostas');
         await SincronizarRespostasWorker().sincronizar(respostasProva);
 
-        // Remove prova do banco local
-        await db.provaDao.deleteByProva(prova.id);
-
         // Remove respostas do banco local
         await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
       } catch (e) {

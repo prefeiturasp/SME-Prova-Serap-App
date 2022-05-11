@@ -6,7 +6,6 @@ import 'package:appserap/main.route.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
-import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -84,7 +83,6 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     }
 
     await _limparDadosLocais();
-    await _apagarArquivos(db);
 
     await db.respostaProvaDao.removerSincronizadas();
 
@@ -103,26 +101,5 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   _limparDadosLocais() async {
     SharedPreferences prefs = GetIt.I.get();
     await prefs.clear();
-  }
-
-  Future<void> _apagarArquivos(AppDatabase db) async {
-    await _apagarArquivosVideos(db);
-    await _apagarArquivosAudios(db);
-  }
-
-  _apagarArquivosVideos(AppDatabase db) async {
-    var arquivos = await db.arquivosVideosDao.listarTodos();
-
-    for (var arquivo in arquivos) {
-      await apagarArquivo(arquivo.path);
-    }
-  }
-
-  _apagarArquivosAudios(AppDatabase db) async {
-    var arquivos = await db.arquivosAudioDao.listarTodos();
-
-    for (var arquivo in arquivos) {
-      await apagarArquivo(arquivo.path);
-    }
   }
 }

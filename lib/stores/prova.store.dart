@@ -417,9 +417,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
             case 411:
               AppDatabase db = GetIt.I.get();
 
-              // Remove prova do banco local
-              await db.provaDao.deleteByProva(prova.id);
-
               // Remove respostas do banco local
               await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
 
