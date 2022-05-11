@@ -1,4 +1,3 @@
-import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:mobx/mobx.dart';
@@ -15,19 +14,9 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
   @observable
   bool isLoading = true;
 
-  setup(ProvaStore provaStore) async {
+  setup(ProvaStore provaStore) {
     this.provaStore = provaStore;
-    await configurarProva();
   }
 
-  configurarProva() async {
-    if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
-      await provaStore.iniciarProva();
-    } else {
-      await provaStore.continuarProva();
-    }
-  }
-
-  void dispose() {
-  }
+  void dispose() {}
 }

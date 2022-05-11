@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/main.ioc.dart';
@@ -14,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqlite_viewer/sqlite_viewer.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool popView;
@@ -83,10 +87,29 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       leading: leading ?? (mostrarBotaoVoltar ? _buildBotaoVoltarLeading(context) : null),
       actions: [
+        _buildSqlView(context),
         _buildAlterarFonte(context),
         exibirSair ? _buildBotaoSair(context) : Container(),
       ],
     );
+  }
+
+  _buildSqlView(context) {
+    return FutureBuilder<Directory>(
+        future: getApplicationDocumentsDirectory(),
+        builder: (context, snapshot) {
+          return IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => DatabaseList(
+                            dbPath: snapshot.data!.path,
+                          )));
+            },
+            icon: Icon(Icons.data_usage),
+          );
+        });
   }
 
   Widget? _buildBotaoVoltarLeading(BuildContext context) {

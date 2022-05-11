@@ -3,7 +3,7 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/job.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/managers/download.manager.dart';
+import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -46,17 +46,20 @@ class BaixarProvaJob with Job, Loggable {
       }
 
       info('Encontrado ${idsToDownload.length} provas para baixar em segundo plano');
+      for (var idProva in idsToDownload) {
+        ProvaResponseDTO provaResumo = provasRemoto.firstWhere((element) => element.id == idProva);
+        info('Prova ID: ${provaResumo.id} - ${provaResumo.descricao}');
+      }
 
       for (var idProva in idsToDownload) {
         ProvaResponseDTO provaResumo = provasRemoto.firstWhere((element) => element.id == idProva);
         info('Iniciando download prova $idProva - ${provaResumo.descricao}');
         await _saveProva(provaResumo);
 
-        GerenciadorDownload gerenciadorDownload = GerenciadorDownload(idProva: idProva);
+        DownloadManagerStore gerenciadorDownload = DownloadManagerStore(provaId: idProva);
 
-        await gerenciadorDownload.configure();
+        await gerenciadorDownload.iniciarDownload();
 
-        await gerenciadorDownload.startDownload();
         info('Download concluido');
       }
     } catch (e, stacktrace) {
@@ -80,6 +83,7 @@ class BaixarProvaJob with Job, Loggable {
       questoes: [],
       senha: provaResponse.senha,
       quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
+      ultimaAlteracao: provaResponse.ultimaAlteracao,
     );
 
     await Prova.salvaProvaCache(prova);

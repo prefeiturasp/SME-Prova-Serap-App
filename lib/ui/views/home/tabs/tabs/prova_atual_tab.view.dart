@@ -477,7 +477,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             child: Row(
               children: [
                 Texto(
-                  "Pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
+                  "Erro ao baixar prova - ",
                   color: TemaUtil.vermelhoErro,
                   bold: true,
                   texStyle: TemaUtil.temaTextoErroNegrito.copyWith(
@@ -486,7 +486,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                   ),
                 ),
                 Texto(
-                  " - Sem conexão com a internet",
+                  "pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
                   color: TemaUtil.vermelhoErro,
                   texStyle: TemaUtil.temaTextoErro.copyWith(
                     fontSize: temaStore.tTexto12,

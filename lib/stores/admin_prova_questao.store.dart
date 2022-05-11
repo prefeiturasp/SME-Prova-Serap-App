@@ -44,7 +44,6 @@ abstract class _AdminProvaQuestaoViewStoreBase with Store, Loggable {
           fine("Erro ao carregar detalhes da questão: ${res.error}");
         }
       },
-      retryIf: (e) => e is Exception,
       onRetry: (e) {
         fine('[Prova $idProva] - Tentativa de carregamento detalhes da questão $idQuestao - ${e.toString()}');
       },

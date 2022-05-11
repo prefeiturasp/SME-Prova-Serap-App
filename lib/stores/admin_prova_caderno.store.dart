@@ -26,7 +26,6 @@ abstract class _AdminProvaCadernoViewStoreBase with Store, Loggable {
           cadernos = res.body!.cadernos.asObservable();
         }
       },
-      retryIf: (e) => e is Exception,
       onRetry: (e) {
         fine('[Prova $idProva] - Tentativa de carregamento lista de cadernos - ${e.toString()}');
       },

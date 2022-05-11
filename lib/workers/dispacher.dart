@@ -16,6 +16,7 @@ callbackDispatcher() {
     print("Native called background task: $task");
 
     try {
+      registerPluginsForIsolate();
       setupLogging();
       await setupAppConfig();
       await DependenciasIoC().setup();

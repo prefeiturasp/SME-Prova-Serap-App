@@ -32,7 +32,6 @@ abstract class _AdminProvaResumoViewStoreBase with Store, Loggable {
           resumo = res.body!.asObservable();
         }
       },
-      retryIf: (e) => e is Exception,
       onRetry: (e) {
         fine('[Prova $idProva] - Tentativa de carregamento Resumo Prova - ${e.toString()}');
       },

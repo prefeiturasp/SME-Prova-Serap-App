@@ -31,7 +31,6 @@ linter:
     implementation_imports: false
     prefer_const_constructors_in_immutables: false
     constant_identifier_names: false
-    body_might_complete_normally_nullable: false
 
 
 # Additional information about this file can be found at
@@ -40,3 +39,6 @@ linter:
 analyzer:
   exclude:
     - "**/*.g.dart"
+    - "**/*.chopper.dart"
+  errors:
+    body_might_complete_normally_nullable: ignore

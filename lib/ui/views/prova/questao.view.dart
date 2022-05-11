@@ -57,6 +57,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
     configure().then((_) {
       store.isLoading = false;
+      provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
     });
   }
 

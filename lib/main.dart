@@ -1,4 +1,6 @@
 // ignore_for_file: avoid_print
+import 'dart:io';
+
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/utils/app_config.util.dart';
@@ -14,6 +16,10 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
+import 'package:path_provider_android/path_provider_android.dart';
+import 'package:path_provider_ios/path_provider_ios.dart';
+import 'package:shared_preferences_android/shared_preferences_android.dart';
+import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 
 import 'utils/firebase.util.dart';
 
@@ -31,7 +37,19 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
+registerPluginsForIsolate() {
+  if (Platform.isAndroid) {
+    SharedPreferencesAndroid.registerWith();
+    PathProviderAndroid.registerWith();
+  }
+  if (Platform.isIOS) {
+    SharedPreferencesIOS.registerWith();
+    PathProviderIOS.registerWith();
+  }
+}
+
 configure() async {
+  print('Configurando App');
   setupDateFormating();
   setupLogging();
   registerFonts();
@@ -91,7 +109,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           routeInformationParser: goRouter.routeInformationParser,
           routerDelegate: goRouter.routerDelegate,
-          debugShowCheckedModeBanner: kDebugMode,
+          debugShowCheckedModeBanner: false,
           theme: ThemeData.light().copyWith(
             appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
             textButtonTheme: TextButtonThemeData(
