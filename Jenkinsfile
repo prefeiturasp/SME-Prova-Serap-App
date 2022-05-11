@@ -43,11 +43,11 @@ pipeline {
 	  ]) {
             sh 'env'
             sh 'cp ${APPKEYJKS} ~/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
-            sh 'cat ${WORKSPACE}/android/key.properties | grep keyPassword | cut -d\'=\' -f2 > /home/cirrus/key.pass'
+            sh 'cat ${WORKSPACE}/android/key.properties | grep keyPassword | cut -d\'=\' -f2 > ~/key.pass'
             sh 'cd ${WORKSPACE} && mkdir config && cp $APPCONFIGDEV config/app_config.json'
             sh 'cp $GOOGLEJSONDEV android/app/google-services.json'
             sh "flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release"
-            sh "cd ~/ && ./android-sdk-linux/build-tools/29.0.2/apksigner sign --ks ~/key.jks --ks-pass file:/home/cirrus/key.pass ${WORKSPACE}/build/app/outputs/apk/release/app-release.apk"
+            sh "cd ~/ && ./android-sdk-linux/build-tools/29.0.2/apksigner sign --ks ~/key.jks --ks-pass file:~/key.pass ${WORKSPACE}/build/app/outputs/apk/release/app-release.apk"
             stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
           }
         }
