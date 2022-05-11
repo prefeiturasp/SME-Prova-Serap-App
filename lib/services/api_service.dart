@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:appserap/converters/error_converter.dart';
 import 'package:appserap/converters/json_conveter.dart';
 import 'package:appserap/interceptors/autenticacao.interceptor.dart';
+import 'package:appserap/interceptors/compressao.interceptor.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/services/rest/admin.service.dart';
 import 'package:appserap/services/rest/auth.admin.service.dart';
@@ -55,6 +56,7 @@ class ApiService {
         AutenticacaoAdminService.create(),
       ],
       interceptors: [
+        CompressaoInterceptor(),
         CustomAuthInterceptor(),
         // CurlInterceptor(),
         // HttpLoggingInterceptor(),

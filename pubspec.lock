@@ -57,6 +57,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
+  brotli:
+    dependency: "direct main"
+    description:
+      name: brotli
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
   build:
     dependency: transitive
     description:
@@ -323,6 +330,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  device_information:
+    dependency: "direct main"
+    description:
+      name: device_information
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
   dio:
     dependency: transitive
     description:
@@ -351,6 +365,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  es_compression:
+    dependency: "direct main"
+    description:
+      name: es_compression
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.5"
   fake_async:
     dependency: transitive
     description:
@@ -954,6 +975,41 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.4.0"
+  permission_handler:
+    dependency: "direct main"
+    description:
+      name: permission_handler
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "9.2.0"
+  permission_handler_android:
+    dependency: transitive
+    description:
+      name: permission_handler_android
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "9.0.2+1"
+  permission_handler_apple:
+    dependency: transitive
+    description:
+      name: permission_handler_apple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "9.0.4"
+  permission_handler_platform_interface:
+    dependency: transitive
+    description:
+      name: permission_handler_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.7.0"
+  permission_handler_windows:
+    dependency: transitive
+    description:
+      name: permission_handler_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   petitparser:
     dependency: transitive
     description:
