@@ -144,6 +144,10 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
   }
 
   informarVersao() async {
+    if (kIsWeb) {
+      return;
+    }
+
     try {
       PermissionStatus status = await Permission.contacts.status;
 
@@ -162,7 +166,9 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
 
         if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
           String imei = await DeviceInformation.deviceIMEINumber;
-          info('IMEI: $imei');
+
+          info("Informando versão...");
+          info("IMEI: $imei Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
 
           await GetIt.I.get<ApiService>().versao.informarVersao(
                 chaveAPI: AppConfigReader.getChaveApi(),
@@ -177,7 +183,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
         }
       }
     } on PlatformException catch (e) {
-      // TODO
+      severe("Erro ao informar versão: ${e.message}");
     }
   }
 }

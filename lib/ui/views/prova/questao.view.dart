@@ -148,6 +148,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       }
 
       return Scaffold(
+        backgroundColor: backgroundColor,
         body: Column(
           children: [
             TempoExecucaoWidget(provaStore: provaStore),
