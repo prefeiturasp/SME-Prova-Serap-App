@@ -6,3 +6,5 @@ export 'rest/alternativa.service.dart';
 export 'rest/arquivo.service.dart';
 export 'rest/versao.service.dart';
 export 'rest/questao_resposta.service.dart';
+export 'rest/orientacao_inicial.service.dart';
+export 'rest/contexto_prova.service.dart';

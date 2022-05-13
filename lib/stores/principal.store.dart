@@ -1,16 +1,23 @@
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'principal.store.g.dart';
 
 class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
-abstract class _PrincipalStoreBase with Store {
-  final _versaoService = GetIt.I.get<ApiService>().versao;
+abstract class _PrincipalStoreBase with Store, Loggable {
   final usuario = GetIt.I.get<UsuarioStore>();
 
   @observable
@@ -20,6 +27,7 @@ abstract class _PrincipalStoreBase with Store {
 
   setup() async {
     _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
+    await obterVersaoDoApp();
   }
 
   void dispose() {
@@ -45,17 +53,53 @@ abstract class _PrincipalStoreBase with Store {
 
   @action
   Future<void> obterVersaoDoApp() async {
-    var versaoAtual = await _versaoService.getVersao();
-
-    //var prefs = await SharedPreferences.getInstance();
-    versaoApp = versaoAtual.body!;
-    // prefs.getString('versaoApp');
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    versaoApp = "Versão ${packageInfo.version}.${packageInfo.buildNumber}";
   }
 
   @action
   Future<void> sair() async {
+    AppDatabase db = GetIt.I.get();
+
+    try {
+      List<ProvaDb> provas = await db.provaDao.listarTodos();
+
+      if (provas.isNotEmpty) {
+        List<int> downlodIds = provas
+            .where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO)
+            .toList()
+            .map((element) => element.idDownload!)
+            .toList();
+
+        await ServiceLocator.get<ApiService>().download.removerDownloads(
+              chaveAPI: AppConfigReader.getChaveApi(),
+              ids: downlodIds,
+            );
+      }
+    } catch (e, stack) {
+      severe('Erro ao remover downlodas');
+      severe(e);
+      severe(stack);
+    }
+
+    await _limparDadosLocais();
+
+    await db.respostaProvaDao.removerSincronizadas();
+
+    await db.limpar();
+
+    bool eraAdimin = usuario.isAdmin;
+
+    usuario.dispose();
+
+    if (eraAdimin) {
+      await launch("https://hom-serap.sme.prefeitura.sp.gov.br/", webOnlyWindowName: '_self');
+      ServiceLocator.get<AppRouter>().router.go("/login");
+    }
+  }
+
+  _limparDadosLocais() async {
     SharedPreferences prefs = GetIt.I.get();
     await prefs.clear();
-    usuario.dispose();
   }
 }

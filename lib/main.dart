@@ -1,19 +1,25 @@
 // ignore_for_file: avoid_print
+import 'dart:io';
 
-import 'package:asuka/asuka.dart' as asuka;
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.dart';
+import 'package:appserap/utils/app_config.util.dart';
+import 'package:appserap/utils/notificacao.util.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/workers/dispacher.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
-
-import 'package:appserap/main.ioc.dart';
-import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
-import 'package:appserap/utils/app_config.util.dart';
-import 'package:appserap/utils/notificacao.util.dart';
-import 'package:appserap/workers/dispacher.dart';
+import 'package:path_provider_android/path_provider_android.dart';
+import 'package:path_provider_ios/path_provider_ios.dart';
+import 'package:shared_preferences_android/shared_preferences_android.dart';
+import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 
 import 'utils/firebase.util.dart';
 
@@ -28,18 +34,22 @@ Future<void> main() async {
 
   await setupFirebase();
 
-  // await SentryFlutter.init(
-  //   (options) => options
-  //     ..dsn = AppConfigReader.getSentryDsn()
-  //     ..environment = AppConfigReader.getEnvironment()
-  //     ..debug = true
-  //     ..diagnosticLevel = SentryLevel.warning,
-  //   appRunner: () => runApp(MyApp()),
-  // );
   runApp(MyApp());
 }
 
+registerPluginsForIsolate() {
+  if (Platform.isAndroid) {
+    SharedPreferencesAndroid.registerWith();
+    PathProviderAndroid.registerWith();
+  }
+  if (Platform.isIOS) {
+    SharedPreferencesIOS.registerWith();
+    PathProviderIOS.registerWith();
+  }
+}
+
 configure() async {
+  print('Configurando App');
   setupDateFormating();
   setupLogging();
   registerFonts();
@@ -47,6 +57,8 @@ configure() async {
   await setupAppConfig();
 
   await DependenciasIoC().setup();
+
+  TelaAdaptativaUtil().setup();
 }
 
 Future setupAppConfig() async {
@@ -60,7 +72,12 @@ Future setupAppConfig() async {
 }
 
 void setupLogging() {
-  Logger.root.level = Level.FINER;
+  if (kDebugMode) {
+    Logger.root.level = Level.FINE;
+  } else {
+    Logger.root.level = Level.WARNING;
+  }
+
   Logger.root.onRecord.listen((rec) {
     print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
   });
@@ -68,8 +85,8 @@ void setupLogging() {
 
 void registerFonts() {
   LicenseRegistry.addLicense(() async* {
-    final license = await rootBundle.loadString('google_fonts/OFL.txt');
-    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+    final license = await rootBundle.loadString('fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['fonts'], license);
   });
 }
 
@@ -81,16 +98,31 @@ setupDateFormating() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: asuka.builder,
-      navigatorObservers: [asuka.asukaHeroController],
-      debugShowCheckedModeBanner: kDebugMode,
-      theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+    return ScreenUtilInit(
+      designSize: Size(
+        960,
+        600,
       ),
-      locale: Locale('pt', 'BR'),
-      home: SplashScreenView(),
-      scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+      builder: (context) {
+        final GoRouter goRouter = ServiceLocator.get<AppRouter>().router;
+
+        return MaterialApp.router(
+          routeInformationParser: goRouter.routeInformationParser,
+          routerDelegate: goRouter.routerDelegate,
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData.light().copyWith(
+            appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
+            textButtonTheme: TextButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(TemaUtil.laranja01),
+              ),
+            ),
+          ),
+          locale: Locale('pt', 'BR'),
+          scaffoldMessengerKey: NotificacaoUtil.messengerKey,
+          onGenerateTitle: (context) => "SERAp Estudantes",
+        );
+      },
     );
   }
 }

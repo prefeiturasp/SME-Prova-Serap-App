@@ -3,11 +3,16 @@ import 'dart:io';
 import 'package:appserap/converters/error_converter.dart';
 import 'package:appserap/converters/json_conveter.dart';
 import 'package:appserap/interceptors/autenticacao.interceptor.dart';
+import 'package:appserap/interceptors/compressao.interceptor.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/services/rest/versao.service.dart';
+import 'package:appserap/services/rest/admin.service.dart';
+import 'package:appserap/services/rest/auth.admin.service.dart';
+import 'package:appserap/services/rest/usuario.service.dart';
 import 'package:chopper/chopper.dart';
 import 'package:http/io_client.dart' as httpio;
 import 'package:http/http.dart' as http;
+
+import 'rest/download.service.dart';
 
 class ConnectionOptions {
   final String baseUrl;
@@ -43,8 +48,15 @@ class ApiService {
         ArquivoService.create(),
         VersaoService.create(),
         QuestaoRespostaService.create(),
+        UsuarioService.create(),
+        OrientacaoInicialService.create(),
+        ContextoProvaService.create(),
+        DownloadService.create(),
+        AdminService.create(),
+        AutenticacaoAdminService.create(),
       ],
       interceptors: [
+        CompressaoInterceptor(),
         CustomAuthInterceptor(),
         // CurlInterceptor(),
         // HttpLoggingInterceptor(),
@@ -61,4 +73,10 @@ class ApiService {
   ArquivoService get arquivo => chopper.getService<ArquivoService>();
   VersaoService get versao => chopper.getService<VersaoService>();
   QuestaoRespostaService get questaoResposta => chopper.getService<QuestaoRespostaService>();
+  UsuarioService get usuario => chopper.getService<UsuarioService>();
+  OrientacaoInicialService get orientacoesIniciais => chopper.getService<OrientacaoInicialService>();
+  ContextoProvaService get contextoProva => chopper.getService<ContextoProvaService>();
+  DownloadService get download => chopper.getService<DownloadService>();
+  AdminService get admin => chopper.getService<AdminService>();
+  AutenticacaoAdminService get adminAuth => chopper.getService<AutenticacaoAdminService>();
 }

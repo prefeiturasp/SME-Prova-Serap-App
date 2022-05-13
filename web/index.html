@@ -21,33 +21,60 @@
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="appserap">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <meta name="apple-mobile-web-app-title" content="SERAp Estudantes">
 
-  <title>appserap</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" type="text/css" href="splash/style.css">
 
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-messaging.js"></script>
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="mask-icon" href="icons/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="icons/favicon.ico">
+  <meta name="msapplication-TileColor" content="#2b5797">
+  <meta name="msapplication-config" content="icons/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>SERAp Estudantes</title>
+  
+  <link rel="stylesheet" type="text/css" href="splash/style.css">
+  <script src="sql-wasm.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+  
+  <script src="assets/packages/flutter_sound_web/js/flutter_sound/flutter_sound.js"></script>
+  <script src="assets/packages/flutter_sound_web/js/flutter_sound/flutter_sound_player.js"></script>
+  <script src="assets/packages/flutter_sound_web/js/flutter_sound/flutter_sound_recorder.js"></script>
+  <script src="assets/packages/flutter_sound_web/js/howler/howler.js"></script>
 </head>
 
 <body style="position: fixed; inset: 0px; overflow: hidden; padding: 0px; margin: 0px; user-select: none; touch-action: none; font: 14px sans-serif; color: red;">
 
-  
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-85250794-18"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-85250794-18');
+  </script>
+
   <script>
     var firebaseConfig = {
-      apiKey: "AIzaSyCKw1XMMDkjP0VcruPyOIgxeYNmnfkDGoQ",
-      authDomain: "test-app-bd32c.firebaseapp.com",
-      projectId: "test-app-bd32c",
-      storageBucket: "test-app-bd32c.appspot.com",
-      messagingSenderId: "522768055060",
-      appId: "1:522768055060:web:41fef8e1bc6b2936076001",
-      measurementId: "G-SMQZN4K6NX"
+      apiKey: "AIzaSyCtMmNGb4HdXkFzRZTFXmW5Npwk4j1p-mc",
+      authDomain: "prod-appserap.firebaseapp.com",
+      projectId: "prod-appserap",
+      storageBucket: "prod-appserap.appspot.com",
+      messagingSenderId: "948771905844",
+      appId: "1:948771905844:web:084326ba6e6a46a4788561",
+      measurementId: "G-S3WSMCJ3ZD"
     };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
   </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:

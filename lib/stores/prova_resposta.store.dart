@@ -1,13 +1,15 @@
-import 'dart:convert';
-
+import 'package:appserap/database/app.database.dart';
+import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/services/api_service.dart';
+import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.ioc.dart';
 
@@ -17,174 +19,161 @@ class ProvaRespostaStore = _ProvaRespostaStoreBase with _$ProvaRespostaStore;
 
 abstract class _ProvaRespostaStoreBase with Store, Loggable {
   final _service = GetIt.I.get<ApiService>().questaoResposta;
+  final _serviceProva = GetIt.I.get<ApiService>().prova;
+
+  final AppDatabase db = ServiceLocator.get();
 
   @observable
   int idProva;
 
-  _ProvaRespostaStoreBase({required this.idProva}) {
-    respostasLocal = carregaRespostasCache().asObservable();
-  }
+  _ProvaRespostaStoreBase({required this.idProva});
 
   @observable
-  ObservableMap<int, ProvaResposta> respostasSalvas = <int, ProvaResposta>{}.asObservable();
+  String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
 
   @observable
-  ObservableMap<int, ProvaResposta> respostasLocal = <int, ProvaResposta>{}.asObservable();
+  ObservableMap<int, RespostaProva> respostasLocal = <int, RespostaProva>{}.asObservable();
 
   @action
   Future<void> carregarRespostasServidor([Prova? prova]) async {
+    respostasLocal = (await carregarRespostasLocal()).asObservable();
+
+    var connectionStatus = await Connectivity().checkConnectivity();
+    if (connectionStatus == ConnectivityStatus.none) {
+      return;
+    }
+
     fine('[Prova $idProva] - Carregando respostas da prova');
 
-    List<int> idsQuestao = [];
+    prova ??= await Prova.carregaProvaCache(idProva);
 
-    prova ??= Prova.carregaProvaCache(idProva);
+    try {
+      var respostaBanco = await _serviceProva.getRespostasPorProvaId(idProva: idProva);
 
-    if (prova != null) {
-      idsQuestao = prova.questoes.map((e) => e.id).toList();
-    }
-    for (var idQuestao in idsQuestao) {
-      try {
-        fine('[Prova $idProva] - (Questão ID $idQuestao) Carregando resposta');
-        var respostaBanco = await _service.getRespostaPorQuestaoId(questaoId: idQuestao);
-        if (respostaBanco.isSuccessful) {
-          var body = respostaBanco.body!;
+      if (respostaBanco.isSuccessful) {
+        var questoesResponse = respostaBanco.body!;
 
-          respostasSalvas[idQuestao] = ProvaResposta(
-            questaoId: idQuestao,
+        for (var questaoResponse in questoesResponse) {
+          var entity = RespostaProva(
+            codigoEOL: codigoEOL,
+            provaId: idProva,
+            questaoId: questaoResponse.questaoId,
+            alternativaId: questaoResponse.alternativaId,
+            resposta: questaoResponse.resposta,
+            dataHoraResposta: questaoResponse.dataHoraResposta.toLocal(),
             sincronizado: true,
-            alternativaId: body.alternativaId,
-            resposta: body.resposta,
-            dataHoraResposta: body.dataHoraResposta.toLocal(),
           );
+
+          await db.respostaProvaDao.inserirOuAtualizar(entity);
+          respostasLocal[questaoResponse.questaoId] = entity;
 
           finer(
-            "[Prova $idProva] - (Questão ID $idQuestao) Resposta Banco Questao ${body.alternativaId} | ${body.resposta}",
+            "[Prova $idProva] - (Questão ID ${questaoResponse.questaoId}) Resposta Remota ${questaoResponse.alternativaId} | ${questaoResponse.resposta}",
           );
         }
-      } catch (e, stack) {
-        if (!e.toString().contains("but got one of type 'String'") &&
-            !e.toString().contains("type 'String' is not a subtype of type")) {
-          severe(e);
-          severe(stack);
-        } else {
-          info('[Prova $idProva] - (Questão ID $idQuestao) Sem resposta salva');
-        }
+
+        fine('[Prova $idProva] - ${questoesResponse.length} respostas carregadas do banco de dados remoto');
+      }
+    } catch (e, stack) {
+      if (!e.toString().contains("but got one of type 'String'") &&
+          !e.toString().contains("type 'String' is not a subtype of type")) {
+        severe(e);
+        severe(stack);
+      } else {
+        finer('[Prova $idProva] Sem respostas salva');
       }
     }
-
-    fine('[Prova $idProva] - ${respostasSalvas.length} respostas carregadas do banco de dados remoto');
   }
 
-  ProvaResposta? obterResposta(int questaoId) {
-    var respostaRemota = respostasSalvas[questaoId];
-    var respostaLocal = respostasLocal[questaoId];
-
-    if (respostaRemota != null && respostaLocal != null) {
-      if (respostaRemota.dataHoraResposta!.isBefore(respostaLocal.dataHoraResposta!)) {
-        return respostaLocal;
-      } else {
-        return respostaRemota;
-      }
-    }
-
-    return respostaRemota ?? respostaLocal;
+  RespostaProva? obterResposta(int questaoId) {
+    return respostasLocal[questaoId];
   }
 
   @action
-  sincronizarResposta() async {
-    //TODO carregar cache local
-
+  sincronizarResposta({bool force = false}) async {
     fine('[$idProva] - Sincronizando respostas para o servidor');
-    var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
+    var respostasNaoSincronizadas = await db.respostaProvaDao.obterTodasNaoSincronizadasPorCodigoEProva(
+      codigoEOL,
+      idProva,
+    );
 
-    for (MapEntry<int, ProvaResposta> item in respostasNaoSincronizadas) {
-      int idQuestao = item.key;
-      ProvaResposta resposta = item.value;
+    var prova = await Prova.carregaProvaCache(idProva);
+
+    if (respostasNaoSincronizadas.length == prova!.quantidadeRespostaSincronizacao || force) {
+      List<QuestaoRespostaDTO> respostas = [];
+
+      for (var resposta in respostasNaoSincronizadas) {
+        respostas.add(
+          QuestaoRespostaDTO(
+            alunoRa: codigoEOL,
+            questaoId: resposta.questaoId,
+            alternativaId: resposta.alternativaId,
+            resposta: resposta.resposta,
+            dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
+            tempoRespostaAluno: resposta.tempoRespostaAluno,
+          ),
+        );
+      }
 
       try {
         var response = await _service.postResposta(
-          questaoId: idQuestao,
-          alternativaId: resposta.alternativaId,
-          resposta: resposta.resposta,
-          dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
-          tempoRespostaAluno: resposta.tempoRespostaAluno,
+          chaveAPI: AppConfigReader.getChaveApi(),
+          respostas: respostas,
         );
 
         if (response.isSuccessful) {
-          fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
-
-          resposta.sincronizado = true;
+          for (var resposta in respostasNaoSincronizadas) {
+            fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
+            await db.respostaProvaDao.definirSincronizado(resposta, true);
+            respostasLocal[resposta.questaoId]!.sincronizado = true;
+          }
         }
       } catch (e) {
         severe(e);
       }
     }
-    fine('[$idProva] - Sincronização com o servidor servidor concluida');
 
-    salvarAllCache();
+    fine('[$idProva] - Sincronização com o servidor servidor concluida');
   }
 
   @action
-  definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) {
-    var resposta = ProvaResposta(
+  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) async {
+    var resposta = RespostaProva(
+      codigoEOL: codigoEOL,
+      provaId: idProva,
       questaoId: questaoId,
       alternativaId: alternativaId,
       resposta: textoResposta,
       sincronizado: false,
-      dataHoraResposta: DateTime.now(),
       tempoRespostaAluno: tempoQuestao,
+      dataHoraResposta: DateTime.now(),
     );
 
+    await db.respostaProvaDao.inserirOuAtualizar(resposta);
     respostasLocal[questaoId] = resposta;
-
-    salvarCache(resposta);
   }
 
   @action
-  definirTempoResposta(int questaoId, {int? tempoQuestao}) {
+  Future<void> definirTempoResposta(int questaoId, {int? tempoQuestao}) async {
     var resposta = obterResposta(questaoId);
 
     if (resposta != null) {
       resposta.sincronizado = false;
       resposta.tempoRespostaAluno = tempoQuestao;
-      salvarCache(resposta);
+
+      await db.respostaProvaDao.inserirOuAtualizar(resposta);
     } else {
-      definirResposta(questaoId, tempoQuestao: tempoQuestao);
+      await definirResposta(questaoId, tempoQuestao: tempoQuestao);
     }
   }
 
-  salvarAllCache() async {
-    List<Future<bool>> futures = [];
+  Future<Map<int, RespostaProva>> carregarRespostasLocal() async {
+    var respostasBanco = await db.respostaProvaDao.obterPorProvaIdECodigoEOL(idProva, codigoEOL);
 
-    for (var respostaLocal in respostasLocal.entries) {
-      futures.add(salvarCache(respostaLocal.value));
-    }
+    Map<int, RespostaProva> respostas = {};
 
-    await Future.wait(futures);
-  }
-
-  salvarCache(ProvaResposta resposta) async {
-    SharedPreferences _pref = GetIt.I.get();
-
-    return await _pref.setString(
-      'resposta_${resposta.questaoId}',
-      jsonEncode(resposta.toJson()),
-    );
-  }
-
-  Map<int, ProvaResposta> carregaRespostasCache() {
-    SharedPreferences _pref = ServiceLocator.get();
-
-    List<String> keysResposta = _pref.getKeys().toList().where((element) => element.startsWith('resposta_')).toList();
-
-    Map<int, ProvaResposta> respostas = {};
-
-    if (keysResposta.isNotEmpty) {
-      for (var keyResposta in keysResposta) {
-        var provaResposta = ProvaResposta.fromJson(jsonDecode(_pref.getString(keyResposta)!));
-
-        respostas[provaResposta.questaoId] = provaResposta;
-      }
+    for (var item in respostasBanco) {
+      respostas[item.questaoId] = item;
     }
 
     return respostas;

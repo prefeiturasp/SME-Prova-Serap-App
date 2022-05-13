@@ -1,8 +1,14 @@
+import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
 import 'package:appserap/dtos/error.response.dto.dart';
+import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/exceptions/sem_conexao.exeption.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api_service.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
-import 'package:asuka/snackbars/asuka_snack_bar.dart';
+import 'package:appserap/utils/notificacao.util.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +48,8 @@ abstract class _LoginStoreBase with Store, Loggable {
     for (final d in _disposers) {
       d();
     }
+    senha = "";
+    codigoEOL = "";
   }
 
   void validateTodos() {
@@ -79,9 +87,29 @@ abstract class _LoginStoreBase with Store, Loggable {
   }
 
   @action
-  Future<void> autenticar() async {
+  onPostLogin(AutenticacaoDadosResponseDTO usuarioDados) async {
+    if (kIsTablet && usuarioDados.tamanhoFonte < 16) {
+      usuarioDados.tamanhoFonte = 16;
+    }
+    defineFonte(usuarioDados.familiaFonte, usuarioDados.tamanhoFonte);
+  }
+
+  @action
+  defineFonte(FonteTipoEnum familiaFonte, double tamanhoFonte) {
+    final _temaStore = GetIt.I.get<TemaStore>();
+
+    _temaStore.fonteDoTexto = familiaFonte;
+    _temaStore.fachadaAlterarTamanhoDoTexto(tamanhoFonte, update: false);
+  }
+
+  @action
+  Future<bool> autenticar() async {
     carregando = true;
     try {
+      if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
+        throw SemConexaoException();
+      }
+
       var responseLogin = await _autenticacaoService.login(
         login: codigoEOL,
         senha: senha,
@@ -92,6 +120,8 @@ abstract class _LoginStoreBase with Store, Loggable {
 
         _usuarioStore.token = body.token;
         _usuarioStore.tokenDataHoraExpiracao = body.dataHoraExpiracao;
+        _usuarioStore.ultimoLogin = body.ultimoLogin;
+        _usuarioStore.isAdmin = false;
 
         SharedPreferences prefs = GetIt.I.get();
         await prefs.setString('token', body.token);
@@ -102,13 +132,33 @@ abstract class _LoginStoreBase with Store, Loggable {
           var usuarioDados = responseMeusDados.body!;
           if (usuarioDados.nome != "") {
             _usuarioStore.atualizarDados(
-              usuarioDados.nome,
-              codigoEOL,
-              body.token,
-              usuarioDados.ano,
-              usuarioDados.tipoTurno,
+              codigoEOL: codigoEOL,
+              token: body.token,
+              nome: usuarioDados.nome,
+              ano: usuarioDados.ano,
+              tipoTurno: usuarioDados.tipoTurno,
+              ultimoLogin: body.ultimoLogin,
+              tamanhoFonte: usuarioDados.tamanhoFonte,
+              familiaFonte: usuarioDados.familiaFonte,
+              inicioTurno: usuarioDados.inicioTurno,
+              fimTurno: usuarioDados.fimTurno,
+              modalidade: usuarioDados.modalidade,
+              dreAbreviacao: usuarioDados.dreAbreviacao,
+              escola: usuarioDados.escola,
+              turma: usuarioDados.turma,
+              deficiencias: usuarioDados.deficiencias,
             );
+
+            await onPostLogin(usuarioDados);
           }
+          carregando = false;
+          return true;
+        } else {
+          carregando = false;
+          if ((responseMeusDados.error! as dynamic).existemErros) {
+            severe((responseMeusDados.error! as dynamic).mensagens.toString());
+          }
+          return false;
         }
       } else {
         switch (responseLogin.statusCode) {
@@ -118,13 +168,22 @@ abstract class _LoginStoreBase with Store, Loggable {
           case 412:
             autenticacaoErroStore.senha = (responseLogin.error! as ErrorResponseDTO).mensagens.first;
             break;
+          case 500:
+            NotificacaoUtil.showSnackbarError("Ocorreu um erro interno. Favor contatar o suporte.");
+            break;
         }
       }
+    } on SemConexaoException catch (e) {
+      NotificacaoUtil.showSnackbarError(e.toString());
     } catch (e, stack) {
-      AsukaSnackbar.alert("Não foi possível estabelecer uma conexão com o servidor.").show();
-      severe(e, stack);
+      NotificacaoUtil.showSnackbarError("Não foi possível estabelecer uma conexão com o servidor.");
+      severe(e);
+      severe(stack);
+    } finally {
+      carregando = false;
     }
-    carregando = false;
+
+    return false;
   }
 }
 

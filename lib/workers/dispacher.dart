@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:flutter/foundation.dart';
@@ -14,6 +16,7 @@ callbackDispatcher() {
     print("Native called background task: $task");
 
     try {
+      registerPluginsForIsolate();
       setupLogging();
       await setupAppConfig();
       await DependenciasIoC().setup();
@@ -38,10 +41,12 @@ class Worker with Loggable {
     config('Configurando Workers');
 
     if (!kIsWeb) {
-      await Workmanager().initialize(
-        callbackDispatcher,
-        isInDebugMode: kDebugMode,
-      );
+      if (Platform.isAndroid) {
+        await Workmanager().initialize(
+          callbackDispatcher,
+          isInDebugMode: false,
+        );
+      }
     }
 
     await registerWorkers();

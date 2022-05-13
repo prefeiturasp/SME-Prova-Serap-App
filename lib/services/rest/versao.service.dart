@@ -1,3 +1,4 @@
+import 'package:appserap/dtos/versao_atualizacao.respose.dto.dart';
 import 'package:chopper/chopper.dart';
 
 part 'versao.service.chopper.dart';
@@ -11,4 +12,16 @@ abstract class VersaoService extends ChopperService {
 
   @Get(path: '/front')
   Future<Response<String>> getVersaoFront();
+
+  @Get(path: '/atualizacao')
+  Future<Response<VersaoAtualizacaoResponseDTO>> getAtualizacao();
+
+  @Post(path: '/dispositivo')
+  Future<Response<bool>> informarVersao({
+    @Header('chave-api') required String chaveAPI,
+    @Field() required int versaoCodigo,
+    @Field() required String versaoDescricao,
+    @Field() required String dispositivoImei,
+    @Field() required String atualizadoEm,
+  });
 }
