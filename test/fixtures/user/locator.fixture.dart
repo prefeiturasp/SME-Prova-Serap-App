@@ -9,6 +9,11 @@ registerLocators({Map<String, Object> defaultPreferences = const {}}) async {
 
   SharedPreferences.setMockInitialValues(defaultPreferences);
 
-  di.registerSingleton<SharedPreferences>(await SharedPreferences.getInstance());
-  di.registerSingleton<ApiService>(MockApiService());
+  if (!di.isRegistered<SharedPreferences>()) {
+    di.registerSingleton<SharedPreferences>(await SharedPreferences.getInstance());
+  }
+
+  if (!di.isRegistered<ApiService>()) {
+    di.registerSingleton<ApiService>(MockApiService());
+  }
 }

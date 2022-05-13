@@ -1,5 +1,8 @@
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
+import 'package:appserap/enums/deficiencia.enum.dart';
+import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/modalidade.enum.dart';
 
 class UserFixture {
   final userEOL = "1234567";
@@ -9,6 +12,17 @@ class UserFixture {
     "Nome do Aluno",
     "5",
     "3",
+    16.0,
+    FonteTipoEnum.POPPINS,
+    ModalidadeEnum.FUNDAMENTAL,
+    8,
+    12,
+    "DRE",
+    "Escola",
+    "Turma",
+    [
+      DeficienciaEnum.SURDEZ_LEVE_OU_MODERADA,
+    ],
   );
 
   final autenticacaoResponse = AutenticacaoResponseDTO(
@@ -41,9 +55,18 @@ class UserJsonFixture {
 
   final autenticacaoDadosResponseJson = """
 {
+  "dreAbreviacao": "DRE - JT",
+  "escola": "Escola",
+  "turma": "5B",
   "nome": "Nome do Aluno",
   "ano": "5",
-  "tipoTurno": "3"
+  "tipoTurno": "3",
+  "tamanhoFonte": 16,
+  "modalidade": 5,
+  "familiaFonte": 1,
+  "inicioTurno": 12,
+  "fimTurno": 19,
+  "deficiencias": []
 }
   """;
 }
