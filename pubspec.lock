@@ -323,6 +323,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  device_information:
+    dependency: "direct main"
+    description:
+      name: device_information
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
   dio:
     dependency: transitive
     description:
@@ -596,7 +603,7 @@ packages:
       name: go_router
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.5.7"
+    version: "3.0.7"
   graphs:
     dependency: transitive
     description:
@@ -702,6 +709,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.2"
+  json_table:
+    dependency: transitive
+    description:
+      name: json_table
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   jwt_decoder:
     dependency: "direct main"
     description:
@@ -892,14 +906,14 @@ packages:
     source: hosted
     version: "2.0.9"
   path_provider_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider_android
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.12"
   path_provider_ios:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider_ios
       url: "https://pub.dartlang.org"
@@ -933,13 +947,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
-  path_to_regexp:
-    dependency: transitive
-    description:
-      name: path_to_regexp
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.0"
   pedantic:
     dependency: transitive
     description:
@@ -954,6 +961,41 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.4.0"
+  permission_handler:
+    dependency: "direct main"
+    description:
+      name: permission_handler
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "9.2.0"
+  permission_handler_android:
+    dependency: transitive
+    description:
+      name: permission_handler_android
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "9.0.2+1"
+  permission_handler_apple:
+    dependency: transitive
+    description:
+      name: permission_handler_apple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "9.0.4"
+  permission_handler_platform_interface:
+    dependency: transitive
+    description:
+      name: permission_handler_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.7.0"
+  permission_handler_windows:
+    dependency: transitive
+    description:
+      name: permission_handler_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   petitparser:
     dependency: transitive
     description:
@@ -1067,14 +1109,14 @@ packages:
     source: hosted
     version: "2.0.13"
   shared_preferences_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences_android
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.11"
   shared_preferences_ios:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences_ios
       url: "https://pub.dartlang.org"
@@ -1162,6 +1204,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.1"
+  sqflite:
+    dependency: transitive
+    description:
+      name: sqflite
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
+  sqflite_common:
+    dependency: transitive
+    description:
+      name: sqflite_common
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1+1"
   sqlite3:
     dependency: transitive
     description:
@@ -1176,6 +1232,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.5"
+  sqlite_viewer:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "3dcd2460b2eb21f861c934c0f35b844f1320f3b8"
+      url: "https://github.com/frgmt/flutter-sqlite-viewer"
+    source: git
+    version: "1.0.5"
   sqlparser:
     dependency: transitive
     description:

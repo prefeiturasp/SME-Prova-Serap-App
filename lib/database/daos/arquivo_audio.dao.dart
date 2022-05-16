@@ -1,4 +1,5 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/tables/arquivo_audio.table.dart';
 import 'package:drift/drift.dart';
 
 part 'arquivo_audio.dao.g.dart';

@@ -29,6 +29,7 @@ class ProvaResponseDTO {
   ModalidadeEnum modalidade;
 
   int quantidadeRespostaSincronizacao;
+  DateTime ultimaAlteracao;
 
   ProvaResponseDTO({
     required this.id,
@@ -45,6 +46,7 @@ class ProvaResponseDTO {
     this.dataFimProvaAluno,
     required this.modalidade,
     required this.quantidadeRespostaSincronizacao,
+    required this.ultimaAlteracao,
   });
 
   bool isFinalizada() {

@@ -28,7 +28,6 @@ class NotificacaoUtil {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      width: 350,
     );
 
     showSnackbar(snackBar);

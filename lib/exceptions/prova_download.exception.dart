@@ -4,8 +4,10 @@ class ProvaDownloadException implements Exception {
 
   ProvaDownloadException(this.idProva, this.mensagem);
 
+  int get getIdProva => idProva;
+
   @override
   String toString() {
-    return "(ProvaDownloadException): [Prova ID $idProva] - $mensagem";
+    return mensagem;
   }
 }

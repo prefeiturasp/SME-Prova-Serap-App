@@ -10,8 +10,8 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao_revisao.store.dart';
@@ -55,6 +55,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   void initState() {
     super.initState();
     loadData();
+    provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
   }
 
   loadData() {
@@ -272,7 +273,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   _buildRespostaConstruida(Questao questao) {
-    ProvaResposta? provaResposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.id);
 
     return Column(
       children: [
@@ -362,7 +363,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    ProvaResposta? resposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
 
     return Observer(
       builder: (_) {
@@ -387,7 +388,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
               await provaStore.respostas.definirResposta(
                 questao.id,
                 alternativaId: value,
-                tempoQuestao: null,
+                tempoQuestao: provaStore.segundos,
               );
             },
             title: Row(

@@ -44,6 +44,7 @@ class Prova {
   List<ContextoProva>? contextosProva;
 
   int quantidadeRespostaSincronizacao;
+  DateTime ultimaAlteracao;
 
   Prova({
     required this.id,
@@ -64,6 +65,7 @@ class Prova {
     this.dataFimProvaAluno,
     this.contextosProva,
     required this.quantidadeRespostaSincronizacao,
+    required this.ultimaAlteracao,
   });
 
   bool isFinalizada() {
@@ -76,12 +78,12 @@ class Prova {
   static Future<Prova?> carregaProvaCache(int idProva) async {
     AppDatabase db = GetIt.I.get();
 
-    ProvaDb? provaDb = await db.obterProvaPorIdNull(idProva);
+    ProvaDb? provaDb = await db.provaDao.obterPorIdNull(idProva);
 
     if (provaDb != null) {
       var prova = Prova(
         id: provaDb.id,
-        downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
+        downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element == provaDb.downloadStatus),
         itensQuantidade: provaDb.itensQuantidade,
         tempoAlerta: provaDb.tempoAlerta,
         tempoExecucao: provaDb.tempoExecucao,
@@ -96,9 +98,10 @@ class Prova {
         senha: provaDb.senha,
         idDownload: provaDb.idDownload,
         quantidadeRespostaSincronizacao: provaDb.quantidadeRespostaSincronizacao,
+        ultimaAlteracao: provaDb.ultimaAlteracao,
       );
 
-      var contextosProvaDb = await db.obterContextoPorProvaId(prova.id);
+      var contextosProvaDb = await db.contextoProvaDao.obterPorProvaId(prova.id);
 
       if (contextosProvaDb.isNotEmpty) {
         prova.contextosProva = contextosProvaDb
@@ -107,8 +110,7 @@ class Prova {
                   provaId: e.provaId,
                   imagem: e.imagem,
                   imagemBase64: e.imagemBase64,
-                  posicionamento:
-                      PosicionamentoImagemEnum.values.firstWhere((element) => element.index == e.posicionamento),
+                  posicionamento: PosicionamentoImagemEnum.values.firstWhere((element) => element == e.posicionamento),
                   ordem: e.ordem,
                   titulo: e.titulo,
                   texto: e.texto,
@@ -116,7 +118,7 @@ class Prova {
             .toList();
       }
 
-      var questoesDb = await db.obterQuestoesPorProvaId(prova.id);
+      var questoesDb = await db.questaoDao.obterPorProvaId(prova.id);
       prova.questoes = questoesDb
           .map(
             (e) => Questao(
@@ -128,14 +130,14 @@ class Prova {
               arquivos: [],
               arquivosVideos: [],
               arquivosAudio: [],
-              tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+              tipo: EnumTipoQuestao.values.firstWhere((element) => element == e.tipo),
               quantidadeAlternativas: e.quantidadeAlternativas!,
             ),
           )
           .toList();
 
       for (var questao in prova.questoes) {
-        var alternativasDb = await db.obterAlternativasPorQuestaoId(questao.id);
+        var alternativasDb = await db.alternativaDao.obterPorQuestaoId(questao.id);
         questao.alternativas = alternativasDb
             .map(
               (e) => Alternativa(
@@ -143,7 +145,7 @@ class Prova {
             )
             .toList();
 
-        var arquivosDb = await db.obterArquivosPorQuestaoId(questao.id);
+        var arquivosDb = await db.arquivoDao.obterPorQuestaoId(questao.id);
         questao.arquivos = arquivosDb
             .map(
               (e) => Arquivo(
@@ -187,7 +189,7 @@ class Prova {
   static Prova fromProvaDb(ProvaDb provaDb) {
     Prova prova = Prova(
       id: provaDb.id,
-      downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
+      downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element == provaDb.downloadStatus),
       itensQuantidade: provaDb.itensQuantidade,
       tempoAlerta: provaDb.tempoAlerta,
       tempoExecucao: provaDb.tempoExecucao,
@@ -202,6 +204,7 @@ class Prova {
       senha: provaDb.senha,
       idDownload: provaDb.idDownload,
       quantidadeRespostaSincronizacao: provaDb.quantidadeRespostaSincronizacao,
+      ultimaAlteracao: provaDb.ultimaAlteracao,
     );
 
     return prova;
@@ -210,11 +213,11 @@ class Prova {
   static salvaProvaCache(Prova prova) async {
     AppDatabase db = GetIt.I.get();
 
-    await db.inserirOuAtualizarProva(
+    await db.provaDao.inserirOuAtualizar(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
-        downloadStatus: prova.downloadStatus.index,
+        downloadStatus: prova.downloadStatus,
         tempoExtra: prova.tempoExtra,
         tempoExecucao: prova.tempoExecucao,
         tempoAlerta: prova.tempoAlerta,
@@ -228,6 +231,7 @@ class Prova {
         senha: prova.senha,
         idDownload: prova.idDownload,
         quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
+        ultimaAlteracao: prova.ultimaAlteracao,
       ),
     );
   }

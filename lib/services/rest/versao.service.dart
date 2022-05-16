@@ -15,4 +15,13 @@ abstract class VersaoService extends ChopperService {
 
   @Get(path: '/atualizacao')
   Future<Response<VersaoAtualizacaoResponseDTO>> getAtualizacao();
+
+  @Post(path: '/dispositivo')
+  Future<Response<bool>> informarVersao({
+    @Header('chave-api') required String chaveAPI,
+    @Field() required int versaoCodigo,
+    @Field() required String versaoDescricao,
+    @Field() required String dispositivoImei,
+    @Field() required String atualizadoEm,
+  });
 }

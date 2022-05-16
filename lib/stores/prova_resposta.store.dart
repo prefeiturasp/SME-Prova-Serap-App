@@ -1,9 +1,8 @@
-import 'dart:convert';
-
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
@@ -11,7 +10,6 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.ioc.dart';
 
@@ -23,21 +21,23 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   final _service = GetIt.I.get<ApiService>().questaoResposta;
   final _serviceProva = GetIt.I.get<ApiService>().prova;
 
+  final AppDatabase db = ServiceLocator.get();
+
   @observable
   int idProva;
 
-  _ProvaRespostaStoreBase({required this.idProva}) {
-    respostasLocal = carregaRespostasCache().asObservable();
-  }
+  _ProvaRespostaStoreBase({required this.idProva});
 
   @observable
   String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
 
   @observable
-  ObservableMap<int, ProvaResposta> respostasLocal = <int, ProvaResposta>{}.asObservable();
+  ObservableMap<int, RespostaProva> respostasLocal = <int, RespostaProva>{}.asObservable();
 
   @action
   Future<void> carregarRespostasServidor([Prova? prova]) async {
+    respostasLocal = (await carregarRespostasLocal()).asObservable();
+
     var connectionStatus = await Connectivity().checkConnectivity();
     if (connectionStatus == ConnectivityStatus.none) {
       return;
@@ -54,19 +54,25 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
         var questoesResponse = respostaBanco.body!;
 
         for (var questaoResponse in questoesResponse) {
-          respostasLocal[questaoResponse.questaoId] = ProvaResposta(
+          var entity = RespostaProva(
             codigoEOL: codigoEOL,
+            provaId: idProva,
             questaoId: questaoResponse.questaoId,
-            sincronizado: true,
             alternativaId: questaoResponse.alternativaId,
             resposta: questaoResponse.resposta,
             dataHoraResposta: questaoResponse.dataHoraResposta.toLocal(),
+            sincronizado: true,
           );
 
+          await db.respostaProvaDao.inserirOuAtualizar(entity);
+          respostasLocal[questaoResponse.questaoId] = entity;
+
           finer(
-            "[Prova $idProva] - (Questão ID ${questaoResponse.questaoId}) Resposta Banco Questao ${questaoResponse.alternativaId} | ${questaoResponse.resposta}",
+            "[Prova $idProva] - (Questão ID ${questaoResponse.questaoId}) Resposta Remota ${questaoResponse.alternativaId} | ${questaoResponse.resposta}",
           );
         }
+
+        fine('[Prova $idProva] - ${questoesResponse.length} respostas carregadas do banco de dados remoto');
       }
     } catch (e, stack) {
       if (!e.toString().contains("but got one of type 'String'") &&
@@ -77,32 +83,30 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
         finer('[Prova $idProva] Sem respostas salva');
       }
     }
-
-    fine('[Prova $idProva] - ${respostasLocal.length} respostas carregadas do banco de dados remoto');
   }
 
-  ProvaResposta? obterResposta(int questaoId) {
+  RespostaProva? obterResposta(int questaoId) {
     return respostasLocal[questaoId];
   }
 
   @action
   sincronizarResposta({bool force = false}) async {
     fine('[$idProva] - Sincronizando respostas para o servidor');
-    var respostasNaoSincronizadas = respostasLocal.entries.where((element) => element.value.sincronizado == false);
+    var respostasNaoSincronizadas = await db.respostaProvaDao.obterTodasNaoSincronizadasPorCodigoEProva(
+      codigoEOL,
+      idProva,
+    );
 
     var prova = await Prova.carregaProvaCache(idProva);
 
     if (respostasNaoSincronizadas.length == prova!.quantidadeRespostaSincronizacao || force) {
       List<QuestaoRespostaDTO> respostas = [];
 
-      for (var item in respostasNaoSincronizadas) {
-        int idQuestao = item.key;
-        ProvaResposta resposta = item.value;
-
+      for (var resposta in respostasNaoSincronizadas) {
         respostas.add(
           QuestaoRespostaDTO(
             alunoRa: codigoEOL,
-            questaoId: idQuestao,
+            questaoId: resposta.questaoId,
             alternativaId: resposta.alternativaId,
             resposta: resposta.resposta,
             dataHoraRespostaTicks: getTicks(resposta.dataHoraResposta!),
@@ -118,8 +122,9 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
         );
 
         if (response.isSuccessful) {
-          for (var resposta in respostas) {
+          for (var resposta in respostasNaoSincronizadas) {
             fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
+            await db.respostaProvaDao.definirSincronizado(resposta, true);
             respostasLocal[resposta.questaoId]!.sincronizado = true;
           }
         }
@@ -129,25 +134,23 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     }
 
     fine('[$idProva] - Sincronização com o servidor servidor concluida');
-
-    salvarAllCache();
   }
 
   @action
   Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) async {
-    var resposta = ProvaResposta(
+    var resposta = RespostaProva(
       codigoEOL: codigoEOL,
+      provaId: idProva,
       questaoId: questaoId,
       alternativaId: alternativaId,
       resposta: textoResposta,
       sincronizado: false,
-      dataHoraResposta: DateTime.now().toUtc(),
       tempoRespostaAluno: tempoQuestao,
+      dataHoraResposta: DateTime.now(),
     );
 
+    await db.respostaProvaDao.inserirOuAtualizar(resposta);
     respostasLocal[questaoId] = resposta;
-
-    await salvarCache(resposta);
   }
 
   @action
@@ -157,48 +160,20 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     if (resposta != null) {
       resposta.sincronizado = false;
       resposta.tempoRespostaAluno = tempoQuestao;
-      await salvarCache(resposta);
+
+      await db.respostaProvaDao.inserirOuAtualizar(resposta);
     } else {
       await definirResposta(questaoId, tempoQuestao: tempoQuestao);
     }
   }
 
-  salvarAllCache() async {
-    List<Future<bool>> futures = [];
+  Future<Map<int, RespostaProva>> carregarRespostasLocal() async {
+    var respostasBanco = await db.respostaProvaDao.obterPorProvaIdECodigoEOL(idProva, codigoEOL);
 
-    for (var respostaLocal in respostasLocal.entries) {
-      futures.add(salvarCache(respostaLocal.value));
-    }
+    Map<int, RespostaProva> respostas = {};
 
-    await Future.wait(futures);
-  }
-
-  Future<bool> salvarCache(ProvaResposta resposta) async {
-    SharedPreferences _pref = GetIt.I.get();
-
-    var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
-
-    return await _pref.setString(
-      'resposta_${codigoEOL}_${resposta.questaoId}',
-      jsonEncode(resposta.toJson()),
-    );
-  }
-
-  Map<int, ProvaResposta> carregaRespostasCache() {
-    SharedPreferences _pref = ServiceLocator.get();
-    var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
-
-    List<String> keysResposta =
-        _pref.getKeys().toList().where((element) => element.startsWith('resposta_${codigoEOL}_')).toList();
-
-    Map<int, ProvaResposta> respostas = {};
-
-    if (keysResposta.isNotEmpty) {
-      for (var keyResposta in keysResposta) {
-        var provaResposta = ProvaResposta.fromJson(jsonDecode(_pref.getString(keyResposta)!));
-
-        respostas[provaResposta.questaoId] = provaResposta;
-      }
+    for (var item in respostasBanco) {
+      respostas[item.questaoId] = item;
     }
 
     return respostas;

@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.5.7
+version: 1.5.8
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -33,10 +33,11 @@ dependencies:
   package_info_plus: ^1.4.2
   infinite_scroll_pagination: ^3.1.0
   jwt_decoder: ^2.0.1
+  permission_handler: ^9.2.0
   
 
   # Conexão
-  cross_connectivity: ^3.0.3
+  cross_connectivity: ^3.0.5
   # connectivity_plus: ^1.1.0
   retry: ^3.1.0
 
@@ -57,6 +58,8 @@ dependencies:
 
   # Banco de dados local
   shared_preferences: ^2.0.13
+  shared_preferences_android: ^2.0.11
+  shared_preferences_ios: ^2.1.0
 
   # Logger
   logger: ^1.1.0
@@ -87,15 +90,21 @@ dependencies:
   drift: ^1.5.0
   sqlite3_flutter_libs: ^0.5.5
   path_provider: ^2.0.9
+  path_provider_android: any
+  path_provider_ios: any
   path: ^1.8.0
   supercharged: ^2.1.1
   idb_shim: ^2.0.1
+  sqlite_viewer:
+    git: 
+      url: https://github.com/frgmt/flutter-sqlite-viewer
 
   # Informações do dispoisitivo
   device_info_plus: ^3.1.1
+  device_information: ^0.0.4
 
   # Navegação
-  go_router: ^2.5.7
+  go_router: ^3.0.7
   url_launcher: 6.0.18
 
   # Reprodução

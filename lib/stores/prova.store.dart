@@ -2,20 +2,20 @@ import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/managers/download.manager.store.dart';
+import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/managers/download.manager.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
@@ -26,7 +26,15 @@ import 'package:appserap/utils/date.util.dart';
 
 part 'prova.store.g.dart';
 
-class ProvaStore = _ProvaStoreBase with _$ProvaStore;
+class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
+  ProvaStore({
+    required int id,
+    required Prova prova,
+    required ProvaRespostaStore respostas,
+  }) : super(id: id, prova: prova, respostas: respostas) {
+    downloadManagerStore = DownloadManagerStore(provaStore: this);
+  }
+}
 
 abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   var _usuarioStore = ServiceLocator.get<UsuarioStore>();
@@ -35,7 +43,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
-  late GerenciadorDownload gerenciadorDownload;
+  // late GerenciadorDownload gerenciadorDownload;
+
+  late DownloadManagerStore downloadManagerStore;
 
   int id;
 
@@ -50,7 +60,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     required this.prova,
     required this.respostas,
   }) {
-    gerenciadorDownload = GerenciadorDownload(idProva: id);
     status = prova.status;
   }
 
@@ -99,24 +108,23 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     fine("[Prova $id] - Configurando Download");
 
-    await gerenciadorDownload.configure();
-
-    gerenciadorDownload.onStatusChange((downloadStatus, progressoDownload) {
+    downloadManagerStore.listen((downloadStatus, progressoDownload, tempoPrevisto) {
       this.downloadStatus = downloadStatus;
       this.progressoDownload = progressoDownload;
-    });
-
-    gerenciadorDownload.onTempoPrevistoChange((tempoPrevisto) {
       this.tempoPrevisto = tempoPrevisto;
     });
 
-    await gerenciadorDownload.startDownload();
+    downloadManagerStore.onTempoPrevistoChange((tempoPrevisto) {
+      this.tempoPrevisto = tempoPrevisto;
+    });
+
+    await downloadManagerStore.iniciarDownload();
 
     await respostas.carregarRespostasServidor(prova);
 
-    var obterProva = await gerenciadorDownload.getProva();
+    var obterProva = await Prova.carregaProvaCache(id);
 
-    prova = obterProva;
+    prova = obterProva!;
 
     fine("[Prova $id] - Download Concluído");
   }
@@ -128,6 +136,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   _setupReactions() {
+    fine('[Prova $id] - Configurando reactions');
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction(
@@ -167,7 +176,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
       info("[Prova $id] - Download Pausado");
       downloadStatus = EnumDownloadStatus.PAUSADO;
-      gerenciadorDownload.pauseAllDownloads();
+      downloadManagerStore.pauseAllDownloads();
     }
     if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
       info("[Prova $id] - Download Resumido");
@@ -185,7 +194,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     if (resultado == ConnectivityStatus.none &&
         (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
       downloadStatus = EnumDownloadStatus.PAUSADO;
-      gerenciadorDownload.pauseAllDownloads();
+      downloadManagerStore.pauseAllDownloads();
     } else if (resultado != ConnectivityStatus.none &&
         (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
       await iniciarDownload();
@@ -244,6 +253,71 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     }
   }
 
+  @action
+  configurarProva() async {
+    info("[Prova $id] - Configurando prova");
+
+    setRespondendoProva(true);
+
+    await respostas.carregarRespostasServidor(prova);
+    await _configureControlesTempoProva();
+
+    if (prova.status == EnumProvaStatus.NAO_INICIADA) {
+      await iniciarProva();
+    } else {
+      await continuarProva();
+    }
+
+    info("[Prova $id] - Configuração concluida");
+  }
+
+  _configureControlesTempoProva() async {
+    info("[Prova $id] - Configurando controles de tempo");
+    if (tempoExecucaoStore != null) {
+      switch (tempoExecucaoStore!.status) {
+        case EnumProvaTempoEventType.EXTENDIDO:
+          await _iniciarRevisaoProva();
+          break;
+        case EnumProvaTempoEventType.FINALIZADO:
+          await _finalizarProva();
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    if (tempoExecucaoStore != null) {
+      tempoExecucaoStore!.onFinalizandoProva(() {
+        fine('Prova quase acabando');
+      });
+
+      tempoExecucaoStore!.onExtenderProva(() async {
+        fine('Prova extendida');
+        await _iniciarRevisaoProva();
+      });
+
+      tempoExecucaoStore!.onFinalizarlProva(() async {
+        fine('Prova finalizada');
+        await _finalizarProva();
+      });
+    }
+  }
+
+  Future<void> _iniciarRevisaoProva() async {
+    await respostas.sincronizarResposta(force: true);
+
+    ServiceLocator.get<AppRouter>().router.go("/prova/$id/resumo");
+  }
+
+  Future<void> _finalizarProva() async {
+    var confirm = await finalizarProva(true);
+    if (confirm) {
+      onDispose();
+      ServiceLocator.get<AppRouter>().router.go("/");
+    }
+  }
+
   /// Configura o tempo de execução da prova
   @action
   _configurarTempoExecucao() {
@@ -268,11 +342,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   saveProva() async {
     AppDatabase db = GetIt.I.get();
 
-    await db.inserirOuAtualizarProva(
+    await db.provaDao.inserirOuAtualizar(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
-        downloadStatus: prova.downloadStatus.index,
+        downloadStatus: prova.downloadStatus,
         tempoExtra: prova.tempoExtra,
         tempoExecucao: prova.tempoExecucao,
         tempoAlerta: prova.tempoAlerta,
@@ -285,9 +359,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         dataFimProvaAluno: prova.dataFimProvaAluno,
         senha: prova.senha,
         quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
+        ultimaAlteracao: prova.ultimaAlteracao,
+        idDownload: prova.idDownload,
       ),
     );
-    var provaSalva = await db.obterProvaPorId(prova.id);
+    var provaSalva = await db.provaDao.obterPorProvaId(prova.id);
     fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }
 
@@ -339,19 +415,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
           switch (response.statusCode) {
             // Prova ja finalizada
             case 411:
-              // Remove prova do cache
-              SharedPreferences prefs = ServiceLocator.get();
               AppDatabase db = GetIt.I.get();
 
-              await prefs.remove('prova_${prova.id}');
-              await prefs.remove('download_${prova.id}');
-              await db.limpar();
-
-              // Remove respostas da prova do cache
-              for (var questoes in prova.questoes) {
-                var codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL;
-                await prefs.remove('resposta_${codigoEOL}_${questoes.id}');
-              }
+              // Remove respostas do banco local
+              await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
 
               mostrarDialogProvaJaEnviada(context);
               break;
