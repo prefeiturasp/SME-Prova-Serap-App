@@ -323,13 +323,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
-  device_information:
-    dependency: "direct main"
-    description:
-      name: device_information
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.4"
   dio:
     dependency: transitive
     description:
@@ -660,6 +653,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.3"
+  imei_plugin:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "4659c2f02ae283c6e3185831fb602109a1a6b654"
+      url: "https://github.com/pablo384/imei_plugin.git"
+    source: git
+    version: "2.1.1"
   infinite_listview:
     dependency: transitive
     description:

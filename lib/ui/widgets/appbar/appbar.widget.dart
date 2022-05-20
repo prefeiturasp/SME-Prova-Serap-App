@@ -95,6 +95,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   }
 
   _buildSqlView(context) {
+    if (!kDebugMode) {
+      return SizedBox.shrink();
+    }
+
     return FutureBuilder<Directory>(
         future: getApplicationDocumentsDirectory(),
         builder: (context, snapshot) {
