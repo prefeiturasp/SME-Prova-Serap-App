@@ -101,7 +101,9 @@ dependencies:
 
   # Informações do dispoisitivo
   device_info_plus: ^3.1.1
-  device_information: ^0.0.4
+  imei_plugin: #^1.2.0
+    git:
+      url: https://github.com/pablo384/imei_plugin.git
 
   # Navegação
   go_router: ^3.0.7
