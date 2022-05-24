@@ -161,8 +161,8 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
         SharedPreferences prefs = ServiceLocator.get();
         PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-        int buildNumber = prefs.getInt("buildNumber") ?? 0;
-        String version = prefs.getString("version") ?? "1.0.0";
+        int buildNumber = prefs.getInt("_buildNumber") ?? 0;
+        String version = prefs.getString("_version") ?? "1.0.0";
 
         if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
           String? imei = await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
@@ -178,8 +178,8 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
                 atualizadoEm: DateTime.now().toIso8601String(),
               );
 
-          await prefs.setInt("buildNumber", int.parse(packageInfo.buildNumber));
-          await prefs.setString("version", packageInfo.version);
+          await prefs.setInt("_buildNumber", int.parse(packageInfo.buildNumber));
+          await prefs.setString("_version", packageInfo.version);
         }
       }
     } on PlatformException catch (e) {
