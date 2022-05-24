@@ -37,4 +37,8 @@ class ArquivosAudioDao extends DatabaseAccessor<AppDatabase> with _$ArquivosAudi
       await (delete(arquivosAudioDb)..where((t) => t.provaId.equals(provaId))).go();
     });
   }
+
+  Future<ArquivoAudioDb?> findById(int id) {
+    return (select(arquivosAudioDb)..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
 }

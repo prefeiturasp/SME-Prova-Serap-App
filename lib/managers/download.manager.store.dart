@@ -9,7 +9,7 @@ import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
-import 'package:appserap/dtos/questao.response.dto.dart';
+import 'package:appserap/dtos/questao_completa.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -123,7 +123,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     // adcionar o que nao tem no banco
     info(" [Prova $provaId] - Adicionando downloads da prova - Questão");
-    for (var idQuestao in provaDetalhes.questoesId) {
+    for (var idQuestao in provaDetalhes.questoesIds) {
       if (!_containsId(downloads, idQuestao, EnumDownloadTipo.QUESTAO)) {
         await salvarBanco(
           DownloadProvaDb(
@@ -137,68 +137,8 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       }
     }
 
-    info(" [Prova $provaId] - Adicionando downloads da prova - Alternativas");
-    for (var idAlternativa in provaDetalhes.alternativasId) {
-      if (!_containsId(downloads, idAlternativa, EnumDownloadTipo.ALTERNATIVA)) {
-        await salvarBanco(
-          DownloadProvaDb(
-            id: idAlternativa,
-            provaId: provaId,
-            tipo: EnumDownloadTipo.ALTERNATIVA,
-            downloadStatus: EnumDownloadStatus.NAO_INICIADO,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
-      }
-    }
-
-    info(" [Prova $provaId] - Adicionando downloads da prova - Arquivos de imagem");
-    for (var idArquivo in provaDetalhes.arquivosId) {
-      if (!_containsId(downloads, idArquivo, EnumDownloadTipo.ARQUIVO)) {
-        await salvarBanco(
-          DownloadProvaDb(
-            id: idArquivo,
-            provaId: provaId,
-            tipo: EnumDownloadTipo.ARQUIVO,
-            downloadStatus: EnumDownloadStatus.NAO_INICIADO,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
-      }
-    }
-
-    info(" [Prova $provaId] - Adicionando downloads da prova - Arquivos de video");
-    for (var idArquivoVideo in provaDetalhes.videosId) {
-      if (!_containsId(downloads, idArquivoVideo, EnumDownloadTipo.VIDEO)) {
-        await salvarBanco(
-          DownloadProvaDb(
-            id: idArquivoVideo,
-            provaId: provaId,
-            tipo: EnumDownloadTipo.VIDEO,
-            downloadStatus: EnumDownloadStatus.NAO_INICIADO,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
-      }
-    }
-
-    info(" [Prova $provaId] - Adicionando downloads da prova - Arquivos de audio");
-    for (var idArquivoAudio in provaDetalhes.audiosId) {
-      if (!_containsId(downloads, idArquivoAudio, EnumDownloadTipo.AUDIO)) {
-        await salvarBanco(
-          DownloadProvaDb(
-            id: idArquivoAudio,
-            provaId: provaId,
-            tipo: EnumDownloadTipo.AUDIO,
-            downloadStatus: EnumDownloadStatus.NAO_INICIADO,
-            dataHoraInicio: DateTime.now(),
-          ),
-        );
-      }
-    }
-
     info(" [Prova $provaId] - Adicionando downloads da prova - Contexto da prova");
-    for (var idContexto in provaDetalhes.contextoProvaIds) {
+    for (var idContexto in provaDetalhes.contextosProvaIds) {
       if (!_containsId(downloads, idContexto, EnumDownloadTipo.CONTEXTO_PROVA)) {
         await salvarBanco(
           DownloadProvaDb(
@@ -268,17 +208,6 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
             break;
 
-          case EnumDownloadTipo.ALTERNATIVA:
-            await retry(
-              () async => await baixarAlternativa(download),
-              maxAttempts: 3,
-              onRetry: (e) {
-                fine('[Prova $provaId] - Tentativa de download da Alternativa ID: ${download.id}');
-                severe(e);
-              },
-            );
-            break;
-
           case EnumDownloadTipo.CONTEXTO_PROVA:
             await retry(
               () async => await baixarContextoProva(download),
@@ -290,39 +219,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
             );
             break;
 
-          case EnumDownloadTipo.VIDEO:
-            await retry(
-              () async => await baixarArquivoVideo(download),
-              maxAttempts: 3,
-              onRetry: (e) {
-                fine('[Prova $provaId] - Tentativa de download do arquivo de Video ID: ${download.id}');
-                severe(e);
-              },
-            );
-
-            break;
-
-          case EnumDownloadTipo.AUDIO:
-            await retry(
-              () async => await baixarArquivoAudio(download),
-              maxAttempts: 3,
-              onRetry: (e) {
-                fine('[Prova $provaId] - Tentativa de download do arquivo de Audio ID: ${download.id}');
-                severe(e);
-              },
-            );
-
-            break;
-
-          case EnumDownloadTipo.ARQUIVO:
-            await retry(
-              () async => await baixarArquivoImagem(download),
-              maxAttempts: 3,
-              onRetry: (e) {
-                fine('[Prova $provaId] - Tentativa de download do arquivo de Imagem ID: ${download.id}');
-                severe(e);
-              },
-            );
+          default:
             break;
         }
 
@@ -444,10 +341,11 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   baixarQuestao(DownloadProvaDb download) async {
     await _updateDownloadStatus(download, EnumDownloadStatus.BAIXANDO);
 
-    Response<QuestaoResponseDTO> response = await apiService.questao.getQuestao(idQuestao: download.id);
+    Response<List<QuestaoCompletaResponseDTO>> response =
+        await apiService.questao.getQuestaoCompleta(ids: [download.id]);
 
     if (response.isSuccessful) {
-      QuestaoResponseDTO questaoDTO = response.body!;
+      QuestaoCompletaResponseDTO questaoDTO = response.body![0];
 
       var questao = QuestaoDb(
         id: questaoDTO.id,
@@ -460,20 +358,21 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       );
 
       await db.questaoDao.inserirOuAtualizar(questao);
-    }
 
-    await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
+      await baixarAlternativa(questaoDTO.alternativas);
+      await baixarArquivoImagem(questaoDTO.arquivos);
+      await baixarArquivoVideo(questaoDTO.videos);
+      await baixarArquivoAudio(questaoDTO.audios);
+
+      await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
+    } else {
+      await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+    }
   }
 
-  baixarAlternativa(DownloadProvaDb download) async {
-    await _updateDownloadStatus(download, EnumDownloadStatus.BAIXANDO);
-
-    Response<AlternativaResponseDTO> response = await apiService.alternativa.getAlternativa(idAlternativa: download.id);
-
-    if (response.isSuccessful) {
-      AlternativaResponseDTO alternativaDTO = response.body!;
-
-      AlternativaDb alternativa = AlternativaDb(
+  baixarAlternativa(List<AlternativaResponseDTO> alternativas) async {
+    for (var alternativaDTO in alternativas) {
+      AlternativaDb alternativaDb = AlternativaDb(
         id: alternativaDTO.id,
         provaId: provaId,
         descricao: alternativaDTO.descricao,
@@ -482,9 +381,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         questaoId: alternativaDTO.questaoId,
       );
 
-      db.alternativaDao.inserirOuAtualizar(alternativa);
-
-      await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
+      await db.alternativaDao.inserirOuAtualizar(alternativaDb);
     }
   }
 
@@ -521,119 +418,101 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  baixarArquivoImagem(DownloadProvaDb download) async {
-    await _updateDownloadStatus(download, EnumDownloadStatus.BAIXANDO);
+  baixarArquivoImagem(List<ArquivoResponseDTO> arquivos) async {
+    for (var arquivoDTO in arquivos) {
+      try {
+        ArquivoDb? arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
 
-    Response<ArquivoResponseDTO> response = await apiService.arquivo.getArquivo(idArquivo: download.id);
+        if (arquivoDb == null) {
+          http.Response arquivoResponse = await http.get(
+            Uri.parse(
+              arquivoDTO.caminho.replaceFirst('http://', 'https://'),
+            ),
+          );
 
-    if (response.isSuccessful) {
-      QuestaoDb? questao = await db.questaoDao.obterQuestaoPorArquivoLegadoId(download.id, provaId);
+          if (arquivoResponse.statusCode == 200) {
+            String base64 = base64Encode(arquivoResponse.bodyBytes);
 
-      questao ??= await db.questaoDao.obterQuestaoPorArquivoLegadoIdAlternativa(download.id, provaId);
+            var arquivo = ArquivoDb(
+              id: int.parse("${arquivoDTO.id}${arquivoDTO.questaoId}"),
+              provaId: provaId,
+              legadoId: arquivoDTO.legadoId,
+              caminho: arquivoDTO.caminho,
+              base64: base64,
+              questaoId: arquivoDTO.questaoId,
+            );
 
-      ArquivoResponseDTO arquivoDTO = response.body!;
-
-      http.Response arquivoResponse = await http.get(
-        Uri.parse(
-          arquivoDTO.caminho.replaceFirst('http://', 'https://'),
-        ),
-      );
-
-      if (arquivoResponse.statusCode == 200) {
-        String base64 = base64Encode(arquivoResponse.bodyBytes);
-
-        var arquivo = ArquivoDb(
-          id: int.parse("${arquivoDTO.id}${arquivoDTO.questaoId}"),
-          provaId: provaId,
-          legadoId: arquivoDTO.id,
-          caminho: arquivoDTO.caminho,
-          base64: base64,
-          questaoId: questao!.id,
-        );
-
-        await db.arquivoDao.inserirOuAtualizar(arquivo);
-
-        await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
-      } else {
-        await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
-        severe("[Prova $provaId] - Erro ao baixar arquivo ${arquivoDTO.id} - Status ${arquivoResponse.statusCode}");
+            await db.arquivoDao.inserirOuAtualizar(arquivo);
+          } else {
+            severe("[Prova $provaId] - Erro ao baixar arquivo ${arquivoDTO.id} - Status ${arquivoResponse.statusCode}");
+          }
+        }
+      } catch (e) {
+        severe("[Prova $provaId] - Erro ao baixar arquivo de imagem ${arquivoDTO.id} - ${e.toString()}");
+        rethrow;
       }
-    } else {
-      await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
     }
   }
 
-  baixarArquivoVideo(DownloadProvaDb download) async {
-    try {
-      await _updateDownloadStatus(download, EnumDownloadStatus.BAIXANDO);
+  baixarArquivoVideo(List<ArquivoVideoResponseDTO> videos) async {
+    for (var arquivoVideoDTO in videos) {
+      try {
+        var arquivoVideoDb = await db.arquivosVideosDao.findById(arquivoVideoDTO.id);
 
-      Response<ArquivoVideoResponseDTO> response = await apiService.arquivo.getVideo(idArquivo: download.id);
+        if (arquivoVideoDb == null) {
+          String path = join(
+            'prova',
+            provaId.toString(),
+            'video',
+            arquivoVideoDTO.questaoId.toString() + extension(arquivoVideoDTO.caminho),
+          );
 
-      if (response.isSuccessful) {
-        ArquivoVideoResponseDTO arquivo = response.body!;
+          await salvarArquivoLocal(arquivoVideoDTO.caminho, path);
 
-        String path = join(
-          'prova',
-          provaId.toString(),
-          'video',
-          arquivo.questaoId.toString() + extension(arquivo.caminho),
-        );
+          var arquivoVideo = ArquivoVideoDb(
+            id: arquivoVideoDTO.id,
+            provaId: provaId,
+            questaoId: arquivoVideoDTO.questaoId,
+            path: path,
+          );
 
-        await salvarArquivoLocal(arquivo.caminho, path);
-
-        var arquivoVideo = ArquivoVideoDb(
-          id: arquivo.id,
-          provaId: provaId,
-          questaoId: arquivo.questaoId,
-          path: path,
-        );
-
-        await db.arquivosVideosDao.inserirOuAtualizar(arquivoVideo);
-
-        await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
-      } else {
-        await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+          await db.arquivosVideosDao.inserirOuAtualizar(arquivoVideo);
+        }
+      } catch (e) {
+        severe("[Prova $provaId] - Erro ao baixar arquivo de vídeo ${arquivoVideoDTO.id} - ${e.toString()}");
+        rethrow;
       }
-    } on Exception {
-      await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
-      rethrow;
     }
   }
 
-  baixarArquivoAudio(DownloadProvaDb download) async {
-    try {
-      await _updateDownloadStatus(download, EnumDownloadStatus.BAIXANDO);
+  baixarArquivoAudio(List<ArquivoResponseDTO> audios) async {
+    for (var arquivoAudioDTO in audios) {
+      try {
+        var arquivoAudioDb = await db.arquivosAudioDao.findById(arquivoAudioDTO.id);
 
-      Response<ArquivoResponseDTO> response = await apiService.arquivo.getAudio(idArquivo: download.id);
+        if (arquivoAudioDb == null) {
+          String path = join(
+            'prova',
+            provaId.toString(),
+            'audio',
+            arquivoAudioDTO.questaoId.toString() + extension(arquivoAudioDTO.caminho),
+          );
 
-      if (response.isSuccessful) {
-        ArquivoResponseDTO arquivo = response.body!;
+          await salvarArquivoLocal(arquivoAudioDTO.caminho, path);
 
-        String path = join(
-          'prova',
-          provaId.toString(),
-          'audio',
-          arquivo.questaoId.toString() + extension(arquivo.caminho),
-        );
+          var arquivoAudio = ArquivoAudioDb(
+            id: arquivoAudioDTO.id,
+            provaId: provaId,
+            questaoId: arquivoAudioDTO.questaoId,
+            path: path,
+          );
 
-        await salvarArquivoLocal(arquivo.caminho, path);
-
-        var arquivoAudio = ArquivoAudioDb(
-          id: arquivo.id,
-          provaId: provaId,
-          questaoId: arquivo.questaoId,
-          path: path,
-        );
-
-        await db.arquivosAudioDao.inserirOuAtualizar(arquivoAudio);
-
-        await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
-      } else {
-        await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+          await db.arquivosAudioDao.inserirOuAtualizar(arquivoAudio);
+        }
+      } catch (e) {
+        severe("[Prova $provaId] - Erro ao baixar arquivo de áudio ${arquivoAudioDTO.id} - ${e.toString()}");
+        rethrow;
       }
-    } on Exception {
-      await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
-      rethrow;
     }
   }
 
@@ -668,6 +547,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     } else if ((await getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO)).length == downloads.length) {
       // Validar quantidade de alternativa das questões
       await _validarQuestoes();
+      await _validarArquivosImagem();
 
       info('[Prova $provaId] - Download concluido');
 
@@ -734,6 +614,19 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
         case EnumTipoQuestao.NAO_CADASTRADO:
           break;
+      }
+    }
+  }
+
+  _validarArquivosImagem() async {
+    var arquivosImagem = await db.arquivoDao.obterPorProvaId(provaId);
+
+    for (var arquivo in arquivosImagem) {
+      if (arquivo.base64.isEmpty) {
+        throw ProvaDownloadException(
+          provaId,
+          'Arquivo ${arquivo.id} não possui cache salvo',
+        );
       }
     }
   }
