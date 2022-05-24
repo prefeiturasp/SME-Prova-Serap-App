@@ -75,7 +75,7 @@ void setupLogging() {
   if (kDebugMode) {
     Logger.root.level = Level.FINE;
   } else {
-    Logger.root.level = Level.WARNING;
+    Logger.root.level = Level.INFO;
   }
 
   Logger.root.onRecord.listen((rec) {

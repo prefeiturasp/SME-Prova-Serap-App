@@ -37,4 +37,8 @@ class ArquivoDao extends DatabaseAccessor<AppDatabase> with _$ArquivoDaoMixin {
       await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });
   }
+
+  Future<ArquivoDb?> findByLegadoId(int legadoId) {
+    return (select(arquivosDb)..where((t) => t.legadoId.equals(legadoId))).getSingleOrNull();
+  }
 }
