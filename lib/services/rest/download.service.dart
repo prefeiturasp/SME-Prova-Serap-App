@@ -8,7 +8,7 @@ abstract class DownloadService extends ChopperService {
   static DownloadService create([ChopperClient? client]) => _$DownloadService(client);
 
   @Post()
-  Future<Response<int>> informarDownloadConcluido({
+  Future<Response<String>> informarDownloadConcluido({
     @Field() required int provaId,
     @Field() required int tipoDispositivo,
     @Field() required String dispositivoId,
@@ -20,6 +20,6 @@ abstract class DownloadService extends ChopperService {
   @Delete()
   Future<Response<void>> removerDownloads({
     @Header('chave-api') required String chaveAPI,
-    @Body() required List<int> ids,
+    @Body() required List<String> ids,
   });
 }

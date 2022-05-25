@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/prova.table.dart';
 import 'package:appserap/database/tables/prova_aluno.table.dart';
@@ -62,7 +64,7 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
         .get();
   }
 
-  updateDownloadStatus(int provaId, EnumDownloadStatus status) {
+  Future<int> updateDownloadStatus(int provaId, EnumDownloadStatus status) {
     return (update(provasDb)
           ..where(
             (t) => t.id.equals(provaId),
@@ -74,7 +76,7 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     );
   }
 
-  updateDownloadId(int provaId, int downloadId) {
+  Future<int> updateDownloadId(int provaId, String downloadId) {
     return (update(provasDb)
           ..where(
             (t) => t.id.equals(provaId),

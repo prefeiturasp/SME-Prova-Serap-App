@@ -26,7 +26,7 @@ abstract class BaseStatelessWidget<TWidget extends BaseStatefulWidget, TBind ext
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
+    WidgetsBinding.instance.addPostFrameCallback((_) => onAfterBuild(context));
 
     return builder(context);
   }

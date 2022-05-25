@@ -54,7 +54,7 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
+    WidgetsBinding.instance.addPostFrameCallback((_) => onAfterBuild(context));
 
     return SafeArea(
       child: Scaffold(

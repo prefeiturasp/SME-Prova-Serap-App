@@ -425,7 +425,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           LinearPercentIndicator(
             lineHeight: 4.0,
             percent: provaStore.progressoDownload,
-            linearStrokeCap: LinearStrokeCap.roundAll,
+            barRadius: const Radius.circular(16),
             progressColor: TemaUtil.vermelhoErro,
           ),
           Padding(
@@ -468,7 +468,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             child: LinearPercentIndicator(
               lineHeight: 4.0,
               percent: provaStore.progressoDownload,
-              linearStrokeCap: LinearStrokeCap.roundAll,
+              barRadius: const Radius.circular(16),
               progressColor: TemaUtil.vermelhoErro,
             ),
           ),
@@ -548,7 +548,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           LinearPercentIndicator(
             lineHeight: 7.0,
             percent: 1,
-            linearStrokeCap: LinearStrokeCap.roundAll,
+            barRadius: const Radius.circular(16),
             progressColor: TemaUtil.laranja02,
           ),
           Padding(
@@ -727,7 +727,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             //animationDuration: 1000,
             lineHeight: 4.0,
             percent: prova.progressoDownload,
-            linearStrokeCap: LinearStrokeCap.roundAll,
+            barRadius: const Radius.circular(16),
             progressColor: TemaUtil.verde01,
           ),
           Padding(
