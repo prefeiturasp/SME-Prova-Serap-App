@@ -9,6 +9,7 @@ class AlternativaResponseDTO {
   int ordem;
   String numeracao;
   int questaoId;
+
   AlternativaResponseDTO({
     required this.id,
     required this.descricao,

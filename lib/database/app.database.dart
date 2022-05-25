@@ -5,6 +5,7 @@ import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/prova_aluno.model.dart';
 import '../models/resposta_prova.model.dart';
@@ -61,7 +62,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -103,8 +104,22 @@ class AppDatabase extends _$AppDatabase {
         if (from == 12) {
           await m.createTable(provaAlunoTable);
         }
+        if (from == 13) {
+          await m.alterTable(
+            TableMigration(provasDb, columnTransformer: {
+              provasDb.idDownload: provasDb.idDownload.cast<String>(),
+            }),
+          );
+        }
+
+        // Assert that the schema is valid after migrations
+        if (kDebugMode) {
+          final wrongForeignKeys = await customSelect('PRAGMA foreign_key_check').get();
+          assert(wrongForeignKeys.isEmpty, '${wrongForeignKeys.map((e) => e.data)}');
+        }
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = 1;');
+        await customStatement('PRAGMA foreign_keys = ON;');
       });
 
   Future limpar() {

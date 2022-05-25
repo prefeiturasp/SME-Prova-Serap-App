@@ -5,23 +5,13 @@ part 'prova_detalhes.response.dto.g.dart';
 @JsonSerializable()
 class ProvaDetalhesResponseDTO {
   int provaId;
-  List<int> questoesId;
-  List<int> arquivosId;
-  List<int> videosId;
-  List<int> audiosId;
-  List<int> alternativasId;
-  int tamanhoTotalArquivos;
-  List<int> contextoProvaIds;
+  List<int> questoesIds;
+  List<int> contextosProvaIds;
 
   ProvaDetalhesResponseDTO({
     required this.provaId,
-    required this.questoesId,
-    required this.arquivosId,
-    this.videosId = const [],
-    this.audiosId = const [],
-    required this.alternativasId,
-    required this.tamanhoTotalArquivos,
-    required this.contextoProvaIds,
+    required this.questoesIds,
+    required this.contextosProvaIds,
   });
 
   static const fromJson = _$ProvaDetalhesResponseDTOFromJson;
@@ -29,6 +19,6 @@ class ProvaDetalhesResponseDTO {
 
   @override
   String toString() {
-    return 'ProvaDetalhesResponseDTO(provaId: $provaId, questoesId: $questoesId, arquivosId: $arquivosId, videosId: $videosId, audiosId: $audiosId, alternativasId: $alternativasId, tamanhoTotalArquivos: $tamanhoTotalArquivos)';
+    return 'ProvaDetalhesResponseDTO(provaId: $provaId, questoesIds: $questoesIds, contextosProvaIds: $contextosProvaIds)';
   }
 }

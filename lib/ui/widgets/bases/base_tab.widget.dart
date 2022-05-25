@@ -31,7 +31,7 @@ abstract class BaseTabWidget<TWidget extends BaseStatefulWidget, TBind extends O
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
+    WidgetsBinding.instance.addPostFrameCallback((_) => onAfterBuild(context));
 
     return builder(context);
   }

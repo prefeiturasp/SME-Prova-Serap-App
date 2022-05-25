@@ -6,7 +6,7 @@ part 'arquivo_video.response.dto.g.dart';
 class ArquivoVideoResponseDTO {
   int id;
   String caminho;
-  String caminhoVideoConvertido;
+  String? caminhoVideoConvertido;
   String caminhoVideoThumbinail;
   int questaoId;
 

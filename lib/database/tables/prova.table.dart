@@ -18,7 +18,7 @@ class ProvasDb extends Table {
   DateTimeColumn get dataFimProvaAluno => dateTime().nullable()();
 
   TextColumn get senha => text().nullable()();
-  IntColumn get idDownload => integer().nullable()();
+  TextColumn get idDownload => text().nullable()();
 
   IntColumn get quantidadeRespostaSincronizacao => integer()();
   DateTimeColumn get ultimaAlteracao => dateTime().withDefault(currentDateAndTime)();

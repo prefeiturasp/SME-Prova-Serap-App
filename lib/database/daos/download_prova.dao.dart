@@ -1,6 +1,7 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/download_prova.table.dart';
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:drift/drift.dart';
 
 part 'download_prova.dao.g.dart';
@@ -29,6 +30,17 @@ class DownloadProvaDao extends DatabaseAccessor<AppDatabase> with _$DownloadProv
     return (select(downloadProvasDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
+  Future<List<DownloadProvaDb>> getByProvaETipo(int provaId, EnumDownloadTipo tipoDownload) {
+    return (select(downloadProvasDb)..where((t) => t.provaId.equals(provaId) & t.tipo.equals(tipoDownload.index)))
+        .get();
+  }
+
+  Future<List<EnumDownloadTipo>> getTiposByProva(int provaId) {
+    var query = select(downloadProvasDb)..where((t) => t.provaId.equals(provaId));
+
+    return query.map((p0) => p0.tipo).get();
+  }
+
   Future<List<DownloadProvaDb>> listarTodos() {
     return select(downloadProvasDb).get();
   }
@@ -42,7 +54,7 @@ class DownloadProvaDao extends DatabaseAccessor<AppDatabase> with _$DownloadProv
         .get();
   }
 
-  Future<Future<int>> updateStatus(DownloadProvaDb download, EnumDownloadStatus status) async {
+  Future<int> updateStatus(DownloadProvaDb download, EnumDownloadStatus status) async {
     return (update(downloadProvasDb)
           ..where(
             (t) => t.id.equals(download.id) & t.provaId.equals(download.provaId),
