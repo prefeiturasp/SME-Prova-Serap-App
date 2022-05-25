@@ -65,7 +65,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
       List<ProvaDb> provas = await db.provaDao.listarTodos();
 
       if (provas.isNotEmpty) {
-        List<int> downlodIds = provas
+        List<String> downlodIds = provas
             .where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO)
             .toList()
             .map((element) => element.idDownload!)
@@ -93,7 +93,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     usuario.dispose();
 
     if (eraAdimin) {
-      await launch("https://hom-serap.sme.prefeitura.sp.gov.br/", webOnlyWindowName: '_self');
+      await launchUrl(Uri.parse("https://hom-serap.sme.prefeitura.sp.gov.br/"), webOnlyWindowName: '_self');
       ServiceLocator.get<AppRouter>().router.go("/login");
     }
   }

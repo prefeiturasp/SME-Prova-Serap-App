@@ -10,6 +10,7 @@ import 'package:appserap/dtos/arquivo_video.response.dto.dart';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/questao_completa.response.dto.dart';
+import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -18,6 +19,7 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
@@ -234,7 +236,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  Future<int> informarDownloadConcluido(int idProva) async {
+  Future<String> informarDownloadConcluido(int idProva) async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
     String modeloDispositivo = "";
@@ -280,7 +282,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       return response.body!;
     }
 
-    return -1;
+    return "";
   }
 
   Future<void> _pause() async {
@@ -361,8 +363,22 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
       await baixarAlternativa(questaoDTO.alternativas);
       await baixarArquivoImagem(questaoDTO.arquivos);
-      await baixarArquivoVideo(questaoDTO.videos);
-      await baixarArquivoAudio(questaoDTO.audios);
+
+      var deficnencias = ServiceLocator.get<UsuarioStore>().deficiencias;
+
+      for (var deficiencia in deficnencias) {
+        if (grupoSurdos.contains(deficiencia)) {
+          await baixarArquivoVideo(questaoDTO.videos);
+          break;
+        }
+      }
+
+      for (var deficiencia in deficnencias) {
+        if (grupoCegos.contains(deficiencia)) {
+          await baixarArquivoAudio(questaoDTO.audios);
+          break;
+        }
+      }
 
       await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
     } else {
@@ -533,7 +549,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     provaStore?.downloadStatus = status;
   }
 
-  _updateProvaDownloadId(int provaId, int downloadId) async {
+  _updateProvaDownloadId(int provaId, String downloadId) async {
     await db.provaDao.updateDownloadId(provaId, downloadId);
     provaStore?.prova.idDownload = downloadId;
   }
@@ -554,7 +570,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       await _updateProvaDownloadStatus(provaId, EnumDownloadStatus.CONCLUIDO);
 
       try {
-        int idDownload = await informarDownloadConcluido(provaId);
+        String idDownload = await informarDownloadConcluido(provaId);
 
         await _updateProvaDownloadId(provaId, idDownload);
       } catch (e, stack) {

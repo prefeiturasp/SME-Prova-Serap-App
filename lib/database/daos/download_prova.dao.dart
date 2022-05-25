@@ -54,7 +54,7 @@ class DownloadProvaDao extends DatabaseAccessor<AppDatabase> with _$DownloadProv
         .get();
   }
 
-  Future<Future<int>> updateStatus(DownloadProvaDb download, EnumDownloadStatus status) async {
+  Future<int> updateStatus(DownloadProvaDb download, EnumDownloadStatus status) async {
     return (update(downloadProvasDb)
           ..where(
             (t) => t.id.equals(download.id) & t.provaId.equals(download.provaId),

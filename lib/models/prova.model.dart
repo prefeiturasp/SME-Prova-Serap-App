@@ -35,7 +35,7 @@ class Prova {
 
   EnumDownloadStatus downloadStatus;
   double downloadProgresso;
-  int? idDownload;
+  String? idDownload;
 
   EnumProvaStatus status;
 
