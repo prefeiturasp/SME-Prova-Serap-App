@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/main.ioc.dart';
@@ -87,33 +86,11 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       leading: leading ?? (mostrarBotaoVoltar ? _buildBotaoVoltarLeading(context) : null),
       actions: [
-        _buildSqlView(context),
         _buildAlterarFonte(context),
         exibirSair ? _buildBotaoSair(context) : Container(),
+        _buildDebugActions(context),
       ],
     );
-  }
-
-  _buildSqlView(context) {
-    if (!kDebugMode) {
-      return SizedBox.shrink();
-    }
-
-    return FutureBuilder<Directory>(
-        future: getApplicationDocumentsDirectory(),
-        builder: (context, snapshot) {
-          return IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => DatabaseList(
-                            dbPath: snapshot.data!.path,
-                          )));
-            },
-            icon: Icon(Icons.data_usage),
-          );
-        });
   }
 
   Widget? _buildBotaoVoltarLeading(BuildContext context) {
@@ -198,5 +175,49 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         );
       }),
     );
+  }
+
+  _buildDebugActions(BuildContext context) {
+    if (!kDebugMode) {
+      return SizedBox.shrink();
+    }
+
+    return PopupMenuButton(
+        // add icon, by default "3 dot" icon
+        // icon: Icon(Icons.book)
+        itemBuilder: (context) {
+      return [
+        PopupMenuItem<int>(
+          value: 0,
+          child: ListTile(
+            leading: Icon(Icons.data_usage),
+            title: Text('Banco Local'),
+          ),
+        ),
+        PopupMenuItem<int>(
+          value: 1,
+          child: ListTile(
+            leading: Icon(Icons.delete),
+            title: Text('Limpar banco'),
+          ),
+        ),
+      ];
+    }, onSelected: (value) async {
+      if (value == 0) {
+        var directory = await getApplicationDocumentsDirectory();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DatabaseList(
+              dbPath: directory.path,
+            ),
+          ),
+        );
+      } else if (value == 1) {
+        await ServiceLocator.get<AppDatabase>().limparBanco();
+        context.go("/splash");
+      }
+    });
   }
 }

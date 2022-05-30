@@ -5,6 +5,7 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
+import 'package:appserap/utils/string.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';
@@ -75,7 +76,7 @@ void setupLogging() {
   if (kDebugMode) {
     Logger.root.level = Level.FINE;
   } else {
-    Logger.root.level = Level.INFO;
+    Logger.root.level = AppConfigReader.logLevel();
   }
 
   Logger.root.onRecord.listen((rec) {
