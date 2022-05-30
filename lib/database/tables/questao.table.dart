@@ -4,7 +4,7 @@ import 'package:drift/drift.dart';
 @DataClassName("QuestaoDb")
 class QuestoesDb extends Table {
   IntColumn get id => integer()();
-  TextColumn get titulo => text()();
+  TextColumn get titulo => text().nullable()();
   TextColumn get descricao => text()();
   IntColumn get ordem => integer()();
   IntColumn get tipo => intEnum<EnumTipoQuestao>()();

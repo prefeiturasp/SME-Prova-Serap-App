@@ -10,7 +10,7 @@ part 'questao_completa.response.dto.g.dart';
 @JsonSerializable()
 class QuestaoCompletaResponseDTO {
   int id;
-  String titulo;
+  String? titulo;
   String descricao;
   int ordem;
   EnumTipoQuestao tipo;
@@ -24,7 +24,7 @@ class QuestaoCompletaResponseDTO {
 
   QuestaoCompletaResponseDTO({
     required this.id,
-    required this.titulo,
+    this.titulo,
     required this.descricao,
     required this.ordem,
     required this.tipo,
