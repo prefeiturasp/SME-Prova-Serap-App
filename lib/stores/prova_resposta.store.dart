@@ -137,7 +137,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) async {
+  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int tempoQuestao = 0}) async {
     var resposta = RespostaProva(
       codigoEOL: codigoEOL,
       provaId: idProva,
@@ -154,16 +154,20 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  Future<void> definirTempoResposta(int questaoId, {int? tempoQuestao}) async {
+  Future<void> definirTempoResposta(int questaoId, {int tempoQuestao = 0}) async {
     var resposta = obterResposta(questaoId);
 
     if (resposta != null) {
       resposta.sincronizado = false;
-      resposta.tempoRespostaAluno = tempoQuestao;
+      resposta.tempoRespostaAluno += tempoQuestao;
+
+      info('[$idProva] - Questao $questaoId - Tempo de resposta: ${resposta.tempoRespostaAluno} + $tempoQuestao');
 
       await db.respostaProvaDao.inserirOuAtualizar(resposta);
     } else {
       await definirResposta(questaoId, tempoQuestao: tempoQuestao);
+
+      info('[$idProva] - Questao $questaoId - Tempo de resposta: $tempoQuestao');
     }
   }
 

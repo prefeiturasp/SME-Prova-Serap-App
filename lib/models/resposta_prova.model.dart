@@ -12,7 +12,7 @@ class RespostaProva implements Insertable<RespostaProva> {
   int? alternativaId;
   String? resposta;
   bool sincronizado = false;
-  int? tempoRespostaAluno;
+  int tempoRespostaAluno;
   DateTime? dataHoraResposta = DateTime.now();
 
   RespostaProva({
@@ -23,7 +23,7 @@ class RespostaProva implements Insertable<RespostaProva> {
     this.resposta,
     required this.sincronizado,
     this.dataHoraResposta,
-    this.tempoRespostaAluno,
+    this.tempoRespostaAluno = 0,
   });
 
   factory RespostaProva.fromJson(Map<String, dynamic> json) => _$RespostaProvaFromJson(json);
