@@ -269,7 +269,11 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     return questoes;
   }
 
-  String tratarTexto(String texto) {
+  String tratarTexto(String? texto) {
+    if (texto == null) {
+      return '';
+    }
+
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');

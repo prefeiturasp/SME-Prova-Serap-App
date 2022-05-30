@@ -62,7 +62,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -110,6 +110,9 @@ class AppDatabase extends _$AppDatabase {
               provasDb.idDownload: provasDb.idDownload.cast<String>(),
             }),
           );
+        }
+        if (from == 14) {
+          await m.alterTable(TableMigration(questoesDb));
         }
 
         // Assert that the schema is valid after migrations
