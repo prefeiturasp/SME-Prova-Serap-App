@@ -47,7 +47,7 @@ class RespostaProvaDao extends DatabaseAccessor<AppDatabase> with _$RespostaProv
     return (select(respostaProvaTable)..where((t) => t.provaId.equals(provaId) & t.sincronizado.not())).get();
   }
 
-  Future<Future<int>> definirSincronizado(RespostaProva resposta, bool sincronizado) async {
+  Future<int> definirSincronizado(RespostaProva resposta, bool sincronizado) async {
     return (update(respostaProvaTable)
           ..where(
             (t) =>

@@ -63,7 +63,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -113,6 +113,9 @@ class AppDatabase extends _$AppDatabase {
           );
         }
         if (from == 14) {
+          await m.alterTable(TableMigration(questoesDb));
+        }
+        if (from == 15) {
           await m.alterTable(TableMigration(respostaProvaTable));
         }
 
