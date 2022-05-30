@@ -316,7 +316,11 @@ class QuestaoAlunoWidget extends StatelessWidget {
     );
   }
 
-  String tratarArquivos(String texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
+  String tratarArquivos(String? texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
+    if (texto == null) {
+      return "";
+    }
+
     if (tipoImagem == EnumTipoImagem.QUESTAO) {
       texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
         return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
@@ -325,11 +329,11 @@ class QuestaoAlunoWidget extends StatelessWidget {
 
     for (var arquivo in arquivos) {
       var obterTipo = arquivo.caminho.split(".");
-      texto =
-          texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto!
+          .replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
 
-    texto = texto.replaceAll("#0#", AssetsUtil.notfound);
+    texto = texto!.replaceAll("#0#", AssetsUtil.notfound);
 
     return texto;
   }

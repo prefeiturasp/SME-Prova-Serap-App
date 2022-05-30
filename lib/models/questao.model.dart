@@ -11,7 +11,7 @@ part 'questao.model.g.dart';
 @JsonSerializable()
 class Questao {
   int id;
-  String titulo;
+  String? titulo;
   String descricao;
   int ordem;
   EnumTipoQuestao tipo;
@@ -25,7 +25,7 @@ class Questao {
 
   Questao({
     required this.id,
-    required this.titulo,
+    this.titulo,
     required this.descricao,
     required this.ordem,
     required this.alternativas,
