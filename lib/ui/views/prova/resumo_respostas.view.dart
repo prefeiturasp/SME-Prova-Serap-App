@@ -3,8 +3,8 @@ import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
@@ -20,7 +20,6 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
@@ -270,7 +269,11 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     return questoes;
   }
 
-  String tratarTexto(String texto) {
+  String tratarTexto(String? texto) {
+    if (texto == null) {
+      return '';
+    }
+
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
@@ -282,7 +285,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     store.questoesParaRevisar.clear();
 
     for (Questao questao in provaStore.prova.questoes) {
-      ProvaResposta? resposta = provaStore.respostas.obterResposta(questao.id);
+      RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
 
       String alternativaSelecionada = "";
       String respostaNaTela = "";
@@ -403,6 +406,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
       ),
       onTap: () {
         provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
+        store.posicaoQuestaoSendoRevisada = questaoOrdem;
         if ((provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido) &&
             resposta == "") {
           store.quantidadeDeQuestoesSemRespostas = 0;

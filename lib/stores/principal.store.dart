@@ -6,7 +6,6 @@ import 'package:appserap/main.route.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
-import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -63,11 +62,11 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     AppDatabase db = GetIt.I.get();
 
     try {
-      List<ProvaDb> provas = await db.obterProvas();
+      List<ProvaDb> provas = await db.provaDao.listarTodos();
 
       if (provas.isNotEmpty) {
-        List<int> downlodIds = provas
-            .where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO.index)
+        List<String> downlodIds = provas
+            .where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO)
             .toList()
             .map((element) => element.idDownload!)
             .toList();
@@ -84,7 +83,8 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     }
 
     await _limparDadosLocais();
-    await _apagarArquivos(db);
+
+    await db.respostaProvaDao.removerSincronizadas();
 
     await db.limpar();
 
@@ -93,7 +93,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     usuario.dispose();
 
     if (eraAdimin) {
-      await launch("https://hom-serap.sme.prefeitura.sp.gov.br/", webOnlyWindowName: '_self');
+      await launchUrl(Uri.parse("https://hom-serap.sme.prefeitura.sp.gov.br/"), webOnlyWindowName: '_self');
       ServiceLocator.get<AppRouter>().router.go("/login");
     }
   }
@@ -101,33 +101,10 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   _limparDadosLocais() async {
     SharedPreferences prefs = GetIt.I.get();
 
-    info(prefs.getKeys());
-
-    for (var key in prefs.getKeys()) {
-      if (!key.startsWith("resposta_")) {
-        await prefs.remove(key);
+    for (var item in prefs.getKeys()) {
+      if (!item.startsWith('_')) {
+        await prefs.remove(item);
       }
-    }
-  }
-
-  Future<void> _apagarArquivos(AppDatabase db) async {
-    await _apagarArquivosVideos(db);
-    await _apagarArquivosAudios(db);
-  }
-
-  _apagarArquivosVideos(AppDatabase db) async {
-    var arquivos = await db.arquivosVideosDao.listarTodos();
-
-    for (var arquivo in arquivos) {
-      await apagarArquivo(arquivo.path);
-    }
-  }
-
-  _apagarArquivosAudios(AppDatabase db) async {
-    var arquivos = await db.arquivosAudioDao.listarTodos();
-
-    for (var arquivo in arquivos) {
-      await apagarArquivo(arquivo.path);
     }
   }
 }

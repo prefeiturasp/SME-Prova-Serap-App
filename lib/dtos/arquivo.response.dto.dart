@@ -5,10 +5,13 @@ part 'arquivo.response.dto.g.dart';
 @JsonSerializable()
 class ArquivoResponseDTO {
   int id;
+  int legadoId;
   String caminho;
   int questaoId;
+
   ArquivoResponseDTO({
     required this.id,
+    required this.legadoId,
     required this.caminho,
     required this.questaoId,
   });

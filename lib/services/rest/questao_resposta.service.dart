@@ -1,3 +1,4 @@
+import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/dtos/questao_resposta.response.dto.dart';
 import 'package:chopper/chopper.dart';
 
@@ -10,24 +11,9 @@ abstract class QuestaoRespostaService extends ChopperService {
   @Get(path: '{questaoId}/respostas')
   Future<Response<QuestaoRespostaResponseDTO>> getRespostaPorQuestaoId({@Path() required int questaoId});
 
-  @Post(path: '/respostas')
-  Future<Response<bool>> postRespostaOld({
-    @Field() required String alunoRa,
-    @Field() required int questaoId,
-    @Field() int? alternativaId,
-    @Field() String? resposta,
-    @Field() required int dataHoraRespostaTicks,
-    @Field() int? tempoRespostaAluno,
-  });
-
   @Post(path: '/respostas/sincronizar')
   Future<Response<bool>> postResposta({
     @Header('chave-api') required String chaveAPI,
-    @Field() required String alunoRa,
-    @Field() required int questaoId,
-    @Field() int? alternativaId,
-    @Field() String? resposta,
-    @Field() required int dataHoraRespostaTicks,
-    @Field() int? tempoRespostaAluno,
+    @Body() required List<QuestaoRespostaDTO> respostas,
   });
 }

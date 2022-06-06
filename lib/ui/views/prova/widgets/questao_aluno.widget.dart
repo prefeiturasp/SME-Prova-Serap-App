@@ -7,8 +7,8 @@ import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
@@ -168,7 +168,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
   }
 
   _buildRespostaConstruida(Questao questao) {
-    ProvaResposta? provaResposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.id);
 
     return Column(
       children: [
@@ -258,7 +258,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
   }
 
   Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    ProvaResposta? resposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
 
     return Observer(
       builder: (_) {
@@ -283,7 +283,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
               await provaStore.respostas.definirResposta(
                 questao.id,
                 alternativaId: value,
-                tempoQuestao: null,
+                tempoQuestao: provaStore.segundos,
               );
             },
             title: Row(
@@ -316,7 +316,11 @@ class QuestaoAlunoWidget extends StatelessWidget {
     );
   }
 
-  String tratarArquivos(String texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
+  String tratarArquivos(String? texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
+    if (texto == null) {
+      return "";
+    }
+
     if (tipoImagem == EnumTipoImagem.QUESTAO) {
       texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
         return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
@@ -325,11 +329,11 @@ class QuestaoAlunoWidget extends StatelessWidget {
 
     for (var arquivo in arquivos) {
       var obterTipo = arquivo.caminho.split(".");
-      texto =
-          texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto!
+          .replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
 
-    texto = texto.replaceAll("#0#", AssetsUtil.notfound);
+    texto = texto!.replaceAll("#0#", AssetsUtil.notfound);
 
     return texto;
   }

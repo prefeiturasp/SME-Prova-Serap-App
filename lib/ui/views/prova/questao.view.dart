@@ -26,7 +26,6 @@ import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -58,6 +57,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
     configure().then((_) {
       store.isLoading = false;
+      provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
     });
   }
 
@@ -148,6 +148,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       }
 
       return Scaffold(
+        backgroundColor: backgroundColor,
         body: Column(
           children: [
             TempoExecucaoWidget(provaStore: provaStore),
@@ -314,7 +315,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
           questao.id,
           tempoQuestao: provaStore.segundos,
         );
-        await SincronizarRespostasWorker().sincronizar();
+        await provaStore.respostas.sincronizarResposta();
         // Navega para a proxima questão
         context.push("/prova/${widget.idProva}/questao/${widget.ordem - 1}");
       },
@@ -345,7 +346,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                 tempoQuestao: provaStore.segundos,
               );
             }
-            await SincronizarRespostasWorker().sincronizar();
+            await provaStore.respostas.sincronizarResposta();
             provaStore.segundos = 0;
 
             context.push("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
@@ -378,7 +379,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   Future<void> _iniciarRevisaoProva() async {
-    await SincronizarRespostasWorker().sincronizar();
+    await provaStore.respostas.sincronizarResposta(force: true);
 
     context.go("/prova/${widget.idProva}/resumo");
   }

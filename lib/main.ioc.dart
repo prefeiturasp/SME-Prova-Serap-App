@@ -77,7 +77,7 @@ class DependenciasIoC with Loggable {
     FutureOr<dynamic> Function(T)? dispose,
   }) {
     if (!ServiceLocator.isRegistered<T>()) {
-      fine('[SingletonAsync] Registrando ${T.toString()}');
+      finest('[SingletonAsync] Registrando ${T.toString()}');
       ServiceLocator.registerSingletonAsync<T>(
         factoryFunc,
         instanceName: instanceName,
@@ -95,7 +95,7 @@ class DependenciasIoC with Loggable {
     FutureOr<dynamic> Function(T)? dispose,
   }) {
     if (!ServiceLocator.isRegistered<T>()) {
-      fine('[Singleton] Registrando ${T.toString()}');
+      finest('[Singleton] Registrando ${T.toString()}');
       ServiceLocator.registerSingleton<T>(
         instance,
         instanceName: instanceName,

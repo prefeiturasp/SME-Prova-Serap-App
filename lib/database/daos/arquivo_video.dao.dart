@@ -1,4 +1,5 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/tables/arquivo_video.table.dart';
 import 'package:drift/drift.dart';
 
 part 'arquivo_video.dao.g.dart';
@@ -35,5 +36,9 @@ class ArquivosVideosDao extends DatabaseAccessor<AppDatabase> with _$ArquivosVid
     return transaction(() async {
       await (delete(arquivosVideoDb)..where((t) => t.provaId.equals(provaId))).go();
     });
+  }
+
+  Future<ArquivoVideoDb?> findById(int id) {
+    return (select(arquivosVideoDb)..where((t) => t.id.equals(id))).getSingleOrNull();
   }
 }

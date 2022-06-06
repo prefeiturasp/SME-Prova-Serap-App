@@ -39,3 +39,6 @@ linter:
 analyzer:
   exclude:
     - "**/*.g.dart"
+    - "**/*.chopper.dart"
+  errors:
+    body_might_complete_normally_nullable: ignore

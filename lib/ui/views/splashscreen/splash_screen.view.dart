@@ -1,15 +1,21 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:imei_plugin/imei_plugin.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:updater/updater.dart';
 
 class SplashScreenView extends StatefulWidget {
@@ -82,12 +88,14 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
     _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!, update: false);
 
     try {
-      if (!(await checkUpdate())) {
+      if (kDebugMode || !(await checkUpdate())) {
         _navegar();
       }
     } catch (e) {
       _navegar();
     }
+
+    await informarVersao();
   }
 
   _navegar() {
@@ -133,5 +141,49 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
     ).check();
 
     return isAvailable;
+  }
+
+  informarVersao() async {
+    if (kIsWeb) {
+      return;
+    }
+
+    try {
+      PermissionStatus status = await Permission.contacts.status;
+
+      if (!status.isGranted) {
+        status = await Permission.phone.request();
+      } else if (status.isPermanentlyDenied || status.isDenied) {
+        await openAppSettings();
+      }
+
+      if (status.isGranted) {
+        SharedPreferences prefs = ServiceLocator.get();
+        PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+        int buildNumber = prefs.getInt("_buildNumber") ?? 0;
+        String version = prefs.getString("_version") ?? "1.0.0";
+
+        if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
+          String? imei = await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
+
+          info("Informando versão...");
+          info("IMEI: $imei Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
+
+          await GetIt.I.get<ApiService>().versao.informarVersao(
+                chaveAPI: AppConfigReader.getChaveApi(),
+                versaoCodigo: int.parse(packageInfo.buildNumber),
+                versaoDescricao: packageInfo.version,
+                dispositivoImei: imei!,
+                atualizadoEm: DateTime.now().toIso8601String(),
+              );
+
+          await prefs.setInt("_buildNumber", int.parse(packageInfo.buildNumber));
+          await prefs.setString("_version", packageInfo.version);
+        }
+      }
+    } on PlatformException catch (e) {
+      severe("Erro ao informar versão: ${e.message}");
+    }
   }
 }

@@ -74,7 +74,6 @@ abstract class _HomeAdminStoreBase with Store, Loggable, Disposable {
           this.provas.addAll(provas.items);
         }
       },
-      retryIf: (e) => e is Exception,
       onRetry: (e) {
         fine('Tentativa de carregamento lista de provas - ${e.toString()}');
       },

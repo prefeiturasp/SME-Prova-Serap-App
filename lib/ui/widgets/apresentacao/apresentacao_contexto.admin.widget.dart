@@ -12,7 +12,6 @@ import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
@@ -59,7 +58,7 @@ class ApresentacaoContextoAdminWidget extends StatelessWidget {
                   listaDePaginasContexto[index].titulo!,
                   listaDePaginasContexto[index].texto!,
                   listaDePaginasContexto[index].imagem!.replaceFirst('http://', 'https://'),
-                  listaDePaginasContexto[index].posicionamento!.index,
+                  listaDePaginasContexto[index].posicionamento.index,
                 ),
               );
             },

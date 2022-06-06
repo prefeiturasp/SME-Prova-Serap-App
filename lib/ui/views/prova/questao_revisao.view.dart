@@ -10,8 +10,8 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
-import 'package:appserap/models/prova_resposta.model.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao_revisao.store.dart';
@@ -26,7 +26,6 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/file.util.dart';
 import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -56,6 +55,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   void initState() {
     super.initState();
     loadData();
+    provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
   }
 
   loadData() {
@@ -273,7 +273,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   _buildRespostaConstruida(Questao questao) {
-    ProvaResposta? provaResposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.id);
 
     return Column(
       children: [
@@ -363,7 +363,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    ProvaResposta? resposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
 
     return Observer(
       builder: (_) {
@@ -388,7 +388,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
               await provaStore.respostas.definirResposta(
                 questao.id,
                 alternativaId: value,
-                tempoQuestao: null,
+                tempoQuestao: provaStore.segundos,
               );
             },
             title: Row(
@@ -421,7 +421,11 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
     );
   }
 
-  String tratarArquivos(String texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
+  String tratarArquivos(String? texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
+    if (texto == null) {
+      return "";
+    }
+
     if (tipoImagem == EnumTipoImagem.QUESTAO) {
       texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
         return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
@@ -430,11 +434,11 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
     for (var arquivo in arquivos) {
       var obterTipo = arquivo.caminho.split(".");
-      texto =
-          texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto!
+          .replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
 
-    texto = texto.replaceAll("#0#", AssetsUtil.notfound);
+    texto = texto!.replaceAll("#0#", AssetsUtil.notfound);
 
     return texto;
   }
@@ -448,10 +452,27 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
           builder: (context) {
             if (store.posicaoQuestaoSendoRevisada != store.totalDeQuestoesParaRevisar) {
               return BotaoDefaultWidget(
-                textoBotao: 'Proximo item da revisão',
+                textoBotao: 'Próximo item da revisão',
                 onPressed: () async {
-                  store.posicaoQuestaoSendoRevisada++;
-                  context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
+                  try {
+                    if (store.botaoOcupado) return;
+
+                    store.botaoOcupado = true;
+
+                    provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                    await provaStore.respostas.definirTempoResposta(
+                      questao.id,
+                      tempoQuestao: provaStore.segundos,
+                    );
+
+                    await provaStore.respostas.sincronizarResposta();
+                    store.posicaoQuestaoSendoRevisada++;
+                    context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
+                  } catch (e) {
+                    fine(e);
+                  } finally {
+                    store.botaoOcupado = false;
+                  }
                 },
               );
             }
@@ -468,12 +489,15 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
               if (store.botaoOcupado) return;
 
               store.botaoOcupado = true;
+
               provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
               await provaStore.respostas.definirTempoResposta(
                 questao.id,
                 tempoQuestao: provaStore.segundos,
               );
-              await SincronizarRespostasWorker().sincronizar();
+
+              await provaStore.respostas.sincronizarResposta();
+
               context.go("/prova/${provaStore.id}/resumo");
             } catch (e) {
               fine(e);
