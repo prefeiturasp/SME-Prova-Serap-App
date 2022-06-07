@@ -24,4 +24,8 @@ abstract class AppConfigReader {
   static String getChaveApi() {
     return _config["chaveApi"] as String;
   }
+
+  static String getSerapUrl() {
+    return _config["serapUrl"] as String;
+  }
 }
