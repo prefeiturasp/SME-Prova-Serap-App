@@ -17,6 +17,10 @@ import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/exceptions/prova_download.exception.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/models/alternativa.model.dart';
+import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -357,13 +361,13 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
         var questaoDTO = questoesDTO.first;
 
-        var questao = QuestaoDb(
+        var questao = Questao(
           id: questaoDTO.id,
+          provaId: provaId,
           titulo: questaoDTO.titulo,
           descricao: questaoDTO.descricao,
           ordem: questaoDTO.ordem,
           tipo: questaoDTO.tipo,
-          provaId: provaId,
           quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
         );
 
@@ -406,7 +410,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     fine("[Prova $provaId] - Salvando ${alternativas.length} alternativas");
 
     for (var alternativaDTO in alternativas) {
-      AlternativaDb alternativaDb = AlternativaDb(
+      Alternativa alternativaDb = Alternativa(
         id: alternativaDTO.id,
         provaId: provaId,
         descricao: alternativaDTO.descricao,
@@ -429,13 +433,13 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
       http.Response contextoResponse = await http.get(
         Uri.parse(
-          contexto.imagem!.replaceFirst('http://', 'https://'),
+          contexto.imagem.replaceFirst('http://', 'https://'),
         ),
       );
 
       String base64 = base64Encode(contextoResponse.bodyBytes);
 
-      var contextoProva = ContextoProvaDb(
+      var contextoProva = ContextoProva(
         id: contexto.id,
         imagem: contexto.imagem,
         imagemBase64: base64,
@@ -457,7 +461,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     for (var arquivoDTO in arquivos) {
       try {
-        ArquivoDb? arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
+        Arquivo? arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
 
         if (arquivoDb == null) {
           http.Response arquivoResponse = await http.get(
@@ -469,7 +473,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
           if (arquivoResponse.statusCode == 200) {
             String base64 = base64Encode(arquivoResponse.bodyBytes);
 
-            var arquivo = ArquivoDb(
+            var arquivo = Arquivo(
               id: int.parse("${arquivoDTO.id}${arquivoDTO.questaoId}"),
               provaId: provaId,
               legadoId: arquivoDTO.legadoId,

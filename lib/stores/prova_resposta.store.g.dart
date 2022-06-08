@@ -59,9 +59,9 @@ mixin _$ProvaRespostaStore on _ProvaRespostaStoreBase, Store {
       AsyncAction('_ProvaRespostaStoreBase.carregarRespostasServidor');
 
   @override
-  Future<void> carregarRespostasServidor([Prova? prova]) {
+  Future<void> carregarRespostasServidor() {
     return _$carregarRespostasServidorAsyncAction
-        .run(() => super.carregarRespostasServidor(prova));
+        .run(() => super.carregarRespostasServidor());
   }
 
   final _$sincronizarRespostaAsyncAction =

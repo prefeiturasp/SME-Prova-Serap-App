@@ -1,5 +1,6 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/alternativa.table.dart';
+import 'package:appserap/models/alternativa.model.dart';
 import 'package:drift/drift.dart';
 
 part 'alternativa.dao.g.dart';
@@ -8,31 +9,31 @@ part 'alternativa.dao.g.dart';
 class AlternativaDao extends DatabaseAccessor<AppDatabase> with _$AlternativaDaoMixin {
   AlternativaDao(AppDatabase db) : super(db);
 
-  Future inserir(AlternativaDb entity) {
+  Future inserir(Alternativa entity) {
     return into(alternativasDb).insert(entity);
   }
 
-  Future inserirOuAtualizar(AlternativaDb entity) {
+  Future inserirOuAtualizar(Alternativa entity) {
     return into(alternativasDb).insertOnConflictUpdate(entity);
   }
 
-  Future remover(AlternativaDb entity) {
+  Future remover(Alternativa entity) {
     return delete(alternativasDb).delete(entity);
   }
 
-  Future<List<AlternativaDb>> obterPorProvaId(int provaId) {
+  Future<List<Alternativa>> obterPorProvaId(int provaId) {
     return (select(alternativasDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future<List<AlternativaDb>> obterPorQuestaoId(int questaoId) {
+  Future<List<Alternativa>> obterPorQuestaoId(int questaoId) {
     return (select(alternativasDb)..where((t) => t.questaoId.equals(questaoId))).get();
   }
 
-  Future<List<AlternativaDb>> listarTodos() {
+  Future<List<Alternativa>> listarTodos() {
     return select(alternativasDb).get();
   }
 
-  Future<List<AlternativaDb>> obterAlternativasPorProvaId(int provaId) {
+  Future<List<Alternativa>> obterAlternativasPorProvaId(int provaId) {
     return (select(alternativasDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 

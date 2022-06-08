@@ -1,6 +1,7 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/alternativa.table.dart';
 import 'package:appserap/database/tables/questao.table.dart';
+import 'package:appserap/models/questao.model.dart';
 import 'package:drift/drift.dart';
 
 part 'questao.dao.g.dart';
@@ -9,27 +10,27 @@ part 'questao.dao.g.dart';
 class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
   QuestaoDao(AppDatabase db) : super(db);
 
-  Future inserir(QuestaoDb entity) {
+  Future inserir(Questao entity) {
     return into(questoesDb).insert(entity);
   }
 
-  Future inserirOuAtualizar(QuestaoDb entity) {
+  Future inserirOuAtualizar(Questao entity) {
     return into(questoesDb).insertOnConflictUpdate(entity);
   }
 
-  Future remover(QuestaoDb entity) {
+  Future remover(Questao entity) {
     return delete(questoesDb).delete(entity);
   }
 
-  Future<List<QuestaoDb>> obterPorProvaId(int provaId) {
+  Future<List<Questao>> obterPorProvaId(int provaId) {
     return (select(questoesDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future<List<QuestaoDb>> listarTodos() {
+  Future<List<Questao>> listarTodos() {
     return select(questoesDb).get();
   }
 
-  Future<QuestaoDb?> obterQuestaoPorArquivoLegadoId(int arquivoLegadoId, int provaId) {
+  Future<Questao?> obterQuestaoPorArquivoLegadoId(int arquivoLegadoId, int provaId) {
     return customSelect('''
         select * from questoes_db 
         where (titulo like '%$arquivoLegadoId%' or descricao like '%$arquivoLegadoId%') and prova_id = $provaId limit 1
@@ -38,7 +39,7 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
     }).map(questoesDb.mapFromRow).getSingleOrNull();
   }
 
-  Future<QuestaoDb?> obterQuestaoPorArquivoLegadoIdAlternativa(int arquivoLegadoId, int provaId) {
+  Future<Questao?> obterQuestaoPorArquivoLegadoIdAlternativa(int arquivoLegadoId, int provaId) {
     return customSelect(
       '''
         select distinct questoes_db.* from questoes_db
@@ -51,7 +52,7 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
     ).map(questoesDb.mapFromRow).getSingleOrNull();
   }
 
-  Future<List<QuestaoDb>> obterQuestoesPorProvaId(int provaId) {
+  Future<List<Questao>> obterQuestoesPorProvaId(int provaId) {
     return (select(questoesDb)
           ..where((t) => t.provaId.equals(provaId))
           ..orderBy([(t) => OrderingTerm(expression: t.ordem)]))
@@ -62,5 +63,9 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
     return transaction(() async {
       await customUpdate("delete from questoes_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });
+  }
+
+  Future<Questao> getByProvaEOrdem(int provaId, int ordem) {
+    return (select(questoesDb)..where((t) => t.provaId.equals(provaId) & t.ordem.equals(ordem))).getSingle();
   }
 }

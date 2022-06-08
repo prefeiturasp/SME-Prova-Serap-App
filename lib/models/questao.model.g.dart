@@ -8,36 +8,22 @@ part of 'questao.model.dart';
 
 Questao _$QuestaoFromJson(Map<String, dynamic> json) => Questao(
       id: json['id'] as int,
+      provaId: json['provaId'] as int,
       titulo: json['titulo'] as String?,
       descricao: json['descricao'] as String,
       ordem: json['ordem'] as int,
-      alternativas: (json['alternativas'] as List<dynamic>)
-          .map((e) => Alternativa.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      arquivos: (json['arquivos'] as List<dynamic>)
-          .map((e) => Arquivo.fromJson(e as Map<String, dynamic>))
-          .toList(),
       tipo: _$enumDecode(_$EnumTipoQuestaoEnumMap, json['tipo']),
       quantidadeAlternativas: json['quantidadeAlternativas'] as int,
-      arquivosVideos: (json['arquivosVideos'] as List<dynamic>)
-          .map((e) => ArquivoVideo.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      arquivosAudio: (json['arquivosAudio'] as List<dynamic>)
-          .map((e) => ArquivoAudio.fromJson(e as Map<String, dynamic>))
-          .toList(),
     );
 
 Map<String, dynamic> _$QuestaoToJson(Questao instance) => <String, dynamic>{
       'id': instance.id,
+      'provaId': instance.provaId,
       'titulo': instance.titulo,
       'descricao': instance.descricao,
       'ordem': instance.ordem,
       'tipo': _$EnumTipoQuestaoEnumMap[instance.tipo],
       'quantidadeAlternativas': instance.quantidadeAlternativas,
-      'alternativas': instance.alternativas,
-      'arquivos': instance.arquivos,
-      'arquivosVideos': instance.arquivosVideos,
-      'arquivosAudio': instance.arquivosAudio,
     };
 
 K _$enumDecode<K, V>(

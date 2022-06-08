@@ -25,6 +25,22 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
+  final _$mapaDeQuestoesAtom =
+      Atom(name: '_QuestaoRevisaoStoreBase.mapaDeQuestoes');
+
+  @override
+  ObservableList<Map<String, dynamic>> get mapaDeQuestoes {
+    _$mapaDeQuestoesAtom.reportRead();
+    return super.mapaDeQuestoes;
+  }
+
+  @override
+  set mapaDeQuestoes(ObservableList<Map<String, dynamic>> value) {
+    _$mapaDeQuestoesAtom.reportWrite(value, super.mapaDeQuestoes, () {
+      super.mapaDeQuestoes = value;
+    });
+  }
+
   final _$posicaoQuestaoSendoRevisadaAtom =
       Atom(name: '_QuestaoRevisaoStoreBase.posicaoQuestaoSendoRevisada');
 
@@ -92,14 +108,31 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
+  final _$isLoadingAtom = Atom(name: '_QuestaoRevisaoStoreBase.isLoading');
+
+  @override
+  bool get isLoading {
+    _$isLoadingAtom.reportRead();
+    return super.isLoading;
+  }
+
+  @override
+  set isLoading(bool value) {
+    _$isLoadingAtom.reportWrite(value, super.isLoading, () {
+      super.isLoading = value;
+    });
+  }
+
   @override
   String toString() {
     return '''
 questoesParaRevisar: ${questoesParaRevisar},
+mapaDeQuestoes: ${mapaDeQuestoes},
 posicaoQuestaoSendoRevisada: ${posicaoQuestaoSendoRevisada},
 totalDeQuestoesParaRevisar: ${totalDeQuestoesParaRevisar},
 quantidadeDeQuestoesSemRespostas: ${quantidadeDeQuestoesSemRespostas},
-botaoOcupado: ${botaoOcupado}
+botaoOcupado: ${botaoOcupado},
+isLoading: ${isLoading}
     ''';
   }
 }

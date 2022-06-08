@@ -1,7 +1,6 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -35,7 +34,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   ObservableMap<int, RespostaProva> respostasLocal = <int, RespostaProva>{}.asObservable();
 
   @action
-  Future<void> carregarRespostasServidor([Prova? prova]) async {
+  Future<void> carregarRespostasServidor() async {
     respostasLocal = (await carregarRespostasLocal()).asObservable();
 
     var connectionStatus = await Connectivity().checkConnectivity();
@@ -44,8 +43,6 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
     }
 
     fine('[Prova $idProva] - Carregando respostas da prova');
-
-    prova ??= await Prova.carregaProvaCache(idProva);
 
     try {
       var respostaBanco = await _serviceProva.getRespostasPorProvaId(idProva: idProva);
@@ -97,9 +94,9 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       idProva,
     );
 
-    var prova = await Prova.carregaProvaCache(idProva);
+    var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaId(idProva);
 
-    if (respostasNaoSincronizadas.length == prova!.quantidadeRespostaSincronizacao || force) {
+    if (respostasNaoSincronizadas.length == prova.quantidadeRespostaSincronizacao || force) {
       List<QuestaoRespostaDTO> respostas = [];
 
       for (var resposta in respostasNaoSincronizadas) {

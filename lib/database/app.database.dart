@@ -3,13 +3,21 @@ import 'package:appserap/database/daos/download_prova.dao.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:drift_dev/api/migrations.dart';
 
-import '../models/prova_aluno.model.dart';
-import '../models/resposta_prova.model.dart';
+import 'package:appserap/models/prova_aluno.model.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/alternativa.model.dart';
+
 import 'daos/alternativa.dao.dart';
 import 'daos/arquivo.dao.dart';
 import 'daos/arquivo_audio.dao.dart';
@@ -63,7 +71,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 16;
+  int get schemaVersion => 17;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -118,6 +126,11 @@ class AppDatabase extends _$AppDatabase {
         if (from == 15) {
           await m.alterTable(TableMigration(respostaProvaTable));
         }
+        if (from == 16) {
+          await m.alterTable(TableMigration(questoesDb));
+          await m.alterTable(TableMigration(arquivosDb));
+          await m.alterTable(TableMigration(contextosProvaDb));
+        }
 
         // Assert that the schema is valid after migrations
         if (kDebugMode) {
@@ -131,7 +144,7 @@ class AppDatabase extends _$AppDatabase {
         if (kDebugMode) {
           // This check pulls in a fair amount of code that's not needed
           // anywhere else, so we recommend only doing it in debug builds.
-          await validateDatabaseSchema();
+          //await validateDatabaseSchema();
         }
       });
 

@@ -17,13 +17,9 @@ Prova _$ProvaFromJson(Map<String, dynamic> json) => Prova(
       tempoExecucao: json['tempoExecucao'] as int,
       tempoExtra: json['tempoExtra'] as int,
       tempoAlerta: json['tempoAlerta'] as int?,
-      questoes: (json['questoes'] as List<dynamic>)
-          .map((e) => Questao.fromJson(e as Map<String, dynamic>))
-          .toList(),
       downloadStatus: _$enumDecodeNullable(
               _$EnumDownloadStatusEnumMap, json['downloadStatus']) ??
           EnumDownloadStatus.NAO_INICIADO,
-      downloadProgresso: (json['downloadProgresso'] as num?)?.toDouble() ?? 0,
       idDownload: json['idDownload'] as String?,
       status: _$enumDecodeNullable(_$EnumProvaStatusEnumMap, json['status']) ??
           EnumProvaStatus.NAO_INICIADA,
@@ -34,9 +30,6 @@ Prova _$ProvaFromJson(Map<String, dynamic> json) => Prova(
       dataFimProvaAluno: json['dataFimProvaAluno'] == null
           ? null
           : DateTime.parse(json['dataFimProvaAluno'] as String),
-      contextosProva: (json['contextosProva'] as List<dynamic>?)
-          ?.map((e) => ContextoProva.fromJson(e as Map<String, dynamic>))
-          .toList(),
       quantidadeRespostaSincronizacao:
           json['quantidadeRespostaSincronizacao'] as int,
       ultimaAlteracao: DateTime.parse(json['ultimaAlteracao'] as String),
@@ -53,13 +46,10 @@ Map<String, dynamic> _$ProvaToJson(Prova instance) => <String, dynamic>{
       'tempoAlerta': instance.tempoAlerta,
       'dataInicioProvaAluno': instance.dataInicioProvaAluno?.toIso8601String(),
       'dataFimProvaAluno': instance.dataFimProvaAluno?.toIso8601String(),
-      'questoes': instance.questoes,
       'downloadStatus': _$EnumDownloadStatusEnumMap[instance.downloadStatus],
-      'downloadProgresso': instance.downloadProgresso,
       'idDownload': instance.idDownload,
       'status': _$EnumProvaStatusEnumMap[instance.status],
       'senha': instance.senha,
-      'contextosProva': instance.contextosProva,
       'quantidadeRespostaSincronizacao':
           instance.quantidadeRespostaSincronizacao,
       'ultimaAlteracao': instance.ultimaAlteracao.toIso8601String(),
