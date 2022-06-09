@@ -5,7 +5,6 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
-import 'package:appserap/utils/string.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
@@ -7,6 +8,8 @@ import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/models/alternativa.model.dart';
+import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -46,7 +49,14 @@ class QuestaoView extends BaseStatefulWidget {
 class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable {
   late ProvaStore provaStore;
   late Questao questao;
-  late Map<int, Uint8List> arquivosVideo = {};
+  late List<Alternativa> alternativas;
+  late List<Arquivo> imagens;
+  late Uint8List arquivoVideo;
+
+  ArquivoVideoDb? arquivoVideoDb;
+  ArquivoAudioDb? arquivoAudioDb;
+
+  var db = ServiceLocator.get<AppDatabase>();
 
   final controller = HtmlEditorController();
 
@@ -70,7 +80,10 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     }
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
-    questao = provaStore.prova.questoes.where((element) => element.ordem == widget.ordem).first;
+
+    questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, widget.ordem);
+    alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
+    imagens = await db.arquivoDao.obterPorQuestaoId(questao.id);
 
     if (kIsWeb) {
       await loadVideos(questao);
@@ -78,20 +91,24 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   loadVideos(Questao questao) async {
-    for (var arquivoVideo in questao.arquivosVideos) {
-      IdbFile idbFile = IdbFile(arquivoVideo.path);
+    arquivoVideoDb = await db.arquivosVideosDao.obterPorQuestaoId(questao.id);
+
+    if (arquivoVideoDb != null) {
+      IdbFile idbFile = IdbFile(arquivoVideoDb!.path);
 
       if (await idbFile.exists()) {
         Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
         info('abrindo video ${formatBytes(readContents.lengthInBytes, 2)}');
-        arquivosVideo[arquivoVideo.id] = readContents;
+        arquivoVideo = readContents;
       }
     }
   }
 
   Future<Uint8List?> loadAudio(Questao questao) async {
-    if (questao.arquivosAudio.isNotEmpty) {
-      IdbFile idbFile = IdbFile(questao.arquivosAudio.first.path);
+    arquivoAudioDb = await db.arquivosAudioDao.obterPorQuestaoId(questao.id);
+
+    if (arquivoAudioDb != null) {
+      IdbFile idbFile = IdbFile(arquivoAudioDb!.path);
 
       if (await idbFile.exists()) {
         Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
@@ -157,11 +174,11 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
               child: _builLayout(
                 body: SingleChildScrollView(
                   child: Padding(
-                    padding: questao.arquivosVideos.isEmpty ? getPadding() : EdgeInsets.zero,
+                    padding: arquivoVideoDb != null ? getPadding() : EdgeInsets.zero,
                     child: Column(
                       children: [
                         SizedBox(
-                          width: questao.arquivosVideos.isNotEmpty ? MediaQuery.of(context).size.width * 0.5 : null,
+                          width: arquivoVideoDb != null ? MediaQuery.of(context).size.width * 0.5 : null,
                           child: Observer(builder: (_) {
                             return Container(
                               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -178,7 +195,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                                         ),
                                       ),
                                       Text(
-                                        'de ${provaStore.prova.questoes.length}',
+                                        'de ${provaStore.prova.itensQuantidade}',
                                         style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
                                           fontSize: temaStore.tTexto20,
                                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
@@ -190,6 +207,8 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                                   QuestaoAlunoWidget(
                                     provaStore: provaStore,
                                     questao: questao,
+                                    alternativas: alternativas,
+                                    imagens: imagens,
                                   ),
                                   SizedBox(height: 8),
                                 ],
@@ -255,9 +274,9 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         },
       );
     } else {
-      if (questao.arquivosAudio.isNotEmpty) {
+      if (arquivoAudioDb != null) {
         return AudioPlayerWidget(
-          audioPath: questao.arquivosAudio.first.path,
+          audioPath: arquivoAudioDb!.path,
         );
       }
     }
@@ -288,7 +307,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       ],
     );
 
-    if (kIsMobile || kIsTablet && questao.arquivosVideos.isNotEmpty) {
+    if (kIsMobile || kIsTablet && arquivoVideoDb != null) {
       botoesRespondendoProva = Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -323,7 +342,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   Widget _buildBotaoProximo(Questao questao) {
-    if (widget.ordem < provaStore.prova.questoes.length - 1) {
+    if (widget.ordem < provaStore.prova.itensQuantidade - 1) {
       return BotaoDefaultWidget(
         textoBotao: 'Próxima questão',
         desabilitado: store.botaoOcupado,
@@ -386,16 +405,15 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
   Future<Widget> showVideoPlayer() async {
     if (kIsWeb) {
-      var file = arquivosVideo.entries.first.value;
-      return VideoPlayerWidget(videoUrl: buildUrl(file));
+      return VideoPlayerWidget(videoUrl: buildUrl(arquivoVideo));
     } else {
-      String path = (await buildPath(questao.arquivosVideos.first.path))!;
+      String path = (await buildPath(arquivoVideoDb!.path))!;
       return VideoPlayerWidget(videoPath: path);
     }
   }
 
   bool exibirAudio() {
-    if (questao.arquivosAudio.isEmpty) {
+    if (arquivoAudioDb == null) {
       return false;
     }
 
@@ -408,7 +426,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   bool exibirVideo() {
-    if (questao.arquivosVideos.isEmpty) {
+    if (arquivoVideoDb == null) {
       return false;
     }
 

@@ -30,9 +30,9 @@ class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
   ProvaStore({
     required int id,
     required Prova prova,
-    required ProvaRespostaStore respostas,
-  }) : super(id: id, prova: prova, respostas: respostas) {
+  }) : super(id: id, prova: prova) {
     downloadManagerStore = DownloadManagerStore(provaStore: this);
+    respostas = ProvaRespostaStore(idProva: id);
   }
 }
 
@@ -43,28 +43,24 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
-  // late GerenciadorDownload gerenciadorDownload;
-
   late DownloadManagerStore downloadManagerStore;
+
+  late ProvaRespostaStore respostas;
 
   int id;
 
   @observable
-  Prova prova;
+  bool isVisible = true;
 
   @observable
-  bool isVisible = true;
+  Prova prova;
 
   _ProvaStoreBase({
     required this.id,
     required this.prova,
-    required this.respostas,
   }) {
     status = prova.status;
   }
-
-  @observable
-  ProvaRespostaStore respostas;
 
   @observable
   EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
@@ -120,11 +116,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     await downloadManagerStore.iniciarDownload();
 
-    await respostas.carregarRespostasServidor(prova);
-
-    var obterProva = await Prova.carregaProvaCache(id);
-
-    prova = obterProva!;
+    await respostas.carregarRespostasServidor();
 
     fine("[Prova $id] - Download Concluído");
   }
@@ -222,7 +214,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   iniciarProva() async {
-    setStatusProva(EnumProvaStatus.INICIADA);
+    await setStatusProva(EnumProvaStatus.INICIADA);
     prova.dataInicioProvaAluno = DateTime.now();
 
     var connectionStatus = await Connectivity().checkConnectivity();
@@ -238,7 +230,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       }
     }
 
-    await saveProva();
     iniciarTemporizador();
   }
 
@@ -259,7 +250,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     setRespondendoProva(true);
 
-    await respostas.carregarRespostasServidor(prova);
+    await respostas.carregarRespostasServidor();
     await _configureControlesTempoProva();
 
     if (prova.status == EnumProvaStatus.NAO_INICIADA) {
@@ -334,37 +325,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  setStatusProva(EnumProvaStatus provaStatus) {
+  setStatusProva(EnumProvaStatus provaStatus) async {
     prova.status = provaStatus;
     status = provaStatus;
-  }
-
-  saveProva() async {
-    AppDatabase db = GetIt.I.get();
-
-    await db.provaDao.inserirOuAtualizar(
-      ProvaDb(
-        id: prova.id,
-        descricao: prova.descricao,
-        downloadStatus: prova.downloadStatus,
-        tempoExtra: prova.tempoExtra,
-        tempoExecucao: prova.tempoExecucao,
-        tempoAlerta: prova.tempoAlerta,
-        status: prova.status.index,
-        itensQuantidade: prova.itensQuantidade,
-        dataInicio: prova.dataInicio,
-        dataFim: prova.dataFim,
-        ultimaAtualizacao: DateTime.now(),
-        dataInicioProvaAluno: prova.dataInicioProvaAluno,
-        dataFimProvaAluno: prova.dataFimProvaAluno,
-        senha: prova.senha,
-        quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
-        ultimaAlteracao: prova.ultimaAlteracao,
-        idDownload: prova.idDownload,
-      ),
-    );
-    var provaSalva = await db.provaDao.obterPorProvaId(prova.id);
-    fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
+    await ServiceLocator.get<AppDatabase>().provaDao.atualizarStatus(id, provaStatus);
   }
 
   @action
@@ -373,22 +337,19 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
 
       ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
-      prova.dataFimProvaAluno = DateTime.now();
       setRespondendoProva(false);
 
       if (resultado == ConnectivityStatus.none) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');
         // Se estiver sem internet alterar status para pendente (worker ira sincronizar)
 
-        setStatusProva(EnumProvaStatus.PENDENTE);
-        await saveProva();
+        await setStatusProva(EnumProvaStatus.PENDENTE);
 
         var retorno = await mostrarDialogSemInternet(context);
         return retorno ?? false;
       } else {
         // Atualiza para finalizada
-        setStatusProva(EnumProvaStatus.FINALIZADA);
-        await saveProva();
+        await setStatusProva(EnumProvaStatus.FINALIZADA);
 
         await respostas.sincronizarResposta(force: true);
 
@@ -397,7 +358,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               idProva: id,
               status: EnumProvaStatus.FINALIZADA.index,
               tipoDispositivo: kDeviceType.index,
-              dataFim: getTicks(prova.dataFimProvaAluno!),
+              dataFim: getTicks(DateTime.now()),
             );
 
         if (response.isSuccessful) {
@@ -418,7 +379,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               AppDatabase db = GetIt.I.get();
 
               // Remove respostas do banco local
-              await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
+              await db.respostaProvaDao.removerSincronizadasPorProva(id);
 
               mostrarDialogProvaJaEnviada(context);
               break;

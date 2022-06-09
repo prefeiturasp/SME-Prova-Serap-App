@@ -24,21 +24,6 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$provaAtom = Atom(name: '_ProvaStoreBase.prova');
-
-  @override
-  Prova get prova {
-    _$provaAtom.reportRead();
-    return super.prova;
-  }
-
-  @override
-  set prova(Prova value) {
-    _$provaAtom.reportWrite(value, super.prova, () {
-      super.prova = value;
-    });
-  }
-
   final _$isVisibleAtom = Atom(name: '_ProvaStoreBase.isVisible');
 
   @override
@@ -54,18 +39,18 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$respostasAtom = Atom(name: '_ProvaStoreBase.respostas');
+  final _$provaAtom = Atom(name: '_ProvaStoreBase.prova');
 
   @override
-  ProvaRespostaStore get respostas {
-    _$respostasAtom.reportRead();
-    return super.respostas;
+  Prova get prova {
+    _$provaAtom.reportRead();
+    return super.prova;
   }
 
   @override
-  set respostas(ProvaRespostaStore value) {
-    _$respostasAtom.reportWrite(value, super.respostas, () {
-      super.respostas = value;
+  set prova(Prova value) {
+    _$provaAtom.reportWrite(value, super.prova, () {
+      super.prova = value;
     });
   }
 
@@ -271,6 +256,15 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     return _$configurarProvaAsyncAction.run(() => super.configurarProva());
   }
 
+  final _$setStatusProvaAsyncAction =
+      AsyncAction('_ProvaStoreBase.setStatusProva');
+
+  @override
+  Future setStatusProva(EnumProvaStatus provaStatus) {
+    return _$setStatusProvaAsyncAction
+        .run(() => super.setStatusProva(provaStatus));
+  }
+
   final _$finalizarProvaAsyncAction =
       AsyncAction('_ProvaStoreBase.finalizarProva');
 
@@ -339,23 +333,11 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
   }
 
   @override
-  dynamic setStatusProva(EnumProvaStatus provaStatus) {
-    final _$actionInfo = _$_ProvaStoreBaseActionController.startAction(
-        name: '_ProvaStoreBase.setStatusProva');
-    try {
-      return super.setStatusProva(provaStatus);
-    } finally {
-      _$_ProvaStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 conexaoStream: ${conexaoStream},
-prova: ${prova},
 isVisible: ${isVisible},
-respostas: ${respostas},
+prova: ${prova},
 downloadStatus: ${downloadStatus},
 tempoCorrendo: ${tempoCorrendo},
 status: ${status},

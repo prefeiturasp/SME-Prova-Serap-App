@@ -11,12 +11,12 @@ ContextoProvaResponseDTO _$ContextoProvaResponseDTOFromJson(
     ContextoProvaResponseDTO(
       id: json['id'] as int,
       provaId: json['provaId'] as int,
-      imagem: json['imagem'] as String?,
+      imagem: json['imagem'] as String,
       posicionamento: _$enumDecode(
           _$PosicionamentoImagemEnumEnumMap, json['posicionamento']),
       ordem: json['ordem'] as int,
-      titulo: json['titulo'] as String?,
-      texto: json['texto'] as String?,
+      titulo: json['titulo'] as String,
+      texto: json['texto'] as String,
     );
 
 Map<String, dynamic> _$ContextoProvaResponseDTOToJson(

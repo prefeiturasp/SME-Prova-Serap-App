@@ -8,15 +8,15 @@ part of 'contexto_prova.model.dart';
 
 ContextoProva _$ContextoProvaFromJson(Map<String, dynamic> json) =>
     ContextoProva(
-      id: json['id'] as int?,
-      provaId: json['provaId'] as int?,
-      imagem: json['imagem'] as String?,
-      imagemBase64: json['imagemBase64'] as String?,
-      posicionamento: _$enumDecodeNullable(
+      id: json['id'] as int,
+      provaId: json['provaId'] as int,
+      imagem: json['imagem'] as String,
+      imagemBase64: json['imagemBase64'] as String,
+      posicionamento: _$enumDecode(
           _$PosicionamentoImagemEnumEnumMap, json['posicionamento']),
-      ordem: json['ordem'] as int?,
-      titulo: json['titulo'] as String?,
-      texto: json['texto'] as String?,
+      ordem: json['ordem'] as int,
+      titulo: json['titulo'] as String,
+      texto: json['texto'] as String,
     );
 
 Map<String, dynamic> _$ContextoProvaToJson(ContextoProva instance) =>
@@ -56,17 +56,6 @@ K _$enumDecode<K, V>(
       return MapEntry(unknownValue, enumValues.values.first);
     },
   ).key;
-}
-
-K? _$enumDecodeNullable<K, V>(
-  Map<K, V> enumValues,
-  dynamic source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$PosicionamentoImagemEnumEnumMap = {
