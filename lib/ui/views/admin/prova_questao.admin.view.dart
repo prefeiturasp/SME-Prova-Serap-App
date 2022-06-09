@@ -217,7 +217,14 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
     return BotaoSecundarioWidget(
       textoBotao: 'Item anterior',
       onPressed: () async {
-        context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem - 1}", extra: widget.resumo.toList());
+        if (widget.nomeCaderno != null) {
+          context.push(
+            "/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/questao/${widget.ordem - 1}",
+            extra: widget.resumo.toList(),
+          );
+        } else {
+          context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem - 1}", extra: widget.resumo.toList());
+        }
       },
     );
   }
@@ -227,7 +234,14 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
       return BotaoDefaultWidget(
         textoBotao: 'Próximo item',
         onPressed: () async {
-          context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem + 1}", extra: widget.resumo.toList());
+          if (widget.nomeCaderno != null) {
+            context.push(
+              "/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/questao/${widget.ordem + 1}",
+              extra: widget.resumo.toList(),
+            );
+          } else {
+            context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem + 1}", extra: widget.resumo.toList());
+          }
         },
       );
     }

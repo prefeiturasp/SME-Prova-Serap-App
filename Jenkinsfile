@@ -92,7 +92,7 @@ pipeline {
             sh 'cd ${WORKSPACE} && mkdir config && cp $APPCONFIGPROD config/app_config.json'
             sh 'cp ${GOOGLEJSONPROD} android/app/google-services.json'
             sh "flutter pub get && flutter packages pub run build_runner build --delete-conflicting-outputs && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release"
-            sh "cd ~/ && ./android-sdk-linux/build-tools/29.0.2/apksigner sign --ks ~/key.jks --ks-pass file:key.pass ${WORKSPACE}/build/app/outputs/apk/release/app-release.apk"
+            sh "cd ~/ && /opt/android-sdk-linux/build-tools/30.0.2/apksigner sign --ks ~/key.jks --ks-pass file:key.pass ${WORKSPACE}/build/app/outputs/apk/release/app-release.apk"
             stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
 	        }
         }
