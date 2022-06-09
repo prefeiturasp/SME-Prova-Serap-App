@@ -144,7 +144,7 @@ class AppDatabase extends _$AppDatabase {
         if (kDebugMode) {
           // This check pulls in a fair amount of code that's not needed
           // anywhere else, so we recommend only doing it in debug builds.
-          //await validateDatabaseSchema();
+          // await validateDatabaseSchema();
         }
       });
 
