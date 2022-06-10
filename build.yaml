@@ -5,6 +5,7 @@ targets:
                 enabled: true
                 generate_for:
                     - lib/**/*.store.dart 
+                    - lib/**/*.controller.dart 
             chopper_generator:
                 enabled: true
                 generate_for:
@@ -13,4 +14,4 @@ targets:
                 enabled: true
                 generate_for:
                     - lib/**/*.dto.dart 
-                    - lib/**/*.model.dart 
+                    - lib/**/*.model.dart

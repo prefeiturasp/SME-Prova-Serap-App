@@ -23,6 +23,16 @@ class BarraProgresso extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var value = progresso;
+
+    if (progresso < 0) {
+      value = 0;
+    }
+
+    if (progresso > 1) {
+      value = 1;
+    }
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       color: Colors.white,
@@ -39,8 +49,8 @@ class BarraProgresso extends StatelessWidget {
           Expanded(
             child: LinearPercentIndicator(
               lineHeight: 8.0,
-              percent: progresso,
-              linearStrokeCap: LinearStrokeCap.roundAll,
+              percent: value,
+              barRadius: const Radius.circular(16),
               progressColor: _getColor(),
             ),
           ),

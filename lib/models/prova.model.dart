@@ -1,16 +1,18 @@
-import 'dart:convert';
-
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/models/questao.model.dart';
+
+import 'arquivo_audio.model.dart';
+import 'arquivo_video.model.dart';
 
 part 'prova.model.g.dart';
 
@@ -33,10 +35,16 @@ class Prova {
 
   EnumDownloadStatus downloadStatus;
   double downloadProgresso;
+  String? idDownload;
 
   EnumProvaStatus status;
 
   String? senha;
+
+  List<ContextoProva>? contextosProva;
+
+  int quantidadeRespostaSincronizacao;
+  DateTime ultimaAlteracao;
 
   Prova({
     required this.id,
@@ -50,11 +58,19 @@ class Prova {
     required this.questoes,
     this.downloadStatus = EnumDownloadStatus.NAO_INICIADO,
     this.downloadProgresso = 0,
+    this.idDownload,
     this.status = EnumProvaStatus.NAO_INICIADA,
     this.senha,
     this.dataInicioProvaAluno,
     this.dataFimProvaAluno,
+    this.contextosProva,
+    required this.quantidadeRespostaSincronizacao,
+    required this.ultimaAlteracao,
   });
+
+  bool isFinalizada() {
+    return status == EnumProvaStatus.FINALIZADA || status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE;
+  }
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);
   Map<String, dynamic> toJson() => _$ProvaToJson(this);
@@ -62,12 +78,12 @@ class Prova {
   static Future<Prova?> carregaProvaCache(int idProva) async {
     AppDatabase db = GetIt.I.get();
 
-    ProvaDb? provaDb = await db.obterProvaPorIdNull(idProva);
+    ProvaDb? provaDb = await db.provaDao.obterPorIdNull(idProva);
 
     if (provaDb != null) {
       var prova = Prova(
         id: provaDb.id,
-        downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
+        downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element == provaDb.downloadStatus),
         itensQuantidade: provaDb.itensQuantidade,
         tempoAlerta: provaDb.tempoAlerta,
         tempoExecucao: provaDb.tempoExecucao,
@@ -78,9 +94,31 @@ class Prova {
         dataInicioProvaAluno: provaDb.dataInicioProvaAluno,
         dataFimProvaAluno: provaDb.dataFimProvaAluno,
         questoes: [],
+        status: EnumProvaStatus.values[provaDb.status],
+        senha: provaDb.senha,
+        idDownload: provaDb.idDownload,
+        quantidadeRespostaSincronizacao: provaDb.quantidadeRespostaSincronizacao,
+        ultimaAlteracao: provaDb.ultimaAlteracao,
       );
 
-      var questoesDb = await db.obterQuestoesPorProvaId(prova.id);
+      var contextosProvaDb = await db.contextoProvaDao.obterPorProvaId(prova.id);
+
+      if (contextosProvaDb.isNotEmpty) {
+        prova.contextosProva = contextosProvaDb
+            .map((e) => ContextoProva(
+                  id: e.id,
+                  provaId: e.provaId,
+                  imagem: e.imagem,
+                  imagemBase64: e.imagemBase64,
+                  posicionamento: PosicionamentoImagemEnum.values.firstWhere((element) => element == e.posicionamento),
+                  ordem: e.ordem,
+                  titulo: e.titulo,
+                  texto: e.texto,
+                ))
+            .toList();
+      }
+
+      var questoesDb = await db.questaoDao.obterPorProvaId(prova.id);
       prova.questoes = questoesDb
           .map(
             (e) => Questao(
@@ -90,13 +128,16 @@ class Prova {
               ordem: e.ordem,
               alternativas: [],
               arquivos: [],
-              tipo: EnumTipoQuestao.values.firstWhere((element) => element.index == e.tipo),
+              arquivosVideos: [],
+              arquivosAudio: [],
+              tipo: EnumTipoQuestao.values.firstWhere((element) => element == e.tipo),
+              quantidadeAlternativas: e.quantidadeAlternativas!,
             ),
           )
           .toList();
 
       for (var questao in prova.questoes) {
-        var alternativasDb = await db.obterAlternativasPorQuestaoId(questao.id);
+        var alternativasDb = await db.alternativaDao.obterPorQuestaoId(questao.id);
         questao.alternativas = alternativasDb
             .map(
               (e) => Alternativa(
@@ -104,14 +145,38 @@ class Prova {
             )
             .toList();
 
-        var arquivosDb = await db.obterArquivosPorQuestaoId(questao.id);
+        var arquivosDb = await db.arquivoDao.obterPorQuestaoId(questao.id);
         questao.arquivos = arquivosDb
             .map(
               (e) => Arquivo(
-                id: e.id,
+                id: e.legadoId!,
                 caminho: e.caminho,
                 base64: e.base64,
                 questaoId: e.questaoId,
+              ),
+            )
+            .toList();
+
+        var arquivosVideosDb = await db.arquivosVideosDao.obterPorQuestaoId(questao.id);
+        questao.arquivosVideos = arquivosVideosDb
+            .map(
+              (e) => ArquivoVideo(
+                id: e.id,
+                path: e.path,
+                idProva: e.provaId,
+                idQuestao: e.questaoId,
+              ),
+            )
+            .toList();
+
+        var arquivosAudiosDb = await db.arquivosAudioDao.obterPorQuestaoId(questao.id);
+        questao.arquivosAudio = arquivosAudiosDb
+            .map(
+              (e) => ArquivoAudio(
+                id: e.id,
+                path: e.path,
+                idProva: e.provaId,
+                idQuestao: e.questaoId,
               ),
             )
             .toList();
@@ -124,7 +189,7 @@ class Prova {
   static Prova fromProvaDb(ProvaDb provaDb) {
     Prova prova = Prova(
       id: provaDb.id,
-      downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element.index == provaDb.downloadStatus),
+      downloadStatus: EnumDownloadStatus.values.firstWhere((element) => element == provaDb.downloadStatus),
       itensQuantidade: provaDb.itensQuantidade,
       tempoAlerta: provaDb.tempoAlerta,
       tempoExecucao: provaDb.tempoExecucao,
@@ -135,6 +200,11 @@ class Prova {
       dataInicioProvaAluno: provaDb.dataInicioProvaAluno,
       dataFimProvaAluno: provaDb.dataFimProvaAluno,
       questoes: [],
+      status: EnumProvaStatus.values[provaDb.status],
+      senha: provaDb.senha,
+      idDownload: provaDb.idDownload,
+      quantidadeRespostaSincronizacao: provaDb.quantidadeRespostaSincronizacao,
+      ultimaAlteracao: provaDb.ultimaAlteracao,
     );
 
     return prova;
@@ -142,18 +212,27 @@ class Prova {
 
   static salvaProvaCache(Prova prova) async {
     AppDatabase db = GetIt.I.get();
-    db.inserirOuAtualizarProva(
+
+    await db.provaDao.inserirOuAtualizar(
       ProvaDb(
-          id: prova.id,
-          descricao: prova.descricao,
-          downloadStatus: prova.downloadStatus.index,
-          tempoExtra: prova.tempoExtra,
-          tempoExecucao: prova.tempoExecucao,
-          tempoAlerta: prova.tempoAlerta,
-          itensQuantidade: prova.itensQuantidade,
-          status: prova.status.index,
-          dataInicio: prova.dataInicio,
-          ultimaAtualizacao: DateTime.now()),
+        id: prova.id,
+        descricao: prova.descricao,
+        downloadStatus: prova.downloadStatus,
+        tempoExtra: prova.tempoExtra,
+        tempoExecucao: prova.tempoExecucao,
+        tempoAlerta: prova.tempoAlerta,
+        itensQuantidade: prova.itensQuantidade,
+        status: prova.status.index,
+        dataInicio: prova.dataInicio,
+        ultimaAtualizacao: DateTime.now(),
+        dataFim: prova.dataFim,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        senha: prova.senha,
+        idDownload: prova.idDownload,
+        quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
+        ultimaAlteracao: prova.ultimaAlteracao,
+      ),
     );
   }
 

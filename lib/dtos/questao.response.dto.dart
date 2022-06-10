@@ -6,16 +6,19 @@ part 'questao.response.dto.g.dart';
 @JsonSerializable()
 class QuestaoResponseDTO {
   int id;
-  String titulo;
+  String? titulo;
   String descricao;
   int ordem;
   EnumTipoQuestao tipo;
+  int quantidadeAlternativas;
+
   QuestaoResponseDTO({
     required this.id,
-    required this.titulo,
+    this.titulo,
     required this.descricao,
     required this.ordem,
     required this.tipo,
+    required this.quantidadeAlternativas,
   });
 
   static const fromJson = _$QuestaoResponseDTOFromJson;

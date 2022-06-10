@@ -1,9 +1,8 @@
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/managers/tempo.manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/managers/tempo.manager.dart';
 
 part 'prova_tempo_exeucao.store.g.dart';
 
@@ -33,10 +32,16 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   double porcentagem = 0;
 
   @observable
+  int horaFinalTurno;
+
+  @observable
   Duration tempoRestante = Duration(seconds: 0);
 
   @observable
   bool tempoAcabando = false;
+
+  @observable
+  bool mostrarAlertaDeTempoAcabando = false;
 
   @computed
   bool get isTempoNormalEmExecucao => status == EnumProvaTempoEventType.INICIADO;
@@ -51,6 +56,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
     required this.duracaoProva,
     required this.duracaoTempoExtra,
     required this.duracaoTempoFinalizando,
+    required this.horaFinalTurno,
   }) {
     setupReactions();
   }
@@ -61,7 +67,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   ) {
     finer('Iniciando contador de tempo');
     this.dataHoraInicioProva = dataHoraInicioProva;
-    configugure();
+    configure();
   }
 
   setupReactions() {
@@ -76,6 +82,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
       if (finalizandoProvaCallback != null) {
         finalizandoProvaCallback!();
       }
+      mostrarAlertaDeTempoAcabando = true;
     }
   }
 
@@ -85,6 +92,7 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
         if (extenderProvaCallback != null) {
           extenderProvaCallback!();
         }
+        mostrarAlertaDeTempoAcabando = false;
         break;
 
       case EnumProvaTempoEventType.FINALIZADO:
@@ -100,15 +108,8 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  configugure() {
+  configure() {
     gerenciadorTempo = GerenciadorTempo();
-
-    gerenciadorTempo!.configure(
-      dataHoraInicioProva: dataHoraInicioProva,
-      duracaoProva: duracaoProva,
-      duracaoTempoExtra: duracaoTempoExtra,
-      duracaoTempoFinalizando: duracaoTempoFinalizando,
-    );
 
     gerenciadorTempo!.onChangeDuracao((TempoChangeData changeData) {
       status = changeData.eventType;
@@ -116,6 +117,15 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
       tempoRestante = changeData.tempoRestante;
       tempoAcabando = changeData.tempoAcabando;
     });
+
+    gerenciadorTempo!.configure(
+      horaFinalTurno: horaFinalTurno,
+      dataHoraInicioProva: dataHoraInicioProva,
+      duracaoProva: duracaoProva,
+      duracaoTempoExtra: duracaoTempoExtra,
+      duracaoTempoFinalizando: duracaoTempoFinalizando,
+    );
+
   }
 
   onFinalizarlProva(finalizarProvaCallback) {
@@ -136,6 +146,9 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
     finalizarProvaCallback = null;
     finalizandoProvaCallback = null;
     extenderProvaCallback = null;
+
+    tempoAcabando = false;
+    tempoRestante = Duration(seconds: 0);
 
     for (var reaction in _reactions) {
       reaction();

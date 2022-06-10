@@ -3,11 +3,12 @@ import 'package:appserap/workers/jobs/baixar_prova.job.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:firebase_core/firebase_core.dart' as fb;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 
 setupFirebase() async {
   try {
-    await fb.Firebase.initializeApp();
     logger.config('[Firebase] Configurando Firebase');
+    await fb.Firebase.initializeApp();
   } catch (e) {
     logger.severe('[Firebase] Falha ao inicializar Firebase');
     logger.severe(e);
@@ -20,8 +21,16 @@ inscreverTurmaFirebase(String ano) async {
       return;
     }
 
-    await FirebaseMessaging.instance.subscribeToTopic('ano-$ano');
+    if ((!await Connectivity().checkConnection())) {
+      return;
+    }
+
+    if (kIsWeb) {
+      return;
+    }
+
     logger.config('[Firebase] Inscrevendo no topico do ano $ano');
+    await FirebaseMessaging.instance.subscribeToTopic('ano-$ano');
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     FirebaseMessaging.onMessage.listen(_firebaseMessagingBackgroundHandler);
@@ -47,6 +56,7 @@ desinscreverTurmaFirebase(String ano) async {
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   logger.info('RECEBEU UMA MENSAGEM:');
-  await await configure();
+  registerPluginsForIsolate();
+  await configure();
   await BaixarProvaJob().run();
 }

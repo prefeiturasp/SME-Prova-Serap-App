@@ -1,19 +1,21 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/main.route.dart';
+import 'package:appserap/managers/download.manager.store.dart';
+import 'package:appserap/managers/tempo.manager.dart';
+import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/managers/download.manager.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
@@ -21,31 +23,43 @@ import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 
 part 'prova.store.g.dart';
 
-class ProvaStore = _ProvaStoreBase with _$ProvaStore;
+class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
+  ProvaStore({
+    required int id,
+    required Prova prova,
+    required ProvaRespostaStore respostas,
+  }) : super(id: id, prova: prova, respostas: respostas) {
+    downloadManagerStore = DownloadManagerStore(provaStore: this);
+  }
+}
 
 abstract class _ProvaStoreBase with Store, Loggable, Disposable {
+  var _usuarioStore = ServiceLocator.get<UsuarioStore>();
   List<ReactionDisposer> _reactions = [];
 
   @observable
   ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
-  late GerenciadorDownload gerenciadorDownload;
+  // late GerenciadorDownload gerenciadorDownload;
+
+  late DownloadManagerStore downloadManagerStore;
 
   int id;
 
   @observable
   Prova prova;
 
+  @observable
+  bool isVisible = true;
+
   _ProvaStoreBase({
     required this.id,
     required this.prova,
     required this.respostas,
   }) {
-    gerenciadorDownload = GerenciadorDownload(idProva: id);
     status = prova.status;
   }
 
@@ -83,31 +97,36 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @observable
   DateTime fimQuestao = DateTime.now();
 
-  @observable
-  bool foraDaPaginaDeRevisao = true;
+  @action
+  setRespondendoProva(bool value) {
+    _usuarioStore.isRespondendoProva = value;
+  }
 
   @action
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-    await gerenciadorDownload.configure();
+    fine("[Prova $id] - Configurando Download");
 
-    gerenciadorDownload.onStatusChange((downloadStatus, progressoDownload) {
+    downloadManagerStore.listen((downloadStatus, progressoDownload, tempoPrevisto) {
       this.downloadStatus = downloadStatus;
       this.progressoDownload = progressoDownload;
-    });
-
-    gerenciadorDownload.onTempoPrevistoChange((tempoPrevisto) {
       this.tempoPrevisto = tempoPrevisto;
     });
 
-    await gerenciadorDownload.startDownload();
+    downloadManagerStore.onTempoPrevistoChange((tempoPrevisto) {
+      this.tempoPrevisto = tempoPrevisto;
+    });
+
+    await downloadManagerStore.iniciarDownload();
 
     await respostas.carregarRespostasServidor(prova);
 
-    var obterProva = await gerenciadorDownload.getProva();
+    var obterProva = await Prova.carregaProvaCache(id);
 
-    prova = obterProva;
+    prova = obterProva!;
+
+    fine("[Prova $id] - Download Concluído");
   }
 
   @action
@@ -117,6 +136,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   _setupReactions() {
+    fine('[Prova $id] - Configurando reactions');
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction(
@@ -125,6 +145,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         fireImmediately: false,
       ),
       reaction((_) => tempoCorrendo, onChangeContadorQuestao),
+      reaction((_) => _usuarioStore.isRespondendoProva, _onRespondendoProvaChange),
     ];
   }
 
@@ -147,16 +168,36 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
+  _onRespondendoProvaChange(bool isRepondendoProva) async {
+    if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
+      return;
+    }
+
+    if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
+      info("[Prova $id] - Download Pausado");
+      downloadStatus = EnumDownloadStatus.PAUSADO;
+      downloadManagerStore.pauseAllDownloads();
+    }
+    if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
+      info("[Prova $id] - Download Resumido");
+
+      await iniciarDownload();
+    }
+  }
+
+  @action
   Future onChangeConexao(ConnectivityStatus? resultado) async {
     if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
-    if (resultado != ConnectivityStatus.none && downloadStatus != EnumDownloadStatus.BAIXANDO) {
-      await iniciarDownload();
-    } else {
+    if (resultado == ConnectivityStatus.none &&
+        (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
       downloadStatus = EnumDownloadStatus.PAUSADO;
-      gerenciadorDownload.pause();
+      downloadManagerStore.pauseAllDownloads();
+    } else if (resultado != ConnectivityStatus.none &&
+        (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
+      await iniciarDownload();
     }
   }
 
@@ -184,10 +225,17 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     setStatusProva(EnumProvaStatus.INICIADA);
     prova.dataInicioProvaAluno = DateTime.now();
 
-    try {
-      await GetIt.I.get<ApiService>().prova.setStatusProva(idProva: id, status: EnumProvaStatus.INICIADA.index);
-    } catch (e) {
-      warning(e);
+    var connectionStatus = await Connectivity().checkConnectivity();
+    if (connectionStatus != ConnectivityStatus.none) {
+      try {
+        await GetIt.I.get<ApiService>().prova.setStatusProva(
+              idProva: id,
+              tipoDispositivo: kDeviceType.index,
+              status: EnumProvaStatus.INICIADA.index,
+            );
+      } catch (e) {
+        warning(e);
+      }
     }
 
     await saveProva();
@@ -205,13 +253,79 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     }
   }
 
+  @action
+  configurarProva() async {
+    info("[Prova $id] - Configurando prova");
+
+    setRespondendoProva(true);
+
+    await respostas.carregarRespostasServidor(prova);
+    await _configureControlesTempoProva();
+
+    if (prova.status == EnumProvaStatus.NAO_INICIADA) {
+      await iniciarProva();
+    } else {
+      await continuarProva();
+    }
+
+    info("[Prova $id] - Configuração concluida");
+  }
+
+  _configureControlesTempoProva() async {
+    info("[Prova $id] - Configurando controles de tempo");
+    if (tempoExecucaoStore != null) {
+      switch (tempoExecucaoStore!.status) {
+        case EnumProvaTempoEventType.EXTENDIDO:
+          await _iniciarRevisaoProva();
+          break;
+        case EnumProvaTempoEventType.FINALIZADO:
+          await _finalizarProva();
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    if (tempoExecucaoStore != null) {
+      tempoExecucaoStore!.onFinalizandoProva(() {
+        fine('Prova quase acabando');
+      });
+
+      tempoExecucaoStore!.onExtenderProva(() async {
+        fine('Prova extendida');
+        await _iniciarRevisaoProva();
+      });
+
+      tempoExecucaoStore!.onFinalizarlProva(() async {
+        fine('Prova finalizada');
+        await _finalizarProva();
+      });
+    }
+  }
+
+  Future<void> _iniciarRevisaoProva() async {
+    await respostas.sincronizarResposta(force: true);
+
+    ServiceLocator.get<AppRouter>().router.go("/prova/$id/resumo");
+  }
+
+  Future<void> _finalizarProva() async {
+    var confirm = await finalizarProva(true);
+    if (confirm) {
+      onDispose();
+      ServiceLocator.get<AppRouter>().router.go("/");
+    }
+  }
+
   /// Configura o tempo de execução da prova
   @action
   _configurarTempoExecucao() {
     if (prova.tempoExecucao > 0) {
-      fine('Configurando controlador de tempo');
+      fine('[Prova $id] - Configurando controlador de tempo');
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
+        horaFinalTurno: ServiceLocator.get<UsuarioStore>().fimTurno,
         duracaoProva: Duration(seconds: prova.tempoExecucao),
         duracaoTempoExtra: Duration(seconds: prova.tempoExtra),
         duracaoTempoFinalizando: Duration(seconds: prova.tempoAlerta ?? 0),
@@ -226,32 +340,41 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   saveProva() async {
-    AppDatabase database = GetIt.I.get();
+    AppDatabase db = GetIt.I.get();
 
-    database.inserirOuAtualizarProva(
+    await db.provaDao.inserirOuAtualizar(
       ProvaDb(
         id: prova.id,
         descricao: prova.descricao,
-        downloadStatus: prova.downloadStatus.index,
+        downloadStatus: prova.downloadStatus,
         tempoExtra: prova.tempoExtra,
         tempoExecucao: prova.tempoExecucao,
         tempoAlerta: prova.tempoAlerta,
         status: prova.status.index,
         itensQuantidade: prova.itensQuantidade,
         dataInicio: prova.dataInicio,
+        dataFim: prova.dataFim,
         ultimaAtualizacao: DateTime.now(),
+        dataInicioProvaAluno: prova.dataInicioProvaAluno,
+        dataFimProvaAluno: prova.dataFimProvaAluno,
+        senha: prova.senha,
+        quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
+        ultimaAlteracao: prova.ultimaAlteracao,
+        idDownload: prova.idDownload,
       ),
     );
-
-    var provaSalva = await database.obterProvaPorId(prova.id);
+    var provaSalva = await db.provaDao.obterPorProvaId(prova.id);
     fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
   }
 
   @action
-  Future<bool> finalizarProva(BuildContext context, [bool automaticamente = false]) async {
+  Future<bool> finalizarProva([bool automaticamente = false]) async {
     try {
+      BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
+
       ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
       prova.dataFimProvaAluno = DateTime.now();
+      setRespondendoProva(false);
 
       if (resultado == ConnectivityStatus.none) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');
@@ -267,12 +390,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         setStatusProva(EnumProvaStatus.FINALIZADA);
         await saveProva();
 
-        await SincronizarRespostasWorker().sincronizar();
+        await respostas.sincronizarResposta(force: true);
 
         // Sincroniza com a api
         var response = await GetIt.I.get<ApiService>().prova.setStatusProva(
               idProva: id,
               status: EnumProvaStatus.FINALIZADA.index,
+              tipoDispositivo: kDeviceType.index,
               dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 
@@ -291,18 +415,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
           switch (response.statusCode) {
             // Prova ja finalizada
             case 411:
-              // Remove prova do cache
-              SharedPreferences prefs = ServiceLocator.get();
               AppDatabase db = GetIt.I.get();
 
-              await prefs.remove('prova_${prova.id}');
-              await prefs.remove('download_${prova.id}');
-              await db.limpar();
-
-              // Remove respostas da prova do cache
-              for (var questoes in prova.questoes) {
-                await prefs.remove('resposta_${questoes.id}');
-              }
+              // Remove respostas do banco local
+              await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
 
               mostrarDialogProvaJaEnviada(context);
               break;
@@ -323,5 +439,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       _reaction();
     }
     tempoExecucaoStore?.onDispose();
+  }
+
+  bool possuiTempoExecucao() {
+    return prova.tempoExecucao > 0;
   }
 }

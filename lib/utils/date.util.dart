@@ -7,6 +7,11 @@ String formatDate(String format, int timestamp) {
   );
 }
 
+bool isSameDate(DateTime other) {
+  DateTime agora = DateTime.now();
+  return agora.year == other.year && agora.month == other.month && agora.day == other.day;
+}
+
 String formatDatedddeMMMdeyyykkmm(DateTime? dateTime) {
   if (dateTime == null) return "-";
   return DateFormat("dd 'de' MMMM 'de' yyyy, kk:mm", 'pt_BR').format(dateTime);
@@ -15,6 +20,11 @@ String formatDatedddeMMMdeyyykkmm(DateTime? dateTime) {
 String formatDateddMMyyykkmm(DateTime? dateTime) {
   if (dateTime == null) return "-";
   return DateFormat("dd/MM/yyyy kk:mm", 'pt_BR').format(dateTime);
+}
+
+String formatDateddMMyyyaskkmm(DateTime? dateTime) {
+  if (dateTime == null) return "-";
+  return DateFormat("dd/MM/yyyy 'às' kk:mm", 'pt_BR').format(dateTime);
 }
 
 String formatDateddMMyyyy(DateTime? dateTime) {
@@ -118,4 +128,8 @@ String formatDuration(Duration d) {
   }
 
   return tokens.join(' ');
+}
+
+isFinalDeSemana(DateTime data) {
+  return data.weekday == DateTime.saturday || data.weekday == DateTime.sunday;
 }

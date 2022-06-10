@@ -1,7 +1,10 @@
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/principal.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -11,17 +14,19 @@ import 'base_statefull.widget.dart';
 abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget>
     with Loggable {
   var store = GetIt.I.get<TBind>();
-  var _principalStore = GetIt.I.get<PrincipalStore>();
+  var principalStore = GetIt.I.get<PrincipalStore>();
+
+  TemaStore temaStore = GetIt.I.get<TemaStore>();
 
   @override
   void initState() {
     super.initState();
-    _principalStore.setup();
+    principalStore.setup();
   }
 
   @override
   void dispose() {
-    _principalStore.dispose();
+    principalStore.dispose();
     super.dispose();
   }
 
@@ -42,11 +47,14 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
 
   bool? resizeToAvoidBottomInset;
 
+  bool exibirSair = false;
+  bool exibirVoltar = true;
+
   onAfterBuild(BuildContext context) {}
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) => onAfterBuild(context));
+    WidgetsBinding.instance.addPostFrameCallback((_) => onAfterBuild(context));
 
     return SafeArea(
       child: Scaffold(
@@ -81,9 +89,21 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
     );
   }
 
+  getPadding([EdgeInsets mobile = EdgeInsets.zero]) {
+    if (kIsWeb) {
+      return EdgeInsets.symmetric(
+        horizontal: (MediaQuery.of(context).size.width - 600 - (24 * 2)) / 2,
+      );
+    } else {
+      return mobile;
+    }
+  }
+
   PreferredSizeWidget buildAppBar() {
     return AppBarWidget(
       popView: false,
+      exibirSair: exibirSair,
+      mostrarBotaoVoltar: exibirVoltar,
     );
   }
 
@@ -110,13 +130,17 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
           builder: (_) {
             var cor = TemaUtil.preto;
 
-            if (!_principalStore.temConexao) {
+            if (!principalStore.temConexao) {
               cor = TemaUtil.vermelhoErro;
             }
 
             return Text(
-              _principalStore.versao,
-              style: TextStyle(color: cor),
+              principalStore.versao,
+              style: TextStyle(
+                color: cor,
+                fontSize: temaStore.tTexto14,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              ),
             );
           },
         ),

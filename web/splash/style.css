@@ -2,8 +2,6 @@ body, html {
   margin:0;
   height:100%;
   background: #ffffff;
-  background-image: url("img/light-background.png");
-  background-size: 100% 100%;
 }
 
 .center {
@@ -37,7 +35,5 @@ body, html {
     margin:0;
     height:100%;
     background: #ffffff;
-    background-image: url("img/dark-background.png");
-    background-size: 100% 100%;
   }
 }
