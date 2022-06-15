@@ -7,7 +7,7 @@ import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/main.route.dart';
+import 'package:appserap/main.router.gr.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
@@ -29,10 +29,10 @@ import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
@@ -40,7 +40,11 @@ class QuestaoView extends BaseStatefulWidget {
   final int idProva;
   final int ordem;
 
-  QuestaoView({Key? key, required this.idProva, required this.ordem}) : super(key: key);
+  QuestaoView({
+    Key? key,
+    @pathParam required this.idProva,
+    @pathParam required this.ordem,
+  }) : super(key: key);
 
   @override
   _QuestaoViewState createState() => _QuestaoViewState();
@@ -75,7 +79,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     var provas = ServiceLocator.get<HomeStore>().provas;
 
     if (provas.isEmpty) {
-      ServiceLocator.get<AppRouter>().router.go("/");
+      ServiceLocator.get<AppRouter>().replaceNamed("/");
       return;
     }
 
@@ -141,7 +145,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
         if (voltar) {
           provaStore.setRespondendoProva(false);
-          context.go("/");
+          context.router.popAndPush(HomeViewRoute());
         }
       },
     );
@@ -336,7 +340,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         );
         await provaStore.respostas.sincronizarResposta();
         // Navega para a proxima questão
-        context.push("/prova/${widget.idProva}/questao/${widget.ordem - 1}");
+        context.router.popAndPush(QuestaoViewRoute(idProva: widget.idProva, ordem: widget.ordem - 1));
       },
     );
   }
@@ -368,7 +372,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
             await provaStore.respostas.sincronizarResposta();
             provaStore.segundos = 0;
 
-            context.push("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
+            context.router.popAndPush(QuestaoViewRoute(idProva: widget.idProva, ordem: widget.ordem + 1));
           } catch (e) {
             fine(e);
           } finally {
@@ -400,7 +404,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   Future<void> _iniciarRevisaoProva() async {
     await provaStore.respostas.sincronizarResposta(force: true);
 
-    context.go("/prova/${widget.idProva}/resumo");
+    context.router.popAndPush(ResumoRespostasViewRoute(idProva: widget.idProva));
   }
 
   Future<Widget> showVideoPlayer() async {

@@ -36,6 +36,7 @@ google-services.json
 .pub/
 /build/
 /ios/build/
+*.g.dart
 
 # Windows related
 **/generated_plugin_registrant.*

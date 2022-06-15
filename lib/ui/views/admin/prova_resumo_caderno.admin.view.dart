@@ -6,14 +6,17 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/string.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 class AdminProvaCadernoView extends BaseStatefulWidget {
   final int idProva;
-  AdminProvaCadernoView({Key? key, required this.idProva}) : super(key: key);
+  AdminProvaCadernoView({
+    Key? key,
+    @pathParam required this.idProva,
+  }) : super(key: key);
 
   @override
   State<AdminProvaCadernoView> createState() => _AdminProvaCadernoViewState();
@@ -41,7 +44,7 @@ class _AdminProvaCadernoViewState extends BaseStateWidget<AdminProvaCadernoView,
     return IconButton(
       icon: Icon(Icons.arrow_back),
       onPressed: () async {
-        context.go("/admin");
+        context.router.navigateNamed("/admin");
       },
     );
   }
@@ -190,7 +193,7 @@ class _AdminProvaCadernoViewState extends BaseStateWidget<AdminProvaCadernoView,
         Radius.circular(10),
       ),
       onTap: () {
-        context.push("/admin/prova/${widget.idProva}/caderno/$nomeCaderno/resumo");
+        context.router.pushNamed("/admin/prova/${widget.idProva}/caderno/$nomeCaderno/resumo");
       },
       child: SvgPicture.asset(
         AssetsUtil.iconeRevisarQuestao,

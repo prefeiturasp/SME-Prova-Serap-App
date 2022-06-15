@@ -1,26 +1,28 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.router.gr.dart';
 import 'package:appserap/stores/contexto_prova_view.store.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao_contexto.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supercharged/supercharged.dart';
 
-import '../../../main.route.dart';
-
 class ContextoProvaView extends StatefulWidget {
   late final ProvaStore provaStore;
 
-  ContextoProvaView({required int idProva}) {
+  ContextoProvaView({
+    @pathParam required int idProva,
+  }) {
     var provas = ServiceLocator.get<HomeStore>().provas;
 
     if (provas.isEmpty) {
-      ServiceLocator.get<AppRouter>().router.go("/");
+      ServiceLocator.get<AppRouter>().replaceNamed("/");
     }
 
     provaStore = provas.filter((prova) => prova.key == idProva).first.value;

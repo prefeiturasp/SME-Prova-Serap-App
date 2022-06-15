@@ -31,7 +31,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
           child: Observer(
             builder: (_) {
               return ApresentacaoWidget(
-                avancarParaPagina: "/",
+                avancarParaPagina: "/home",
                 listaDePaginas: _store.listaPaginasOrientacoes,
                 textoBotaoAvancar: "PRÓXIMA DICA",
                 textoBotaoPular: "IR PARA A PÁGINA INICIAL",

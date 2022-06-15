@@ -1,4 +1,5 @@
 import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
+import 'package:appserap/main.router.gr.dart';
 import 'package:appserap/stores/admin_prova_resumo.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
@@ -7,10 +8,10 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/string.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 class AdminProvaResumoView extends BaseStatefulWidget {
   final int idProva;
@@ -18,8 +19,8 @@ class AdminProvaResumoView extends BaseStatefulWidget {
 
   AdminProvaResumoView({
     Key? key,
-    required this.idProva,
-    required this.nomeCaderno,
+    @pathParam required this.idProva,
+    @pathParam required this.nomeCaderno,
   }) : super(key: key);
 
   @override
@@ -49,9 +50,9 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
       icon: Icon(Icons.arrow_back),
       onPressed: () async {
         if (widget.nomeCaderno != null) {
-          context.go("/admin/prova/${widget.idProva}/caderno");
+          context.router.navigateNamed("/admin/prova/${widget.idProva}/caderno");
         } else {
-          context.go("/admin");
+          context.router.navigateNamed("/admin");
         }
       },
     );
@@ -204,12 +205,21 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
       ),
       onTap: () {
         if (widget.nomeCaderno != null) {
-          context.push(
-            "/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/questao/$questaoOrdem",
-            extra: store.resumo.toList(),
+          context.router.push(
+            AdminProvaQuestaoViewRoute(
+              idProva: widget.idProva,
+              ordem: questaoOrdem,
+              nomeCaderno: widget.nomeCaderno,
+            ),
           );
         } else {
-          context.push("/admin/prova/${widget.idProva}/questao/$questaoOrdem", extra: store.resumo.toList());
+          context.router.push(
+            AdminProvaQuestaoViewRoute(
+              idProva: widget.idProva,
+              ordem: questaoOrdem,
+              resumo: store.resumo.toList(),
+            ),
+          );
         }
       },
       child: SvgPicture.asset(

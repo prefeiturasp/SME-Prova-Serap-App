@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/main.route.dart';
+import 'package:appserap/main.router.gr.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
@@ -16,7 +17,9 @@ import 'package:supercharged_dart/supercharged_dart.dart';
 class ProvaView extends BaseStatefulWidget {
   final int idProva;
 
-  const ProvaView({required this.idProva}) : super(title: "Prova");
+  const ProvaView({
+    @pathParam required this.idProva,
+  }) : super(title: "Prova");
 
   @override
   _ProvaViewState createState() => _ProvaViewState();
@@ -41,7 +44,7 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     var provas = ServiceLocator.get<HomeStore>().provas;
 
     if (provas.isEmpty) {
-      ServiceLocator.get<AppRouter>().router.go("/");
+      ServiceLocator.get<AppRouter>().navigateNamed("/");
     }
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
@@ -49,7 +52,6 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
     provaStore.configurarProva().then((_) async {
       Timer(Duration(milliseconds: 500), () {
         store.isLoading = false;
-        ServiceLocator.get<AppRouter>().router.go("/prova/${provaStore.id}/questao/0");
       });
     });
 
@@ -79,6 +81,8 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
             Text("Carregando..."),
           ],
         );
+      } else {
+        context.router.push(QuestaoViewRoute(idProva: provaStore.id, ordem: 0));
       }
 
       return SizedBox.shrink();

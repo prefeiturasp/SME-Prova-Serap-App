@@ -5,11 +5,11 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:imei_plugin/imei_plugin.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
@@ -101,12 +101,12 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
   _navegar() {
     if (_principalStore.usuario.isLogado) {
       if (_principalStore.usuario.isAdmin) {
-        context.go("/admin");
+        context.router.navigateNamed("/admin");
       } else {
-        context.go("/");
+        context.router.navigateNamed("/home");
       }
     } else {
-      context.go("/login");
+      context.router.navigateNamed("/login");
     }
   }
 

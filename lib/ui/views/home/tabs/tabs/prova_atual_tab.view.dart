@@ -25,13 +25,13 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/extensions/date.extension.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mobx/mobx.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:supercharged/supercharged.dart';
@@ -677,7 +677,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             _navegarParaProvaPrimeiraVez(provaStore);
           }
         } else if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
-          context.go("/prova/${provaStore.id}");
+          context.router.navigateNamed("/prova/${provaStore.id}");
         }
       },
     );
@@ -699,9 +699,9 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
     if (iniciarProva) {
       if (await ServiceLocator.get<AppDatabase>().contextoProvaDao.possuiContexto(provaStore.id)) {
-        context.go("/prova/${provaStore.id}/contexto");
+        context.router.pushNamed("/prova/${provaStore.id}/contexto");
       } else {
-        context.go("/prova/${provaStore.id}");
+        context.router.pushNamed("/prova/${provaStore.id}");
       }
     }
   }

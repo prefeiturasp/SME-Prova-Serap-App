@@ -1,15 +1,15 @@
 import 'package:appserap/stores/login_adm.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class LoginAdmView extends BaseStatefulWidget {
   final String codigo;
 
   LoginAdmView({
     Key? key,
-    required this.codigo,
+    @pathParam required this.codigo,
   }) : super(key: key);
 
   @override
@@ -22,7 +22,7 @@ class _LoginAdmViewState extends BaseStateWidget<LoginAdmView, LoginAdmStore> {
     super.initState();
     store.loginByToken(widget.codigo).then((logou) {
       if (logou) {
-        context.go("/admin");
+        context.router.replaceNamed("/admin");
       }
     });
   }

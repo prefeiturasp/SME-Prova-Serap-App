@@ -2,17 +2,16 @@
 import 'dart:io';
 
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/main.route.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -21,6 +20,7 @@ import 'package:path_provider_ios/path_provider_ios.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 
+import 'main.router.gr.dart';
 import 'utils/firebase.util.dart';
 
 var logger = Logger('Main');
@@ -34,7 +34,7 @@ Future<void> main() async {
 
   await setupFirebase();
 
-  runApp(MyApp());
+  runApp(App());
 }
 
 registerPluginsForIsolate() {
@@ -95,7 +95,7 @@ setupDateFormating() {
   Intl.defaultLocale = 'pt_BR';
 }
 
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -104,11 +104,11 @@ class MyApp extends StatelessWidget {
         600,
       ),
       builder: (context, child) {
-        final GoRouter goRouter = ServiceLocator.get<AppRouter>().router;
+        final _appRouter = ServiceLocator.get<AppRouter>();
 
         return MaterialApp.router(
-          routeInformationParser: goRouter.routeInformationParser,
-          routerDelegate: goRouter.routerDelegate,
+          routerDelegate: _appRouter.delegate(),
+          routeInformationParser: _appRouter.defaultRouteParser(),
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light().copyWith(
             appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
@@ -120,9 +120,12 @@ class MyApp extends StatelessWidget {
           ),
           locale: Locale('pt', 'BR'),
           scaffoldMessengerKey: NotificacaoUtil.messengerKey,
-          onGenerateTitle: (context) => "SERAp Estudantes",
         );
       },
     );
   }
+}
+
+class EmptyRouterPage extends AutoRouter {
+  const EmptyRouterPage({Key? key}) : super(key: key);
 }

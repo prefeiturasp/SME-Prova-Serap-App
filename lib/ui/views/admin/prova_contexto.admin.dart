@@ -2,18 +2,18 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/admin_prova_contexto.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao_contexto.admin.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 
 class AdminProvaContextoView extends StatefulWidget {
   final int idProva;
   final bool possuiBIB;
   AdminProvaContextoView({
     Key? key,
-    required this.idProva,
-    required this.possuiBIB,
+    @pathParam required this.idProva,
+    @queryParam this.possuiBIB = false,
   }) : super(key: key);
 
   @override
@@ -52,9 +52,9 @@ class _AdminProvaContextoViewState extends State<AdminProvaContextoView> {
                 regraMostrarApenasBotaoPoximo: true,
                 onDone: () {
                   if (widget.possuiBIB) {
-                    context.push("/admin/prova/${widget.idProva}/caderno");
+                    context.router.pushNamed("/admin/prova/${widget.idProva}/caderno");
                   } else {
-                    context.push("/admin/prova/${widget.idProva}/resumo");
+                    context.router.pushNamed("/admin/prova/${widget.idProva}/resumo");
                   }
                 },
               );

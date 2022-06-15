@@ -8,7 +8,7 @@ import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/main.route.dart';
+import 'package:appserap/main.router.gr.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
@@ -27,11 +27,11 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/file.util.dart';
 import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
@@ -40,7 +40,11 @@ class QuestaoRevisaoView extends BaseStatefulWidget {
   final int idProva;
   final int ordem;
 
-  QuestaoRevisaoView({Key? key, required this.idProva, required this.ordem}) : super(key: key);
+  QuestaoRevisaoView({
+    Key? key,
+    @pathParam required this.idProva,
+    @pathParam required this.ordem,
+  }) : super(key: key);
 
   @override
   _QuestaoRevisaoViewState createState() => _QuestaoRevisaoViewState();
@@ -74,7 +78,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
     var provas = ServiceLocator.get<HomeStore>().provas;
 
     if (provas.isEmpty) {
-      ServiceLocator.get<AppRouter>().router.go("/");
+      ServiceLocator.get<AppRouter>().replaceNamed("/");
     }
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
@@ -495,7 +499,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
                     await provaStore.respostas.sincronizarResposta();
                     store.posicaoQuestaoSendoRevisada++;
-                    context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
+                    context.router.pushNamed("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
                   } catch (e) {
                     fine(e);
                   } finally {
@@ -526,7 +530,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
               await provaStore.respostas.sincronizarResposta();
 
-              context.go("/prova/${provaStore.id}/resumo");
+              context.router.navigateNamed("/prova/${provaStore.id}/resumo");
             } catch (e) {
               fine(e);
             } finally {

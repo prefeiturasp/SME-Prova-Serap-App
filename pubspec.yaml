@@ -65,8 +65,8 @@ dependencies:
   logger: ^1.1.0
 
   # Mobx
-  mobx: ^2.0.0
-  flutter_mobx: ^2.0.0
+  mobx: ^2.0.7+3
+  flutter_mobx: ^2.0.6+1
 
   # Vizualizar imagem
   photo_view: ^0.12.0
@@ -108,8 +108,9 @@ dependencies:
       url: https://github.com/pablo384/imei_plugin.git
 
   # Navegação
-  go_router: ^3.0.7
+  # go_router: ^3.0.7
   url_launcher: ^6.1.2
+  auto_route: ^4.0.1
 
   # Reprodução
   flutter_sound: ^9.2.13
@@ -132,12 +133,13 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^1.0.0
 
-  build_runner: ^2.1.2
+  build_runner: ^2.1.11
   chopper_generator: ^4.0.1
   mobx_codegen: ^2.0.0
   drift_dev: ^1.6.0
   json_annotation: ^4.1.0
   json_serializable: ^5.0.0
+  auto_route_generator: ^4.0.0
 
 scripts:
   clean: flutter clean flutter pub get

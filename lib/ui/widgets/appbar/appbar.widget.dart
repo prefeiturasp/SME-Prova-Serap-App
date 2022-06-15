@@ -10,11 +10,11 @@ import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite_viewer/sqlite_viewer.dart';
 
@@ -97,7 +97,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     return IconButton(
       icon: Icon(Icons.arrow_back),
       onPressed: () async {
-        context.pop();
+        context.router.pop();
       },
     );
   }
@@ -145,7 +145,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             prova.dispose();
             orientacoes.dispose();
 
-            context.go("/splash");
+            context.router.replaceNamed("/splash");
           }
         }
       },
@@ -216,7 +216,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         );
       } else if (value == 1) {
         await ServiceLocator.get<AppDatabase>().limparBanco();
-        context.go("/splash");
+        context.router.replaceNamed("/splash");
       }
     });
   }

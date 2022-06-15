@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/main.route.dart';
+import 'package:appserap/main.router.gr.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -298,14 +298,14 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   Future<void> _iniciarRevisaoProva() async {
     await respostas.sincronizarResposta(force: true);
 
-    ServiceLocator.get<AppRouter>().router.go("/prova/$id/resumo");
+    ServiceLocator.get<AppRouter>().replaceNamed("/prova/$id/resumo");
   }
 
   Future<void> _finalizarProva() async {
     var confirm = await finalizarProva(true);
     if (confirm) {
       onDispose();
-      ServiceLocator.get<AppRouter>().router.go("/");
+      ServiceLocator.get<AppRouter>().replaceNamed("/home");
     }
   }
 

@@ -16,7 +16,7 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'main.route.dart';
+import 'main.router.gr.dart';
 import 'stores/admin_prova_caderno.store.dart';
 import 'stores/admin_prova_contexto.store.dart';
 import 'stores/admin_prova_questao.store.dart';
