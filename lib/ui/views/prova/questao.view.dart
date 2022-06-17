@@ -85,15 +85,13 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
     imagens = await db.arquivoDao.obterPorQuestaoId(questao.id);
 
-    if (kIsWeb) {
-      await loadVideos(questao);
-    }
+    loadVideos(questao);
   }
 
   loadVideos(Questao questao) async {
     arquivoVideoDb = await db.arquivosVideosDao.obterPorQuestaoId(questao.id);
 
-    if (arquivoVideoDb != null) {
+    if (arquivoVideoDb != null && kIsWeb) {
       IdbFile idbFile = IdbFile(arquivoVideoDb!.path);
 
       if (await idbFile.exists()) {
