@@ -8,6 +8,7 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/provas.util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
 class BaixarProvaJob with Job, Loggable {
@@ -15,7 +16,14 @@ class BaixarProvaJob with Job, Loggable {
   run() async {
     try {
       var _usuarioStore = ServiceLocator.get<UsuarioStore>();
-      if (_usuarioStore.isRespondendoProva) return;
+      if (_usuarioStore.isRespondendoProva) {
+        return;
+      }
+
+      String? token = ServiceLocator.get<SharedPreferences>().getString("token");
+      if (token == null) {
+        return;
+      }
 
       ProvaService provaService = ServiceLocator.get<ApiService>().prova;
 
