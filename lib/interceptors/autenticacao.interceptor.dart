@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -11,15 +13,14 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ServiceAuthenticator extends Authenticator with Loggable {
+  bool refreshtoken = false;
+
   @override
   FutureOr<Request?> authenticate(Request request, Response<dynamic> response, [Request? originalRequest]) async {
     SharedPreferences prefs = GetIt.I.get();
 
-    if (response.statusCode == 401) {
-      if (response.bodyString.contains("Token inválido")) {
-        await _deslogar();
-        return null;
-      }
+    if (response.statusCode == 401 && !refreshtoken) {
+      refreshtoken = true;
 
       fine('401 - Não autorizado');
 
@@ -32,6 +33,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       }
 
       var newToken = await refreshToken(token);
+      refreshtoken = false;
       token = newToken;
 
       Map<String, String> updatedHeaders = Map.of(request.headers);
@@ -43,7 +45,11 @@ class ServiceAuthenticator extends Authenticator with Loggable {
         (value) => "GET, PUT, POST, DELETE, HEAD, OPTIONS, PATCH, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK",
         ifAbsent: () => "GET, PUT, POST, DELETE, HEAD, OPTIONS, PATCH, PROPFIND, PROPPATCH, MKCOL, COPY, MOVE, LOCK",
       );
+
       return request.copyWith(headers: updatedHeaders);
+    } else if (response.statusCode != 200 && refreshtoken) {
+      await _deslogar();
+      return null;
     }
   }
 
@@ -82,8 +88,10 @@ class ServiceAuthenticator extends Authenticator with Loggable {
 
   _deslogar() async {
     info("Deslogando...");
+    refreshtoken = false;
     final _principalStore = GetIt.I.get<PrincipalStore>();
     await _principalStore.sair();
+    ServiceLocator.get<AppRouter>().router.go("/login");
   }
 }
 
