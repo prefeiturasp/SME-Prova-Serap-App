@@ -1,9 +1,10 @@
+import 'package:appserap/models/arquivo.model.dart';
 import 'package:drift/drift.dart';
 
-@DataClassName("ArquivoDb")
+@UseRowClass(Arquivo)
 class ArquivosDb extends Table {
   IntColumn get id => integer()();
-  IntColumn get legadoId => integer().nullable()();
+  IntColumn get legadoId => integer()();
   TextColumn get caminho => text()();
   TextColumn get base64 => text()();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();

@@ -24,8 +24,8 @@ class ArquivosVideosDao extends DatabaseAccessor<AppDatabase> with _$ArquivosVid
     return (select(arquivosVideoDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future<List<ArquivoVideoDb>> obterPorQuestaoId(int questaoId) {
-    return (select(arquivosVideoDb)..where((t) => t.questaoId.equals(questaoId))).get();
+  Future<ArquivoVideoDb?> obterPorQuestaoId(int questaoId) {
+    return (select(arquivosVideoDb)..where((t) => t.questaoId.equals(questaoId))).getSingleOrNull();
   }
 
   Future<List<ArquivoVideoDb>> listarTodos() {

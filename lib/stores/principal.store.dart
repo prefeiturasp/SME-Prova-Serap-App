@@ -3,6 +3,7 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
@@ -62,7 +63,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     AppDatabase db = GetIt.I.get();
 
     try {
-      List<ProvaDb> provas = await db.provaDao.listarTodos();
+      List<Prova> provas = await db.provaDao.listarTodos();
 
       if (provas.isNotEmpty) {
         List<String> downlodIds = provas
