@@ -1,3 +1,4 @@
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -38,8 +39,6 @@ class ResumoRespostasView extends BaseStatefulWidget {
 
 class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, QuestaoRevisaoStore> with Loggable {
   late final ProvaStore provaStore;
-
-  List<Map<String, dynamic>> mapaDeQuestoes = [];
 
   int flexQuestao = 18;
   int flexAlternativa = 4;
@@ -252,7 +251,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
   List<Widget> _buildListaRespostas() {
     List<Widget> questoes = [];
 
-    for (var item in mapaDeQuestoes) {
+    for (var item in store.mapaDeQuestoes) {
       questoes.add(
         Padding(
           padding: EdgeInsets.symmetric(vertical: 4),
@@ -280,11 +279,16 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     return textoNovo;
   }
 
-  void popularMapaDeQuestoes() {
+  Future<void> popularMapaDeQuestoes() async {
     store.quantidadeDeQuestoesSemRespostas = 0;
     store.questoesParaRevisar.clear();
+    store.mapaDeQuestoes.clear();
 
-    for (Questao questao in provaStore.prova.questoes) {
+    var db = ServiceLocator.get<AppDatabase>();
+
+    var questoes = await db.questaoDao.obterPorProvaId(widget.idProva);
+
+    for (Questao questao in questoes) {
       RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
 
       String alternativaSelecionada = "";
@@ -294,7 +298,9 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
       String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
 
       if (questao.id == resposta?.questaoId) {
-        for (var alternativa in questao.alternativas) {
+        var alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
+
+        for (var alternativa in alternativas) {
           if (alternativa.id == resposta!.alternativaId) {
             alternativaSelecionada = alternativa.numeracao;
           }
@@ -333,7 +339,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         store.quantidadeDeQuestoesSemRespostas++;
       }
 
-      mapaDeQuestoes.add(
+      store.mapaDeQuestoes.add(
         {
           'questao': '$ordemQuestaoTratada - $questaoProva',
           'resposta': respostaNaTela,
@@ -341,7 +347,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         },
       );
 
-      mapaDeQuestoes.sort(
+      store.mapaDeQuestoes.sort(
         (questao1, questao2) {
           return questao1['questao_ordem'].compareTo(
             questao2['questao_ordem'],

@@ -1,4 +1,5 @@
 import 'package:appserap/enums/modalidade.enum.dart';
+import 'package:appserap/models/prova.model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -7,29 +8,29 @@ part 'prova.response.dto.g.dart';
 
 @JsonSerializable()
 class ProvaResponseDTO {
-  int id;
-  String descricao;
+  final int id;
+  final String descricao;
 
-  int itensQuantidade;
+  final int itensQuantidade;
 
-  DateTime dataInicio;
-  DateTime dataFim;
+  final DateTime dataInicio;
+  final DateTime dataFim;
 
-  String? senha;
+  final String? senha;
 
-  EnumProvaStatus status;
+  final EnumProvaStatus status;
 
-  int tempoExecucao;
-  int tempoExtra;
-  int tempoAlerta;
+  final int tempoExecucao;
+  final int tempoExtra;
+  final int tempoAlerta;
 
-  DateTime? dataInicioProvaAluno;
-  DateTime? dataFimProvaAluno;
+  final DateTime? dataInicioProvaAluno;
+  final DateTime? dataFimProvaAluno;
 
-  ModalidadeEnum modalidade;
+  final ModalidadeEnum modalidade;
 
-  int quantidadeRespostaSincronizacao;
-  DateTime ultimaAlteracao;
+  final int quantidadeRespostaSincronizacao;
+  final DateTime ultimaAlteracao;
 
   ProvaResponseDTO({
     required this.id,
@@ -55,6 +56,25 @@ class ProvaResponseDTO {
 
   static const fromJson = _$ProvaResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$ProvaResponseDTOToJson(this);
+
+  Prova toProvaModel() {
+    return Prova(
+      id: id,
+      descricao: descricao,
+      itensQuantidade: itensQuantidade,
+      dataInicio: dataInicio,
+      tempoExecucao: tempoExecucao,
+      tempoExtra: tempoExtra,
+      tempoAlerta: tempoAlerta,
+      quantidadeRespostaSincronizacao: quantidadeRespostaSincronizacao,
+      ultimaAlteracao: ultimaAlteracao,
+      status: status,
+      dataInicioProvaAluno: dataInicioProvaAluno,
+      dataFimProvaAluno: dataFimProvaAluno,
+      senha: senha,
+      dataFim: dataFim,
+    );
+  }
 
   @override
   String toString() {

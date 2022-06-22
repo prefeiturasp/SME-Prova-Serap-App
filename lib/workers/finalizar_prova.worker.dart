@@ -54,9 +54,7 @@ class FinalizarProvaWorker with Worker, Loggable {
 
     fine('Sincronizando provas para o servidor');
 
-    List<ProvaDb> provasDb = await db.provaDao.obterPendentes();
-
-    List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
+    List<Prova> provas = await db.provaDao.obterPendentes();
 
     info('${provas.length} provas pendente de sincronização');
 

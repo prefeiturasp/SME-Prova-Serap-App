@@ -75,7 +75,7 @@ void setupLogging() {
   if (kDebugMode) {
     Logger.root.level = Level.FINE;
   } else {
-    Logger.root.level = Level.INFO;
+    Logger.root.level = AppConfigReader.logLevel();
   }
 
   Logger.root.onRecord.listen((rec) {

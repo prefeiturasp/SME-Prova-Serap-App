@@ -1,3 +1,4 @@
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/job.interface.dart';
@@ -42,7 +43,7 @@ class BaixarProvaJob with Job, Loggable {
       List<int> idsParaVerificar = idsProvasLocal.toSet().difference(idsToDownload.toSet()).toList();
 
       for (var idProva in idsParaVerificar) {
-        var prova = await Prova.carregaProvaCache(idProva);
+        Prova? prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorIdNull(idProva);
 
         if (prova == null) {
           continue;
@@ -88,12 +89,11 @@ class BaixarProvaJob with Job, Loggable {
       tempoExtra: provaResponse.tempoExtra,
       tempoAlerta: provaResponse.tempoAlerta,
       dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
-      questoes: [],
       senha: provaResponse.senha,
       quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
       ultimaAlteracao: provaResponse.ultimaAlteracao,
     );
 
-    await Prova.salvaProvaCache(prova);
+    await ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(prova);
   }
 }

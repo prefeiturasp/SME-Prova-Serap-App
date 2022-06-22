@@ -24,8 +24,8 @@ class ArquivosAudioDao extends DatabaseAccessor<AppDatabase> with _$ArquivosAudi
     return (select(arquivosAudioDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future<List<ArquivoAudioDb>> obterPorQuestaoId(int questaoId) {
-    return (select(arquivosAudioDb)..where((t) => t.questaoId.equals(questaoId))).get();
+  Future<ArquivoAudioDb?> obterPorQuestaoId(int questaoId) {
+    return (select(arquivosAudioDb)..where((t) => t.questaoId.equals(questaoId))).getSingleOrNull();
   }
 
   Future<List<ArquivoAudioDb>> listarTodos() {
