@@ -28,6 +28,10 @@ abstract class AppConfigReader {
     return _config["chaveApi"] as String;
   }
 
+  static String getSerapUrl() {
+    return _config["serapUrl"] as String;
+  }
+
   static bool debugSql() {
     return _config["debugSQL"] ?? false;
   }
