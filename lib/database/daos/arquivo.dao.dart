@@ -1,5 +1,6 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/arquivo.table.dart';
+import 'package:appserap/models/arquivo.model.dart';
 import 'package:drift/drift.dart';
 
 part 'arquivo.dao.g.dart';
@@ -8,27 +9,27 @@ part 'arquivo.dao.g.dart';
 class ArquivoDao extends DatabaseAccessor<AppDatabase> with _$ArquivoDaoMixin {
   ArquivoDao(AppDatabase db) : super(db);
 
-  Future inserir(ArquivoDb entity) {
+  Future inserir(Arquivo entity) {
     return into(arquivosDb).insert(entity);
   }
 
-  Future inserirOuAtualizar(ArquivoDb entity) {
+  Future inserirOuAtualizar(Arquivo entity) {
     return into(arquivosDb).insertOnConflictUpdate(entity);
   }
 
-  Future remover(ArquivoDb entity) {
+  Future remover(Arquivo entity) {
     return delete(arquivosDb).delete(entity);
   }
 
-  Future<List<ArquivoDb>> obterPorProvaId(int provaId) {
+  Future<List<Arquivo>> obterPorProvaId(int provaId) {
     return (select(arquivosDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future<List<ArquivoDb>> obterPorQuestaoId(int questaoId) {
+  Future<List<Arquivo>> obterPorQuestaoId(int questaoId) {
     return (select(arquivosDb)..where((t) => t.questaoId.equals(questaoId))).get();
   }
 
-  Future<List<ArquivoDb>> listarTodos() {
+  Future<List<Arquivo>> listarTodos() {
     return select(arquivosDb).get();
   }
 
@@ -38,7 +39,7 @@ class ArquivoDao extends DatabaseAccessor<AppDatabase> with _$ArquivoDaoMixin {
     });
   }
 
-  Future<ArquivoDb?> findByLegadoId(int legadoId) {
+  Future<Arquivo?> findByLegadoId(int legadoId) {
     return (select(arquivosDb)..where((t) => t.legadoId.equals(legadoId))).getSingleOrNull();
   }
 }

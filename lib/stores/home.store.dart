@@ -14,7 +14,6 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
-import 'package:appserap/stores/prova_resposta.store.dart';
 
 part 'home.store.g.dart';
 
@@ -36,17 +35,12 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     AppDatabase db = GetIt.I.get();
 
-    List<ProvaDb> provasDb = await db.provaDao.listarTodosPorAluno(codigoEOL);
-    if (provasDb.isNotEmpty) {
-      List<Prova> provas = provasDb.map((e) => Prova.fromProvaDb(e)).cast<Prova>().toList();
-
-      for (var prova in provas) {
-        provasStore[prova.id] = ProvaStore(
-          id: prova.id,
-          prova: prova,
-          respostas: ProvaRespostaStore(idProva: prova.id),
-        );
-      }
+    List<Prova> provasDb = await db.provaDao.listarTodosPorAluno(codigoEOL);
+    for (var prova in provasDb) {
+      provasStore[prova.id] = ProvaStore(
+        id: prova.id,
+        prova: prova,
+      );
     }
 
     ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
@@ -67,28 +61,11 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               provaId: provaResponse.id,
             ));
 
-            var prova = Prova(
-              id: provaResponse.id,
-              descricao: provaResponse.descricao,
-              itensQuantidade: provaResponse.itensQuantidade,
-              dataInicio: provaResponse.dataInicio,
-              dataFim: provaResponse.dataFim,
-              status: provaResponse.status,
-              tempoExecucao: provaResponse.tempoExecucao,
-              tempoExtra: provaResponse.tempoExtra,
-              tempoAlerta: provaResponse.tempoAlerta,
-              dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
-              dataFimProvaAluno: provaResponse.dataFimProvaAluno,
-              questoes: [],
-              senha: provaResponse.senha,
-              quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
-              ultimaAlteracao: provaResponse.ultimaAlteracao,
-            );
+            var prova = provaResponse.toProvaModel();
 
             var provaStore = ProvaStore(
               id: provaResponse.id,
               prova: prova,
-              respostas: ProvaRespostaStore(idProva: provaResponse.id),
             );
 
             // caso nao tenha o id, define como nova prova
@@ -139,12 +116,12 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   }
 
   Future<void> carregaProva(int idProva, ProvaStore provaStore) async {
-    Prova? prova = await Prova.carregaProvaCache(idProva);
+    var provaDao = ServiceLocator.get<AppDatabase>().provaDao;
+
+    Prova? prova = await provaDao.obterPorIdNull(idProva);
 
     if (prova != null) {
       // atualizar prova com os valores remotos
-
-      prova.contextosProva = provaStore.prova.contextosProva;
 
       prova.status = provaStore.prova.status;
       prova.dataInicioProvaAluno = provaStore.prova.dataInicioProvaAluno;
@@ -161,10 +138,9 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
       provaStore.prova = prova;
       provaStore.downloadStatus = prova.downloadStatus;
-      provaStore.progressoDownload = prova.downloadProgresso;
     }
 
-    await Prova.salvaProvaCache(provaStore.prova);
+    await provaDao.inserirOuAtualizar(provaStore.prova);
   }
 
   @override
