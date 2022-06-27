@@ -89,7 +89,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   loadVideos(Questao questao) async {
-    arquivoVideoDb = await db.arquivosVideosDao.obterPorQuestaoId(questao.id);
+    arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoId(questao.id);
 
     if (arquivoVideoDb != null && kIsWeb) {
       IdbFile idbFile = IdbFile(arquivoVideoDb!.path);

@@ -20,11 +20,11 @@ class ArquivosVideosDao extends DatabaseAccessor<AppDatabase> with _$ArquivosVid
     return delete(arquivosVideoDb).delete(entity);
   }
 
-  Future<List<ArquivoVideoDb>> obterPorProvaId(int provaId) {
+  Future<List<ArquivoVideoDb>> findByProvaId(int provaId) {
     return (select(arquivosVideoDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future<ArquivoVideoDb?> obterPorQuestaoId(int questaoId) {
+  Future<ArquivoVideoDb?> findByQuestaoId(int questaoId) {
     return (select(arquivosVideoDb)..where((t) => t.questaoId.equals(questaoId))).getSingleOrNull();
   }
 
@@ -32,9 +32,9 @@ class ArquivosVideosDao extends DatabaseAccessor<AppDatabase> with _$ArquivosVid
     return select(arquivosVideoDb).get();
   }
 
-  Future removerContextoPorProvaId(int provaId) {
+  Future<int> removerPorProvaId(int provaId) {
     return transaction(() async {
-      await (delete(arquivosVideoDb)..where((t) => t.provaId.equals(provaId))).go();
+      return await (delete(arquivosVideoDb)..where((t) => t.provaId.equals(provaId))).go();
     });
   }
 

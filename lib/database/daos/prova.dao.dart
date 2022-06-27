@@ -22,8 +22,8 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     return into(provasDb).insertOnConflictUpdate(entity);
   }
 
-  Future deleteByProva(int provaId) {
-    return (delete(provasDb)..where((t) => t.id.equals(provaId))).go();
+  Future<int> deleteByProva(int provaId) {
+    return transaction(() => (delete(provasDb)..where((t) => t.id.equals(provaId))).go());
   }
 
   Future<List<Prova>> listarTodos() {
@@ -99,5 +99,18 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
         status: Value(status),
       ),
     );
+  }
+
+  Future<List<Prova>> getProvasExpiradas() {
+    var query = select(provasDb)
+      ..where((t) {
+        var hoje = DateTime.now();
+
+        var fimExpirado = t.dataFim.isSmallerThanValue(DateTime(hoje.year, hoje.month, hoje.day));
+
+        return fimExpirado;
+      });
+
+    return query.get();
   }
 }

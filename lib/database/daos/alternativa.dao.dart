@@ -37,9 +37,9 @@ class AlternativaDao extends DatabaseAccessor<AppDatabase> with _$AlternativaDao
     return (select(alternativasDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future removerAlternativasPorProvaId(int id) {
+  Future<int> removerPorProvaId(int id) {
     return transaction(() async {
-      await customUpdate("delete from alternativas_db where prova_id = ?", variables: [Variable.withInt(id)]);
+      return await customUpdate("delete from alternativas_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });
   }
 }

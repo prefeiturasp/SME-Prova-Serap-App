@@ -36,4 +36,10 @@ class ProvaAlunoDao extends DatabaseAccessor<AppDatabase> with _$ProvaAlunoDaoMi
   Future<int> apagarPorUsuario(String codigoEOL) {
     return (delete(provaAlunoTable)..where((t) => t.codigoEOL.equals(codigoEOL))).go();
   }
+
+  Future<int> removerPorProvaId(int provaId) {
+    return transaction(() {
+      return (delete(provaAlunoTable)..where((t) => t.provaId.equals(provaId))).go();
+    });
+  }
 }

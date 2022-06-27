@@ -669,7 +669,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   _validarArquivosImagem() async {
-    var arquivosImagem = await db.arquivoDao.obterPorProvaId(provaId);
+    var arquivosImagem = await db.arquivoDao.findByProvaId(provaId);
 
     for (var arquivo in arquivosImagem) {
       if (arquivo.base64.isEmpty) {
