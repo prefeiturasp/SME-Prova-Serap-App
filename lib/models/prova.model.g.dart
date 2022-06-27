@@ -98,6 +98,7 @@ const _$EnumDownloadStatusEnumMap = {
   EnumDownloadStatus.PAUSADO: 2,
   EnumDownloadStatus.CONCLUIDO: 3,
   EnumDownloadStatus.ERRO: 4,
+  EnumDownloadStatus.ATUALIZAR: 5,
 };
 
 const _$EnumProvaStatusEnumMap = {

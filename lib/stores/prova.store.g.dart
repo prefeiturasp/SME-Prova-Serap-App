@@ -274,6 +274,14 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
         .run(() => super.finalizarProva(automaticamente));
   }
 
+  final _$removerDownloadAsyncAction =
+      AsyncAction('_ProvaStoreBase.removerDownload');
+
+  @override
+  Future removerDownload() {
+    return _$removerDownloadAsyncAction.run(() => super.removerDownload());
+  }
+
   final _$_ProvaStoreBaseActionController =
       ActionController(name: '_ProvaStoreBase');
 
