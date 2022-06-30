@@ -76,7 +76,9 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
             } else {
               // Data alteração da prova alterada
               if (!isSameDates(provaStore.prova.ultimaAlteracao, provasStore[prova.id]!.prova.ultimaAlteracao)) {
-                if (provaStore.prova.status != EnumProvaStatus.INICIADA) {
+                if (provaStore.prova.status != EnumProvaStatus.INICIADA &&
+                    provaStore.prova.status != EnumProvaStatus.FINALIZADA &&
+                    provaStore.prova.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE) {
                   // remover download
                   await provaStore.removerDownload();
 
