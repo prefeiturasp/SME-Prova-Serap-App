@@ -149,6 +149,10 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       prova.tempoExecucao = provaStore.prova.tempoExecucao;
       prova.tempoExtra = provaStore.prova.tempoExtra;
 
+      prova.itensQuantidade = provaStore.prova.itensQuantidade;
+      prova.quantidadeRespostaSincronizacao = provaStore.prova.quantidadeRespostaSincronizacao;
+      prova.senha = provaStore.prova.senha;
+
       provaStore.prova = prova;
       provaStore.downloadStatus = prova.downloadStatus;
     }
