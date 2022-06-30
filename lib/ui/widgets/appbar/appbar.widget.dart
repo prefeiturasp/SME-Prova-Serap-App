@@ -7,9 +7,14 @@ import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/widgets/appbar/popup_submenu_item.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/workers/finalizar_prova.worker.dart';
+import 'package:appserap/workers/jobs.enum.dart';
+import 'package:appserap/workers/jobs/remover_provas.job.dart';
+import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -182,28 +187,48 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       return SizedBox.shrink();
     }
 
-    return PopupMenuButton(
+    return PopupMenuButton<String>(
         // add icon, by default "3 dot" icon
         // icon: Icon(Icons.book)
         itemBuilder: (context) {
       return [
-        PopupMenuItem<int>(
-          value: 0,
+        PopupMenuItem(
+          value: 'banco',
           child: ListTile(
             leading: Icon(Icons.data_usage),
             title: Text('Banco Local'),
           ),
         ),
-        PopupMenuItem<int>(
-          value: 1,
+        PopupMenuItem(
+          value: 'limpar',
           child: ListTile(
             leading: Icon(Icons.delete),
             title: Text('Limpar banco'),
           ),
         ),
+        PopupSubMenuItem(
+          title: "Jobs",
+          items: JobsEnum.values.map((e) => e.uniqueName).toList(),
+          onSelected: (selected) async {
+            var jobs = JobsEnum.parse(selected)!;
+            switch (jobs) {
+              case JobsEnum.SINCRONIZAR_RESPOSTAS:
+                await SincronizarRespostasWorker().sincronizar();
+                break;
+
+              case JobsEnum.FINALIZAR_PROVA:
+                await FinalizarProvaWorker().sincronizar();
+                break;
+
+              case JobsEnum.REMOVER_PROVAS_EXPIRADAS:
+                await RemoverProvasJob().run();
+                break;
+            }
+          },
+        ),
       ];
     }, onSelected: (value) async {
-      if (value == 0) {
+      if (value == 'banco') {
         var directory = await getApplicationDocumentsDirectory();
 
         Navigator.push(
@@ -214,7 +239,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         );
-      } else if (value == 1) {
+      } else if (value == 'limpar') {
         await ServiceLocator.get<AppDatabase>().limparBanco();
         context.go("/splash");
       }

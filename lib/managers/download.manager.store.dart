@@ -461,7 +461,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     for (var arquivoDTO in arquivos) {
       try {
-        Arquivo? arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
+        Arquivo? arquivoDb;
+        try {
+          arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
+        } catch (e) {}
 
         if (arquivoDb == null) {
           http.Response arquivoResponse = await http.get(
@@ -713,6 +716,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     var arquivos = await db.arquivoDao.findByProvaId(provaId);
 
     for (var arquivo in arquivos) {
+      fine("'Removendo arquivo de iamgem '${arquivo.caminho}'");
       await db.arquivoDao.remover(arquivo);
       await apagarArquivo(arquivo.caminho);
     }
@@ -724,6 +728,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     var arquivos = await db.arquivosAudioDao.findByProvaId(provaId);
 
     for (var arquivo in arquivos) {
+      fine("'Removendo arquivo de video '${arquivo.path}'");
       await db.arquivosAudioDao.remover(arquivo);
       await apagarArquivo(arquivo.path);
     }
@@ -735,6 +740,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     var arquivos = await db.arquivosVideosDao.findByProvaId(provaId);
 
     for (var arquivo in arquivos) {
+      fine("'Removendo arquivo de audio '${arquivo.path}'");
       await db.arquivosVideosDao.remover(arquivo);
       await apagarArquivo(arquivo.path);
     }

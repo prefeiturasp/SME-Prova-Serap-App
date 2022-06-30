@@ -17,11 +17,11 @@ Prova _$ProvaFromJson(Map<String, dynamic> json) => Prova(
       tempoExecucao: json['tempoExecucao'] as int,
       tempoExtra: json['tempoExtra'] as int,
       tempoAlerta: json['tempoAlerta'] as int?,
-      downloadStatus: _$enumDecodeNullable(
+      downloadStatus: $enumDecodeNullable(
               _$EnumDownloadStatusEnumMap, json['downloadStatus']) ??
           EnumDownloadStatus.NAO_INICIADO,
       idDownload: json['idDownload'] as String?,
-      status: _$enumDecodeNullable(_$EnumProvaStatusEnumMap, json['status']) ??
+      status: $enumDecodeNullable(_$EnumProvaStatusEnumMap, json['status']) ??
           EnumProvaStatus.NAO_INICIADA,
       senha: json['senha'] as String?,
       dataInicioProvaAluno: json['dataInicioProvaAluno'] == null
@@ -54,43 +54,6 @@ Map<String, dynamic> _$ProvaToJson(Prova instance) => <String, dynamic>{
           instance.quantidadeRespostaSincronizacao,
       'ultimaAlteracao': instance.ultimaAlteracao.toIso8601String(),
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
-
-K? _$enumDecodeNullable<K, V>(
-  Map<K, V> enumValues,
-  dynamic source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    return null;
-  }
-  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
-}
 
 const _$EnumDownloadStatusEnumMap = {
   EnumDownloadStatus.NAO_INICIADO: 0,

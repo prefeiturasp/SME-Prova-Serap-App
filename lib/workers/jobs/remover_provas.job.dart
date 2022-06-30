@@ -22,9 +22,10 @@ class RemoverProvasJob with Job, Loggable, Database {
     info('Removendo ${provas.length} provas expiradas');
 
     for (var prova in provas) {
+      info("Removendo prova 'ID ${prova.id} - ${prova.descricao}'");
       try {
         var downloadManager = DownloadManagerStore(provaId: prova.id);
-        await downloadManager.deleteDownload();
+        await downloadManager.removerDownloadCompleto();
       } catch (e, stacktrace) {
         severe(e);
         severe(stacktrace);

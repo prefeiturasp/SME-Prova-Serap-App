@@ -2,6 +2,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/prova_aluno.model.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:chopper/src/response.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -74,7 +75,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               provaStore.prova.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
             } else {
               // Data alteração da prova alterada
-              if (provaStore.prova.ultimaAlteracao != provasStore[prova.id]!.prova.ultimaAlteracao) {
+              if (!isSameDates(provaStore.prova.ultimaAlteracao, provasStore[prova.id]!.prova.ultimaAlteracao)) {
                 if (provaStore.prova.status != EnumProvaStatus.INICIADA) {
                   // remover download
                   await provaStore.removerDownload();
