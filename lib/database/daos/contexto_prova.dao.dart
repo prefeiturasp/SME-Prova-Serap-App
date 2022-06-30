@@ -35,9 +35,9 @@ class ContextoProvaDao extends DatabaseAccessor<AppDatabase> with _$ContextoProv
     return (await query.get()).isNotEmpty;
   }
 
-  Future removerContextoPorProvaId(int id) {
+  Future<int> removerPorProvaId(int id) {
     return transaction(() async {
-      await customUpdate("delete from contextos_prova_db where prova_id = ?", variables: [Variable.withInt(id)]);
+      return await customUpdate("delete from contextos_prova_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });
   }
 }

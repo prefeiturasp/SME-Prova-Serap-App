@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';

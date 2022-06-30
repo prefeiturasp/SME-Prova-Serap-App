@@ -394,6 +394,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     }
   }
 
+  @action
+  removerDownload() async {
+    await downloadManagerStore.removerDownloadCompleto();
+  }
+
   @override
   onDispose() {
     for (var _reaction in _reactions) {

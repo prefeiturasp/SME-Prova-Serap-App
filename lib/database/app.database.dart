@@ -8,7 +8,6 @@ import 'package:appserap/enums/tipo_questao.enum.dart';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
-import 'package:drift_dev/api/migrations.dart';
 
 import 'package:appserap/models/prova_aluno.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';

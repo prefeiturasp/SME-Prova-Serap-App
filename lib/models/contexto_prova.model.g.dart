@@ -12,7 +12,7 @@ ContextoProva _$ContextoProvaFromJson(Map<String, dynamic> json) =>
       provaId: json['provaId'] as int,
       imagem: json['imagem'] as String,
       imagemBase64: json['imagemBase64'] as String,
-      posicionamento: _$enumDecode(
+      posicionamento: $enumDecode(
           _$PosicionamentoImagemEnumEnumMap, json['posicionamento']),
       ordem: json['ordem'] as int,
       titulo: json['titulo'] as String,
@@ -31,32 +31,6 @@ Map<String, dynamic> _$ContextoProvaToJson(ContextoProva instance) =>
       'titulo': instance.titulo,
       'texto': instance.texto,
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
 
 const _$PosicionamentoImagemEnumEnumMap = {
   PosicionamentoImagemEnum.NAO_CADASTRADO: 0,
