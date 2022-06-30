@@ -21,7 +21,7 @@ class ArquivoDao extends DatabaseAccessor<AppDatabase> with _$ArquivoDaoMixin {
     return delete(arquivosDb).delete(entity);
   }
 
-  Future<List<Arquivo>> obterPorProvaId(int provaId) {
+  Future<List<Arquivo>> findByProvaId(int provaId) {
     return (select(arquivosDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
@@ -33,9 +33,9 @@ class ArquivoDao extends DatabaseAccessor<AppDatabase> with _$ArquivoDaoMixin {
     return select(arquivosDb).get();
   }
 
-  Future removerArquivosPorProvaId(int id) {
+  Future<int> removerPorProvaId(int id) {
     return transaction(() async {
-      await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
+      return await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });
   }
 

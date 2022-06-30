@@ -1,6 +1,7 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/job.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
@@ -8,11 +9,12 @@ import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/provas.util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
-class BaixarProvaJob with Job, Loggable {
+class BaixarProvaJob with Job, Loggable, Database {
   @override
   run() async {
     try {
@@ -50,6 +52,16 @@ class BaixarProvaJob with Job, Loggable {
         }
 
         if (prova.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+          idsToDownload.add(idProva);
+        }
+
+        var provaRemoto = provasRemoto.firstWhere((element) => element.id == prova.id);
+
+        if (!isSameDates(prova.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
+          info('[${prova.id} - ${prova.descricao}] Prova alterada - Baixando Novamente...');
+
+          await DownloadManagerStore(provaId: prova.id).removerDownloadCompleto();
+
           idsToDownload.add(idProva);
         }
       }

@@ -20,7 +20,7 @@ class ArquivosAudioDao extends DatabaseAccessor<AppDatabase> with _$ArquivosAudi
     return delete(arquivosAudioDb).delete(entity);
   }
 
-  Future<List<ArquivoAudioDb>> obterPorProvaId(int provaId) {
+  Future<List<ArquivoAudioDb>> findByProvaId(int provaId) {
     return (select(arquivosAudioDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
@@ -32,9 +32,9 @@ class ArquivosAudioDao extends DatabaseAccessor<AppDatabase> with _$ArquivosAudi
     return select(arquivosAudioDb).get();
   }
 
-  Future removerContextoPorProvaId(int provaId) {
+  Future<int> removerPorProvaId(int provaId) {
     return transaction(() async {
-      await (delete(arquivosAudioDb)..where((t) => t.provaId.equals(provaId))).go();
+      return await (delete(arquivosAudioDb)..where((t) => t.provaId.equals(provaId))).go();
     });
   }
 

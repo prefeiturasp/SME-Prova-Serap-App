@@ -13,7 +13,7 @@ ProvaResponseDTO _$ProvaResponseDTOFromJson(Map<String, dynamic> json) =>
       itensQuantidade: json['itensQuantidade'] as int,
       dataInicio: DateTime.parse(json['dataInicio'] as String),
       dataFim: DateTime.parse(json['dataFim'] as String),
-      status: _$enumDecode(_$EnumProvaStatusEnumMap, json['status']),
+      status: $enumDecode(_$EnumProvaStatusEnumMap, json['status']),
       senha: json['senha'] as String?,
       tempoExecucao: json['tempoExecucao'] as int,
       tempoExtra: json['tempoExtra'] as int,
@@ -24,7 +24,7 @@ ProvaResponseDTO _$ProvaResponseDTOFromJson(Map<String, dynamic> json) =>
       dataFimProvaAluno: json['dataFimProvaAluno'] == null
           ? null
           : DateTime.parse(json['dataFimProvaAluno'] as String),
-      modalidade: _$enumDecode(_$ModalidadeEnumEnumMap, json['modalidade']),
+      modalidade: $enumDecode(_$ModalidadeEnumEnumMap, json['modalidade']),
       quantidadeRespostaSincronizacao:
           json['quantidadeRespostaSincronizacao'] as int,
       ultimaAlteracao: DateTime.parse(json['ultimaAlteracao'] as String),
@@ -49,32 +49,6 @@ Map<String, dynamic> _$ProvaResponseDTOToJson(ProvaResponseDTO instance) =>
           instance.quantidadeRespostaSincronizacao,
       'ultimaAlteracao': instance.ultimaAlteracao.toIso8601String(),
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
 
 const _$EnumProvaStatusEnumMap = {
   EnumProvaStatus.NAO_INICIADA: 0,

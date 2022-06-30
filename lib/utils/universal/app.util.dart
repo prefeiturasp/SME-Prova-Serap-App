@@ -21,7 +21,11 @@ Future<bool> fileExists(String path) async {
 }
 
 apagarArquivo(String path) async {
-  await File((await buildPath(path))!).delete();
+  var file = File((await buildPath(path))!);
+
+  if (await file.exists()) {
+    await file.delete();
+  }
 }
 
 Future<String?> buildPath(String? path) async {

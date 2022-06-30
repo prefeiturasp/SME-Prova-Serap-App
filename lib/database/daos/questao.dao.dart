@@ -59,9 +59,9 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
         .get();
   }
 
-  Future removerQuestoesPorProvaId(int id) {
+  Future<int> removerPorProvaId(int id) {
     return transaction(() async {
-      await customUpdate("delete from questoes_db where prova_id = ?", variables: [Variable.withInt(id)]);
+      return await customUpdate("delete from questoes_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });
   }
 

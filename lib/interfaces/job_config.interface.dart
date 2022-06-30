@@ -1,11 +1,15 @@
+import 'package:workmanager/workmanager.dart';
+
 class JobConfig {
-  int frequency;
+  Duration frequency;
   String uniqueName;
   String taskName;
+  Constraints? constraints;
 
   JobConfig({
-    this.frequency = 0,
+    this.frequency = const Duration(days: 1),
     this.uniqueName = '',
     this.taskName = '',
+    this.constraints,
   });
 }

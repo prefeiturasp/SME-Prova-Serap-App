@@ -13,15 +13,15 @@ AutenticacaoDadosResponseDTO _$AutenticacaoDadosResponseDTOFromJson(
       json['ano'] as String,
       json['tipoTurno'] as String,
       (json['tamanhoFonte'] as num).toDouble(),
-      _$enumDecode(_$FonteTipoEnumEnumMap, json['familiaFonte']),
-      _$enumDecode(_$ModalidadeEnumEnumMap, json['modalidade']),
+      $enumDecode(_$FonteTipoEnumEnumMap, json['familiaFonte']),
+      $enumDecode(_$ModalidadeEnumEnumMap, json['modalidade']),
       json['inicioTurno'] as int,
       json['fimTurno'] as int,
       json['dreAbreviacao'] as String,
       json['escola'] as String,
       json['turma'] as String,
       (json['deficiencias'] as List<dynamic>)
-          .map((e) => _$enumDecode(_$DeficienciaEnumEnumMap, e))
+          .map((e) => $enumDecode(_$DeficienciaEnumEnumMap, e))
           .toList(),
     );
 
@@ -43,32 +43,6 @@ Map<String, dynamic> _$AutenticacaoDadosResponseDTOToJson(
           .map((e) => _$DeficienciaEnumEnumMap[e])
           .toList(),
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
 
 const _$FonteTipoEnumEnumMap = {
   FonteTipoEnum.NAO_CADASTRADO: 0,

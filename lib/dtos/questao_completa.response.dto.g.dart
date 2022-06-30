@@ -13,7 +13,7 @@ QuestaoCompletaResponseDTO _$QuestaoCompletaResponseDTOFromJson(
       titulo: json['titulo'] as String?,
       descricao: json['descricao'] as String,
       ordem: json['ordem'] as int,
-      tipo: _$enumDecode(_$EnumTipoQuestaoEnumMap, json['tipo']),
+      tipo: $enumDecode(_$EnumTipoQuestaoEnumMap, json['tipo']),
       quantidadeAlternativas: json['quantidadeAlternativas'] as int,
       arquivos: (json['arquivos'] as List<dynamic>)
           .map((e) => ArquivoResponseDTO.fromJson(e as Map<String, dynamic>))
@@ -45,32 +45,6 @@ Map<String, dynamic> _$QuestaoCompletaResponseDTOToJson(
       'videos': instance.videos,
       'alternativas': instance.alternativas,
     };
-
-K _$enumDecode<K, V>(
-  Map<K, V> enumValues,
-  Object? source, {
-  K? unknownValue,
-}) {
-  if (source == null) {
-    throw ArgumentError(
-      'A value must be provided. Supported values: '
-      '${enumValues.values.join(', ')}',
-    );
-  }
-
-  return enumValues.entries.singleWhere(
-    (e) => e.value == source,
-    orElse: () {
-      if (unknownValue == null) {
-        throw ArgumentError(
-          '`$source` is not one of the supported values: '
-          '${enumValues.values.join(', ')}',
-        );
-      }
-      return MapEntry(unknownValue, enumValues.values.first);
-    },
-  ).key;
-}
 
 const _$EnumTipoQuestaoEnumMap = {
   EnumTipoQuestao.NAO_CADASTRADO: 0,

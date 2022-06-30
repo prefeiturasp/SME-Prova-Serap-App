@@ -461,7 +461,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     for (var arquivoDTO in arquivos) {
       try {
-        Arquivo? arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
+        Arquivo? arquivoDb;
+        try {
+          arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
+        } catch (e) {}
 
         if (arquivoDb == null) {
           http.Response arquivoResponse = await http.get(
@@ -669,7 +672,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   _validarArquivosImagem() async {
-    var arquivosImagem = await db.arquivoDao.obterPorProvaId(provaId);
+    var arquivosImagem = await db.arquivoDao.findByProvaId(provaId);
 
     for (var arquivo in arquivosImagem) {
       if (arquivo.base64.isEmpty) {
@@ -679,5 +682,78 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         );
       }
     }
+  }
+
+  removerDownloadCompleto() async {
+    info('[$provaId] Removendo conteudo da prova');
+
+    await removerContexto(provaId);
+    await removerQuestoes(provaId);
+    await removerAlternativas(provaId);
+    await removerArquivosImagem(provaId);
+    await removerArquivosAudio(provaId);
+    await removerArquivosVideo(provaId);
+    await removerCacheAluno(provaId);
+    await removerProva(provaId);
+  }
+
+  removerContexto(int provaId) async {
+    int total = await db.contextoProvaDao.removerPorProvaId(provaId);
+    info("[Prova $provaId - Removido $total contextos");
+  }
+
+  removerQuestoes(int provaId) async {
+    int total = await db.questaoDao.removerPorProvaId(provaId);
+    info("[Prova $provaId - Removido $total questoes");
+  }
+
+  removerAlternativas(int provaId) async {
+    int total = await db.alternativaDao.removerPorProvaId(provaId);
+    info("[Prova $provaId - Removido $total alternativas");
+  }
+
+  removerArquivosImagem(int provaId) async {
+    var arquivos = await db.arquivoDao.findByProvaId(provaId);
+
+    for (var arquivo in arquivos) {
+      fine("'Removendo arquivo de iamgem '${arquivo.caminho}'");
+      await db.arquivoDao.remover(arquivo);
+      await apagarArquivo(arquivo.caminho);
+    }
+
+    info("[Prova $provaId - Removido ${arquivos.length} arquivos de imagem");
+  }
+
+  removerArquivosAudio(int provaId) async {
+    var arquivos = await db.arquivosAudioDao.findByProvaId(provaId);
+
+    for (var arquivo in arquivos) {
+      fine("'Removendo arquivo de video '${arquivo.path}'");
+      await db.arquivosAudioDao.remover(arquivo);
+      await apagarArquivo(arquivo.path);
+    }
+
+    info("[Prova $provaId - Removido ${arquivos.length} arquivos de audio");
+  }
+
+  removerArquivosVideo(int provaId) async {
+    var arquivos = await db.arquivosVideosDao.findByProvaId(provaId);
+
+    for (var arquivo in arquivos) {
+      fine("'Removendo arquivo de audio '${arquivo.path}'");
+      await db.arquivosVideosDao.remover(arquivo);
+      await apagarArquivo(arquivo.path);
+    }
+
+    info("[Prova $provaId - Removido ${arquivos.length} arquivos de video");
+  }
+
+  removerCacheAluno(int provaId) async {
+    int total = await db.provaAlunoDao.removerPorProvaId(provaId);
+    info("[Prova $provaId - Removido $total caches de provas");
+  }
+
+  removerProva(int provaId) async {
+    await db.provaDao.deleteByProva(provaId);
   }
 }

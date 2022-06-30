@@ -2,6 +2,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/prova_aluno.model.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:chopper/src/response.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
@@ -73,14 +74,26 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
               provaStore.prova.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
             } else {
-              provaStore.downloadStatus = EnumDownloadStatus.CONCLUIDO;
-              provaStore.prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+              // Data alteração da prova alterada
+              if (!isSameDates(provaStore.prova.ultimaAlteracao, provasStore[prova.id]!.prova.ultimaAlteracao)) {
+                if (provaStore.prova.status != EnumProvaStatus.INICIADA) {
+                  // remover download
+                  await provaStore.removerDownload();
 
-              if (provasStore[prova.id]!.status != EnumProvaStatus.PENDENTE) {
-                provaStore.status = prova.status;
+                  provaStore.downloadStatus = EnumDownloadStatus.ATUALIZAR;
+                  provaStore.prova.downloadStatus = EnumDownloadStatus.ATUALIZAR;
+                }
               } else {
-                provaStore.status = provasStore[prova.id]!.status;
-                prova.status = provasStore[prova.id]!.status;
+                provaStore.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+                provaStore.prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+
+                var provaLocal = provasStore[prova.id]!;
+                if (provaLocal.status != EnumProvaStatus.PENDENTE) {
+                  provaStore.status = prova.status;
+                } else {
+                  provaStore.status = provaLocal.status;
+                  prova.status = provaLocal.status;
+                }
               }
             }
 
@@ -136,11 +149,20 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       prova.tempoExecucao = provaStore.prova.tempoExecucao;
       prova.tempoExtra = provaStore.prova.tempoExtra;
 
+      prova.itensQuantidade = provaStore.prova.itensQuantidade;
+      prova.quantidadeRespostaSincronizacao = provaStore.prova.quantidadeRespostaSincronizacao;
+      prova.senha = provaStore.prova.senha;
+
       provaStore.prova = prova;
       provaStore.downloadStatus = prova.downloadStatus;
     }
 
     await provaDao.inserirOuAtualizar(provaStore.prova);
+
+    if (provaStore.downloadStatus == EnumDownloadStatus.ATUALIZAR) {
+      info('Prova alterada. Iniciando atualização');
+      provaStore.iniciarDownload();
+    }
   }
 
   @override
