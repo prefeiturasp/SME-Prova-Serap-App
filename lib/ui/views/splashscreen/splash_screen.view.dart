@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
@@ -144,7 +146,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
   }
 
   informarVersao() async {
-    if (kIsWeb) {
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
       return;
     }
 
