@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:appserap/interfaces/job.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/utils/timer.util.dart';
 import 'package:appserap/workers/jobs/remover_provas.job.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:flutter/foundation.dart';
@@ -76,19 +77,18 @@ class Worker with Loggable {
   configure(Job job) async {
     info('Configurando task ${job.configuration().taskName}');
 
-    if (!kIsWeb) {
-      if (Platform.isAndroid) {
-        await Workmanager().registerPeriodicTask(
-          job.configuration().uniqueName,
-          job.configuration().taskName,
-          frequency: job.configuration().frequency,
-          constraints: job.configuration().constraints,
-        );
-      } else {
-        Timer.periodic(job.configuration().frequency, (timer) async {
-          await job.run();
-        });
-      }
+    if (!kIsWeb && Platform.isAndroid) {
+      await Workmanager().registerPeriodicTask(
+        job.configuration().uniqueName,
+        job.configuration().taskName,
+        frequency: job.configuration().frequency,
+        constraints: job.configuration().constraints,
+      );
+    } else {
+      await interval(job.configuration().frequency, (timer) async {
+        info('Executando job ${job.configuration().taskName}');
+        await job.run();
+      });
     }
   }
 }
