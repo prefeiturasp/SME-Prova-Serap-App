@@ -35,7 +35,7 @@ Map<String, dynamic> _$ProvaAnteriorResponseDTOToJson(
       'dataInicio': instance.dataInicio.toIso8601String(),
       'dataFim': instance.dataFim?.toIso8601String(),
       'tempoTotal': instance.tempoTotal,
-      'status': _$EnumProvaStatusEnumMap[instance.status],
+      'status': _$EnumProvaStatusEnumMap[instance.status]!,
       'dataInicioProvaAluno': instance.dataInicioProvaAluno?.toIso8601String(),
       'dataFimProvaAluno': instance.dataFimProvaAluno?.toIso8601String(),
     };

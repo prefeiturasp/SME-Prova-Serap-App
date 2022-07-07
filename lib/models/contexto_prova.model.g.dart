@@ -26,7 +26,7 @@ Map<String, dynamic> _$ContextoProvaToJson(ContextoProva instance) =>
       'imagem': instance.imagem,
       'imagemBase64': instance.imagemBase64,
       'posicionamento':
-          _$PosicionamentoImagemEnumEnumMap[instance.posicionamento],
+          _$PosicionamentoImagemEnumEnumMap[instance.posicionamento]!,
       'ordem': instance.ordem,
       'titulo': instance.titulo,
       'texto': instance.texto,

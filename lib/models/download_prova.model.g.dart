@@ -19,8 +19,8 @@ DownloadProva _$DownloadProvaFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$DownloadProvaToJson(DownloadProva instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'tipo': _$EnumDownloadTipoEnumMap[instance.tipo],
-      'downloadStatus': _$EnumDownloadStatusEnumMap[instance.downloadStatus],
+      'tipo': _$EnumDownloadTipoEnumMap[instance.tipo]!,
+      'downloadStatus': _$EnumDownloadStatusEnumMap[instance.downloadStatus]!,
       'dataHoraInicio': instance.dataHoraInicio.toIso8601String(),
     };
 

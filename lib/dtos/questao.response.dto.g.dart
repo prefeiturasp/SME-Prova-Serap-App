@@ -22,7 +22,7 @@ Map<String, dynamic> _$QuestaoResponseDTOToJson(QuestaoResponseDTO instance) =>
       'titulo': instance.titulo,
       'descricao': instance.descricao,
       'ordem': instance.ordem,
-      'tipo': _$EnumTipoQuestaoEnumMap[instance.tipo],
+      'tipo': _$EnumTipoQuestaoEnumMap[instance.tipo]!,
       'quantidadeAlternativas': instance.quantidadeAlternativas,
     };
 

@@ -56,6 +56,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   late DateTime inicio;
   late int downloadAtual;
   bool _isPauseAllDownloads = false;
+  var quantidadeDownloads = 2;
 
   StatusChangeCallback? onStatusChangeCallback;
 
@@ -188,55 +189,84 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     startTimer();
 
-    for (int i = 1; i <= downloadsNaoConcluidos.length; i++) {
-      var download = downloadsNaoConcluidos[i - 1];
-      finer('[Prova $provaId] - Iniciando download  ${download.id} - ${download.tipo}');
+    var downloadsQuestao =
+        downloadsNaoConcluidos.filter((element) => element.tipo == EnumDownloadTipo.QUESTAO).toList();
+    var downloadsContexto =
+        downloadsNaoConcluidos.filter((element) => element.tipo == EnumDownloadTipo.CONTEXTO_PROVA).toList();
 
-      try {
-        if (_isPauseAllDownloads) {
-          info("[Prova $provaId] - Pausando todos os downloads");
-          await _pause();
-          break;
-        }
-
-        await atualizarStatus(downloads, EnumDownloadStatus.BAIXANDO);
-
-        switch (download.tipo) {
-          case EnumDownloadTipo.QUESTAO:
-            await retry(
-              () async => await baixarQuestao(download),
-              maxAttempts: 3,
-              onRetry: (e) {
-                fine('[Prova $provaId] - Tentativa de download da Questão ID: ${download.id}');
-                severe(e);
-              },
-            );
-
-            break;
-
-          case EnumDownloadTipo.CONTEXTO_PROVA:
-            await retry(
-              () async => await baixarContextoProva(download),
-              maxAttempts: 3,
-              onRetry: (e) {
-                fine('[Prova $provaId] - Tentativa de download do Contexto ID: ${download.id}');
-                severe(e);
-              },
-            );
-            break;
-
-          default:
-            break;
-        }
-
-        downloadAtual = i;
-      } on Exception catch (e, stack) {
-        severe('[Prova $provaId] - ERRO: $e');
-        severe(download);
-        severe(stack);
-
-        await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+    for (int i = 0; i <= downloadsQuestao.length; i = i + quantidadeDownloads) {
+      if (_isPauseAllDownloads) {
+        info("[Prova $provaId] - Pausando todos os downloads");
+        await _pause();
+        return;
       }
+
+      var end = i + quantidadeDownloads;
+      end = end > downloadsQuestao.length ? downloadsQuestao.length : end;
+
+      info('Baixando do $i ate $end');
+      var downloads = downloadsNaoConcluidos.getRange(i, end).toList();
+
+      await atualizarStatus(EnumDownloadStatus.BAIXANDO);
+
+      await salvarQuestao(downloads);
+
+      downloadAtual = i + quantidadeDownloads;
+    }
+
+    for (var download in downloadsContexto) {
+      if (_isPauseAllDownloads) {
+        info("[Prova $provaId] - Pausando todos os contextos");
+        await _pause();
+        return;
+      }
+
+      await salvarContexto(download);
+      await atualizarStatus(EnumDownloadStatus.BAIXANDO);
+    }
+  }
+
+  salvarContexto(DownloadProvaDb download) async {
+    finer('[Prova $provaId] - Iniciando download  ${download.id} - ${download.tipo}');
+
+    try {
+      await retry(
+        () async => await baixarContextoProva(download),
+        maxAttempts: 3,
+        onRetry: (e) {
+          fine('[Prova $provaId] - Tentativa de download do Contexto ID: ${download.id}');
+          severe(e);
+        },
+      );
+    } on Exception catch (e, stack) {
+      severe('[Prova $provaId] - ERRO: $e');
+      severe(download);
+      severe(stack);
+
+      await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+    }
+  }
+
+  salvarQuestao(List<DownloadProvaDb> downloads) async {
+    for (var download in downloads) {
+      finer('[Prova $provaId] - Iniciando download  ${download.id} - ${download.tipo}');
+    }
+
+    try {
+      await retry(
+        () async => await baixarQuestao(downloads),
+        maxAttempts: 3,
+        onRetry: (e) {
+          fine('[Prova $provaId] - Tentativa de download da Questão ID: ${downloads.map((e) => e.id).toList()}');
+          severe(e);
+        },
+      );
+    } on Exception catch (e, stack) {
+      severe('[Prova $provaId] - ERRO: $e');
+      severe(downloads);
+      severe(stack);
+
+      await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
     }
   }
 
@@ -304,7 +334,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
       await _updateProvaDownloadStatus(provaId, EnumDownloadStatus.PAUSADO);
 
-      info("[Prova $provaId] - Download pausado - $downloadsPendentes pendentes");
+      var porcentagem = await getPorcentagem(downloads);
+
+      info(
+          "[Prova $provaId] - Download pausado ${(porcentagem * 100).toStringAsFixed(2)} - $downloadsPendentes pendentes");
     } finally {
       _isPauseAllDownloads = false;
     }
@@ -327,11 +360,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     timer?.cancel();
   }
 
-  Future<double> getPorcentagem(List<DownloadProvaDb> downloads) async {
-    var downloadsDb = await db.downloadProvaDao.getByProva(provaId);
+  Future<double> getPorcentagem(List<DownloadProvaDb> downloadsDb) async {
     int baixado = downloadsDb.where((element) => element.downloadStatus == EnumDownloadStatus.CONCLUIDO).length;
 
-    return baixado / downloads.length;
+    return baixado / downloadsDb.length;
   }
 
   double getTempoPrevisto(List<DownloadProvaDb> downloads) {
@@ -344,63 +376,63 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     return downloads.where((element) => element.downloadStatus == status).toList();
   }
 
-  baixarQuestao(DownloadProvaDb download) async {
-    await _updateDownloadStatus(download, EnumDownloadStatus.BAIXANDO);
+  baixarQuestao(List<DownloadProvaDb> downloads) async {
+    await _updateDownloadsStatus(downloads, EnumDownloadStatus.BAIXANDO);
 
     try {
       Response<List<QuestaoCompletaResponseDTO>> response =
-          await apiService.questao.getQuestaoCompleta(ids: [download.id]);
+          await apiService.questao.getQuestaoCompleta(ids: downloads.map((e) => e.id).toList());
 
       if (response.isSuccessful) {
         List<QuestaoCompletaResponseDTO> questoesDTO = response.body!;
 
         if (questoesDTO.isEmpty) {
-          await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+          await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
           return;
         }
 
-        var questaoDTO = questoesDTO.first;
+        for (var questaoDTO in questoesDTO) {
+          var questao = Questao(
+            id: questaoDTO.id,
+            provaId: provaId,
+            titulo: questaoDTO.titulo,
+            descricao: questaoDTO.descricao,
+            ordem: questaoDTO.ordem,
+            tipo: questaoDTO.tipo,
+            quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
+          );
 
-        var questao = Questao(
-          id: questaoDTO.id,
-          provaId: provaId,
-          titulo: questaoDTO.titulo,
-          descricao: questaoDTO.descricao,
-          ordem: questaoDTO.ordem,
-          tipo: questaoDTO.tipo,
-          quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
-        );
+          await db.questaoDao.inserirOuAtualizar(questao);
 
-        await db.questaoDao.inserirOuAtualizar(questao);
+          await baixarAlternativa(questaoDTO.alternativas);
 
-        await baixarAlternativa(questaoDTO.alternativas);
+          if (questaoDTO.arquivos.isNotEmpty) {
+            await baixarArquivoImagem(questaoDTO.arquivos);
+          }
 
-        if (questaoDTO.arquivos.isNotEmpty) {
-          await baixarArquivoImagem(questaoDTO.arquivos);
-        }
+          var deficnencias = ServiceLocator.get<UsuarioStore>().deficiencias;
 
-        var deficnencias = ServiceLocator.get<UsuarioStore>().deficiencias;
+          for (var deficiencia in deficnencias) {
+            if (grupoSurdos.contains(deficiencia)) {
+              await baixarArquivoVideo(questaoDTO.videos);
+              break;
+            }
+          }
 
-        for (var deficiencia in deficnencias) {
-          if (grupoSurdos.contains(deficiencia)) {
-            await baixarArquivoVideo(questaoDTO.videos);
-            break;
+          for (var deficiencia in deficnencias) {
+            if (grupoCegos.contains(deficiencia)) {
+              await baixarArquivoAudio(questaoDTO.audios);
+              break;
+            }
           }
         }
 
-        for (var deficiencia in deficnencias) {
-          if (grupoCegos.contains(deficiencia)) {
-            await baixarArquivoAudio(questaoDTO.audios);
-            break;
-          }
-        }
-
-        await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
+        await _updateDownloadsStatus(downloads, EnumDownloadStatus.CONCLUIDO);
       } else {
-        await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+        await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
       }
     } catch (e, stack) {
-      await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+      await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
       severe('[Prova $provaId] - ERRO: $e');
       severe(stack);
     }
@@ -577,6 +609,12 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     await saveFile(path, contentes);
   }
 
+  _updateDownloadsStatus(List<DownloadProvaDb> downloads, EnumDownloadStatus status) async {
+    for (var download in downloads) {
+      await db.downloadProvaDao.updateStatus(download, status);
+    }
+  }
+
   _updateDownloadStatus(DownloadProvaDb download, EnumDownloadStatus status) async {
     await db.downloadProvaDao.updateStatus(download, status);
   }
@@ -619,18 +657,20 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       cancelTimer();
       await deleteDownload();
 
-      await atualizarStatus(downloads, EnumDownloadStatus.CONCLUIDO);
+      await atualizarStatus(EnumDownloadStatus.CONCLUIDO);
     }
   }
 
-  Future<void> atualizarStatus(List<DownloadProvaDb> downloads, EnumDownloadStatus status) async {
-    double porcentagem = await getPorcentagem(downloads);
+  Future<void> atualizarStatus(EnumDownloadStatus status) async {
+    var downloadsDb = await db.downloadProvaDao.getByProva(provaId);
+
+    double porcentagem = await getPorcentagem(downloadsDb);
 
     if (onStatusChangeCallback != null) {
       onStatusChangeCallback!(
         status,
         porcentagem,
-        getTempoPrevisto(downloads),
+        getTempoPrevisto(downloadsDb),
       );
     }
     fine("[Prova $provaId] - Porcentagem concluida: ${(porcentagem * 100).toStringAsFixed(2)}%");
