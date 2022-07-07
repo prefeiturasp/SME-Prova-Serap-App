@@ -46,9 +46,9 @@ Map<String, dynamic> _$ProvaToJson(Prova instance) => <String, dynamic>{
       'tempoAlerta': instance.tempoAlerta,
       'dataInicioProvaAluno': instance.dataInicioProvaAluno?.toIso8601String(),
       'dataFimProvaAluno': instance.dataFimProvaAluno?.toIso8601String(),
-      'downloadStatus': _$EnumDownloadStatusEnumMap[instance.downloadStatus],
+      'downloadStatus': _$EnumDownloadStatusEnumMap[instance.downloadStatus]!,
       'idDownload': instance.idDownload,
-      'status': _$EnumProvaStatusEnumMap[instance.status],
+      'status': _$EnumProvaStatusEnumMap[instance.status]!,
       'senha': instance.senha,
       'quantidadeRespostaSincronizacao':
           instance.quantidadeRespostaSincronizacao,

@@ -702,17 +702,21 @@ packages:
   json_annotation:
     dependency: "direct dev"
     description:
-      name: json_annotation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.5.0"
+      path: json_annotation
+      ref: HEAD
+      resolved-ref: "8a0e71ee64860d3f88d5480c7446ed23599998aa"
+      url: "https://github.com/google/json_serializable.dart.git"
+    source: git
+    version: "4.6.0"
   json_serializable:
     dependency: "direct dev"
     description:
-      name: json_serializable
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.2.0"
+      path: json_serializable
+      ref: HEAD
+      resolved-ref: "8a0e71ee64860d3f88d5480c7446ed23599998aa"
+      url: "https://github.com/google/json_serializable.dart.git"
+    source: git
+    version: "6.3.1-dev"
   json_table:
     dependency: transitive
     description:

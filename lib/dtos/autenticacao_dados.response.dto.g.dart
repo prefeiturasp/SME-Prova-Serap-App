@@ -32,15 +32,15 @@ Map<String, dynamic> _$AutenticacaoDadosResponseDTOToJson(
       'ano': instance.ano,
       'tipoTurno': instance.tipoTurno,
       'tamanhoFonte': instance.tamanhoFonte,
-      'familiaFonte': _$FonteTipoEnumEnumMap[instance.familiaFonte],
-      'modalidade': _$ModalidadeEnumEnumMap[instance.modalidade],
+      'familiaFonte': _$FonteTipoEnumEnumMap[instance.familiaFonte]!,
+      'modalidade': _$ModalidadeEnumEnumMap[instance.modalidade]!,
       'inicioTurno': instance.inicioTurno,
       'fimTurno': instance.fimTurno,
       'dreAbreviacao': instance.dreAbreviacao,
       'escola': instance.escola,
       'turma': instance.turma,
       'deficiencias': instance.deficiencias
-          .map((e) => _$DeficienciaEnumEnumMap[e])
+          .map((e) => _$DeficienciaEnumEnumMap[e]!)
           .toList(),
     };
 

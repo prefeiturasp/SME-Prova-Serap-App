@@ -26,7 +26,7 @@ Map<String, dynamic> _$ContextoProvaResponseDTOToJson(
       'provaId': instance.provaId,
       'imagem': instance.imagem,
       'posicionamento':
-          _$PosicionamentoImagemEnumEnumMap[instance.posicionamento],
+          _$PosicionamentoImagemEnumEnumMap[instance.posicionamento]!,
       'ordem': instance.ordem,
       'titulo': instance.titulo,
       'texto': instance.texto,
