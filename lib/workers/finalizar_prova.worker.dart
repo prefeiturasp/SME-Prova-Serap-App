@@ -5,6 +5,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:appserap/main.ioc.dart';
@@ -81,8 +82,8 @@ class FinalizarProvaWorker with Worker, Loggable {
 
         // Remove respostas do banco local
         await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
-      } catch (e) {
-        severe(e);
+      } catch (e, stack) {
+        await FirebaseCrashlytics.instance.recordError(e, stack);
       }
     }
     fine('Sincronização com o servidor servidor concluida');

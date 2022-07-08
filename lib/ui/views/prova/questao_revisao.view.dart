@@ -27,6 +27,7 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/file.util.dart';
 import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -496,8 +497,8 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
                     await provaStore.respostas.sincronizarResposta();
                     store.posicaoQuestaoSendoRevisada++;
                     context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
-                  } catch (e) {
-                    fine(e);
+                  } catch (e, stack) {
+                    await FirebaseCrashlytics.instance.recordError(e, stack);
                   } finally {
                     store.botaoOcupado = false;
                   }
@@ -527,8 +528,8 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
               await provaStore.respostas.sincronizarResposta();
 
               context.go("/prova/${provaStore.id}/resumo");
-            } catch (e) {
-              fine(e);
+            } catch (e, stack) {
+              await FirebaseCrashlytics.instance.recordError(e, stack);
             } finally {
               store.botaoOcupado = false;
             }

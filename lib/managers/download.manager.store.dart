@@ -30,6 +30,7 @@ import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:chopper/chopper.dart';
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
 import 'package:path/path.dart';
@@ -90,15 +91,15 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
           severe(e);
         },
       );
-    } on ProvaDownloadException catch (e) {
+    } on ProvaDownloadException catch (e, stack) {
       NotificacaoUtil.showSnackbarError(e.toString());
       await _updateProvaDownloadStatus(provaId, EnumDownloadStatus.ERRO);
-    } on Exception catch (e, stacktrace) {
+      await FirebaseCrashlytics.instance.recordError(e, stack);
+    } on Exception catch (e, stack) {
       NotificacaoUtil.showSnackbarError(
           "Não foi possível baixar a prova ${provaStore?.prova.descricao ?? 'id: $provaId'}");
       await _updateProvaDownloadStatus(provaId, EnumDownloadStatus.NAO_INICIADO);
-      severe(e);
-      severe(stacktrace);
+      await FirebaseCrashlytics.instance.recordError(e, stack);
     }
   }
 
@@ -240,8 +241,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       );
     } on Exception catch (e, stack) {
       severe('[Prova $provaId] - ERRO: $e');
-      severe(download);
-      severe(stack);
+      await FirebaseCrashlytics.instance.recordError(e, stack);
 
       await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
     }
@@ -263,8 +263,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       );
     } on Exception catch (e, stack) {
       severe('[Prova $provaId] - ERRO: $e');
-      severe(downloads);
-      severe(stack);
+      await FirebaseCrashlytics.instance.recordError(e, stack);
 
       await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
     }
@@ -434,7 +433,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     } catch (e, stack) {
       await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
       severe('[Prova $provaId] - ERRO: $e');
-      severe(stack);
+      await FirebaseCrashlytics.instance.recordError(e, stack);
     }
   }
 
@@ -496,7 +495,9 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         Arquivo? arquivoDb;
         try {
           arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
-        } catch (e) {}
+        } catch (e, stack) {
+          await FirebaseCrashlytics.instance.recordError(e, stack);
+        }
 
         if (arquivoDb == null) {
           http.Response arquivoResponse = await http.get(
@@ -526,6 +527,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         }
       } catch (e) {
         severe("[Prova $provaId] - Erro ao baixar arquivo de imagem ${arquivoDTO.id} - ${e.toString()}");
+
         rethrow;
       }
     }
@@ -561,6 +563,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         }
       } catch (e) {
         severe("[Prova $provaId] - Erro ao baixar arquivo de vídeo ${arquivoVideoDTO.id} - ${e.toString()}");
+
         rethrow;
       }
     }
@@ -596,6 +599,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         }
       } catch (e) {
         severe("[Prova $provaId] - Erro ao baixar arquivo de áudio ${arquivoAudioDTO.id} - ${e.toString()}");
+
         rethrow;
       }
     }
@@ -650,8 +654,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         await _updateProvaDownloadId(provaId, idDownload);
       } catch (e, stack) {
         severe('[Prova $provaId] - Erro ao informar download concluido');
-        severe(e);
-        severe(stack);
+        await FirebaseCrashlytics.instance.recordError(e, stack, reason: "Erro ao informar download concluido");
       }
 
       cancelTimer();

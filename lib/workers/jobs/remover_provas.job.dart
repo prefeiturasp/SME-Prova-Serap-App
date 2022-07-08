@@ -4,6 +4,7 @@ import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/models/prova.model.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class RemoverProvasJob with Job, Loggable, Database {
   @override
@@ -26,9 +27,8 @@ class RemoverProvasJob with Job, Loggable, Database {
       try {
         var downloadManager = DownloadManagerStore(provaId: prova.id);
         await downloadManager.removerDownloadCompleto();
-      } catch (e, stacktrace) {
-        severe(e);
-        severe(stacktrace);
+      } catch (e, stack) {
+        await FirebaseCrashlytics.instance.recordError(e, stack);
       }
     }
   }

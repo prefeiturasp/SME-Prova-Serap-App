@@ -12,9 +12,9 @@ setupFirebase() async {
     await fb.Firebase.initializeApp();
 
     await setupCrashlytics();
-  } catch (e) {
+  } catch (e, stack) {
     logger.severe('[Firebase] Falha ao inicializar Firebase');
-    logger.severe(e);
+    await FirebaseCrashlytics.instance.recordError(e, stack);
   }
 }
 
@@ -41,9 +41,9 @@ inscreverTurmaFirebase(String ano) async {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     FirebaseMessaging.onMessage.listen(_firebaseMessagingBackgroundHandler);
-  } catch (e) {
+  } catch (e, stack) {
     logger.severe('[Firebase] Falha ao inscrever no tópico do ano do aluno');
-    logger.severe(e);
+    await FirebaseCrashlytics.instance.recordError(e, stack);
   }
 }
 
@@ -55,9 +55,9 @@ desinscreverTurmaFirebase(String ano) async {
 
     await FirebaseMessaging.instance.unsubscribeFromTopic('ano-$ano');
     logger.config('[Firebase] Desinscrevendo no topico do ano $ano');
-  } catch (e) {
+  } catch (e, stack) {
     logger.severe('[Firebase] Falha ao desinscrever no tópico do ano $ano do aluno');
-    logger.severe(e);
+    await FirebaseCrashlytics.instance.recordError(e, stack);
   }
 }
 

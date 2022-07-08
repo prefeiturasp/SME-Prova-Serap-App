@@ -8,6 +8,7 @@ import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -62,6 +63,8 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   Future<void> sair() async {
     AppDatabase db = GetIt.I.get();
 
+    await FirebaseCrashlytics.instance.setUserIdentifier("");
+
     try {
       List<Prova> provas = await db.provaDao.listarTodos();
 
@@ -78,9 +81,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
             );
       }
     } catch (e, stack) {
-      severe('Erro ao remover downlodas');
-      severe(e);
-      severe(stack);
+      await FirebaseCrashlytics.instance.recordError(e, stack, reason: "Erro ao remover downloads");
     }
 
     await _limparDadosLocais();

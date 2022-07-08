@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math';
 
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
@@ -39,7 +40,9 @@ Future<void> main() async {
     await setupFirebase();
 
     runApp(MyApp());
-  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
+  }, (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack);
+  });
 }
 
 registerPluginsForIsolate() {
@@ -77,10 +80,11 @@ configure() async {
 Future setupAppConfig() async {
   try {
     await AppConfigReader.initialize();
-  } catch (error) {
+  } catch (e, stack) {
     print("Erro ao ler arquivo de configurações.");
     print("Verifique se seu projeto possui o arquivo config/app_config.json");
-    print('$error');
+    print('$e');
+    await FirebaseCrashlytics.instance.recordError(e, stack);
   }
 }
 
