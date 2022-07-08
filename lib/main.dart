@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
+import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
@@ -8,6 +10,7 @@ import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,15 +29,17 @@ import 'utils/firebase.util.dart';
 var logger = Logger('Main');
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  await configure();
+    await configure();
 
-  await Worker().setup();
+    await Worker().setup();
 
-  await setupFirebase();
+    await setupFirebase();
 
-  runApp(MyApp());
+    runApp(MyApp());
+  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
 }
 
 registerPluginsForIsolate() {
@@ -46,6 +51,14 @@ registerPluginsForIsolate() {
     SharedPreferencesIOS.registerWith();
     PathProviderIOS.registerWith();
   }
+
+  Isolate.current.addErrorListener(RawReceivePort((pair) async {
+    final List<dynamic> errorAndStacktrace = pair;
+    await FirebaseCrashlytics.instance.recordError(
+      errorAndStacktrace.first,
+      errorAndStacktrace.last,
+    );
+  }).sendPort);
 }
 
 configure() async {
