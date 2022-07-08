@@ -19,8 +19,6 @@ setupFirebase() async {
 }
 
 setupCrashlytics() async {
-  FirebaseCrashlytics.instance.crash();
-
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 }
 
