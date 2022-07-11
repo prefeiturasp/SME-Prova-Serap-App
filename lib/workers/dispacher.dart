@@ -7,6 +7,7 @@ import 'package:appserap/interfaces/job.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/workers/jobs/remover_provas.job.dart';
 import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -42,9 +43,9 @@ callbackDispatcher() {
       }
 
       return Future.value(true);
-    } catch (e, stacktrace) {
-      print('ERRO: $e');
-      print(stacktrace);
+    } catch (e, stack) {
+      await FirebaseCrashlytics.instance.recordError(e, stack);
+
       return Future.error(e);
     }
   });

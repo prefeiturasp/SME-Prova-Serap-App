@@ -8,6 +8,7 @@ import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:chopper/chopper.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -77,8 +78,9 @@ class ServiceAuthenticator extends Authenticator with Loggable {
       } else {
         await _deslogar();
       }
-    } catch (e) {
+    } catch (e, stack) {
       severe('Erro ao atualizar token: $e');
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: "Erro ao Atualizar token");
       await _deslogar();
     }
 

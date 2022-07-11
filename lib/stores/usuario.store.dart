@@ -2,6 +2,7 @@ import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/utils/firebase.util.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -146,6 +147,10 @@ abstract class _UsuarioStoreBase with Store {
     if (ano != null && ano!.isNotEmpty) {
       await inscreverTurmaFirebase(ano!);
     }
+
+    if (codigoEOL != null && codigoEOL!.isNotEmpty) {
+      await FirebaseCrashlytics.instance.setUserIdentifier(codigoEOL!);
+    }
   }
 
   @action
@@ -191,6 +196,7 @@ abstract class _UsuarioStoreBase with Store {
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
       await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
+      await FirebaseCrashlytics.instance.setUserIdentifier(codigoEOL);
     }
 
     await prefs.setString('serapUsuarioAno', ano);
@@ -235,6 +241,7 @@ abstract class _UsuarioStoreBase with Store {
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
       await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
+      await FirebaseCrashlytics.instance.setUserIdentifier(codigoEOL);
     }
 
     if (token != null && token.isNotEmpty) {
