@@ -2,6 +2,7 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,10 +43,8 @@ abstract class _LoginAdmStoreBase with Store, Loggable {
 
         return true;
       }
-    } catch (e, stacktrace) {
-      severe("Erro ao fazer login");
-      severe(stacktrace);
-      severe(e);
+    } catch (e, stack) {
+      await FirebaseCrashlytics.instance.recordError(e, stack, reason: "Erro ao realiar o login");
     }
 
     return false;

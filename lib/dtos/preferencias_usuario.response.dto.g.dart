@@ -17,7 +17,7 @@ Map<String, dynamic> _$PreferenciasUsuarioResponseDTOToJson(
         PreferenciasUsuarioResponseDTO instance) =>
     <String, dynamic>{
       'tamanhoFonte': instance.tamanhoFonte,
-      'familiaFonte': _$FonteTipoEnumEnumMap[instance.familiaFonte],
+      'familiaFonte': _$FonteTipoEnumEnumMap[instance.familiaFonte]!,
     };
 
 const _$FonteTipoEnumEnumMap = {

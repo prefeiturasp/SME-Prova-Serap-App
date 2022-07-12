@@ -7,6 +7,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -81,8 +82,9 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
             );
           }
         }
-      } catch (e) {
+      } catch (e, stack) {
         await _principalStore.sair();
+        await FirebaseCrashlytics.instance.recordError(e, stack);
       }
     }
 
@@ -93,8 +95,9 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
       if (kDebugMode || !(await checkUpdate())) {
         _navegar();
       }
-    } catch (e) {
+    } catch (e, stack) {
       _navegar();
+      await FirebaseCrashlytics.instance.recordError(e, stack);
     }
 
     await informarVersao();
@@ -166,9 +169,11 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
         int buildNumber = prefs.getInt("_buildNumber") ?? 0;
         String version = prefs.getString("_version") ?? "1.0.0";
 
-        if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
-          String? imei = await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
+        String? imei = await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
 
+        await FirebaseCrashlytics.instance.setCustomKey('imei', imei!);
+
+        if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
           info("Informando versão...");
           info("IMEI: $imei Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
 
@@ -176,7 +181,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
                 chaveAPI: AppConfigReader.getChaveApi(),
                 versaoCodigo: int.parse(packageInfo.buildNumber),
                 versaoDescricao: packageInfo.version,
-                dispositivoImei: imei!,
+                dispositivoImei: imei,
                 atualizadoEm: DateTime.now().toIso8601String(),
               );
 
@@ -184,8 +189,8 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
           await prefs.setString("_version", packageInfo.version);
         }
       }
-    } on PlatformException catch (e) {
-      severe("Erro ao informar versão: ${e.message}");
+    } on PlatformException catch (e, stack) {
+      await FirebaseCrashlytics.instance.recordError(e, stack, reason: "Erro ao informar versão");
     }
   }
 }

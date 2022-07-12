@@ -385,42 +385,56 @@ packages:
       name: firebase_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.14.1"
+    version: "1.19.1"
   firebase_core_platform_interface:
     dependency: transitive
     description:
       name: firebase_core_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.2.5"
+    version: "4.4.3"
   firebase_core_web:
     dependency: "direct main"
     description:
       name: firebase_core_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.2"
+    version: "1.6.6"
+  firebase_crashlytics:
+    dependency: "direct main"
+    description:
+      name: firebase_crashlytics
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.8.4"
+  firebase_crashlytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_crashlytics_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.10"
   firebase_messaging:
     dependency: "direct main"
     description:
       name: firebase_messaging
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "11.2.13"
+    version: "11.4.4"
   firebase_messaging_platform_interface:
     dependency: transitive
     description:
       name: firebase_messaging_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.3"
+    version: "3.5.4"
   firebase_messaging_web:
     dependency: "direct main"
     description:
       name: firebase_messaging_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.11"
+    version: "2.4.4"
   fixnum:
     dependency: transitive
     description:
@@ -702,17 +716,21 @@ packages:
   json_annotation:
     dependency: "direct dev"
     description:
-      name: json_annotation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.5.0"
+      path: json_annotation
+      ref: HEAD
+      resolved-ref: "8a0e71ee64860d3f88d5480c7446ed23599998aa"
+      url: "https://github.com/google/json_serializable.dart.git"
+    source: git
+    version: "4.6.0"
   json_serializable:
     dependency: "direct dev"
     description:
-      name: json_serializable
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "6.2.0"
+      path: json_serializable
+      ref: HEAD
+      resolved-ref: "8a0e71ee64860d3f88d5480c7446ed23599998aa"
+      url: "https://github.com/google/json_serializable.dart.git"
+    source: git
+    version: "6.3.1-dev"
   json_table:
     dependency: transitive
     description:
