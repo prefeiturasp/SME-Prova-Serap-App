@@ -7,7 +7,7 @@ import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -227,7 +227,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               status: EnumProvaStatus.INICIADA.index,
             );
       } catch (e, stack) {
-        await FirebaseCrashlytics.instance.recordError(e, stack);
+        await recordError(e, stack);
       }
     }
 
@@ -390,7 +390,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
       return true;
     } catch (e, stack) {
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
       return false;
     }
   }

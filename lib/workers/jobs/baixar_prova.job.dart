@@ -11,7 +11,7 @@ import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/provas.util.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
@@ -85,7 +85,7 @@ class BaixarProvaJob with Job, Loggable, Database {
         info('Download concluido');
       }
     } catch (e, stack) {
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
     }
   }
 

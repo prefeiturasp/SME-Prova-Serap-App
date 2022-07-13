@@ -29,7 +29,7 @@ import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -369,7 +369,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
             context.push("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
           } catch (e, stack) {
-            await FirebaseCrashlytics.instance.recordError(e, stack);
+            await recordError(e, stack);
           } finally {
             store.botaoOcupado = false;
           }
@@ -390,7 +390,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
           await _iniciarRevisaoProva();
         } catch (e, stack) {
-          await FirebaseCrashlytics.instance.recordError(e, stack);
+          await recordError(e, stack);
         }
       },
     );

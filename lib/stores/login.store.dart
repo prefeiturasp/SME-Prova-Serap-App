@@ -9,7 +9,7 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -178,7 +178,7 @@ abstract class _LoginStoreBase with Store, Loggable {
       NotificacaoUtil.showSnackbarError(e.toString());
     } catch (e, stack) {
       NotificacaoUtil.showSnackbarError("Não foi possível estabelecer uma conexão com o servidor.");
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
     } finally {
       carregando = false;
     }

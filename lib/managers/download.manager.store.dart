@@ -20,6 +20,7 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:appserap/models/prova_questao.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -30,7 +31,7 @@ import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:chopper/chopper.dart';
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
 import 'package:path/path.dart';
@@ -94,12 +95,12 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     } on ProvaDownloadException catch (e, stack) {
       NotificacaoUtil.showSnackbarError(e.toString());
       await _updateProvaDownloadStatus(provaId, EnumDownloadStatus.ERRO);
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
     } on Exception catch (e, stack) {
       NotificacaoUtil.showSnackbarError(
           "Não foi possível baixar a prova ${provaStore?.prova.descricao ?? 'id: $provaId'}");
       await _updateProvaDownloadStatus(provaId, EnumDownloadStatus.NAO_INICIADO);
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
     }
   }
 
@@ -241,7 +242,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       );
     } on Exception catch (e, stack) {
       severe('[Prova $provaId] - ERRO: $e');
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
 
       await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
     }
@@ -263,7 +264,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       );
     } on Exception catch (e, stack) {
       severe('[Prova $provaId] - ERRO: $e');
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
 
       await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
     }
@@ -393,7 +394,6 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         for (var questaoDTO in questoesDTO) {
           var questao = Questao(
             id: questaoDTO.id,
-            provaId: provaId,
             titulo: questaoDTO.titulo,
             descricao: questaoDTO.descricao,
             ordem: questaoDTO.ordem,
@@ -433,7 +433,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     } catch (e, stack) {
       await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
       severe('[Prova $provaId] - ERRO: $e');
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
     }
   }
 
@@ -496,7 +496,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         try {
           arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
         } catch (e, stack) {
-          await FirebaseCrashlytics.instance.recordError(e, stack);
+          await recordError(e, stack);
         }
 
         if (arquivoDb == null) {
@@ -654,7 +654,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         await _updateProvaDownloadId(provaId, idDownload);
       } catch (e, stack) {
         severe('[Prova $provaId] - Erro ao informar download concluido');
-        await FirebaseCrashlytics.instance.recordError(e, stack, reason: "Erro ao informar download concluido");
+        await recordError(e, stack, reason: "Erro ao informar download concluido");
       }
 
       cancelTimer();
@@ -684,7 +684,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   _validarQuestoes() async {
-    var questoes = await db.questaoDao.obterQuestoesPorProvaId(provaId);
+    var questoes = await db.questaoDao.obterPorProvaId(provaId);
 
     for (var questao in questoes) {
       var alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
