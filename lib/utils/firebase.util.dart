@@ -21,7 +21,7 @@ setupFirebase() async {
 }
 
 setupCrashlytics() async {
-  if (!Platform.isWindows) {
+  if (!kIsWeb && !Platform.isWindows) {
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   }
 }
@@ -31,13 +31,13 @@ recordError(
   StackTrace? stack, {
   dynamic reason,
 }) async {
-  if (!Platform.isWindows) {
+  if (!kIsWeb && !Platform.isWindows) {
     await FirebaseCrashlytics.instance.recordError(exception, stack);
   }
 }
 
 setUserIdentifier(String identifier) async {
-  if (!Platform.isWindows) {
+  if (!kIsWeb && !Platform.isWindows) {
     await FirebaseCrashlytics.instance.setUserIdentifier(identifier);
   }
 }
