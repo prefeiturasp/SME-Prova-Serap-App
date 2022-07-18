@@ -150,7 +150,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
   }
 
   informarVersao() async {
-    if (kIsWeb || Platform.isWindows) {
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
       return;
     }
 
