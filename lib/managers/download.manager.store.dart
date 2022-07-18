@@ -20,7 +20,6 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
-import 'package:appserap/models/prova_questao.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -394,6 +393,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         for (var questaoDTO in questoesDTO) {
           var questao = Questao(
             id: questaoDTO.id,
+            provaId: provaId,
             titulo: questaoDTO.titulo,
             descricao: questaoDTO.descricao,
             ordem: questaoDTO.ordem,
