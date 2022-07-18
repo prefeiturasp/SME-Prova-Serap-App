@@ -7,6 +7,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +85,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
         }
       } catch (e, stack) {
         await _principalStore.sair();
-        await FirebaseCrashlytics.instance.recordError(e, stack);
+        await recordError(e, stack);
       }
     }
 
@@ -97,7 +98,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
       }
     } catch (e, stack) {
       _navegar();
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
     }
 
     await informarVersao();
@@ -190,7 +191,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
         }
       }
     } on PlatformException catch (e, stack) {
-      await FirebaseCrashlytics.instance.recordError(e, stack, reason: "Erro ao informar versão");
+      await recordError(e, stack, reason: "Erro ao informar versão");
     }
   }
 }

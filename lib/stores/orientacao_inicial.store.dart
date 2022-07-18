@@ -6,7 +6,7 @@ import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
 import 'package:chopper/chopper.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get_it/get_it.dart';
@@ -76,7 +76,7 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
         }
       }
     } catch (e, stack) {
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
     }
   }
 

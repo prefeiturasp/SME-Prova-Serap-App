@@ -4,7 +4,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/utils/app_config.util.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -87,7 +87,7 @@ class SincronizarRespostasWorker with Worker, Loggable {
         }
       }
     } catch (e, stack) {
-      await FirebaseCrashlytics.instance.recordError(e, stack);
+      await recordError(e, stack);
     }
 
     fine('Sincronização com o servidor servidor concluida');

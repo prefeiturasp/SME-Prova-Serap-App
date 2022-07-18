@@ -5,7 +5,7 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:chopper/src/response.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
@@ -108,7 +108,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
           provasStore.removeWhere((idProva, prova) => !idsRemote.contains(idProva));
         }
       } catch (e, stack) {
-        await FirebaseCrashlytics.instance.recordError(e, stack);
+        await recordError(e, stack);
       }
     }
 
