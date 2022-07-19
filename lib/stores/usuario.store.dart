@@ -149,7 +149,7 @@ abstract class _UsuarioStoreBase with Store {
     }
 
     if (codigoEOL != null && codigoEOL!.isNotEmpty) {
-      await FirebaseCrashlytics.instance.setUserIdentifier(codigoEOL!);
+      await setUserIdentifier(codigoEOL!);
     }
   }
 
@@ -196,7 +196,7 @@ abstract class _UsuarioStoreBase with Store {
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
       await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
-      await FirebaseCrashlytics.instance.setUserIdentifier(codigoEOL);
+      await setUserIdentifier(codigoEOL);
     }
 
     await prefs.setString('serapUsuarioAno', ano);
@@ -241,7 +241,7 @@ abstract class _UsuarioStoreBase with Store {
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
       await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
-      await FirebaseCrashlytics.instance.setUserIdentifier(codigoEOL);
+      await setUserIdentifier(codigoEOL);
     }
 
     if (token != null && token.isNotEmpty) {

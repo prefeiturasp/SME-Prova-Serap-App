@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:appserap/main.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
 import 'package:cross_connectivity/cross_connectivity.dart';
@@ -14,12 +16,30 @@ setupFirebase() async {
     await setupCrashlytics();
   } catch (e, stack) {
     logger.severe('[Firebase] Falha ao inicializar Firebase');
-    await FirebaseCrashlytics.instance.recordError(e, stack);
+    await recordError(e, stack);
   }
 }
 
 setupCrashlytics() async {
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  if (!kIsWeb && !Platform.isWindows) {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  }
+}
+
+recordError(
+  dynamic exception,
+  StackTrace? stack, {
+  dynamic reason,
+}) async {
+  if (!kIsWeb && !Platform.isWindows) {
+    await FirebaseCrashlytics.instance.recordError(exception, stack);
+  }
+}
+
+setUserIdentifier(String identifier) async {
+  if (!kIsWeb && !Platform.isWindows) {
+    await FirebaseCrashlytics.instance.setUserIdentifier(identifier);
+  }
 }
 
 inscreverTurmaFirebase(String ano) async {
@@ -43,7 +63,7 @@ inscreverTurmaFirebase(String ano) async {
     FirebaseMessaging.onMessage.listen(_firebaseMessagingBackgroundHandler);
   } catch (e, stack) {
     logger.severe('[Firebase] Falha ao inscrever no tópico do ano do aluno');
-    await FirebaseCrashlytics.instance.recordError(e, stack);
+    await recordError(e, stack);
   }
 }
 
@@ -57,7 +77,7 @@ desinscreverTurmaFirebase(String ano) async {
     logger.config('[Firebase] Desinscrevendo no topico do ano $ano');
   } catch (e, stack) {
     logger.severe('[Firebase] Falha ao desinscrever no tópico do ano $ano do aluno');
-    await FirebaseCrashlytics.instance.recordError(e, stack);
+    await recordError(e, stack);
   }
 }
 

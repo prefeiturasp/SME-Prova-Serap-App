@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:math';
 
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
@@ -11,7 +10,7 @@ import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,7 +40,7 @@ Future<void> main() async {
 
     runApp(MyApp());
   }, (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack);
+    recordError(error, stack);
   });
 }
 
@@ -57,7 +56,7 @@ registerPluginsForIsolate() {
 
   Isolate.current.addErrorListener(RawReceivePort((pair) async {
     final List<dynamic> errorAndStacktrace = pair;
-    await FirebaseCrashlytics.instance.recordError(
+    await recordError(
       errorAndStacktrace.first,
       errorAndStacktrace.last,
     );
@@ -84,7 +83,7 @@ Future setupAppConfig() async {
     print("Erro ao ler arquivo de configurações.");
     print("Verifique se seu projeto possui o arquivo config/app_config.json");
     print('$e');
-    await FirebaseCrashlytics.instance.recordError(e, stack);
+    await recordError(e, stack);
   }
 }
 
