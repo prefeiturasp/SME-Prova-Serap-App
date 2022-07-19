@@ -18,6 +18,7 @@ import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
@@ -137,8 +138,16 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
                                 child: BotaoDefaultWidget(
                                   textoBotao: 'FINALIZAR E ENVIAR',
                                   largura: 392,
+                                  desabilitado: store.botaoFinalizarOcupado,
                                   onPressed: () async {
-                                    await finalizarProva();
+                                    try {
+                                      store.botaoFinalizarOcupado = true;
+                                      await finalizarProva();
+                                    } catch (e, stack) {
+                                      await recordError(e, stack);
+                                    } finally {
+                                      store.botaoFinalizarOcupado = false;
+                                    }
                                   },
                                 ),
                               )

@@ -108,6 +108,23 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
+  final _$botaoFinalizarOcupadoAtom =
+      Atom(name: '_QuestaoRevisaoStoreBase.botaoFinalizarOcupado');
+
+  @override
+  bool get botaoFinalizarOcupado {
+    _$botaoFinalizarOcupadoAtom.reportRead();
+    return super.botaoFinalizarOcupado;
+  }
+
+  @override
+  set botaoFinalizarOcupado(bool value) {
+    _$botaoFinalizarOcupadoAtom.reportWrite(value, super.botaoFinalizarOcupado,
+        () {
+      super.botaoFinalizarOcupado = value;
+    });
+  }
+
   final _$isLoadingAtom = Atom(name: '_QuestaoRevisaoStoreBase.isLoading');
 
   @override
@@ -132,6 +149,7 @@ posicaoQuestaoSendoRevisada: ${posicaoQuestaoSendoRevisada},
 totalDeQuestoesParaRevisar: ${totalDeQuestoesParaRevisar},
 quantidadeDeQuestoesSemRespostas: ${quantidadeDeQuestoesSemRespostas},
 botaoOcupado: ${botaoOcupado},
+botaoFinalizarOcupado: ${botaoFinalizarOcupado},
 isLoading: ${isLoading}
     ''';
   }
