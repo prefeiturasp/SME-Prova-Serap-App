@@ -191,12 +191,12 @@ packages:
     source: hosted
     version: "1.16.0"
   connectivity_plus:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: connectivity_plus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.3.0"
+    version: "2.3.6"
   connectivity_plus_linux:
     dependency: transitive
     description:
@@ -210,7 +210,7 @@ packages:
       name: connectivity_plus_macos
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.2"
+    version: "1.2.4"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -224,14 +224,14 @@ packages:
       name: connectivity_plus_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.3"
   connectivity_plus_windows:
     dependency: transitive
     description:
       name: connectivity_plus_windows
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.2"
   convert:
     dependency: transitive
     description:
@@ -239,13 +239,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
-  cross_connectivity:
-    dependency: "direct main"
-    description:
-      name: cross_connectivity
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.5"
   crypto:
     dependency: "direct main"
     description:
@@ -714,23 +707,19 @@ packages:
     source: hosted
     version: "0.6.4"
   json_annotation:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
-      path: json_annotation
-      ref: HEAD
-      resolved-ref: "8a0e71ee64860d3f88d5480c7446ed23599998aa"
-      url: "https://github.com/google/json_serializable.dart.git"
-    source: git
+      name: json_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "4.6.0"
   json_serializable:
     dependency: "direct dev"
     description:
-      path: json_serializable
-      ref: HEAD
-      resolved-ref: "8a0e71ee64860d3f88d5480c7446ed23599998aa"
-      url: "https://github.com/google/json_serializable.dart.git"
-    source: git
-    version: "6.3.1-dev"
+      name: json_serializable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.3.1"
   json_table:
     dependency: transitive
     description:
@@ -1109,13 +1098,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.0"
-  rxdart:
-    dependency: transitive
-    description:
-      name: rxdart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.27.3"
   sembast:
     dependency: transitive
     description:

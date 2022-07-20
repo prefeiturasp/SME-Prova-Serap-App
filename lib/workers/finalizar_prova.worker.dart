@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:appserap/utils/firebase.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:appserap/main.ioc.dart';
@@ -59,8 +59,8 @@ class FinalizarProvaWorker with Worker, Loggable {
 
     info('${provas.length} provas pendente de sincronização');
 
-    ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
-    if (provas.isNotEmpty && resultado == ConnectivityStatus.none) {
+    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+    if (provas.isNotEmpty && resultado == ConnectivityResult.none) {
       info('Falha na sincronização. Sem Conexão....');
       return;
     }

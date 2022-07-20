@@ -7,9 +7,8 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -24,7 +23,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   final usuario = GetIt.I.get<UsuarioStore>();
 
   @observable
-  ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   ReactionDisposer? _disposer;
 
@@ -38,19 +37,20 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   }
 
   @observable
-  ConnectivityStatus status = ConnectivityStatus.wifi;
+  ConnectivityResult status = ConnectivityResult.none;
 
   @observable
   String versaoApp = "Versão 0";
 
   @computed
-  bool get temConexao => status != ConnectivityStatus.none;
+  bool get temConexao => status != ConnectivityResult.none;
 
   @computed
-  String get versao => "$versaoApp ${status == ConnectivityStatus.none ? ' - Sem conexão' : ''}";
+  String get versao => "$versaoApp ${status == ConnectivityResult.none ? ' - Sem conexão' : ''}";
 
   @action
-  Future onChangeConexao(ConnectivityStatus? resultado) async {
+  Future onChangeConexao(ConnectivityResult? resultado) async {
+    info("Conexão alterada: $resultado");
     status = resultado!;
   }
 

@@ -12,13 +12,13 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
   final _$conexaoStreamAtom = Atom(name: '_ProvaStoreBase.conexaoStream');
 
   @override
-  ObservableStream<ConnectivityStatus> get conexaoStream {
+  ObservableStream<ConnectivityResult> get conexaoStream {
     _$conexaoStreamAtom.reportRead();
     return super.conexaoStream;
   }
 
   @override
-  set conexaoStream(ObservableStream<ConnectivityStatus> value) {
+  set conexaoStream(ObservableStream<ConnectivityResult> value) {
     _$conexaoStreamAtom.reportWrite(value, super.conexaoStream, () {
       super.conexaoStream = value;
     });
@@ -228,7 +228,7 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
       AsyncAction('_ProvaStoreBase.onChangeConexao');
 
   @override
-  Future<dynamic> onChangeConexao(ConnectivityStatus? resultado) {
+  Future<dynamic> onChangeConexao(ConnectivityResult? resultado) {
     return _$onChangeConexaoAsyncAction
         .run(() => super.onChangeConexao(resultado));
   }

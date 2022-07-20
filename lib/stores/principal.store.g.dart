@@ -27,13 +27,13 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
   final _$conexaoStreamAtom = Atom(name: '_PrincipalStoreBase.conexaoStream');
 
   @override
-  ObservableStream<ConnectivityStatus> get conexaoStream {
+  ObservableStream<ConnectivityResult> get conexaoStream {
     _$conexaoStreamAtom.reportRead();
     return super.conexaoStream;
   }
 
   @override
-  set conexaoStream(ObservableStream<ConnectivityStatus> value) {
+  set conexaoStream(ObservableStream<ConnectivityResult> value) {
     _$conexaoStreamAtom.reportWrite(value, super.conexaoStream, () {
       super.conexaoStream = value;
     });
@@ -42,13 +42,13 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
   final _$statusAtom = Atom(name: '_PrincipalStoreBase.status');
 
   @override
-  ConnectivityStatus get status {
+  ConnectivityResult get status {
     _$statusAtom.reportRead();
     return super.status;
   }
 
   @override
-  set status(ConnectivityStatus value) {
+  set status(ConnectivityResult value) {
     _$statusAtom.reportWrite(value, super.status, () {
       super.status = value;
     });
@@ -73,7 +73,7 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
       AsyncAction('_PrincipalStoreBase.onChangeConexao');
 
   @override
-  Future<dynamic> onChangeConexao(ConnectivityStatus? resultado) {
+  Future<dynamic> onChangeConexao(ConnectivityResult? resultado) {
     return _$onChangeConexaoAsyncAction
         .run(() => super.onChangeConexao(resultado));
   }

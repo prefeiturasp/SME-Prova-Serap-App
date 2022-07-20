@@ -5,9 +5,8 @@ import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
-
-import 'package:cross_connectivity/cross_connectivity.dart';
 
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -54,8 +53,8 @@ class SincronizarRespostasWorker with Worker, Loggable {
     var respostasParaSincronizar = respostas ?? await carregaRespostasNaoSincronizadas();
     fine('${respostasParaSincronizar.length} respostas ainda não sincronizadas');
 
-    ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
-    if (respostasParaSincronizar.isNotEmpty && resultado == ConnectivityStatus.none) {
+    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
+    if (respostasParaSincronizar.isNotEmpty && resultado == ConnectivityResult.none) {
       info('Falha na sincronização. Sem Conexão....');
       return;
     }
