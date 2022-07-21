@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:appserap/main.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart' as fb;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -44,11 +44,7 @@ setUserIdentifier(String identifier) async {
 
 inscreverTurmaFirebase(String ano) async {
   try {
-    if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
-      return;
-    }
-
-    if ((!await Connectivity().checkConnection())) {
+    if ((await Connectivity().checkConnectivity()) == ConnectivityResult.none) {
       return;
     }
 
@@ -69,7 +65,7 @@ inscreverTurmaFirebase(String ano) async {
 
 desinscreverTurmaFirebase(String ano) async {
   try {
-    if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
+    if ((await Connectivity().checkConnectivity()) == ConnectivityResult.none) {
       return;
     }
 

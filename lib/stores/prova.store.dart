@@ -6,8 +6,8 @@ import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:appserap/utils/firebase.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -42,7 +42,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   List<ReactionDisposer> _reactions = [];
 
   @observable
-  ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   late DownloadManagerStore downloadManagerStore;
 
@@ -179,16 +179,16 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  Future onChangeConexao(ConnectivityStatus? resultado) async {
+  Future onChangeConexao(ConnectivityResult? resultado) async {
     if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
-    if (resultado == ConnectivityStatus.none &&
+    if (resultado == ConnectivityResult.none &&
         (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
       downloadStatus = EnumDownloadStatus.PAUSADO;
       downloadManagerStore.pauseAllDownloads();
-    } else if (resultado != ConnectivityStatus.none &&
+    } else if (resultado != ConnectivityResult.none &&
         (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
       await iniciarDownload();
     }
@@ -219,7 +219,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     prova.dataInicioProvaAluno = DateTime.now();
 
     var connectionStatus = await Connectivity().checkConnectivity();
-    if (connectionStatus != ConnectivityStatus.none) {
+    if (connectionStatus != ConnectivityResult.none) {
       try {
         await GetIt.I.get<ApiService>().prova.setStatusProva(
               idProva: id,
@@ -337,10 +337,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     try {
       BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
 
-      ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
+      ConnectivityResult resultado = await (Connectivity().checkConnectivity());
       setRespondendoProva(false);
 
-      if (resultado == ConnectivityStatus.none) {
+      if (resultado == ConnectivityResult.none) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');
         // Se estiver sem internet alterar status para pendente (worker ira sincronizar)
 
