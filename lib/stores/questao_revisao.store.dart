@@ -25,5 +25,8 @@ abstract class _QuestaoRevisaoStoreBase with Store {
   bool botaoOcupado = false;
 
   @observable
+  bool botaoFinalizarOcupado = false;
+
+  @observable
   bool isLoading = false;
 }

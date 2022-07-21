@@ -4,8 +4,8 @@ import 'package:appserap/models/prova_aluno.model.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:chopper/src/response.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:appserap/utils/firebase.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
@@ -45,10 +45,10 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       );
     }
 
-    ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
+    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
 
     // Atualizar lista de provas do cache
-    if (resultado != ConnectivityStatus.none) {
+    if (resultado != ConnectivityResult.none) {
       try {
         Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
 

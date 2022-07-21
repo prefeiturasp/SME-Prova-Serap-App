@@ -8,8 +8,8 @@ import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:appserap/utils/firebase.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -107,7 +107,7 @@ abstract class _LoginStoreBase with Store, Loggable {
   Future<bool> autenticar() async {
     carregando = true;
     try {
-      if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
+      if ((await Connectivity().checkConnectivity()) == ConnectivityResult.none) {
         throw SemConexaoException();
       }
 
