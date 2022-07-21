@@ -20,6 +20,10 @@ part 'principal.store.g.dart';
 class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
 abstract class _PrincipalStoreBase with Store, Loggable {
+  _PrincipalStoreBase() {
+    Connectivity().checkConnectivity().then((value) => status = value);
+  }
+
   final usuario = GetIt.I.get<UsuarioStore>();
 
   @observable
