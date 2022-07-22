@@ -12,7 +12,7 @@ abstract class _ContextoProvaViewStoreBase with Store {
   bool loading = false;
 
   @observable
-  late List<ContextoProva> contextoProva;
+  List<ContextoProva>? contextoProva;
 
   @action
   carregarContextoProva(int provaId) async {
