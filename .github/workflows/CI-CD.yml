@@ -1,5 +1,5 @@
 
-name: Docker Image CI
+name: CI-CD
  
 on:
 
@@ -18,7 +18,7 @@ jobs:
     environment:
       name: development
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Ajustando configuração
         env: # Ou como uma variável de ambiente
           APP_CONFIG: ${{ secrets.APP_CONFIG }}
@@ -32,7 +32,7 @@ jobs:
     environment:
       name: release
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Ajustando configuração
         env: # Ou como uma variável de ambiente
           APP_CONFIG: ${{ secrets.APP_CONFIG }}
@@ -45,7 +45,7 @@ jobs:
      environment:
        name: master
      steps:
-       - uses: actions/checkout@v2
+       - uses: actions/checkout@v3
        - name: Ajustando configuração
          env: # Ou como uma variável de ambiente
            APP_CONFIG: ${{ secrets.APP_CONFIG }}
@@ -60,7 +60,7 @@ jobs:
     needs: [flutter_conf_dev]
     steps:
       - name: Login to registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ${{ secrets.REGISTRY_HOST }}
           username: ${{ secrets.REGISTRY_USER }}
@@ -68,6 +68,7 @@ jobs:
           
       - name: Build the Docker image
         run: |
+               docker login
                docker build -f Dockerfile.flutter --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front .
                docker push ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
   
@@ -79,7 +80,7 @@ jobs:
     needs: [flutter_conf_rel]
     steps:
       - name: Login to registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ${{ secrets.REGISTRY_HOST }}
           username: ${{ secrets.REGISTRY_USER }}
@@ -87,6 +88,7 @@ jobs:
           
       - name: Build the Docker image
         run: |
+               docker login
                docker build -f Dockerfile.flutter --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front .
                docker push ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
  
@@ -98,7 +100,7 @@ jobs:
      needs: [flutter_conf_master]
      steps:
        - name: Login to registry
-         uses: docker/login-action@v1
+         uses: docker/login-action@v2
          with:
            registry: ${{ secrets.REGISTRY_HOST }}
            username: ${{ secrets.REGISTRY_USER }}
@@ -106,6 +108,7 @@ jobs:
 
        - name: Build the Docker image
          run: |
+                docker login
                 docker build -f Dockerfile.flutter --tag ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front .
                 docker push ${{ secrets.REGISTRY_HOST }}/${GITHUB_REF##*/}/sme-prova-serap-front
 
@@ -117,7 +120,7 @@ jobs:
     needs: [ build_dev ]
     steps:
       - name: Redeploy
-        uses: luizhpriotto/action_images@kubectl-v1.0
+        uses: prefeiturasp/SME-GithubAction-Images/@kubectl-v2.0
         env: 
           RANCHER_URL: ${{ secrets.RANCHER_URL }}
           RANCHER_TOKEN: ${{ secrets.RANCHER_TOKEN }}
@@ -133,7 +136,7 @@ jobs:
     needs: [ build_release ]
     steps:
       - name: Redeploy
-        uses: luizhpriotto/action_images@kubectl-v1.0
+        uses: prefeiturasp/SME-GithubAction-Images/@kubectl-v2.0
         env: 
           RANCHER_URL: ${{ secrets.RANCHER_URL }}
           RANCHER_TOKEN: ${{ secrets.RANCHER_TOKEN }}
@@ -149,7 +152,7 @@ jobs:
     needs: [ build_master ]
     steps:
       - name: Redeploy
-        uses: luizhpriotto/action_images@kubectl-v1.0
+        uses: prefeiturasp/SME-GithubAction-Images/@kubectl-v2.0
         env: 
           RANCHER_URL: ${{ secrets.RANCHER_URL }}
           RANCHER_TOKEN: ${{ secrets.RANCHER_TOKEN }}
