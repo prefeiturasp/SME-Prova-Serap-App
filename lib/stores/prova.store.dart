@@ -406,6 +406,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       _reaction();
     }
     tempoExecucaoStore?.onDispose();
+    tempoExecucaoStore = null;
   }
 
   bool possuiTempoExecucao() {

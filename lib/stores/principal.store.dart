@@ -5,6 +5,7 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
@@ -95,6 +96,8 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
     await db.limpar();
 
+    await limparMemoriaProvas();
+
     bool eraAdimin = usuario.isAdmin;
 
     usuario.dispose();
@@ -103,6 +106,16 @@ abstract class _PrincipalStoreBase with Store, Loggable {
       await launchUrl(Uri.parse(AppConfigReader.getSerapUrl()), webOnlyWindowName: '_self');
       ServiceLocator.get<AppRouter>().router.go("/login");
     }
+  }
+
+  limparMemoriaProvas() async {
+    var homeStore = ServiceLocator.get<HomeStore>();
+
+    homeStore.provas.forEach((key, value) {
+      value.onDispose();
+    });
+
+    homeStore.provas.clear();
   }
 
   _limparDadosLocais() async {
