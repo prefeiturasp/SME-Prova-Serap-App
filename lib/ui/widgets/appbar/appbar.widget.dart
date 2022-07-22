@@ -145,9 +145,9 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
 
           if (popView) {
             var prova = GetIt.I.get<ProvaViewStore>();
-            var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
-
             prova.dispose();
+
+            var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
             orientacoes.dispose();
 
             context.go("/splash");
