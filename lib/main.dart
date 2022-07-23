@@ -11,6 +11,7 @@ import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';
+import 'package:desktop_window/desktop_window.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,10 @@ var logger = Logger('Main');
 Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
+
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      DesktopWindow.setWindowSize(Size(625, 1000));
+    }
 
     await configure();
 

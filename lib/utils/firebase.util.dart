@@ -6,10 +6,14 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
+import '../firebase_options.dart';
+
 setupFirebase() async {
   try {
     logger.config('[Firebase] Configurando Firebase');
-    await fb.Firebase.initializeApp();
+    await fb.Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
 
     await setupCrashlytics();
   } catch (e, stack) {

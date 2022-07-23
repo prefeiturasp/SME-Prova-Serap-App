@@ -49,6 +49,7 @@
 		D7E06FB33F47DE4BCFE1D62D /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		DB70F035270218D2004A2B79 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Main.strings"; sourceTree = "<group>"; };
 		DB70F036270218D2004A2B79 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		FA6736DE358961541357E478 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +93,7 @@
 				97C146EF1CF9000F007C117D /* Products */,
 				35F0F78918D320DE546A7961 /* Pods */,
 				F4C7D2841A27F3E42F35E0BD /* Frameworks */,
+				FA6736DE358961541357E478 /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
