@@ -4,18 +4,19 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:appserap/interfaces/job.interface.dart';
+import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/utils/timer.util.dart';
-import 'package:appserap/workers/jobs/remover_provas.job.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:workmanager/workmanager.dart';
 
 import '../main.ioc.dart';
 import '../main.dart';
-import 'finalizar_prova.worker.dart';
 import 'jobs.enum.dart';
+import 'jobs/finalizar_prova.job.dart';
+import 'jobs/remover_provas.job.dart';
+import 'jobs/sincronizar_respostas.job.dart';
 
 callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
@@ -31,11 +32,11 @@ callbackDispatcher() {
 
       switch (job) {
         case JobsEnum.SINCRONIZAR_RESPOSTAS:
-          await SincronizarRespostasWorker().sincronizar();
+          await SincronizarRespostasJob().run();
           break;
 
         case JobsEnum.FINALIZAR_PROVA:
-          await FinalizarProvaWorker().sincronizar();
+          await FinalizarProvasJob().run();
           break;
 
         case JobsEnum.REMOVER_PROVAS_EXPIRADAS:
@@ -69,25 +70,29 @@ class Worker with Loggable {
   }
 
   Future<void> registerWorkers() async {
-    await SincronizarRespostasWorker().setup();
-    await FinalizarProvaWorker().setup();
-
+    await configure(FinalizarProvasJob());
+    await configure(SincronizarRespostasJob());
     await configure(RemoverProvasJob());
   }
 
   configure(Job job) async {
-    info('Configurando task ${job.configuration().taskName}');
+    JobConfig config = job.configuration();
+
+    info('Configurando task a cada ${config.frequency} - ${config.taskName}');
 
     if (!kIsWeb && Platform.isAndroid) {
       await Workmanager().registerPeriodicTask(
-        job.configuration().uniqueName,
-        job.configuration().taskName,
-        frequency: job.configuration().frequency,
-        constraints: job.configuration().constraints,
+        config.uniqueName,
+        config.taskName,
+        frequency: config.frequency,
+        constraints: config.constraints,
+        initialDelay: Duration(seconds: 30),
+        existingWorkPolicy: ExistingWorkPolicy.replace,
+        backoffPolicy: BackoffPolicy.linear,
       );
     } else {
-      await interval(job.configuration().frequency, (timer) async {
-        info('Executando job ${job.configuration().taskName}');
+      await interval(config.frequency, (timer) async {
+        info('Executando job ${config.taskName}');
         await job.run();
       });
     }

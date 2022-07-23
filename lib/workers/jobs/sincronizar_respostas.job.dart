@@ -1,56 +1,37 @@
-import 'dart:async';
-import 'dart:io';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
-import 'package:appserap/models/resposta_prova.model.dart';
+import 'package:appserap/interfaces/database.interface.dart';
+import 'package:appserap/interfaces/job.interface.dart';
+import 'package:appserap/interfaces/job_config.interface.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/app_config.util.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/foundation.dart';
-
-import 'package:appserap/main.ioc.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/interfaces/worker.interface.dart';
-import 'package:appserap/services/api_service.dart';
-import 'package:appserap/utils/date.util.dart';
 import 'package:workmanager/workmanager.dart';
 
-class SincronizarRespostasWorker with Worker, Loggable {
-  setup() async {
-    if (!kIsWeb) {
-      if (Platform.isAndroid) {
-        return await Workmanager().registerPeriodicTask(
-          "2",
-          "SincronizarRespostasWorker",
-          frequency: Duration(minutes: 15),
-          constraints: Constraints(
-            networkType: NetworkType.connected,
-          ),
-        );
-      } else {
-        return Timer.periodic(Duration(minutes: 15), (timer) {
-          sincronizar();
-        });
-      }
-    }
-
-    Timer.periodic(Duration(minutes: 1), (timer) {
-      sincronizar();
-    });
+class SincronizarRespostasJob with Job, Loggable, Database {
+  @override
+  JobConfig configuration() {
+    return JobConfig(
+      frequency: Duration(minutes: 15),
+      taskName: 'SincronizarRespostas',
+      uniqueName: 'respostas-sincronizar',
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ),
+    );
   }
 
   @override
-  onFetch(String taskId) async {
-    fine('[Worker] Event received.');
-    sincronizar();
-  }
-
-  Future<void> sincronizar([List<RespostaProva>? respostas]) async {
+  run() async {
     fine('Sincronizando respostas para o servidor');
 
     AppDatabase db = ServiceLocator.get();
 
-    var respostasParaSincronizar = respostas ?? await carregaRespostasNaoSincronizadas();
+    var respostasParaSincronizar = await carregaRespostasNaoSincronizadas();
     fine('${respostasParaSincronizar.length} respostas ainda não sincronizadas');
 
     ConnectivityResult resultado = await (Connectivity().checkConnectivity());
