@@ -333,12 +333,20 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
+  Future<int> setHoraFimProva(DateTime dataFimProvaAluno) async {
+    prova.dataFimProvaAluno = dataFimProvaAluno;
+    return await ServiceLocator.get<AppDatabase>().provaDao.atualizaDataFimProvaAluno(id, dataFimProvaAluno);
+  }
+
+  @action
   Future<bool> finalizarProva([bool automaticamente = false]) async {
     try {
       BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
 
       ConnectivityResult resultado = await (Connectivity().checkConnectivity());
       setRespondendoProva(false);
+
+      await setHoraFimProva(DateTime.now());
 
       if (resultado == ConnectivityResult.none) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');
@@ -359,7 +367,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               idProva: id,
               status: EnumProvaStatus.FINALIZADA.index,
               tipoDispositivo: kDeviceType.index,
-              dataFim: getTicks(DateTime.now()),
+              dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 
         if (response.isSuccessful) {
