@@ -265,6 +265,15 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
         .run(() => super.setStatusProva(provaStatus));
   }
 
+  final _$setHoraFimProvaAsyncAction =
+      AsyncAction('_ProvaStoreBase.setHoraFimProva');
+
+  @override
+  Future<int> setHoraFimProva(DateTime dataFimProvaAluno) {
+    return _$setHoraFimProvaAsyncAction
+        .run(() => super.setHoraFimProva(dataFimProvaAluno));
+  }
+
   final _$finalizarProvaAsyncAction =
       AsyncAction('_ProvaStoreBase.finalizarProva');
 

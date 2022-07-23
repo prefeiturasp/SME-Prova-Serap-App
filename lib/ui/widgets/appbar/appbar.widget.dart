@@ -11,10 +11,10 @@ import 'package:appserap/ui/widgets/appbar/popup_submenu_item.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/workers/finalizar_prova.worker.dart';
 import 'package:appserap/workers/jobs.enum.dart';
+import 'package:appserap/workers/jobs/finalizar_prova.job.dart';
 import 'package:appserap/workers/jobs/remover_provas.job.dart';
-import 'package:appserap/workers/sincronizar_resposta.worker.dart';
+import 'package:appserap/workers/jobs/sincronizar_respostas.job.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -208,16 +208,16 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         ),
         PopupSubMenuItem(
           title: "Jobs",
-          items: JobsEnum.values.map((e) => e.uniqueName).toList(),
+          items: JobsEnum.values.map((e) => e.taskName).toList(),
           onSelected: (selected) async {
             var jobs = JobsEnum.parse(selected)!;
             switch (jobs) {
               case JobsEnum.SINCRONIZAR_RESPOSTAS:
-                await SincronizarRespostasWorker().sincronizar();
+                await SincronizarRespostasJob().run();
                 break;
 
               case JobsEnum.FINALIZAR_PROVA:
-                await FinalizarProvaWorker().sincronizar();
+                await FinalizarProvasJob().run();
                 break;
 
               case JobsEnum.REMOVER_PROVAS_EXPIRADAS:

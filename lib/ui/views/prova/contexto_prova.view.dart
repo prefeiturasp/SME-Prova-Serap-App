@@ -56,7 +56,7 @@ class _ContextoProvaViewState extends State<ContextoProvaView> with Loggable {
               }
 
               return ApresentacaoContextoWidget(
-                listaDePaginasContexto: store.contextoProva,
+                listaDePaginasContexto: store.contextoProva!,
                 textoBotaoAvancar: "PRÓXIMA DICA",
                 textoBotaoPular: "IR PARA A PROVA",
                 regraMostrarTodosOsBotoesAoIniciar: false,

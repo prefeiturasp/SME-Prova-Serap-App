@@ -13,6 +13,7 @@ google-services.json
 .buildlog/
 .history
 .svn/
+*.jks
 
 # IntelliJ related
 *.iml

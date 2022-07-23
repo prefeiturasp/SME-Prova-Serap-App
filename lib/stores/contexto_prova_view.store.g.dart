@@ -28,13 +28,13 @@ mixin _$ContextoProvaViewStore on _ContextoProvaViewStoreBase, Store {
       Atom(name: '_ContextoProvaViewStoreBase.contextoProva');
 
   @override
-  List<ContextoProva> get contextoProva {
+  List<ContextoProva>? get contextoProva {
     _$contextoProvaAtom.reportRead();
     return super.contextoProva;
   }
 
   @override
-  set contextoProva(List<ContextoProva> value) {
+  set contextoProva(List<ContextoProva>? value) {
     _$contextoProvaAtom.reportWrite(value, super.contextoProva, () {
       super.contextoProva = value;
     });

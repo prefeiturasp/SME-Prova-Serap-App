@@ -1,15 +1,15 @@
 enum JobsEnum {
-  SINCRONIZAR_RESPOSTAS('SincronizarRespostasWorker'),
-  FINALIZAR_PROVA('FinalizarProvaWorker'),
+  SINCRONIZAR_RESPOSTAS('SincronizarRespostas'),
+  FINALIZAR_PROVA('FinalizarProvasPendentes'),
   REMOVER_PROVAS_EXPIRADAS('RemocaoProvasExpiradas');
 
-  const JobsEnum(this.uniqueName);
+  const JobsEnum(this.taskName);
 
-  final String uniqueName;
+  final String taskName;
 
   static JobsEnum? parse(String task) {
     for (var job in JobsEnum.values) {
-      if (task == job.uniqueName) {
+      if (task == job.taskName) {
         return job;
       }
     }
