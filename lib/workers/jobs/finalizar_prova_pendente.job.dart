@@ -14,7 +14,7 @@ import 'package:appserap/workers/jobs/sincronizar_respostas.job.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:workmanager/workmanager.dart';
 
-class FinalizarProvasJob with Job, Loggable, Database {
+class FinalizarProvasPendenteJob with Job, Loggable, Database {
   @override
   JobConfig configuration() {
     return JobConfig(
@@ -59,6 +59,9 @@ class FinalizarProvasJob with Job, Loggable, Database {
 
         // Remove respostas do banco local
         await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
+
+        // Atualiza Status da prova
+        await db.provaDao.atualizarStatus(prova.id, EnumProvaStatus.FINALIZADA);
       } catch (e, stack) {
         await recordError(e, stack);
       }
