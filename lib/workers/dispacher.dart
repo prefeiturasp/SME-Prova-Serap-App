@@ -14,7 +14,7 @@ import 'package:workmanager/workmanager.dart';
 import '../main.ioc.dart';
 import '../main.dart';
 import 'jobs.enum.dart';
-import 'jobs/finalizar_prova.job.dart';
+import 'jobs/finalizar_prova_pendente.job.dart';
 import 'jobs/remover_provas.job.dart';
 import 'jobs/sincronizar_respostas.job.dart';
 
@@ -36,7 +36,7 @@ callbackDispatcher() {
           break;
 
         case JobsEnum.FINALIZAR_PROVA:
-          await FinalizarProvasJob().run();
+          await FinalizarProvasPendenteJob().run();
           break;
 
         case JobsEnum.REMOVER_PROVAS_EXPIRADAS:
@@ -70,7 +70,7 @@ class Worker with Loggable {
   }
 
   Future<void> registerWorkers() async {
-    await configure(FinalizarProvasJob());
+    await configure(FinalizarProvasPendenteJob());
     await configure(SincronizarRespostasJob());
     await configure(RemoverProvasJob());
   }
