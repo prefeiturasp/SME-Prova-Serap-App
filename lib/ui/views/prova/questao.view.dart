@@ -146,6 +146,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
         if (voltar) {
           provaStore.setRespondendoProva(false);
+          provaStore.onDispose();
           context.go("/");
         }
       },
