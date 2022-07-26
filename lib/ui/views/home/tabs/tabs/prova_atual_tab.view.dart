@@ -625,13 +625,11 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                       left: 16,
                       right: 16,
                     ),
-                    child: Observer(builder: (_) {
-                      return Texto(
-                        "Insira a senha informada para iniciar a prova",
-                        center: true,
-                        fontSize: tamanhoFonte,
-                      );
-                    }),
+                    child: Texto(
+                      "Insira a senha informada para iniciar a prova",
+                      center: true,
+                      fontSize: tamanhoFonte,
+                    ),
                   ),
                   corpo: Padding(
                     padding: const EdgeInsets.symmetric(
