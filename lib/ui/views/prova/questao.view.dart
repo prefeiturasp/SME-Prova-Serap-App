@@ -72,12 +72,6 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     });
   }
 
-  @override
-  void dispose() {
-    provaStore.onDispose();
-    super.dispose();
-  }
-
   configure() async {
     var provas = ServiceLocator.get<HomeStore>().provas;
 
