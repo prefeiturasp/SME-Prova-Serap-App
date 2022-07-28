@@ -25,6 +25,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
   final Value<String?> idDownload;
   final Value<int> quantidadeRespostaSincronizacao;
   final Value<DateTime> ultimaAlteracao;
+  final Value<String> caderno;
   const ProvasDbCompanion({
     this.id = const Value.absent(),
     this.descricao = const Value.absent(),
@@ -43,6 +44,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.idDownload = const Value.absent(),
     this.quantidadeRespostaSincronizacao = const Value.absent(),
     this.ultimaAlteracao = const Value.absent(),
+    this.caderno = const Value.absent(),
   });
   ProvasDbCompanion.insert({
     this.id = const Value.absent(),
@@ -62,6 +64,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.idDownload = const Value.absent(),
     required int quantidadeRespostaSincronizacao,
     this.ultimaAlteracao = const Value.absent(),
+    this.caderno = const Value.absent(),
   })  : descricao = Value(descricao),
         downloadStatus = Value(downloadStatus),
         itensQuantidade = Value(itensQuantidade),
@@ -89,6 +92,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     Expression<String?>? idDownload,
     Expression<int>? quantidadeRespostaSincronizacao,
     Expression<DateTime>? ultimaAlteracao,
+    Expression<String>? caderno,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -110,6 +114,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       if (quantidadeRespostaSincronizacao != null)
         'quantidade_resposta_sincronizacao': quantidadeRespostaSincronizacao,
       if (ultimaAlteracao != null) 'ultima_alteracao': ultimaAlteracao,
+      if (caderno != null) 'caderno': caderno,
     });
   }
 
@@ -130,7 +135,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       Value<String?>? senha,
       Value<String?>? idDownload,
       Value<int>? quantidadeRespostaSincronizacao,
-      Value<DateTime>? ultimaAlteracao}) {
+      Value<DateTime>? ultimaAlteracao,
+      Value<String>? caderno}) {
     return ProvasDbCompanion(
       id: id ?? this.id,
       descricao: descricao ?? this.descricao,
@@ -150,6 +156,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       quantidadeRespostaSincronizacao: quantidadeRespostaSincronizacao ??
           this.quantidadeRespostaSincronizacao,
       ultimaAlteracao: ultimaAlteracao ?? this.ultimaAlteracao,
+      caderno: caderno ?? this.caderno,
     );
   }
 
@@ -213,6 +220,9 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     if (ultimaAlteracao.present) {
       map['ultima_alteracao'] = Variable<DateTime>(ultimaAlteracao.value);
     }
+    if (caderno.present) {
+      map['caderno'] = Variable<String>(caderno.value);
+    }
     return map;
   }
 
@@ -236,7 +246,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
           ..write('idDownload: $idDownload, ')
           ..write(
               'quantidadeRespostaSincronizacao: $quantidadeRespostaSincronizacao, ')
-          ..write('ultimaAlteracao: $ultimaAlteracao')
+          ..write('ultimaAlteracao: $ultimaAlteracao, ')
+          ..write('caderno: $caderno')
           ..write(')'))
         .toString();
   }
@@ -350,6 +361,13 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
           type: const IntType(),
           requiredDuringInsert: false,
           defaultValue: currentDateAndTime);
+  final VerificationMeta _cadernoMeta = const VerificationMeta('caderno');
+  @override
+  late final GeneratedColumn<String?> caderno = GeneratedColumn<String?>(
+      'caderno', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      defaultValue: Constant("A"));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -368,7 +386,8 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
         senha,
         idDownload,
         quantidadeRespostaSincronizacao,
-        ultimaAlteracao
+        ultimaAlteracao,
+        caderno
       ];
   @override
   String get aliasedName => _alias ?? 'provas_db';
@@ -475,6 +494,10 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
           ultimaAlteracao.isAcceptableOrUnknown(
               data['ultima_alteracao']!, _ultimaAlteracaoMeta));
     }
+    if (data.containsKey('caderno')) {
+      context.handle(_cadernoMeta,
+          caderno.isAcceptableOrUnknown(data['caderno']!, _cadernoMeta));
+    }
     return context;
   }
 
@@ -516,6 +539,8 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
           data['${effectivePrefix}quantidade_resposta_sincronizacao'])!,
       ultimaAlteracao: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}ultima_alteracao'])!,
+      caderno: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}caderno'])!,
     );
   }
 

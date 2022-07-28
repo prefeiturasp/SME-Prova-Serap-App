@@ -32,6 +32,8 @@ class ProvaResponseDTO {
   final int quantidadeRespostaSincronizacao;
   final DateTime ultimaAlteracao;
 
+  final String caderno;
+
   ProvaResponseDTO({
     required this.id,
     required this.descricao,
@@ -48,6 +50,7 @@ class ProvaResponseDTO {
     required this.modalidade,
     required this.quantidadeRespostaSincronizacao,
     required this.ultimaAlteracao,
+    required this.caderno,
   });
 
   bool isFinalizada() {
@@ -73,11 +76,12 @@ class ProvaResponseDTO {
       dataFimProvaAluno: dataFimProvaAluno,
       senha: senha,
       dataFim: dataFim,
+      caderno: caderno,
     );
   }
 
   @override
   String toString() {
-    return 'ProvaResponseDTO(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, status: $status, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno, dataFimProvaAluno: $dataFimProvaAluno)';
+    return 'ProvaResponseDTO(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, status: $status, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno, dataFimProvaAluno: $dataFimProvaAluno, caderno: $caderno)';
   }
 }

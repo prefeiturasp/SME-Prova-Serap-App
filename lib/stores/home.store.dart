@@ -46,8 +46,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     }
 
     ConnectivityResult resultado = await (Connectivity().checkConnectivity());
-
-    // Atualizar lista de provas do cache
     if (resultado != ConnectivityResult.none) {
       try {
         Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
@@ -75,22 +73,24 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
               provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
               provaStore.prova.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
             } else {
+              ProvaStore provaLocal = provasStore[prova.id]!;
+
               // Data alteração da prova alterada
-              if (!isSameDates(provaStore.prova.ultimaAlteracao, provasStore[prova.id]!.prova.ultimaAlteracao)) {
+              if (!isSameDates(provaStore.prova.ultimaAlteracao, provaLocal.prova.ultimaAlteracao)) {
                 if (provaStore.prova.status != EnumProvaStatus.INICIADA &&
                     provaStore.prova.status != EnumProvaStatus.FINALIZADA &&
                     provaStore.prova.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE) {
                   // remover download
-                  await provaStore.removerDownload();
-
-                  provaStore.downloadStatus = EnumDownloadStatus.ATUALIZAR;
-                  provaStore.prova.downloadStatus = EnumDownloadStatus.ATUALIZAR;
+                  await removerProva(provaStore);
                 }
+              } else if (provaLocal.prova.caderno != provaStore.prova.caderno) {
+                info(
+                    "[Prova ${provaStore.id}] - Caderno alterado ${provaLocal.prova.caderno} -> ${provaStore.prova.caderno}");
+                await removerProva(provaStore, true);
               } else {
-                provaStore.downloadStatus = EnumDownloadStatus.CONCLUIDO;
-                provaStore.prova.downloadStatus = EnumDownloadStatus.CONCLUIDO;
+                provaStore.downloadStatus = provaLocal.downloadStatus;
+                provaStore.prova.downloadStatus = provaLocal.downloadStatus;
 
-                var provaLocal = provasStore[prova.id]!;
                 if (provaLocal.status != EnumProvaStatus.PENDENTE) {
                   provaStore.status = prova.status;
                 } else {
@@ -125,12 +125,21 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
         provaStore.configure();
       }
     }
+
     provas = ObservableMap.of(provasStore);
 
     carregando = false;
   }
 
-  Future<void> carregaProva(int idProva, ProvaStore provaStore) async {
+  @action
+  removerProva(ProvaStore provaStore, [bool manterRegistroProva = false]) async {
+    await provaStore.removerDownload(manterRegistroProva);
+
+    provaStore.downloadStatus = EnumDownloadStatus.ATUALIZAR;
+    provaStore.prova.downloadStatus = EnumDownloadStatus.ATUALIZAR;
+  }
+
+  Future<void> carregaProva(int idProva, ProvaStore provaStoreAtualizada) async {
     var provaDao = ServiceLocator.get<AppDatabase>().provaDao;
 
     Prova? prova = await provaDao.obterPorIdNull(idProva);
@@ -138,32 +147,35 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     if (prova != null) {
       // atualizar prova com os valores remotos
 
-      prova.status = provaStore.prova.status;
-      prova.dataInicioProvaAluno = provaStore.prova.dataInicioProvaAluno;
-      prova.dataFimProvaAluno = provaStore.prova.dataFimProvaAluno;
+      prova.status = provaStoreAtualizada.prova.status;
+      prova.downloadStatus = provaStoreAtualizada.prova.downloadStatus;
 
-      prova.dataInicio = provaStore.prova.dataInicio;
-      prova.dataFim = provaStore.prova.dataFim;
+      prova.dataInicioProvaAluno = provaStoreAtualizada.prova.dataInicioProvaAluno;
+      prova.dataFimProvaAluno = provaStoreAtualizada.prova.dataFimProvaAluno;
 
-      prova.ultimaAlteracao = provaStore.prova.ultimaAlteracao;
+      prova.dataInicio = provaStoreAtualizada.prova.dataInicio;
+      prova.dataFim = provaStoreAtualizada.prova.dataFim;
 
-      prova.tempoAlerta = provaStore.prova.tempoAlerta;
-      prova.tempoExecucao = provaStore.prova.tempoExecucao;
-      prova.tempoExtra = provaStore.prova.tempoExtra;
+      prova.ultimaAlteracao = provaStoreAtualizada.prova.ultimaAlteracao;
 
-      prova.itensQuantidade = provaStore.prova.itensQuantidade;
-      prova.quantidadeRespostaSincronizacao = provaStore.prova.quantidadeRespostaSincronizacao;
-      prova.senha = provaStore.prova.senha;
+      prova.tempoAlerta = provaStoreAtualizada.prova.tempoAlerta;
+      prova.tempoExecucao = provaStoreAtualizada.prova.tempoExecucao;
+      prova.tempoExtra = provaStoreAtualizada.prova.tempoExtra;
 
-      provaStore.prova = prova;
-      provaStore.downloadStatus = prova.downloadStatus;
+      prova.itensQuantidade = provaStoreAtualizada.prova.itensQuantidade;
+      prova.quantidadeRespostaSincronizacao = provaStoreAtualizada.prova.quantidadeRespostaSincronizacao;
+      prova.senha = provaStoreAtualizada.prova.senha;
+      prova.caderno = provaStoreAtualizada.prova.caderno;
+
+      provaStoreAtualizada.prova = prova;
+      provaStoreAtualizada.downloadStatus = prova.downloadStatus;
     }
 
-    await provaDao.inserirOuAtualizar(provaStore.prova);
+    await provaDao.inserirOuAtualizar(provaStoreAtualizada.prova);
 
-    if (provaStore.downloadStatus == EnumDownloadStatus.ATUALIZAR) {
-      info('Prova alterada. Iniciando atualização');
-      provaStore.iniciarDownload();
+    if (provaStoreAtualizada.downloadStatus == EnumDownloadStatus.ATUALIZAR) {
+      info('Prova ${provaStoreAtualizada.id} alterada. Iniciando atualização');
+      provaStoreAtualizada.iniciarDownload();
     }
   }
 

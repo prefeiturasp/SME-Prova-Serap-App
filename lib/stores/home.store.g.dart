@@ -47,6 +47,15 @@ mixin _$HomeStore on _HomeStoreBase, Store {
     return _$carregarProvasAsyncAction.run(() => super.carregarProvas());
   }
 
+  final _$removerProvaAsyncAction = AsyncAction('_HomeStoreBase.removerProva');
+
+  @override
+  Future removerProva(ProvaStore provaStore,
+      [bool manterRegistroProva = false]) {
+    return _$removerProvaAsyncAction
+        .run(() => super.removerProva(provaStore, manterRegistroProva));
+  }
+
   final _$_HomeStoreBaseActionController =
       ActionController(name: '_HomeStoreBase');
 

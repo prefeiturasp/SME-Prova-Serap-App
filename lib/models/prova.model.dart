@@ -32,6 +32,8 @@ class Prova implements Insertable<Prova> {
   int quantidadeRespostaSincronizacao;
   DateTime ultimaAlteracao;
 
+  String caderno;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -49,6 +51,7 @@ class Prova implements Insertable<Prova> {
     this.dataFimProvaAluno,
     required this.quantidadeRespostaSincronizacao,
     required this.ultimaAlteracao,
+    required this.caderno,
   });
 
   bool isFinalizada() {
@@ -60,7 +63,7 @@ class Prova implements Insertable<Prova> {
 
   @override
   String toString() {
-    return 'Prova(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno, dataFimProvaAluno: $dataFimProvaAluno, downloadStatus: $downloadStatus, status: $status)';
+    return 'Prova(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno, dataFimProvaAluno: $dataFimProvaAluno, downloadStatus: $downloadStatus, status: $status, caderno: $caderno)';
   }
 
   @override
@@ -83,6 +86,7 @@ class Prova implements Insertable<Prova> {
       idDownload: Value(idDownload),
       quantidadeRespostaSincronizacao: Value(quantidadeRespostaSincronizacao),
       ultimaAlteracao: Value(ultimaAlteracao),
+      caderno: Value(caderno),
     ).toColumns(nullToAbsent);
   }
 }
