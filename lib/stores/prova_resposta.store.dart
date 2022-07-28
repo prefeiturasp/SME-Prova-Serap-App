@@ -8,7 +8,6 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
@@ -39,8 +38,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   Future<void> carregarRespostasServidor() async {
     respostasLocal = (await carregarRespostasLocal()).asObservable();
 
-    var connectionStatus = await Connectivity().checkConnectivity();
-    if (connectionStatus == ConnectivityResult.none) {
+    if (!ServiceLocator.get<PrincipalStore>().temConexao) {
       return;
     }
 

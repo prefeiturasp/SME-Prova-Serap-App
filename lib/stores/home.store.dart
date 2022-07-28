@@ -5,7 +5,6 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:chopper/src/response.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
@@ -16,6 +15,8 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
+
+import 'principal.store.dart';
 
 part 'home.store.g.dart';
 
@@ -45,8 +46,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       );
     }
 
-    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
-    if (resultado != ConnectivityResult.none) {
+    if (ServiceLocator.get<PrincipalStore>().temConexao) {
       try {
         Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
 
