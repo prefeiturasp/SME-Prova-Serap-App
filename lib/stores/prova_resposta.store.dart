@@ -3,6 +3,7 @@ import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/services/api_service.dart';
+import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
@@ -74,7 +75,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       }
     } catch (e, stack) {
       if (!e.toString().contains("but got one of type 'String'") &&
-          !e.toString().contains("type 'String' is not a subtype of type")) {
+          !e.toString().contains("is not a subtype of type")) {
         await recordError(e, stack);
       } else {
         finer('[Prova $idProva] Sem respostas salva');
@@ -93,6 +94,11 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       codigoEOL,
       idProva,
     );
+
+    if (!ServiceLocator.get<PrincipalStore>().temConexao) {
+      info("[$idProva] - Sincronização não executada. Não há conexão com a internet");
+      return;
+    }
 
     var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaId(idProva);
 
