@@ -113,6 +113,18 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     );
   }
 
+  Future<int> atualizaDataInicioProvaAluno(int provaId, DateTime dataInicioProvaAluno) {
+    return (update(provasDb)
+          ..where(
+            (t) => t.id.equals(provaId),
+          ))
+        .write(
+      ProvasDbCompanion(
+        dataInicioProvaAluno: Value(dataInicioProvaAluno),
+      ),
+    );
+  }
+
   Future<List<Prova>> getProvasExpiradas() {
     var query = select(provasDb)
       ..where((t) {
