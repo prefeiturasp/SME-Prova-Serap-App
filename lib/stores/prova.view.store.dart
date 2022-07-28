@@ -18,7 +18,5 @@ abstract class _ProvaViewStoreBase with Store, Loggable {
     this.provaStore = provaStore;
   }
 
-  void dispose() {
-    provaStore?.onDispose();
-  }
+  void dispose() {}
 }
