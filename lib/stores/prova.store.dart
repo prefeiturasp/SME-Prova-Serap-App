@@ -25,6 +25,8 @@ import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
 
+import 'principal.store.dart';
+
 part 'prova.store.g.dart';
 
 class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
@@ -219,8 +221,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     await setStatusProva(EnumProvaStatus.INICIADA);
     await setHoraInicioProva(DateTime.now());
 
-    var connectionStatus = await Connectivity().checkConnectivity();
-    if (connectionStatus != ConnectivityResult.none) {
+    if (ServiceLocator.get<PrincipalStore>().temConexao) {
       try {
         await GetIt.I.get<ApiService>().prova.setStatusProva(
               idProva: id,
@@ -351,12 +352,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     try {
       BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
 
-      ConnectivityResult resultado = await (Connectivity().checkConnectivity());
       setRespondendoProva(false);
 
       await setHoraFimProva(DateTime.now());
 
-      if (resultado == ConnectivityResult.none) {
+      if (!ServiceLocator.get<PrincipalStore>().temConexao) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');
         // Se estiver sem internet alterar status para pendente (worker ira sincronizar)
 
