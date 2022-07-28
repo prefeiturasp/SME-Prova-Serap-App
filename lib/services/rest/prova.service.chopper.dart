@@ -44,11 +44,13 @@ class _$ProvaService extends ProvaService {
       {required int idProva,
       required int status,
       required int tipoDispositivo,
+      int? dataInicio,
       int? dataFim}) {
     final $url = '/v1/provas/${idProva}/status-aluno';
     final $body = <String, dynamic>{
       'status': status,
       'tipoDispositivo': tipoDispositivo,
+      'dataInicio': dataInicio,
       'dataFim': dataFim
     };
     final $request = Request('POST', $url, client.baseUrl, body: $body);

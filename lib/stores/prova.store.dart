@@ -217,7 +217,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @action
   iniciarProva() async {
     await setStatusProva(EnumProvaStatus.INICIADA);
-    prova.dataInicioProvaAluno = DateTime.now();
+    await setHoraInicioProva(DateTime.now());
 
     var connectionStatus = await Connectivity().checkConnectivity();
     if (connectionStatus != ConnectivityResult.none) {
@@ -226,6 +226,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               idProva: id,
               tipoDispositivo: kDeviceType.index,
               status: EnumProvaStatus.INICIADA.index,
+              dataInicio: getTicks(prova.dataInicioProvaAluno!),
             );
       } catch (e, stack) {
         await recordError(e, stack);
@@ -340,6 +341,12 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
+  Future<int> setHoraInicioProva(DateTime dataInicioProvaAluno) async {
+    prova.dataInicioProvaAluno = dataInicioProvaAluno;
+    return await ServiceLocator.get<AppDatabase>().provaDao.atualizaDataInicioProvaAluno(id, dataInicioProvaAluno);
+  }
+
+  @action
   Future<bool> finalizarProva([bool automaticamente = false]) async {
     try {
       BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
@@ -368,6 +375,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               idProva: id,
               status: EnumProvaStatus.FINALIZADA.index,
               tipoDispositivo: kDeviceType.index,
+              dataInicio: getTicks(prova.dataInicioProvaAluno!),
               dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 

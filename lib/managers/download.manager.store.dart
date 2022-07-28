@@ -195,7 +195,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     var downloadsContexto =
         downloadsNaoConcluidos.filter((element) => element.tipo == EnumDownloadTipo.CONTEXTO_PROVA).toList();
 
-    for (int i = 0; i <= downloadsQuestao.length; i = i + quantidadeDownloads) {
+    for (int i = 0; i < downloadsQuestao.length; i = i + quantidadeDownloads) {
       if (_isPauseAllDownloads) {
         info("[Prova $provaId] - Pausando todos os downloads");
         await _pause();
