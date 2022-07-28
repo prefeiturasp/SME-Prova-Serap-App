@@ -28,6 +28,7 @@ ProvaResponseDTO _$ProvaResponseDTOFromJson(Map<String, dynamic> json) =>
       quantidadeRespostaSincronizacao:
           json['quantidadeRespostaSincronizacao'] as int,
       ultimaAlteracao: DateTime.parse(json['ultimaAlteracao'] as String),
+      caderno: json['caderno'] as String,
     );
 
 Map<String, dynamic> _$ProvaResponseDTOToJson(ProvaResponseDTO instance) =>
@@ -48,6 +49,7 @@ Map<String, dynamic> _$ProvaResponseDTOToJson(ProvaResponseDTO instance) =>
       'quantidadeRespostaSincronizacao':
           instance.quantidadeRespostaSincronizacao,
       'ultimaAlteracao': instance.ultimaAlteracao.toIso8601String(),
+      'caderno': instance.caderno,
     };
 
 const _$EnumProvaStatusEnumMap = {

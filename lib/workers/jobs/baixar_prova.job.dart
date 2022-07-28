@@ -46,23 +46,29 @@ class BaixarProvaJob with Job, Loggable, Database {
       List<int> idsParaVerificar = idsProvasLocal.toSet().difference(idsToDownload.toSet()).toList();
 
       for (var idProva in idsParaVerificar) {
-        Prova? prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorIdNull(idProva);
+        Prova? provaLocal = await ServiceLocator.get<AppDatabase>().provaDao.obterPorIdNull(idProva);
 
-        if (prova == null) {
+        if (provaLocal == null) {
           continue;
         }
+        var provaRemoto = provasRemoto.firstWhere((element) => element.id == provaLocal.id);
 
-        if (prova.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+        // Caderno de questões alterado
+        if (provaLocal.caderno != provaRemoto.caderno) {
+          info("[Prova ${provaLocal.id}] - Caderno alterado ${provaLocal.caderno} -> ${provaRemoto.caderno}");
+          await DownloadManagerStore(provaId: provaLocal.id).removerDownloadCompleto();
           idsToDownload.add(idProva);
         }
 
-        var provaRemoto = provasRemoto.firstWhere((element) => element.id == prova.id);
+        // Prova não baixada
+        if (provaLocal.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+          idsToDownload.add(idProva);
+        }
 
-        if (!isSameDates(prova.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
-          info('[${prova.id} - ${prova.descricao}] Prova alterada - Baixando Novamente...');
-
-          await DownloadManagerStore(provaId: prova.id).removerDownloadCompleto();
-
+        // Prova alterada
+        if (!isSameDates(provaLocal.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
+          info('[Prova ${provaLocal.id}] Prova alterada - Baixando Novamente...');
+          await DownloadManagerStore(provaId: provaLocal.id).removerDownloadCompleto();
           idsToDownload.add(idProva);
         }
       }
@@ -104,6 +110,7 @@ class BaixarProvaJob with Job, Loggable, Database {
       senha: provaResponse.senha,
       quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
       ultimaAlteracao: provaResponse.ultimaAlteracao,
+      caderno: provaResponse.caderno,
     );
 
     await ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(prova);

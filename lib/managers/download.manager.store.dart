@@ -207,6 +207,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
       info('Baixando do $i ate $end');
       var downloads = downloadsNaoConcluidos.getRange(i, end).toList();
+      info('Baixando as questões ${downloads.map((e) => e.id).toList()}');
 
       await atualizarStatus(EnumDownloadStatus.BAIXANDO);
 
@@ -727,7 +728,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  removerDownloadCompleto() async {
+  removerDownloadCompleto([bool manterRegistroProva = false]) async {
     info('[$provaId] Removendo conteudo da prova');
 
     await removerContexto(provaId);
@@ -736,8 +737,11 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     await removerArquivosImagem(provaId);
     await removerArquivosAudio(provaId);
     await removerArquivosVideo(provaId);
-    await removerCacheAluno(provaId);
-    await removerProva(provaId);
+
+    if (!manterRegistroProva) {
+      await removerCacheAluno(provaId);
+      await removerProva(provaId);
+    }
   }
 
   removerContexto(int provaId) async {

@@ -25,6 +25,8 @@ class ProvasDb extends Table {
   IntColumn get quantidadeRespostaSincronizacao => integer()();
   DateTimeColumn get ultimaAlteracao => dateTime().withDefault(currentDateAndTime)();
 
+  TextColumn get caderno => text().withDefault(Constant("A"))();
+
   @override
   Set<Column> get primaryKey => {id};
 }

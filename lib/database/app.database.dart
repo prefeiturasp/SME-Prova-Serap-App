@@ -70,7 +70,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 18;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -130,6 +130,9 @@ class AppDatabase extends _$AppDatabase {
           await m.alterTable(TableMigration(arquivosDb));
           await m.alterTable(TableMigration(contextosProvaDb));
         }
+        if (from == 17) {
+          await m.addColumn(provasDb, provasDb.caderno);
+        }
 
         // Assert that the schema is valid after migrations
         if (kDebugMode) {
@@ -182,6 +185,8 @@ class AppDatabase extends _$AppDatabase {
       await customUpdate("delete from provas_db;");
 
       await customUpdate("delete from download_provas_db;");
+
+      await customUpdate("delete from prova_aluno_table;");
     });
   }
 }

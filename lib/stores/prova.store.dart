@@ -61,6 +61,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     required this.prova,
   }) {
     status = prova.status;
+    downloadStatus = prova.downloadStatus;
   }
 
   @observable
@@ -404,8 +405,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  removerDownload() async {
-    await downloadManagerStore.removerDownloadCompleto();
+  removerDownload([bool manterRegistroProva = false]) async {
+    await downloadManagerStore.removerDownloadCompleto(manterRegistroProva);
   }
 
   @override

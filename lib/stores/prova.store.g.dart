@@ -287,8 +287,9 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
       AsyncAction('_ProvaStoreBase.removerDownload');
 
   @override
-  Future removerDownload() {
-    return _$removerDownloadAsyncAction.run(() => super.removerDownload());
+  Future removerDownload([bool manterRegistroProva = false]) {
+    return _$removerDownloadAsyncAction
+        .run(() => super.removerDownload(manterRegistroProva));
   }
 
   final _$_ProvaStoreBaseActionController =
