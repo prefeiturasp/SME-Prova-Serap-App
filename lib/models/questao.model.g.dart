@@ -14,6 +14,7 @@ Questao _$QuestaoFromJson(Map<String, dynamic> json) => Questao(
       ordem: json['ordem'] as int,
       tipo: $enumDecode(_$EnumTipoQuestaoEnumMap, json['tipo']),
       quantidadeAlternativas: json['quantidadeAlternativas'] as int,
+      caderno: json['caderno'] as String,
     );
 
 Map<String, dynamic> _$QuestaoToJson(Questao instance) => <String, dynamic>{
@@ -24,6 +25,7 @@ Map<String, dynamic> _$QuestaoToJson(Questao instance) => <String, dynamic>{
       'ordem': instance.ordem,
       'tipo': _$EnumTipoQuestaoEnumMap[instance.tipo]!,
       'quantidadeAlternativas': instance.quantidadeAlternativas,
+      'caderno': instance.caderno,
     };
 
 const _$EnumTipoQuestaoEnumMap = {

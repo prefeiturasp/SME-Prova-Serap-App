@@ -48,6 +48,7 @@ class DownloadManagerStore = _DownloadManagerStoreBase with _$DownloadManagerSto
 abstract class _DownloadManagerStoreBase with Store, Loggable {
   ProvaStore? provaStore;
   late int provaId;
+  late String caderno;
 
   AppDatabase db = ServiceLocator.get();
   ApiService apiService = ServiceLocator.get();
@@ -64,12 +65,14 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   Timer? timer;
   TempoPrevistoChangeCallback? onTempoPrevistoChangeCallback;
 
-  _DownloadManagerStoreBase({ProvaStore? provaStore, int? provaId}) {
+  _DownloadManagerStoreBase({ProvaStore? provaStore, int? provaId, String? caderno}) {
     if (provaStore != null) {
       this.provaStore = provaStore;
       this.provaId = provaStore.id;
+      this.caderno = provaStore.caderno;
     } else {
       this.provaId = provaId!;
+      this.caderno = caderno!;
     }
   }
 
@@ -400,6 +403,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
             ordem: questaoDTO.ordem,
             tipo: questaoDTO.tipo,
             quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
+            caderno: caderno,
           );
 
           await db.questaoDao.inserirOuAtualizar(questao);
@@ -685,7 +689,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   _validarQuestoes() async {
-    var questoes = await db.questaoDao.obterPorProvaId(provaId);
+    var questoes = await db.questaoDao.obterPorProvaId(provaId, caderno);
 
     for (var questao in questoes) {
       var alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);

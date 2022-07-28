@@ -564,6 +564,7 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
   final Value<DateTime?> ultimaAtualizacao;
   final Value<int> provaId;
   final Value<int> quantidadeAlternativas;
+  final Value<String> caderno;
   const QuestoesDbCompanion({
     this.id = const Value.absent(),
     this.titulo = const Value.absent(),
@@ -573,9 +574,10 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
     this.ultimaAtualizacao = const Value.absent(),
     this.provaId = const Value.absent(),
     this.quantidadeAlternativas = const Value.absent(),
+    this.caderno = const Value.absent(),
   });
   QuestoesDbCompanion.insert({
-    this.id = const Value.absent(),
+    required int id,
     this.titulo = const Value.absent(),
     required String descricao,
     required int ordem,
@@ -583,7 +585,9 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
     this.ultimaAtualizacao = const Value.absent(),
     required int provaId,
     required int quantidadeAlternativas,
-  })  : descricao = Value(descricao),
+    this.caderno = const Value.absent(),
+  })  : id = Value(id),
+        descricao = Value(descricao),
         ordem = Value(ordem),
         tipo = Value(tipo),
         provaId = Value(provaId),
@@ -597,6 +601,7 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
     Expression<DateTime?>? ultimaAtualizacao,
     Expression<int>? provaId,
     Expression<int>? quantidadeAlternativas,
+    Expression<String>? caderno,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -608,6 +613,7 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
       if (provaId != null) 'prova_id': provaId,
       if (quantidadeAlternativas != null)
         'quantidade_alternativas': quantidadeAlternativas,
+      if (caderno != null) 'caderno': caderno,
     });
   }
 
@@ -619,7 +625,8 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
       Value<EnumTipoQuestao>? tipo,
       Value<DateTime?>? ultimaAtualizacao,
       Value<int>? provaId,
-      Value<int>? quantidadeAlternativas}) {
+      Value<int>? quantidadeAlternativas,
+      Value<String>? caderno}) {
     return QuestoesDbCompanion(
       id: id ?? this.id,
       titulo: titulo ?? this.titulo,
@@ -630,6 +637,7 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
       provaId: provaId ?? this.provaId,
       quantidadeAlternativas:
           quantidadeAlternativas ?? this.quantidadeAlternativas,
+      caderno: caderno ?? this.caderno,
     );
   }
 
@@ -662,6 +670,9 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
       map['quantidade_alternativas'] =
           Variable<int>(quantidadeAlternativas.value);
     }
+    if (caderno.present) {
+      map['caderno'] = Variable<String>(caderno.value);
+    }
     return map;
   }
 
@@ -675,7 +686,8 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
           ..write('tipo: $tipo, ')
           ..write('ultimaAtualizacao: $ultimaAtualizacao, ')
           ..write('provaId: $provaId, ')
-          ..write('quantidadeAlternativas: $quantidadeAlternativas')
+          ..write('quantidadeAlternativas: $quantidadeAlternativas, ')
+          ..write('caderno: $caderno')
           ..write(')'))
         .toString();
   }
@@ -691,7 +703,7 @@ class $QuestoesDbTable extends QuestoesDb
   @override
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
+      type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _tituloMeta = const VerificationMeta('titulo');
   @override
   late final GeneratedColumn<String?> titulo = GeneratedColumn<String?>(
@@ -730,6 +742,13 @@ class $QuestoesDbTable extends QuestoesDb
   late final GeneratedColumn<int?> quantidadeAlternativas =
       GeneratedColumn<int?>('quantidade_alternativas', aliasedName, false,
           type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _cadernoMeta = const VerificationMeta('caderno');
+  @override
+  late final GeneratedColumn<String?> caderno = GeneratedColumn<String?>(
+      'caderno', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      defaultValue: Constant("A"));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -739,7 +758,8 @@ class $QuestoesDbTable extends QuestoesDb
         tipo,
         ultimaAtualizacao,
         provaId,
-        quantidadeAlternativas
+        quantidadeAlternativas,
+        caderno
       ];
   @override
   String get aliasedName => _alias ?? 'questoes_db';
@@ -752,6 +772,8 @@ class $QuestoesDbTable extends QuestoesDb
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('titulo')) {
       context.handle(_tituloMeta,
@@ -790,11 +812,15 @@ class $QuestoesDbTable extends QuestoesDb
     } else if (isInserting) {
       context.missing(_quantidadeAlternativasMeta);
     }
+    if (data.containsKey('caderno')) {
+      context.handle(_cadernoMeta,
+          caderno.isAcceptableOrUnknown(data['caderno']!, _cadernoMeta));
+    }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {id, caderno};
   @override
   Questao map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -813,6 +839,8 @@ class $QuestoesDbTable extends QuestoesDb
           .mapFromDatabaseResponse(data['${effectivePrefix}tipo']))!,
       quantidadeAlternativas: const IntType().mapFromDatabaseResponse(
           data['${effectivePrefix}quantidade_alternativas'])!,
+      caderno: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}caderno'])!,
     );
   }
 

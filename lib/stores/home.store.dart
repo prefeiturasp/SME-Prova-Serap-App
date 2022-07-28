@@ -41,7 +41,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     List<Prova> provasDb = await db.provaDao.listarTodosPorAluno(codigoEOL);
     for (var prova in provasDb) {
       provasStore[prova.id] = ProvaStore(
-        id: prova.id,
         prova: prova,
       );
     }
@@ -64,16 +63,19 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
             var prova = provaResponse.toProvaModel();
 
             var provaStore = ProvaStore(
-              id: provaResponse.id,
-              prova: prova,
+              prova: provaResponse.toProvaModel(),
             );
 
             // caso nao tenha o id, define como nova prova
-            if (!provasStore.keys.contains(provaStore.id)) {
+            var provaExiste = await db.provaDao.existeProva(provaResponse.id, provaResponse.caderno);
+
+            if (provaExiste == null) {
               provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
               provaStore.prova.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
             } else {
-              ProvaStore provaLocal = provasStore[prova.id]!;
+              ProvaStore? provaLocal = ProvaStore(
+                prova: provaExiste,
+              );
 
               // Data alteração da prova alterada
               if (!isSameDates(provaStore.prova.ultimaAlteracao, provaLocal.prova.ultimaAlteracao)) {
@@ -83,10 +85,6 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
                   // remover download
                   await removerProva(provaStore);
                 }
-              } else if (provaLocal.prova.caderno != provaStore.prova.caderno) {
-                info(
-                    "[Prova ${provaStore.id}] - Caderno alterado ${provaLocal.prova.caderno} -> ${provaStore.prova.caderno}");
-                await removerProva(provaStore, true);
               } else {
                 provaStore.downloadStatus = provaLocal.downloadStatus;
                 provaStore.prova.downloadStatus = provaLocal.downloadStatus;

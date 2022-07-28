@@ -26,6 +26,14 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     return transaction(() => (delete(provasDb)..where((t) => t.id.equals(provaId))).go());
   }
 
+  Future<Prova?> existeProva(int provaId, String caderno) {
+    var query = select(provasDb);
+
+    query.where((t) => t.id.equals(provaId) & t.caderno.equals(caderno));
+
+    return query.getSingleOrNull();
+  }
+
   Future<List<Prova>> listarTodos() {
     return select(provasDb).get();
   }

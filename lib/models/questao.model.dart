@@ -17,6 +17,8 @@ class Questao implements Insertable<Questao> {
 
   int quantidadeAlternativas;
 
+  String caderno;
+
   Questao({
     required this.id,
     required this.provaId,
@@ -25,6 +27,7 @@ class Questao implements Insertable<Questao> {
     required this.ordem,
     required this.tipo,
     required this.quantidadeAlternativas,
+    required this.caderno,
   });
 
   factory Questao.fromJson(Map<String, dynamic> json) => _$QuestaoFromJson(json);
@@ -32,7 +35,7 @@ class Questao implements Insertable<Questao> {
 
   @override
   String toString() {
-    return 'Questao(id: $id, titulo: $titulo, descricao: $descricao, ordem: $ordem)';
+    return 'Questao(id: $id, titulo: $titulo, descricao: $descricao, ordem: $ordem, caderno: $caderno)';
   }
 
   @override
@@ -45,6 +48,7 @@ class Questao implements Insertable<Questao> {
       tipo: Value(tipo),
       quantidadeAlternativas: Value(quantidadeAlternativas),
       provaId: Value(provaId),
+      caderno: Value(caderno),
     ).toColumns(nullToAbsent);
   }
 }
