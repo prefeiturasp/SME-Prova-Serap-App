@@ -50,6 +50,7 @@ class FinalizarProvasPendenteJob with Job, Loggable, Database {
               idProva: prova.id,
               status: EnumProvaStatus.FINALIZADA.index,
               tipoDispositivo: kDeviceType.index,
+              dataInicio: getTicks(prova.dataInicioProvaAluno!),
               dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 
