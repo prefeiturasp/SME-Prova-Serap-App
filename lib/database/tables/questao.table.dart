@@ -13,6 +13,8 @@ class QuestoesDb extends Table {
   IntColumn get provaId => integer()();
   IntColumn get quantidadeAlternativas => integer()();
 
+  TextColumn get caderno => text().withDefault(Constant("A"))();
+
   @override
-  Set<Column> get primaryKey => {id};
+  Set<Column> get primaryKey => {id, caderno};
 }
