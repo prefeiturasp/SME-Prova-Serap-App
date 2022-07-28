@@ -62,43 +62,43 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
             var prova = provaResponse.toProvaModel();
 
-            var provaStore = ProvaStore(
+            var provaRemotaStore = ProvaStore(
               prova: provaResponse.toProvaModel(),
             );
 
             // caso nao tenha o id, define como nova prova
-            var provaExiste = await db.provaDao.existeProva(provaResponse.id, provaResponse.caderno);
+            var provaLocalExiste = await db.provaDao.existeProva(provaResponse.id, provaResponse.caderno);
 
-            if (provaExiste == null) {
-              provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
-              provaStore.prova.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+            if (provaLocalExiste == null) {
+              provaRemotaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+              provaRemotaStore.prova.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
             } else {
               ProvaStore? provaLocal = ProvaStore(
-                prova: provaExiste,
+                prova: provaLocalExiste,
               );
 
               // Data alteração da prova alterada
-              if (!isSameDates(provaStore.prova.ultimaAlteracao, provaLocal.prova.ultimaAlteracao)) {
-                if (provaStore.prova.status != EnumProvaStatus.INICIADA &&
-                    provaStore.prova.status != EnumProvaStatus.FINALIZADA &&
-                    provaStore.prova.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE) {
+              if (!isSameDates(provaRemotaStore.prova.ultimaAlteracao, provaLocal.prova.ultimaAlteracao)) {
+                if (provaRemotaStore.prova.status != EnumProvaStatus.INICIADA &&
+                    provaRemotaStore.prova.status != EnumProvaStatus.FINALIZADA &&
+                    provaRemotaStore.prova.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE) {
                   // remover download
-                  await removerProva(provaStore);
+                  await removerProva(provaRemotaStore);
                 }
               } else {
-                provaStore.downloadStatus = provaLocal.downloadStatus;
-                provaStore.prova.downloadStatus = provaLocal.downloadStatus;
+                provaRemotaStore.downloadStatus = provaLocal.downloadStatus;
+                provaRemotaStore.prova.downloadStatus = provaLocal.downloadStatus;
 
                 if (provaLocal.status != EnumProvaStatus.PENDENTE) {
-                  provaStore.status = prova.status;
+                  provaRemotaStore.status = prova.status;
                 } else {
-                  provaStore.status = provaLocal.status;
-                  prova.status = provaLocal.status;
+                  provaRemotaStore.status = provaLocal.status;
+                  provaRemotaStore.prova.status = provaLocal.status;
                 }
               }
             }
 
-            provasStore[provaStore.id] = provaStore;
+            provasStore[provaRemotaStore.id] = provaRemotaStore;
           }
 
           var idsRemote = provasResponse.map((e) => e.id).toList();
