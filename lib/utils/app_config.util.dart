@@ -1,8 +1,5 @@
 import "dart:convert";
-import 'package:appserap/utils/string.util.dart';
 import "package:flutter/services.dart";
-
-import 'package:logging/src/level.dart';
 
 abstract class AppConfigReader {
   static Map<String, dynamic> _config = {};
@@ -30,13 +27,5 @@ abstract class AppConfigReader {
 
   static String getSerapUrl() {
     return _config["serapUrl"] as String;
-  }
-
-  static bool debugSql() {
-    return _config["debugSQL"] ?? false;
-  }
-
-  static Level logLevel() {
-    return parseLog(_config["logLevel"]);
   }
 }

@@ -7,20 +7,20 @@ part 'contexto_prova.response.dto.g.dart';
 class ContextoProvaResponseDTO {
   int id;
   int provaId;
-  String imagem;
+  String? imagem;
   PosicionamentoImagemEnum posicionamento;
   int ordem;
-  String titulo;
-  String texto;
+  String? titulo;
+  String? texto;
 
   ContextoProvaResponseDTO({
     required this.id,
     required this.provaId,
-    required this.imagem,
+    this.imagem,
     required this.posicionamento,
     required this.ordem,
-    required this.titulo,
-    required this.texto,
+    this.titulo,
+    this.texto,
   });
 
   static const fromJson = _$ContextoProvaResponseDTOFromJson;

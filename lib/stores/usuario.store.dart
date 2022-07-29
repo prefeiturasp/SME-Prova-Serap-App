@@ -117,7 +117,7 @@ abstract class _UsuarioStoreBase with Store {
     }
 
     if (prefs.getInt("serapUsuarioFimTurno") != null) {
-      fimTurno = prefs.getInt("serapUsuarioFimTurno")!;
+      fimTurno = prefs.getInt("serapUsuarioInicioTurno")!;
     }
 
     if (prefs.getInt("serapUsuarioModalidade") != null) {
@@ -145,10 +145,6 @@ abstract class _UsuarioStoreBase with Store {
 
     if (ano != null && ano!.isNotEmpty) {
       await inscreverTurmaFirebase(ano!);
-    }
-
-    if (codigoEOL != null && codigoEOL!.isNotEmpty) {
-      await setUserIdentifier(codigoEOL!);
     }
   }
 
@@ -195,7 +191,6 @@ abstract class _UsuarioStoreBase with Store {
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
       await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
-      await setUserIdentifier(codigoEOL);
     }
 
     await prefs.setString('serapUsuarioAno', ano);
@@ -240,7 +235,6 @@ abstract class _UsuarioStoreBase with Store {
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
       await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
-      await setUserIdentifier(codigoEOL);
     }
 
     if (token != null && token.isNotEmpty) {

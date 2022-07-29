@@ -252,7 +252,7 @@ class QuestaoAdminWidget extends StatelessWidget {
     }
 
     for (var arquivo in arquivos) {
-      texto = texto!.replaceAll("#${arquivo.legadoId}#", arquivo.caminho.replaceFirst('http://', 'https://'));
+      texto = texto!.replaceAll("#${arquivo.id}#", arquivo.caminho.replaceFirst('http://', 'https://'));
     }
 
     texto = texto!.replaceAll("#0#", AssetsUtil.notfound);

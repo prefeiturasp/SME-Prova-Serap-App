@@ -1,7 +1,6 @@
-import 'package:appserap/models/alternativa.model.dart';
 import 'package:drift/drift.dart';
 
-@UseRowClass(Alternativa)
+@DataClassName("AlternativaDb")
 class AlternativasDb extends Table {
   IntColumn get id => integer()();
   TextColumn get descricao => text()();

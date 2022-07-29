@@ -1,6 +1,5 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/arquivo.table.dart';
-import 'package:appserap/models/arquivo.model.dart';
 import 'package:drift/drift.dart';
 
 part 'arquivo.dao.g.dart';
@@ -9,37 +8,37 @@ part 'arquivo.dao.g.dart';
 class ArquivoDao extends DatabaseAccessor<AppDatabase> with _$ArquivoDaoMixin {
   ArquivoDao(AppDatabase db) : super(db);
 
-  Future inserir(Arquivo entity) {
+  Future inserir(ArquivoDb entity) {
     return into(arquivosDb).insert(entity);
   }
 
-  Future inserirOuAtualizar(Arquivo entity) {
+  Future inserirOuAtualizar(ArquivoDb entity) {
     return into(arquivosDb).insertOnConflictUpdate(entity);
   }
 
-  Future remover(Arquivo entity) {
+  Future remover(ArquivoDb entity) {
     return delete(arquivosDb).delete(entity);
   }
 
-  Future<List<Arquivo>> findByProvaId(int provaId) {
+  Future<List<ArquivoDb>> obterPorProvaId(int provaId) {
     return (select(arquivosDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future<List<Arquivo>> obterPorQuestaoId(int questaoId) {
+  Future<List<ArquivoDb>> obterPorQuestaoId(int questaoId) {
     return (select(arquivosDb)..where((t) => t.questaoId.equals(questaoId))).get();
   }
 
-  Future<List<Arquivo>> listarTodos() {
+  Future<List<ArquivoDb>> listarTodos() {
     return select(arquivosDb).get();
   }
 
-  Future<int> removerPorProvaId(int id) {
+  Future removerArquivosPorProvaId(int id) {
     return transaction(() async {
-      return await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
+      await customUpdate("delete from arquivos_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });
   }
 
-  Future<Arquivo?> findByLegadoId(int legadoId) {
+  Future<ArquivoDb?> findByLegadoId(int legadoId) {
     return (select(arquivosDb)..where((t) => t.legadoId.equals(legadoId))).getSingleOrNull();
   }
 }

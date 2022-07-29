@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_print
-import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
@@ -10,7 +8,6 @@ import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';
-import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,19 +26,15 @@ import 'utils/firebase.util.dart';
 var logger = Logger('Main');
 
 Future<void> main() async {
-  runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-    await configure();
+  await configure();
 
-    await Worker().setup();
+  await Worker().setup();
 
-    await setupFirebase();
+  await setupFirebase();
 
-    runApp(MyApp());
-  }, (error, stack) {
-    recordError(error, stack);
-  });
+  runApp(MyApp());
 }
 
 registerPluginsForIsolate() {
@@ -53,14 +46,6 @@ registerPluginsForIsolate() {
     SharedPreferencesIOS.registerWith();
     PathProviderIOS.registerWith();
   }
-
-  Isolate.current.addErrorListener(RawReceivePort((pair) async {
-    final List<dynamic> errorAndStacktrace = pair;
-    await recordError(
-      errorAndStacktrace.first,
-      errorAndStacktrace.last,
-    );
-  }).sendPort);
 }
 
 configure() async {
@@ -79,11 +64,10 @@ configure() async {
 Future setupAppConfig() async {
   try {
     await AppConfigReader.initialize();
-  } catch (e, stack) {
+  } catch (error) {
     print("Erro ao ler arquivo de configurações.");
     print("Verifique se seu projeto possui o arquivo config/app_config.json");
-    print('$e');
-    await recordError(e, stack);
+    print('$error');
   }
 }
 
@@ -91,7 +75,7 @@ void setupLogging() {
   if (kDebugMode) {
     Logger.root.level = Level.FINE;
   } else {
-    Logger.root.level = AppConfigReader.logLevel();
+    Logger.root.level = Level.INFO;
   }
 
   Logger.root.onRecord.listen((rec) {

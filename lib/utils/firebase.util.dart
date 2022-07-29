@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:appserap/main.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:firebase_core/firebase_core.dart' as fb;
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
@@ -12,39 +9,19 @@ setupFirebase() async {
   try {
     logger.config('[Firebase] Configurando Firebase');
     await fb.Firebase.initializeApp();
-
-    await setupCrashlytics();
-  } catch (e, stack) {
+  } catch (e) {
     logger.severe('[Firebase] Falha ao inicializar Firebase');
-    await recordError(e, stack);
-  }
-}
-
-setupCrashlytics() async {
-  if (!kIsWeb && !Platform.isWindows) {
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-  }
-}
-
-recordError(
-  dynamic exception,
-  StackTrace? stack, {
-  dynamic reason,
-}) async {
-  if (!kIsWeb && !Platform.isWindows) {
-    await FirebaseCrashlytics.instance.recordError(exception, stack);
-  }
-}
-
-setUserIdentifier(String identifier) async {
-  if (!kIsWeb && !Platform.isWindows) {
-    await FirebaseCrashlytics.instance.setUserIdentifier(identifier);
+    logger.severe(e);
   }
 }
 
 inscreverTurmaFirebase(String ano) async {
   try {
-    if ((await Connectivity().checkConnectivity()) == ConnectivityResult.none) {
+    if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
+      return;
+    }
+
+    if ((!await Connectivity().checkConnection())) {
       return;
     }
 
@@ -57,23 +34,23 @@ inscreverTurmaFirebase(String ano) async {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     FirebaseMessaging.onMessage.listen(_firebaseMessagingBackgroundHandler);
-  } catch (e, stack) {
+  } catch (e) {
     logger.severe('[Firebase] Falha ao inscrever no tópico do ano do aluno');
-    await recordError(e, stack);
+    logger.severe(e);
   }
 }
 
 desinscreverTurmaFirebase(String ano) async {
   try {
-    if ((await Connectivity().checkConnectivity()) == ConnectivityResult.none) {
+    if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
       return;
     }
 
     await FirebaseMessaging.instance.unsubscribeFromTopic('ano-$ano');
     logger.config('[Firebase] Desinscrevendo no topico do ano $ano');
-  } catch (e, stack) {
+  } catch (e) {
     logger.severe('[Firebase] Falha ao desinscrever no tópico do ano $ano do aluno');
-    await recordError(e, stack);
+    logger.severe(e);
   }
 }
 

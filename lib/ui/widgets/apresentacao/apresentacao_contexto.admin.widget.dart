@@ -55,9 +55,9 @@ class ApresentacaoContextoAdminWidget extends StatelessWidget {
                 margin: EdgeInsets.only(top: 20),
                 child: _buildPaginaContextoAdaptativa(
                   context,
-                  listaDePaginasContexto[index].titulo,
-                  listaDePaginasContexto[index].texto,
-                  listaDePaginasContexto[index].imagem.replaceFirst('http://', 'https://'),
+                  listaDePaginasContexto[index].titulo!,
+                  listaDePaginasContexto[index].texto!,
+                  listaDePaginasContexto[index].imagem!.replaceFirst('http://', 'https://'),
                   listaDePaginasContexto[index].posicionamento.index,
                 ),
               );

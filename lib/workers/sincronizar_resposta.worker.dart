@@ -1,41 +1,60 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
-import 'package:appserap/interfaces/database.interface.dart';
-import 'package:appserap/interfaces/job.interface.dart';
-import 'package:appserap/interfaces/job_config.interface.dart';
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/utils/app_config.util.dart';
+import 'package:flutter/foundation.dart';
+
+import 'package:cross_connectivity/cross_connectivity.dart';
+
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/interfaces/worker.interface.dart';
+import 'package:appserap/services/api_service.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:appserap/utils/firebase.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:workmanager/workmanager.dart';
 
-class SincronizarRespostasJob with Job, Loggable, Database {
-  @override
-  JobConfig configuration() {
-    return JobConfig(
-      frequency: Duration(minutes: 15),
-      taskName: 'SincronizarRespostas',
-      uniqueName: 'respostas-sincronizar',
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ),
-    );
+class SincronizarRespostasWorker with Worker, Loggable {
+  setup() async {
+    if (!kIsWeb) {
+      if (Platform.isAndroid) {
+        return await Workmanager().registerPeriodicTask(
+          "2",
+          "SincronizarRespostasWorker",
+          frequency: Duration(minutes: 15),
+          constraints: Constraints(
+            networkType: NetworkType.connected,
+          ),
+        );
+      } else {
+        return Timer.periodic(Duration(minutes: 15), (timer) {
+          sincronizar();
+        });
+      }
+    }
+
+    Timer.periodic(Duration(minutes: 1), (timer) {
+      sincronizar();
+    });
   }
 
   @override
-  run() async {
+  onFetch(String taskId) async {
+    fine('[Worker] Event received.');
+    sincronizar();
+  }
+
+  Future<void> sincronizar([List<RespostaProva>? respostas]) async {
     fine('Sincronizando respostas para o servidor');
 
     AppDatabase db = ServiceLocator.get();
 
-    var respostasParaSincronizar = await carregaRespostasNaoSincronizadas();
+    var respostasParaSincronizar = respostas ?? await carregaRespostasNaoSincronizadas();
     fine('${respostasParaSincronizar.length} respostas ainda não sincronizadas');
 
-    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
-    if (respostasParaSincronizar.isNotEmpty && resultado == ConnectivityResult.none) {
+    ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
+    if (respostasParaSincronizar.isNotEmpty && resultado == ConnectivityStatus.none) {
       info('Falha na sincronização. Sem Conexão....');
       return;
     }
@@ -66,8 +85,8 @@ class SincronizarRespostasJob with Job, Loggable, Database {
           await db.respostaProvaDao.definirSincronizado(resposta, true);
         }
       }
-    } catch (e, stack) {
-      await recordError(e, stack);
+    } catch (e) {
+      severe(e);
     }
 
     fine('Sincronização com o servidor servidor concluida');
