@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -625,11 +624,13 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                       left: 16,
                       right: 16,
                     ),
-                    child: Texto(
-                      "Insira a senha informada para iniciar a prova",
-                      center: true,
-                      fontSize: tamanhoFonte,
-                    ),
+                    child: Observer(builder: (_) {
+                      return Texto(
+                        "Insira a senha informada para iniciar a prova",
+                        center: true,
+                        fontSize: tamanhoFonte,
+                      );
+                    }),
                   ),
                   corpo: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -696,7 +697,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     if (iniciarProva) {
-      if (await ServiceLocator.get<AppDatabase>().contextoProvaDao.possuiContexto(provaStore.id)) {
+      if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
         context.go("/prova/${provaStore.id}/contexto");
       } else {
         context.go("/prova/${provaStore.id}");

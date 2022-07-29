@@ -11,7 +11,7 @@ class RespostaProvaTable extends Table {
   IntColumn get alternativaId => integer().nullable()();
   TextColumn get resposta => text().nullable()();
 
-  IntColumn get tempoRespostaAluno => integer()();
+  IntColumn get tempoRespostaAluno => integer().nullable()();
   DateTimeColumn get dataHoraResposta => dateTime().withDefault(currentDateAndTime).nullable()();
 
   BoolColumn get sincronizado => boolean()();

@@ -1,6 +1,5 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/stores/contexto_prova_view.store.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao_contexto.widget.dart';
@@ -31,12 +30,11 @@ class ContextoProvaView extends StatefulWidget {
 }
 
 class _ContextoProvaViewState extends State<ContextoProvaView> with Loggable {
-  final store = GetIt.I.get<ContextoProvaViewStore>();
+  final store = GetIt.I.get<HomeStore>();
 
   @override
   void initState() {
     widget.provaStore.setRespondendoProva(true);
-    store.carregarContextoProva(widget.provaStore.id);
     super.initState();
   }
 
@@ -49,14 +47,8 @@ class _ContextoProvaViewState extends State<ContextoProvaView> with Loggable {
           padding: getPadding(),
           child: Observer(
             builder: (_) {
-              if (store.loading) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
               return ApresentacaoContextoWidget(
-                listaDePaginasContexto: store.contextoProva!,
+                listaDePaginasContexto: widget.provaStore.prova.contextosProva!,
                 textoBotaoAvancar: "PRÓXIMA DICA",
                 textoBotaoPular: "IR PARA A PROVA",
                 regraMostrarTodosOsBotoesAoIniciar: false,

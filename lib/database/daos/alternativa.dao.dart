@@ -1,6 +1,5 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/alternativa.table.dart';
-import 'package:appserap/models/alternativa.model.dart';
 import 'package:drift/drift.dart';
 
 part 'alternativa.dao.g.dart';
@@ -9,37 +8,37 @@ part 'alternativa.dao.g.dart';
 class AlternativaDao extends DatabaseAccessor<AppDatabase> with _$AlternativaDaoMixin {
   AlternativaDao(AppDatabase db) : super(db);
 
-  Future inserir(Alternativa entity) {
+  Future inserir(AlternativaDb entity) {
     return into(alternativasDb).insert(entity);
   }
 
-  Future inserirOuAtualizar(Alternativa entity) {
+  Future inserirOuAtualizar(AlternativaDb entity) {
     return into(alternativasDb).insertOnConflictUpdate(entity);
   }
 
-  Future remover(Alternativa entity) {
+  Future remover(AlternativaDb entity) {
     return delete(alternativasDb).delete(entity);
   }
 
-  Future<List<Alternativa>> obterPorProvaId(int provaId) {
+  Future<List<AlternativaDb>> obterPorProvaId(int provaId) {
     return (select(alternativasDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future<List<Alternativa>> obterPorQuestaoId(int questaoId) {
+  Future<List<AlternativaDb>> obterPorQuestaoId(int questaoId) {
     return (select(alternativasDb)..where((t) => t.questaoId.equals(questaoId))).get();
   }
 
-  Future<List<Alternativa>> listarTodos() {
+  Future<List<AlternativaDb>> listarTodos() {
     return select(alternativasDb).get();
   }
 
-  Future<List<Alternativa>> obterAlternativasPorProvaId(int provaId) {
+  Future<List<AlternativaDb>> obterAlternativasPorProvaId(int provaId) {
     return (select(alternativasDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
-  Future<int> removerPorProvaId(int id) {
+  Future removerAlternativasPorProvaId(int id) {
     return transaction(() async {
-      return await customUpdate("delete from alternativas_db where prova_id = ?", variables: [Variable.withInt(id)]);
+      await customUpdate("delete from alternativas_db where prova_id = ?", variables: [Variable.withInt(id)]);
     });
   }
 }

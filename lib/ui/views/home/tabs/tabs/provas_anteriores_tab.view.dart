@@ -41,6 +41,8 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
 
   @override
   Widget builder(BuildContext context) {
+    ObservableMap<int, ProvaStore> provasStore = store.provas;
+
     return Padding(
       padding: const EdgeInsets.only(top: 16, bottom: 8),
       child: Observer(
@@ -55,7 +57,7 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
             onRefresh: () async {
               await store.carregarProvas();
             },
-            child: _buildItens(store.provas),
+            child: _buildItens(provasStore),
           );
         },
       ),

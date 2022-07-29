@@ -16,16 +16,8 @@ saveFile(String path, Uint8List bodyBytes) async {
   await File(newPath).writeAsBytes(bodyBytes);
 }
 
-Future<bool> fileExists(String path) async {
-  return await File(path).exists();
-}
-
 apagarArquivo(String path) async {
-  var file = File((await buildPath(path))!);
-
-  if (await file.exists()) {
-    await file.delete();
-  }
+  await File((await buildPath(path))!).delete();
 }
 
 Future<String?> buildPath(String? path) async {

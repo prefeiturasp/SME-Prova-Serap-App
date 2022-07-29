@@ -64,10 +64,10 @@ class ApresentacaoContextoWidget extends StatelessWidget {
                 margin: EdgeInsets.only(top: 20),
                 child: _buildPaginaContextoAdaptativa(
                   context,
-                  listaDePaginasContexto[index].titulo,
-                  listaDePaginasContexto[index].texto,
-                  listaDePaginasContexto[index].imagemBase64,
-                  listaDePaginasContexto[index].posicionamento.index,
+                  listaDePaginasContexto[index].titulo!,
+                  listaDePaginasContexto[index].texto!,
+                  listaDePaginasContexto[index].imagemBase64!,
+                  listaDePaginasContexto[index].posicionamento!.index,
                 ),
               );
             },

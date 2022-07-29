@@ -14,14 +14,14 @@ import 'package:get_it/get_it.dart';
 
 import 'dialog_default.widget.dart';
 
-Future<bool?> mostrarDialogSemInternet(BuildContext context) {
+Future<bool>? mostrarDialogSemInternet(BuildContext context) {
   String mensagem = "Sua prova será enviada quando houver conexão com a internet.";
   String icone = AssetsUtil.semConexao;
   String mensagemBotao = "ENTENDI";
 
   final temaStore = GetIt.I.get<TemaStore>();
 
-  return showDialog(
+  showDialog(
     context: context,
     barrierColor: Colors.black87,
     builder: (context) {
@@ -42,7 +42,8 @@ Future<bool?> mostrarDialogSemInternet(BuildContext context) {
         botoes: [
           BotaoDefaultWidget(
             onPressed: () async {
-              Navigator.of(context).pop(true);
+              Navigator.of(context).pop();
+              return true;
             },
             textoBotao: mensagemBotao,
           )

@@ -9,20 +9,7 @@ class HomeViewUtil {
 
     if (provaStore.prova.dataFim != null) {
       DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-
-      DateTime dataInicio = DateTime(
-        provaStore.prova.dataInicio.year,
-        provaStore.prova.dataInicio.month,
-        provaStore.prova.dataInicio.day,
-      );
-
-      DateTime dataFim = DateTime(
-        provaStore.prova.dataFim!.year,
-        provaStore.prova.dataFim!.month,
-        provaStore.prova.dataFim!.day,
-      );
-
-      provaVigente = dataAtual.isBetween(dataInicio, dataFim);
+      provaVigente = dataAtual.isBetween(provaStore.prova.dataInicio, provaStore.prova.dataFim!);
     }
 
     if (!provaVigente) {

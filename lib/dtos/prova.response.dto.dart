@@ -1,5 +1,4 @@
 import 'package:appserap/enums/modalidade.enum.dart';
-import 'package:appserap/models/prova.model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -8,31 +7,29 @@ part 'prova.response.dto.g.dart';
 
 @JsonSerializable()
 class ProvaResponseDTO {
-  final int id;
-  final String descricao;
+  int id;
+  String descricao;
 
-  final int itensQuantidade;
+  int itensQuantidade;
 
-  final DateTime dataInicio;
-  final DateTime dataFim;
+  DateTime dataInicio;
+  DateTime dataFim;
 
-  final String? senha;
+  String? senha;
 
-  final EnumProvaStatus status;
+  EnumProvaStatus status;
 
-  final int tempoExecucao;
-  final int tempoExtra;
-  final int tempoAlerta;
+  int tempoExecucao;
+  int tempoExtra;
+  int tempoAlerta;
 
-  final DateTime? dataInicioProvaAluno;
-  final DateTime? dataFimProvaAluno;
+  DateTime? dataInicioProvaAluno;
+  DateTime? dataFimProvaAluno;
 
-  final ModalidadeEnum modalidade;
+  ModalidadeEnum modalidade;
 
-  final int quantidadeRespostaSincronizacao;
-  final DateTime ultimaAlteracao;
-
-  final String caderno;
+  int quantidadeRespostaSincronizacao;
+  DateTime ultimaAlteracao;
 
   ProvaResponseDTO({
     required this.id,
@@ -50,7 +47,6 @@ class ProvaResponseDTO {
     required this.modalidade,
     required this.quantidadeRespostaSincronizacao,
     required this.ultimaAlteracao,
-    required this.caderno,
   });
 
   bool isFinalizada() {
@@ -60,28 +56,8 @@ class ProvaResponseDTO {
   static const fromJson = _$ProvaResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$ProvaResponseDTOToJson(this);
 
-  Prova toProvaModel() {
-    return Prova(
-      id: id,
-      descricao: descricao,
-      itensQuantidade: itensQuantidade,
-      dataInicio: dataInicio,
-      tempoExecucao: tempoExecucao,
-      tempoExtra: tempoExtra,
-      tempoAlerta: tempoAlerta,
-      quantidadeRespostaSincronizacao: quantidadeRespostaSincronizacao,
-      ultimaAlteracao: ultimaAlteracao,
-      status: status,
-      dataInicioProvaAluno: dataInicioProvaAluno,
-      dataFimProvaAluno: dataFimProvaAluno,
-      senha: senha,
-      dataFim: dataFim,
-      caderno: caderno,
-    );
-  }
-
   @override
   String toString() {
-    return 'ProvaResponseDTO(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, status: $status, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno, dataFimProvaAluno: $dataFimProvaAluno, caderno: $caderno)';
+    return 'ProvaResponseDTO(id: $id, descricao: $descricao, itensQuantidade: $itensQuantidade, dataInicio: $dataInicio, dataFim: $dataFim, status: $status, tempoExecucao: $tempoExecucao, tempoExtra: $tempoExtra, tempoAlerta: $tempoAlerta, dataInicioProvaAluno: $dataInicioProvaAluno, dataFimProvaAluno: $dataFimProvaAluno)';
   }
 }

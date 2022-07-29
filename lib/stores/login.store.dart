@@ -3,14 +3,12 @@ import 'package:appserap/dtos/error.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/exceptions/sem_conexao.exeption.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api_service.dart';
-import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:appserap/utils/firebase.util.dart';
+import 'package:cross_connectivity/cross_connectivity.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -108,7 +106,7 @@ abstract class _LoginStoreBase with Store, Loggable {
   Future<bool> autenticar() async {
     carregando = true;
     try {
-      if (!ServiceLocator.get<PrincipalStore>().temConexao) {
+      if ((await Connectivity().checkConnectivity()) == ConnectivityStatus.none) {
         throw SemConexaoException();
       }
 
@@ -179,7 +177,8 @@ abstract class _LoginStoreBase with Store, Loggable {
       NotificacaoUtil.showSnackbarError(e.toString());
     } catch (e, stack) {
       NotificacaoUtil.showSnackbarError("Não foi possível estabelecer uma conexão com o servidor.");
-      await recordError(e, stack);
+      severe(e);
+      severe(stack);
     } finally {
       carregando = false;
     }

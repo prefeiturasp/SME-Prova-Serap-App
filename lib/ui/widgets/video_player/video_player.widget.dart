@@ -57,7 +57,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
   void dispose() {
     _videoPlayerController.pause();
     _chewieController.dispose();
-    _videoPlayerController.dispose();
 
     super.dispose();
   }

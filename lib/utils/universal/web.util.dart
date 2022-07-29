@@ -14,11 +14,6 @@ saveFile(String path, Uint8List bodyBytes) async {
   await idbFileVideo.writeAsBytes(bodyBytes);
 }
 
-Future<bool> fileExists(String path) async {
-  var idbFile = IdbFile(path);
-  return await idbFile.exists();
-}
-
 apagarArquivo(String path) async {
   await IdbFile(path).delete();
 }

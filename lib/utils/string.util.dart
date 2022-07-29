@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:logging/src/level.dart';
-
 void validateNotNull(Object? value, String name) {
   if (value == null) {
     throw Exception(name + " não pode ser nulo.");
@@ -217,35 +215,4 @@ bool isNumeric(String? s) {
     return false;
   }
   return double.tryParse(s) != null;
-}
-
-Level parseLog(String? level) {
-  if (level == null) {
-    return Level.INFO;
-  }
-
-  switch (level.toUpperCase()) {
-    case 'ALL':
-      return Level.ALL;
-    case 'CONFIG':
-      return Level.CONFIG;
-    case 'FINE':
-      return Level.FINE;
-    case 'FINER':
-      return Level.FINER;
-    case 'FINEST':
-      return Level.FINEST;
-    case 'INFO':
-      return Level.INFO;
-    case 'OFF':
-      return Level.OFF;
-    case 'SEVERE':
-      return Level.SEVERE;
-    case 'SHOUT':
-      return Level.SHOUT;
-    case 'WARNING':
-      return Level.WARNING;
-    default:
-      return Level.INFO;
-  }
 }

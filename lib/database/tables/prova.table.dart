@@ -1,9 +1,7 @@
 import 'package:appserap/enums/download_status.enum.dart';
-import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/models/prova.model.dart';
 import 'package:drift/drift.dart';
 
-@UseRowClass(Prova)
+@DataClassName("ProvaDb")
 class ProvasDb extends Table {
   IntColumn get id => integer()();
   TextColumn get descricao => text().withLength(min: 1, max: 150)();
@@ -13,7 +11,7 @@ class ProvasDb extends Table {
   IntColumn get tempoAlerta => integer().nullable()();
   IntColumn get tempoExecucao => integer()();
   IntColumn get tempoExtra => integer()();
-  IntColumn get status => intEnum<EnumProvaStatus>()();
+  IntColumn get status => integer()();
   DateTimeColumn get dataInicio => dateTime()();
   DateTimeColumn get dataFim => dateTime().nullable()();
   DateTimeColumn get dataInicioProvaAluno => dateTime().nullable()();
@@ -24,8 +22,6 @@ class ProvasDb extends Table {
 
   IntColumn get quantidadeRespostaSincronizacao => integer()();
   DateTimeColumn get ultimaAlteracao => dateTime().withDefault(currentDateAndTime)();
-
-  TextColumn get caderno => text().withDefault(Constant("A"))();
 
   @override
   Set<Column> get primaryKey => {id};

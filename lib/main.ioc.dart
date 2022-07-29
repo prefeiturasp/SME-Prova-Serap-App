@@ -21,7 +21,6 @@ import 'stores/admin_prova_caderno.store.dart';
 import 'stores/admin_prova_contexto.store.dart';
 import 'stores/admin_prova_questao.store.dart';
 import 'stores/admin_prova_resumo.store.dart';
-import 'stores/contexto_prova_view.store.dart';
 import 'stores/home.admin.store.dart';
 import 'stores/home_provas_anteriores.store.dart';
 import 'stores/login_adm.store.dart';
@@ -68,7 +67,6 @@ class DependenciasIoC with Loggable {
     registerSingleton<AdminProvaResumoViewStore>(AdminProvaResumoViewStore());
     registerSingleton<AdminProvaQuestaoViewStore>(AdminProvaQuestaoViewStore());
     registerSingleton<AdminProvaContextoViewStore>(AdminProvaContextoViewStore());
-    registerSingleton<ContextoProvaViewStore>(ContextoProvaViewStore());
   }
 
   void registerSingletonAsync<T extends Object>(
