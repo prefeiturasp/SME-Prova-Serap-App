@@ -8,7 +8,6 @@ import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -179,7 +178,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
           info("Informando versão...");
           info("IMEI: $imei Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
 
-          if ((await Connectivity().checkConnectivity()) != ConnectivityResult.none) {
+          if (ServiceLocator.get<PrincipalStore>().temConexao) {
             await GetIt.I.get<ApiService>().versao.informarVersao(
                   chaveAPI: AppConfigReader.getChaveApi(),
                   versaoCodigo: int.parse(packageInfo.buildNumber),

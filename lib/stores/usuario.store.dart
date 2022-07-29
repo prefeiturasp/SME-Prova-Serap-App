@@ -117,7 +117,7 @@ abstract class _UsuarioStoreBase with Store {
     }
 
     if (prefs.getInt("serapUsuarioFimTurno") != null) {
-      fimTurno = prefs.getInt("serapUsuarioInicioTurno")!;
+      fimTurno = prefs.getInt("serapUsuarioFimTurno")!;
     }
 
     if (prefs.getInt("serapUsuarioModalidade") != null) {

@@ -5,7 +5,6 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:chopper/src/response.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
@@ -16,6 +15,8 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
+
+import 'principal.store.dart';
 
 part 'home.store.g.dart';
 
@@ -40,13 +41,11 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     List<Prova> provasDb = await db.provaDao.listarTodosPorAluno(codigoEOL);
     for (var prova in provasDb) {
       provasStore[prova.id] = ProvaStore(
-        id: prova.id,
         prova: prova,
       );
     }
 
-    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
-    if (resultado != ConnectivityResult.none) {
+    if (ServiceLocator.get<PrincipalStore>().temConexao) {
       try {
         Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
 
@@ -63,44 +62,43 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
             var prova = provaResponse.toProvaModel();
 
-            var provaStore = ProvaStore(
-              id: provaResponse.id,
-              prova: prova,
+            var provaRemotaStore = ProvaStore(
+              prova: provaResponse.toProvaModel(),
             );
 
             // caso nao tenha o id, define como nova prova
-            if (!provasStore.keys.contains(provaStore.id)) {
-              provaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
-              provaStore.prova.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+            var provaLocalExiste = await db.provaDao.existeProva(provaResponse.id, provaResponse.caderno);
+
+            if (provaLocalExiste == null) {
+              provaRemotaStore.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
+              provaRemotaStore.prova.downloadStatus = EnumDownloadStatus.NAO_INICIADO;
             } else {
-              ProvaStore provaLocal = provasStore[prova.id]!;
+              ProvaStore? provaLocal = ProvaStore(
+                prova: provaLocalExiste,
+              );
 
               // Data alteração da prova alterada
-              if (!isSameDates(provaStore.prova.ultimaAlteracao, provaLocal.prova.ultimaAlteracao)) {
-                if (provaStore.prova.status != EnumProvaStatus.INICIADA &&
-                    provaStore.prova.status != EnumProvaStatus.FINALIZADA &&
-                    provaStore.prova.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE) {
+              if (!isSameDates(provaRemotaStore.prova.ultimaAlteracao, provaLocal.prova.ultimaAlteracao)) {
+                if (provaRemotaStore.prova.status != EnumProvaStatus.INICIADA &&
+                    provaRemotaStore.prova.status != EnumProvaStatus.FINALIZADA &&
+                    provaRemotaStore.prova.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE) {
                   // remover download
-                  await removerProva(provaStore);
+                  await removerProva(provaRemotaStore);
                 }
-              } else if (provaLocal.prova.caderno != provaStore.prova.caderno) {
-                info(
-                    "[Prova ${provaStore.id}] - Caderno alterado ${provaLocal.prova.caderno} -> ${provaStore.prova.caderno}");
-                await removerProva(provaStore, true);
               } else {
-                provaStore.downloadStatus = provaLocal.downloadStatus;
-                provaStore.prova.downloadStatus = provaLocal.downloadStatus;
+                provaRemotaStore.downloadStatus = provaLocal.downloadStatus;
+                provaRemotaStore.prova.downloadStatus = provaLocal.downloadStatus;
 
                 if (provaLocal.status != EnumProvaStatus.PENDENTE) {
-                  provaStore.status = prova.status;
+                  provaRemotaStore.status = prova.status;
                 } else {
-                  provaStore.status = provaLocal.status;
-                  prova.status = provaLocal.status;
+                  provaRemotaStore.status = provaLocal.status;
+                  provaRemotaStore.prova.status = provaLocal.status;
                 }
               }
             }
 
-            provasStore[provaStore.id] = provaStore;
+            provasStore[provaRemotaStore.id] = provaRemotaStore;
           }
 
           var idsRemote = provasResponse.map((e) => e.id).toList();
