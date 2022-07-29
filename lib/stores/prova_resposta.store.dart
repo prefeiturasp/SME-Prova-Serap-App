@@ -1,13 +1,13 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/services/api_service.dart';
+import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
@@ -35,17 +35,14 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   ObservableMap<int, RespostaProva> respostasLocal = <int, RespostaProva>{}.asObservable();
 
   @action
-  Future<void> carregarRespostasServidor([Prova? prova]) async {
+  Future<void> carregarRespostasServidor() async {
     respostasLocal = (await carregarRespostasLocal()).asObservable();
 
-    var connectionStatus = await Connectivity().checkConnectivity();
-    if (connectionStatus == ConnectivityStatus.none) {
+    if (!ServiceLocator.get<PrincipalStore>().temConexao) {
       return;
     }
 
     fine('[Prova $idProva] - Carregando respostas da prova');
-
-    prova ??= await Prova.carregaProvaCache(idProva);
 
     try {
       var respostaBanco = await _serviceProva.getRespostasPorProvaId(idProva: idProva);
@@ -76,9 +73,8 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       }
     } catch (e, stack) {
       if (!e.toString().contains("but got one of type 'String'") &&
-          !e.toString().contains("type 'String' is not a subtype of type")) {
-        severe(e);
-        severe(stack);
+          !e.toString().contains("is not a subtype of type")) {
+        await recordError(e, stack);
       } else {
         finer('[Prova $idProva] Sem respostas salva');
       }
@@ -97,9 +93,14 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       idProva,
     );
 
-    var prova = await Prova.carregaProvaCache(idProva);
+    if (!ServiceLocator.get<PrincipalStore>().temConexao) {
+      info("[$idProva] - Sincronização não executada. Não há conexão com a internet");
+      return;
+    }
 
-    if (respostasNaoSincronizadas.length == prova!.quantidadeRespostaSincronizacao || force) {
+    var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaId(idProva);
+
+    if (respostasNaoSincronizadas.length == prova.quantidadeRespostaSincronizacao || force) {
       List<QuestaoRespostaDTO> respostas = [];
 
       for (var resposta in respostasNaoSincronizadas) {
@@ -128,8 +129,8 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
             respostasLocal[resposta.questaoId]!.sincronizado = true;
           }
         }
-      } catch (e) {
-        severe(e);
+      } catch (e, stack) {
+        await recordError(e, stack);
       }
     }
 
@@ -137,7 +138,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int? tempoQuestao}) async {
+  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int tempoQuestao = 0}) async {
     var resposta = RespostaProva(
       codigoEOL: codigoEOL,
       provaId: idProva,
@@ -154,16 +155,20 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   @action
-  Future<void> definirTempoResposta(int questaoId, {int? tempoQuestao}) async {
+  Future<void> definirTempoResposta(int questaoId, {int tempoQuestao = 0}) async {
     var resposta = obterResposta(questaoId);
 
     if (resposta != null) {
       resposta.sincronizado = false;
-      resposta.tempoRespostaAluno = tempoQuestao;
+      resposta.tempoRespostaAluno += tempoQuestao;
+
+      info('[$idProva] - Questao $questaoId - Tempo de resposta: ${resposta.tempoRespostaAluno} + $tempoQuestao');
 
       await db.respostaProvaDao.inserirOuAtualizar(resposta);
     } else {
       await definirResposta(questaoId, tempoQuestao: tempoQuestao);
+
+      info('[$idProva] - Questao $questaoId - Tempo de resposta: $tempoQuestao');
     }
   }
 

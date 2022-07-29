@@ -28,6 +28,7 @@ abstract class ProvaService extends ChopperService {
     @Path() required int idProva,
     @Field() required int status,
     @Field() required int tipoDispositivo,
+    @Field() int? dataInicio,
     @Field() int? dataFim,
   });
 
