@@ -130,7 +130,24 @@ pipeline {
             }
           }
         }		
-      }    
+      }	    
+
+      stage('Tag Github Prod') {
+        agent { label 'master' }
+	      when { anyOf {  branch 'master'; }}
+        steps{
+          script{
+            try {
+              withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
+                sh("github-release release --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-prod --name app-${APP_VERSION}-prod")
+              }
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }   
 
       stage('Release Github Dev') {
         agent { label 'master' }
@@ -167,6 +184,28 @@ pipeline {
                     }
                     sh ("echo \"app-${env.branchname}.apk\"")
 	                  sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
+                }
+            } 
+            catch (err) {
+                echo err.getMessage()
+            }
+          }
+        }		
+      }
+	    
+      stage('Release Github Prod') {
+        agent { label 'master' }
+	      when { anyOf {  branch 'master'; }}
+        steps{
+          script{
+            try {
+                withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
+	                  sh ("rm -Rf tmp")
+                    dir('tmp'){
+                        unstash 'appbuild'
+                    }
+                    sh ("echo \"app-${env.branchname}.apk\"")
+	                  sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-prod --name "+"app-${APP_VERSION}-prod.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
                 }
             } 
             catch (err) {
