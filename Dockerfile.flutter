@@ -5,7 +5,6 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN flutter pub get
-RUN flutter pub run build_runner build --delete-conflicting-outputs
 RUN flutter build web --profile
 
 FROM nginx:1.20.1-alpine

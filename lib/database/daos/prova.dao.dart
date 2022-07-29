@@ -5,6 +5,7 @@ import 'package:appserap/database/tables/prova.table.dart';
 import 'package:appserap/database/tables/prova_aluno.table.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
+import 'package:appserap/models/prova.model.dart';
 import 'package:drift/drift.dart';
 
 part 'prova.dao.g.dart';
@@ -13,27 +14,35 @@ part 'prova.dao.g.dart';
 class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
   ProvaDao(AppDatabase db) : super(db);
 
-  Future inserir(ProvaDb entity) {
+  Future inserir(Prova entity) {
     return into(provasDb).insert(entity);
   }
 
-  Future inserirOuAtualizar(ProvaDb entity) {
+  Future inserirOuAtualizar(Prova entity) {
     return into(provasDb).insertOnConflictUpdate(entity);
   }
 
-  Future deleteByProva(int provaId) {
-    return (delete(provasDb)..where((t) => t.id.equals(provaId))).go();
+  Future<int> deleteByProva(int provaId) {
+    return transaction(() => (delete(provasDb)..where((t) => t.id.equals(provaId))).go());
   }
 
-  Future<List<ProvaDb>> listarTodos() {
+  Future<Prova?> existeProva(int provaId, String caderno) {
+    var query = select(provasDb);
+
+    query.where((t) => t.id.equals(provaId) & t.caderno.equals(caderno));
+
+    return query.getSingleOrNull();
+  }
+
+  Future<List<Prova>> listarTodos() {
     return select(provasDb).get();
   }
 
-  Future<ProvaDb> obterPorProvaId(int provaId) {
+  Future<Prova> obterPorProvaId(int provaId) {
     return (select(provasDb)..where((t) => t.id.equals(provaId))).getSingle();
   }
 
-  Future<ProvaDb?> obterPorIdNull(int id) {
+  Future<Prova?> obterPorIdNull(int id) {
     return (select(provasDb)..where((t) => t.id.equals(id))).getSingleOrNull();
   }
 
@@ -42,7 +51,7 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     return query.map((row) => row.id).get();
   }
 
-  Future<List<ProvaDb>> listarTodosPorAluno(String codigoEOL) async {
+  Future<List<Prova>> listarTodosPorAluno(String codigoEOL) async {
     final query = select(provasDb).join([
       innerJoin(provaAlunoTable, provaAlunoTable.provaId.equalsExp(provasDb.id)),
     ])
@@ -56,7 +65,7 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     }).toList();
   }
 
-  Future<List<ProvaDb>> obterPendentes() {
+  Future<List<Prova>> obterPendentes() {
     return (select(provasDb)
           ..where(
             (t) => t.status.equals(EnumProvaStatus.PENDENTE.index),
@@ -86,5 +95,58 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
         idDownload: Value(downloadId),
       ),
     );
+  }
+
+  Future<int> atualizarStatus(int provaId, EnumProvaStatus status) {
+    return (update(provasDb)
+          ..where(
+            (t) => t.id.equals(provaId),
+          ))
+        .write(
+      ProvasDbCompanion(
+        status: Value(status),
+      ),
+    );
+  }
+
+  Future<int> atualizaDataFimProvaAluno(int provaId, DateTime dataFimProvaAluno) {
+    return (update(provasDb)
+          ..where(
+            (t) => t.id.equals(provaId),
+          ))
+        .write(
+      ProvasDbCompanion(
+        dataFimProvaAluno: Value(dataFimProvaAluno),
+      ),
+    );
+  }
+
+  Future<int> atualizaDataInicioProvaAluno(int provaId, DateTime dataInicioProvaAluno) {
+    return (update(provasDb)
+          ..where(
+            (t) => t.id.equals(provaId),
+          ))
+        .write(
+      ProvasDbCompanion(
+        dataInicioProvaAluno: Value(dataInicioProvaAluno),
+      ),
+    );
+  }
+
+  Future<List<Prova>> getProvasExpiradas() {
+    var query = select(provasDb)
+      ..where((t) {
+        var hoje = DateTime.now();
+
+        var fimExpirado = t.dataFim.isSmallerThanValue(DateTime(hoje.year, hoje.month, hoje.day));
+        var status = t.status.isNotIn([
+          EnumProvaStatus.FINALIZADA.index,
+          EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE.index,
+        ]);
+
+        return fimExpirado & status;
+      });
+
+    return query.get();
   }
 }

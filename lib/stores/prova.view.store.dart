@@ -7,7 +7,7 @@ part 'prova.view.store.g.dart';
 class ProvaViewStore = _ProvaViewStoreBase with _$ProvaViewStore;
 
 abstract class _ProvaViewStoreBase with Store, Loggable {
-  late ProvaStore provaStore;
+  ProvaStore? provaStore;
 
   bool botaoOcupado = false;
 

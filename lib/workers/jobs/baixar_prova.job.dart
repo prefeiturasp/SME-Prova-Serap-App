@@ -1,5 +1,7 @@
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/job.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
@@ -7,15 +9,25 @@ import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/provas.util.dart';
+import 'package:appserap/utils/firebase.util.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
-class BaixarProvaJob with Job, Loggable {
+class BaixarProvaJob with Job, Loggable, Database {
   @override
   run() async {
     try {
       var _usuarioStore = ServiceLocator.get<UsuarioStore>();
-      if (_usuarioStore.isRespondendoProva) return;
+      if (_usuarioStore.isRespondendoProva) {
+        return;
+      }
+
+      String? token = ServiceLocator.get<SharedPreferences>().getString("token");
+      if (token == null) {
+        return;
+      }
 
       ProvaService provaService = ServiceLocator.get<ApiService>().prova;
 
@@ -34,13 +46,29 @@ class BaixarProvaJob with Job, Loggable {
       List<int> idsParaVerificar = idsProvasLocal.toSet().difference(idsToDownload.toSet()).toList();
 
       for (var idProva in idsParaVerificar) {
-        var prova = await Prova.carregaProvaCache(idProva);
+        Prova? provaLocal = await ServiceLocator.get<AppDatabase>().provaDao.obterPorIdNull(idProva);
 
-        if (prova == null) {
+        if (provaLocal == null) {
           continue;
         }
+        var provaRemoto = provasRemoto.firstWhere((element) => element.id == provaLocal.id);
 
-        if (prova.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+        // Caderno de questões alterado
+        if (provaLocal.caderno != provaRemoto.caderno) {
+          info("[Prova ${provaLocal.id}] - Caderno alterado ${provaLocal.caderno} -> ${provaRemoto.caderno}");
+          await DownloadManagerStore(provaId: provaLocal.id).removerDownloadCompleto();
+          idsToDownload.add(idProva);
+        }
+
+        // Prova não baixada
+        if (provaLocal.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+          idsToDownload.add(idProva);
+        }
+
+        // Prova alterada
+        if (!isSameDates(provaLocal.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
+          info('[Prova ${provaLocal.id}] Prova alterada - Baixando Novamente...');
+          await DownloadManagerStore(provaId: provaLocal.id).removerDownloadCompleto();
           idsToDownload.add(idProva);
         }
       }
@@ -62,9 +90,8 @@ class BaixarProvaJob with Job, Loggable {
 
         info('Download concluido');
       }
-    } catch (e, stacktrace) {
-      severe(e);
-      severe(stacktrace);
+    } catch (e, stack) {
+      await recordError(e, stack);
     }
   }
 
@@ -80,12 +107,12 @@ class BaixarProvaJob with Job, Loggable {
       tempoExtra: provaResponse.tempoExtra,
       tempoAlerta: provaResponse.tempoAlerta,
       dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
-      questoes: [],
       senha: provaResponse.senha,
       quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
       ultimaAlteracao: provaResponse.ultimaAlteracao,
+      caderno: provaResponse.caderno,
     );
 
-    await Prova.salvaProvaCache(prova);
+    await ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(prova);
   }
 }

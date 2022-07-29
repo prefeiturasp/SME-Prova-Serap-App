@@ -3,10 +3,13 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:appserap/utils/firebase.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -18,10 +21,14 @@ part 'principal.store.g.dart';
 class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
 abstract class _PrincipalStoreBase with Store, Loggable {
+  _PrincipalStoreBase() {
+    Connectivity().checkConnectivity().then((value) => status = value);
+  }
+
   final usuario = GetIt.I.get<UsuarioStore>();
 
   @observable
-  ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
+  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   ReactionDisposer? _disposer;
 
@@ -35,19 +42,20 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   }
 
   @observable
-  ConnectivityStatus status = ConnectivityStatus.wifi;
+  ConnectivityResult status = ConnectivityResult.none;
 
   @observable
   String versaoApp = "Versão 0";
 
   @computed
-  bool get temConexao => status != ConnectivityStatus.none;
+  bool get temConexao => status != ConnectivityResult.none;
 
   @computed
-  String get versao => "$versaoApp ${status == ConnectivityStatus.none ? ' - Sem conexão' : ''}";
+  String get versao => "$versaoApp ${status == ConnectivityResult.none ? ' - Sem conexão' : ''}";
 
   @action
-  Future onChangeConexao(ConnectivityStatus? resultado) async {
+  Future onChangeConexao(ConnectivityResult? resultado) async {
+    info("Conexão alterada: $resultado");
     status = resultado!;
   }
 
@@ -61,8 +69,10 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   Future<void> sair() async {
     AppDatabase db = GetIt.I.get();
 
+    await setUserIdentifier("");
+
     try {
-      List<ProvaDb> provas = await db.provaDao.listarTodos();
+      List<Prova> provas = await db.provaDao.listarTodos();
 
       if (provas.isNotEmpty) {
         List<String> downlodIds = provas
@@ -77,9 +87,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
             );
       }
     } catch (e, stack) {
-      severe('Erro ao remover downlodas');
-      severe(e);
-      severe(stack);
+      await recordError(e, stack, reason: "Erro ao remover downloads");
     }
 
     await _limparDadosLocais();
@@ -87,6 +95,8 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     await db.respostaProvaDao.removerSincronizadas();
 
     await db.limpar();
+
+    await limparMemoriaProvas();
 
     bool eraAdimin = usuario.isAdmin;
 
@@ -96,6 +106,16 @@ abstract class _PrincipalStoreBase with Store, Loggable {
       await launchUrl(Uri.parse(AppConfigReader.getSerapUrl()), webOnlyWindowName: '_self');
       ServiceLocator.get<AppRouter>().router.go("/login");
     }
+  }
+
+  limparMemoriaProvas() async {
+    var homeStore = ServiceLocator.get<HomeStore>();
+
+    homeStore.provas.forEach((key, value) {
+      value.onDispose();
+    });
+
+    homeStore.provas.clear();
   }
 
   _limparDadosLocais() async {

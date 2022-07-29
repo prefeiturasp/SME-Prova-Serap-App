@@ -3,12 +3,20 @@ import 'package:appserap/database/daos/download_prova.dao.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
+import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 
-import '../models/prova_aluno.model.dart';
-import '../models/resposta_prova.model.dart';
+import 'package:appserap/models/prova_aluno.model.dart';
+import 'package:appserap/models/resposta_prova.model.dart';
+import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/models/arquivo.model.dart';
+import 'package:appserap/models/alternativa.model.dart';
+
 import 'daos/alternativa.dao.dart';
 import 'daos/arquivo.dao.dart';
 import 'daos/arquivo_audio.dao.dart';
@@ -62,7 +70,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase(QueryExecutor e) : super(e);
 
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 19;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -114,6 +122,21 @@ class AppDatabase extends _$AppDatabase {
         if (from == 14) {
           await m.alterTable(TableMigration(questoesDb));
         }
+        if (from == 15) {
+          await m.alterTable(TableMigration(respostaProvaTable));
+        }
+        if (from == 16) {
+          await m.alterTable(TableMigration(questoesDb));
+          await m.alterTable(TableMigration(arquivosDb));
+          await m.alterTable(TableMigration(contextosProvaDb));
+        }
+        if (from == 17) {
+          await m.addColumn(provasDb, provasDb.caderno);
+        }
+        if (from == 18) {
+          await m.addColumn(questoesDb, questoesDb.caderno);
+          await m.alterTable(TableMigration(questoesDb));
+        }
 
         // Assert that the schema is valid after migrations
         if (kDebugMode) {
@@ -123,6 +146,12 @@ class AppDatabase extends _$AppDatabase {
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = 1;');
         await customStatement('PRAGMA foreign_keys = ON;');
+
+        if (kDebugMode) {
+          // This check pulls in a fair amount of code that's not needed
+          // anywhere else, so we recommend only doing it in debug builds.
+          // await validateDatabaseSchema();
+        }
       });
 
   Future limpar() {
@@ -141,6 +170,27 @@ class AppDatabase extends _$AppDatabase {
       // await customUpdate("delete from provas_db;");
 
       await customUpdate("delete from download_provas_db;");
+    });
+  }
+
+  Future limparBanco() {
+    return transaction(() async {
+      await customUpdate("delete from alternativas_db;");
+
+      await customUpdate("delete from questoes_db;");
+
+      await customUpdate("delete from arquivos_db;");
+
+      await customUpdate("delete from contextos_prova_db;");
+
+      await customUpdate("delete from arquivos_video_db;");
+      await customUpdate("delete from arquivos_audio_db;");
+
+      await customUpdate("delete from provas_db;");
+
+      await customUpdate("delete from download_provas_db;");
+
+      await customUpdate("delete from prova_aluno_table;");
     });
   }
 }
