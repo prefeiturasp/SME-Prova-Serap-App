@@ -15,4 +15,7 @@ enum EnumDownloadStatus {
 
   @JsonValue(4)
   ERRO,
+
+  @JsonValue(5)
+  ATUALIZAR,
 }

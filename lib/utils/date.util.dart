@@ -12,6 +12,15 @@ bool isSameDate(DateTime other) {
   return agora.year == other.year && agora.month == other.month && agora.day == other.day;
 }
 
+isSameDates(DateTime date1, DateTime date2) {
+  return date1.year == date2.year &&
+      date1.month == date2.month &&
+      date1.day == date2.day &&
+      date1.hour == date2.hour &&
+      date1.minute == date2.minute &&
+      date1.second == date2.second;
+}
+
 String formatDatedddeMMMdeyyykkmm(DateTime? dateTime) {
   if (dateTime == null) return "-";
   return DateFormat("dd 'de' MMMM 'de' yyyy, kk:mm", 'pt_BR').format(dateTime);

@@ -22,6 +22,10 @@ class TempoExecucaoWidget extends StatelessWidget {
 
     return Column(children: [
       Observer(builder: (_) {
+        if (provaStore.tempoExecucaoStore == null) {
+          return Container();
+        }
+
         return BarraProgresso(
           progresso: provaStore.tempoExecucaoStore?.porcentagem ?? 0,
           tempoRestante: provaStore.tempoExecucaoStore?.tempoRestante ?? Duration(),
@@ -30,6 +34,10 @@ class TempoExecucaoWidget extends StatelessWidget {
         );
       }),
       Observer(builder: (_) {
+        if (provaStore.tempoExecucaoStore == null) {
+          return Container();
+        }
+
         return Visibility(
           visible: provaStore.tempoExecucaoStore!.mostrarAlertaDeTempoAcabando,
           child: Container(

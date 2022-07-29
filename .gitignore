@@ -1,12 +1,9 @@
 config/app_config.json
 web/config/app_config.json
 google-services.json
-.vscode/launch.json
 .vscode/*.redis
 
 # Miscellaneous
-*.g.dart
-*.chopper.dart
 *.class
 *.log
 *.pyc
@@ -16,6 +13,7 @@ google-services.json
 .buildlog/
 .history
 .svn/
+*.jks
 
 # IntelliJ related
 *.iml

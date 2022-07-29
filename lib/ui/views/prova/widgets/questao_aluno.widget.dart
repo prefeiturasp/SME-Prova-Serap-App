@@ -26,11 +26,15 @@ class QuestaoAlunoWidget extends StatelessWidget {
 
   final ProvaStore provaStore;
   final Questao questao;
+  final List<Arquivo> imagens;
+  final List<Alternativa> alternativas;
 
   QuestaoAlunoWidget({
     Key? key,
     required this.provaStore,
     required this.questao,
+    required this.imagens,
+    required this.alternativas,
   }) : super(key: key);
 
   @override
@@ -38,7 +42,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
     return Column(
       children: [
         Html(
-          data: tratarArquivos(questao.titulo, questao.arquivos, EnumTipoImagem.QUESTAO),
+          data: tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO),
           style: {
             '*': Style.fromTextStyle(
               TemaUtil.temaTextoHtmlPadrao.copyWith(
@@ -61,7 +65,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
         ),
         SizedBox(height: 8),
         Html(
-          data: tratarArquivos(questao.descricao, questao.arquivos, EnumTipoImagem.QUESTAO),
+          data: tratarArquivos(questao.descricao, imagens, EnumTipoImagem.QUESTAO),
           style: {
             '*': Style.fromTextStyle(
               TemaUtil.temaTextoHtmlPadrao.copyWith(
@@ -239,13 +243,11 @@ class QuestaoAlunoWidget extends StatelessWidget {
   }
 
   _buildAlternativas(Questao questao) {
-    List<Alternativa> alternativasQuestoes = questao.alternativas;
-
-    alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
+    alternativas.sort((a, b) => a.ordem.compareTo(b.ordem));
     return ListTileTheme.merge(
       horizontalTitleGap: 0,
       child: Column(
-        children: alternativasQuestoes
+        children: alternativas
             .map((e) => _buildAlternativa(
                   e.id,
                   e.numeracao,
@@ -297,7 +299,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
                 ),
                 Expanded(
                   child: Html(
-                    data: tratarArquivos(descricao, questao.arquivos, EnumTipoImagem.ALTERNATIVA),
+                    data: tratarArquivos(descricao, imagens, EnumTipoImagem.ALTERNATIVA),
                     style: {
                       '*': Style.fromTextStyle(
                         TemaUtil.temaTextoPadrao.copyWith(
@@ -329,8 +331,8 @@ class QuestaoAlunoWidget extends StatelessWidget {
 
     for (var arquivo in arquivos) {
       var obterTipo = arquivo.caminho.split(".");
-      texto = texto!
-          .replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      texto = texto!.replaceAll(
+          "#${arquivo.legadoId}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
     }
 
     texto = texto!.replaceAll("#0#", AssetsUtil.notfound);
