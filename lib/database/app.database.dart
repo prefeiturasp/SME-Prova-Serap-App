@@ -76,64 +76,79 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
         return m.createAll();
       }, onUpgrade: (Migrator m, int from, int to) async {
-        if (from == 1) {
+        if (from < 2) {
           await m.addColumn(provasDb, provasDb.senha);
         }
-        if (from == 2) {
+        if (from < 3) {
           await m.addColumn(questoesDb, questoesDb.quantidadeAlternativas);
         }
-        if (from == 3) {
+
+        if (from < 4) {
           await m.createTable(contextosProvaDb);
         }
-        if (from == 4) {
+
+        if (from < 5) {
           await m.addColumn(arquivosDb, arquivosDb.legadoId);
         }
-        if (from == 5) {
+
+        if (from < 6) {
           await m.addColumn(provasDb, provasDb.idDownload);
         }
-        if (from == 6) {
+
+        if (from < 7) {
           await m.createTable(arquivosVideoDb);
         }
-        if (from == 7) {
+
+        if (from < 8) {
           await m.createTable(arquivosAudioDb);
         }
-        if (from == 8) {
+
+        if (from < 9) {
           await m.addColumn(provasDb, provasDb.quantidadeRespostaSincronizacao);
         }
-        if (from == 9) {
+
+        if (from < 10) {
           await m.createTable(downloadProvasDb);
         }
-        if (from == 10) {
+
+        if (from < 11) {
           await m.createTable(respostaProvaTable);
         }
-        if (from == 11) {
+
+        if (from < 12) {
           await m.addColumn(provasDb, provasDb.ultimaAlteracao);
         }
-        if (from == 12) {
+
+        if (from < 13) {
           await m.createTable(provaAlunoTable);
         }
-        if (from == 13) {
+
+        if (from < 14) {
           await m.alterTable(
             TableMigration(provasDb, columnTransformer: {
               provasDb.idDownload: provasDb.idDownload.cast<String>(),
             }),
           );
         }
-        if (from == 14) {
+
+        if (from < 15) {
           await m.alterTable(TableMigration(questoesDb));
         }
-        if (from == 15) {
+
+        if (from < 16) {
           await m.alterTable(TableMigration(respostaProvaTable));
         }
-        if (from == 16) {
-          await m.alterTable(TableMigration(questoesDb));
+
+        if (from < 17) {
           await m.alterTable(TableMigration(arquivosDb));
           await m.alterTable(TableMigration(contextosProvaDb));
         }
-        if (from == 17) {
+
+        if (from < 18) {
           await m.addColumn(provasDb, provasDb.caderno);
         }
-        if (from == 18) {
+
+        if (from < 19) {
           await m.addColumn(questoesDb, questoesDb.caderno);
           await m.alterTable(TableMigration(questoesDb));
         }
@@ -144,7 +159,7 @@ class AppDatabase extends _$AppDatabase {
           assert(wrongForeignKeys.isEmpty, '${wrongForeignKeys.map((e) => e.data)}');
         }
       }, beforeOpen: (details) async {
-        await customStatement('PRAGMA auto_vacuum = 1;');
+        await customStatement('PRAGMA auto_vacuum = FULL;');
         await customStatement('PRAGMA foreign_keys = ON;');
 
         if (kDebugMode) {
