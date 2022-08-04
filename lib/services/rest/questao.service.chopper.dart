@@ -32,4 +32,14 @@ class _$QuestaoService extends QuestaoService {
     return client.send<List<QuestaoCompletaResponseDTO>,
         QuestaoCompletaResponseDTO>($request);
   }
+
+  @override
+  Future<Response<List<QuestaoDetalhesLegadoResponseDTO>>>
+      getQuestaoCompletaLegado({required List<int> idsLegado}) {
+    final $url = '/v1/questoes/completas-legado';
+    final $params = <String, dynamic>{'ids': idsLegado};
+    final $request = Request('GET', $url, client.baseUrl, parameters: $params);
+    return client.send<List<QuestaoDetalhesLegadoResponseDTO>,
+        QuestaoDetalhesLegadoResponseDTO>($request);
+  }
 }

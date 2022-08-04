@@ -1,14 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'questao.dao.dart';
+part of 'prova_caderno.dao.dart';
 
 // **************************************************************************
 // DaoGenerator
 // **************************************************************************
 
-mixin _$QuestaoDaoMixin on DatabaseAccessor<AppDatabase> {
-  $QuestoesDbTable get questoesDb => attachedDatabase.questoesDb;
-  $AlternativasDbTable get alternativasDb => attachedDatabase.alternativasDb;
+mixin _$ProvaCadernoDaoMixin on DatabaseAccessor<AppDatabase> {
   $ProvaCadernoTableTable get provaCadernoTable =>
       attachedDatabase.provaCadernoTable;
 }

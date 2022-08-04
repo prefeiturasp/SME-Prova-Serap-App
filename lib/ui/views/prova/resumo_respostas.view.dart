@@ -4,6 +4,7 @@ import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
@@ -299,12 +300,17 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
 
     for (Questao questao in questoes) {
       RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
+      ProvaCaderno provaCaderno = await db.provaCadernoDao.findByQuestaoId(
+        questao.id,
+        widget.idProva,
+        provaStore.caderno,
+      );
 
       String alternativaSelecionada = "";
       String respostaNaTela = "";
       String questaoProva = tratarTexto(questao.titulo) + tratarTexto(questao.descricao);
 
-      String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
+      String ordemQuestaoTratada = provaCaderno.ordem < 10 ? '0${provaCaderno.ordem + 1}' : '${provaCaderno.ordem + 1}';
 
       if (questao.id == resposta?.questaoId) {
         var alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
@@ -352,7 +358,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         {
           'questao': '$ordemQuestaoTratada - $questaoProva',
           'resposta': respostaNaTela,
-          'questao_ordem': questao.ordem,
+          'questao_ordem': provaCaderno.ordem,
         },
       );
 

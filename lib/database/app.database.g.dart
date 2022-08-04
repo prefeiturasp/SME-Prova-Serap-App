@@ -559,20 +559,16 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
   final Value<int> id;
   final Value<String?> titulo;
   final Value<String> descricao;
-  final Value<int> ordem;
   final Value<EnumTipoQuestao> tipo;
   final Value<DateTime?> ultimaAtualizacao;
-  final Value<int> provaId;
   final Value<int> quantidadeAlternativas;
   final Value<String> caderno;
   const QuestoesDbCompanion({
     this.id = const Value.absent(),
     this.titulo = const Value.absent(),
     this.descricao = const Value.absent(),
-    this.ordem = const Value.absent(),
     this.tipo = const Value.absent(),
     this.ultimaAtualizacao = const Value.absent(),
-    this.provaId = const Value.absent(),
     this.quantidadeAlternativas = const Value.absent(),
     this.caderno = const Value.absent(),
   });
@@ -580,26 +576,20 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
     required int id,
     this.titulo = const Value.absent(),
     required String descricao,
-    required int ordem,
     required EnumTipoQuestao tipo,
     this.ultimaAtualizacao = const Value.absent(),
-    required int provaId,
     required int quantidadeAlternativas,
     this.caderno = const Value.absent(),
   })  : id = Value(id),
         descricao = Value(descricao),
-        ordem = Value(ordem),
         tipo = Value(tipo),
-        provaId = Value(provaId),
         quantidadeAlternativas = Value(quantidadeAlternativas);
   static Insertable<Questao> custom({
     Expression<int>? id,
     Expression<String?>? titulo,
     Expression<String>? descricao,
-    Expression<int>? ordem,
     Expression<EnumTipoQuestao>? tipo,
     Expression<DateTime?>? ultimaAtualizacao,
-    Expression<int>? provaId,
     Expression<int>? quantidadeAlternativas,
     Expression<String>? caderno,
   }) {
@@ -607,10 +597,8 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
       if (id != null) 'id': id,
       if (titulo != null) 'titulo': titulo,
       if (descricao != null) 'descricao': descricao,
-      if (ordem != null) 'ordem': ordem,
       if (tipo != null) 'tipo': tipo,
       if (ultimaAtualizacao != null) 'ultima_atualizacao': ultimaAtualizacao,
-      if (provaId != null) 'prova_id': provaId,
       if (quantidadeAlternativas != null)
         'quantidade_alternativas': quantidadeAlternativas,
       if (caderno != null) 'caderno': caderno,
@@ -621,20 +609,16 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
       {Value<int>? id,
       Value<String?>? titulo,
       Value<String>? descricao,
-      Value<int>? ordem,
       Value<EnumTipoQuestao>? tipo,
       Value<DateTime?>? ultimaAtualizacao,
-      Value<int>? provaId,
       Value<int>? quantidadeAlternativas,
       Value<String>? caderno}) {
     return QuestoesDbCompanion(
       id: id ?? this.id,
       titulo: titulo ?? this.titulo,
       descricao: descricao ?? this.descricao,
-      ordem: ordem ?? this.ordem,
       tipo: tipo ?? this.tipo,
       ultimaAtualizacao: ultimaAtualizacao ?? this.ultimaAtualizacao,
-      provaId: provaId ?? this.provaId,
       quantidadeAlternativas:
           quantidadeAlternativas ?? this.quantidadeAlternativas,
       caderno: caderno ?? this.caderno,
@@ -653,18 +637,12 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
     if (descricao.present) {
       map['descricao'] = Variable<String>(descricao.value);
     }
-    if (ordem.present) {
-      map['ordem'] = Variable<int>(ordem.value);
-    }
     if (tipo.present) {
       final converter = $QuestoesDbTable.$converter0;
       map['tipo'] = Variable<int>(converter.mapToSql(tipo.value)!);
     }
     if (ultimaAtualizacao.present) {
       map['ultima_atualizacao'] = Variable<DateTime?>(ultimaAtualizacao.value);
-    }
-    if (provaId.present) {
-      map['prova_id'] = Variable<int>(provaId.value);
     }
     if (quantidadeAlternativas.present) {
       map['quantidade_alternativas'] =
@@ -682,10 +660,8 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
           ..write('id: $id, ')
           ..write('titulo: $titulo, ')
           ..write('descricao: $descricao, ')
-          ..write('ordem: $ordem, ')
           ..write('tipo: $tipo, ')
           ..write('ultimaAtualizacao: $ultimaAtualizacao, ')
-          ..write('provaId: $provaId, ')
           ..write('quantidadeAlternativas: $quantidadeAlternativas, ')
           ..write('caderno: $caderno')
           ..write(')'))
@@ -714,11 +690,6 @@ class $QuestoesDbTable extends QuestoesDb
   late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
       'descricao', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _ordemMeta = const VerificationMeta('ordem');
-  @override
-  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
-      'ordem', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _tipoMeta = const VerificationMeta('tipo');
   @override
   late final GeneratedColumnWithTypeConverter<EnumTipoQuestao, int?> tipo =
@@ -731,11 +702,6 @@ class $QuestoesDbTable extends QuestoesDb
   late final GeneratedColumn<DateTime?> ultimaAtualizacao =
       GeneratedColumn<DateTime?>('ultima_atualizacao', aliasedName, true,
           type: const IntType(), requiredDuringInsert: false);
-  final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
-  @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _quantidadeAlternativasMeta =
       const VerificationMeta('quantidadeAlternativas');
   @override
@@ -754,10 +720,8 @@ class $QuestoesDbTable extends QuestoesDb
         id,
         titulo,
         descricao,
-        ordem,
         tipo,
         ultimaAtualizacao,
-        provaId,
         quantidadeAlternativas,
         caderno
       ];
@@ -785,24 +749,12 @@ class $QuestoesDbTable extends QuestoesDb
     } else if (isInserting) {
       context.missing(_descricaoMeta);
     }
-    if (data.containsKey('ordem')) {
-      context.handle(
-          _ordemMeta, ordem.isAcceptableOrUnknown(data['ordem']!, _ordemMeta));
-    } else if (isInserting) {
-      context.missing(_ordemMeta);
-    }
     context.handle(_tipoMeta, const VerificationResult.success());
     if (data.containsKey('ultima_atualizacao')) {
       context.handle(
           _ultimaAtualizacaoMeta,
           ultimaAtualizacao.isAcceptableOrUnknown(
               data['ultima_atualizacao']!, _ultimaAtualizacaoMeta));
-    }
-    if (data.containsKey('prova_id')) {
-      context.handle(_provaIdMeta,
-          provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
-    } else if (isInserting) {
-      context.missing(_provaIdMeta);
     }
     if (data.containsKey('quantidade_alternativas')) {
       context.handle(
@@ -827,14 +779,10 @@ class $QuestoesDbTable extends QuestoesDb
     return Questao(
       id: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
       titulo: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}titulo']),
       descricao: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}descricao'])!,
-      ordem: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ordem'])!,
       tipo: $QuestoesDbTable.$converter0.mapToDart(const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}tipo']))!,
       quantidadeAlternativas: const IntType().mapFromDatabaseResponse(
@@ -2084,6 +2032,7 @@ class $ArquivosAudioDbTable extends ArquivosAudioDb
 class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
   final int id;
   final int provaId;
+  final int? ordem;
   final EnumDownloadTipo tipo;
   final EnumDownloadStatus downloadStatus;
   final DateTime dataHoraInicio;
@@ -2091,6 +2040,7 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
   DownloadProvaDb(
       {required this.id,
       required this.provaId,
+      this.ordem,
       required this.tipo,
       required this.downloadStatus,
       required this.dataHoraInicio,
@@ -2103,6 +2053,8 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       provaId: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
+      ordem: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}ordem']),
       tipo: $DownloadProvasDbTable.$converter0.mapToDart(const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}tipo']))!,
       downloadStatus: $DownloadProvasDbTable.$converter1.mapToDart(
@@ -2119,6 +2071,9 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['prova_id'] = Variable<int>(provaId);
+    if (!nullToAbsent || ordem != null) {
+      map['ordem'] = Variable<int?>(ordem);
+    }
     {
       final converter = $DownloadProvasDbTable.$converter0;
       map['tipo'] = Variable<int>(converter.mapToSql(tipo)!);
@@ -2139,6 +2094,8 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
     return DownloadProvasDbCompanion(
       id: Value(id),
       provaId: Value(provaId),
+      ordem:
+          ordem == null && nullToAbsent ? const Value.absent() : Value(ordem),
       tipo: Value(tipo),
       downloadStatus: Value(downloadStatus),
       dataHoraInicio: Value(dataHoraInicio),
@@ -2154,6 +2111,7 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
     return DownloadProvaDb(
       id: serializer.fromJson<int>(json['id']),
       provaId: serializer.fromJson<int>(json['provaId']),
+      ordem: serializer.fromJson<int?>(json['ordem']),
       tipo: serializer.fromJson<EnumDownloadTipo>(json['tipo']),
       downloadStatus:
           serializer.fromJson<EnumDownloadStatus>(json['downloadStatus']),
@@ -2167,6 +2125,7 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'provaId': serializer.toJson<int>(provaId),
+      'ordem': serializer.toJson<int?>(ordem),
       'tipo': serializer.toJson<EnumDownloadTipo>(tipo),
       'downloadStatus': serializer.toJson<EnumDownloadStatus>(downloadStatus),
       'dataHoraInicio': serializer.toJson<DateTime>(dataHoraInicio),
@@ -2177,6 +2136,7 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
   DownloadProvaDb copyWith(
           {int? id,
           int? provaId,
+          int? ordem,
           EnumDownloadTipo? tipo,
           EnumDownloadStatus? downloadStatus,
           DateTime? dataHoraInicio,
@@ -2184,6 +2144,7 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
       DownloadProvaDb(
         id: id ?? this.id,
         provaId: provaId ?? this.provaId,
+        ordem: ordem ?? this.ordem,
         tipo: tipo ?? this.tipo,
         downloadStatus: downloadStatus ?? this.downloadStatus,
         dataHoraInicio: dataHoraInicio ?? this.dataHoraInicio,
@@ -2194,6 +2155,7 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
     return (StringBuffer('DownloadProvaDb(')
           ..write('id: $id, ')
           ..write('provaId: $provaId, ')
+          ..write('ordem: $ordem, ')
           ..write('tipo: $tipo, ')
           ..write('downloadStatus: $downloadStatus, ')
           ..write('dataHoraInicio: $dataHoraInicio, ')
@@ -2204,13 +2166,14 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
 
   @override
   int get hashCode => Object.hash(
-      id, provaId, tipo, downloadStatus, dataHoraInicio, dataHoraFim);
+      id, provaId, ordem, tipo, downloadStatus, dataHoraInicio, dataHoraFim);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DownloadProvaDb &&
           other.id == this.id &&
           other.provaId == this.provaId &&
+          other.ordem == this.ordem &&
           other.tipo == this.tipo &&
           other.downloadStatus == this.downloadStatus &&
           other.dataHoraInicio == this.dataHoraInicio &&
@@ -2220,6 +2183,7 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
 class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   final Value<int> id;
   final Value<int> provaId;
+  final Value<int?> ordem;
   final Value<EnumDownloadTipo> tipo;
   final Value<EnumDownloadStatus> downloadStatus;
   final Value<DateTime> dataHoraInicio;
@@ -2227,6 +2191,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   const DownloadProvasDbCompanion({
     this.id = const Value.absent(),
     this.provaId = const Value.absent(),
+    this.ordem = const Value.absent(),
     this.tipo = const Value.absent(),
     this.downloadStatus = const Value.absent(),
     this.dataHoraInicio = const Value.absent(),
@@ -2235,6 +2200,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   DownloadProvasDbCompanion.insert({
     required int id,
     required int provaId,
+    this.ordem = const Value.absent(),
     required EnumDownloadTipo tipo,
     required EnumDownloadStatus downloadStatus,
     required DateTime dataHoraInicio,
@@ -2247,6 +2213,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   static Insertable<DownloadProvaDb> custom({
     Expression<int>? id,
     Expression<int>? provaId,
+    Expression<int?>? ordem,
     Expression<EnumDownloadTipo>? tipo,
     Expression<EnumDownloadStatus>? downloadStatus,
     Expression<DateTime>? dataHoraInicio,
@@ -2255,6 +2222,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (provaId != null) 'prova_id': provaId,
+      if (ordem != null) 'ordem': ordem,
       if (tipo != null) 'tipo': tipo,
       if (downloadStatus != null) 'download_status': downloadStatus,
       if (dataHoraInicio != null) 'data_hora_inicio': dataHoraInicio,
@@ -2265,6 +2233,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   DownloadProvasDbCompanion copyWith(
       {Value<int>? id,
       Value<int>? provaId,
+      Value<int?>? ordem,
       Value<EnumDownloadTipo>? tipo,
       Value<EnumDownloadStatus>? downloadStatus,
       Value<DateTime>? dataHoraInicio,
@@ -2272,6 +2241,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     return DownloadProvasDbCompanion(
       id: id ?? this.id,
       provaId: provaId ?? this.provaId,
+      ordem: ordem ?? this.ordem,
       tipo: tipo ?? this.tipo,
       downloadStatus: downloadStatus ?? this.downloadStatus,
       dataHoraInicio: dataHoraInicio ?? this.dataHoraInicio,
@@ -2287,6 +2257,9 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     }
     if (provaId.present) {
       map['prova_id'] = Variable<int>(provaId.value);
+    }
+    if (ordem.present) {
+      map['ordem'] = Variable<int?>(ordem.value);
     }
     if (tipo.present) {
       final converter = $DownloadProvasDbTable.$converter0;
@@ -2311,6 +2284,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     return (StringBuffer('DownloadProvasDbCompanion(')
           ..write('id: $id, ')
           ..write('provaId: $provaId, ')
+          ..write('ordem: $ordem, ')
           ..write('tipo: $tipo, ')
           ..write('downloadStatus: $downloadStatus, ')
           ..write('dataHoraInicio: $dataHoraInicio, ')
@@ -2336,6 +2310,11 @@ class $DownloadProvasDbTable extends DownloadProvasDb
   late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
       'prova_id', aliasedName, false,
       type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _ordemMeta = const VerificationMeta('ordem');
+  @override
+  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
+      'ordem', aliasedName, true,
+      type: const IntType(), requiredDuringInsert: false);
   final VerificationMeta _tipoMeta = const VerificationMeta('tipo');
   @override
   late final GeneratedColumnWithTypeConverter<EnumDownloadTipo, int?> tipo =
@@ -2365,7 +2344,7 @@ class $DownloadProvasDbTable extends DownloadProvasDb
           type: const IntType(), requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, provaId, tipo, downloadStatus, dataHoraInicio, dataHoraFim];
+      [id, provaId, ordem, tipo, downloadStatus, dataHoraInicio, dataHoraFim];
   @override
   String get aliasedName => _alias ?? 'download_provas_db';
   @override
@@ -2385,6 +2364,10 @@ class $DownloadProvasDbTable extends DownloadProvasDb
           provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
     } else if (isInserting) {
       context.missing(_provaIdMeta);
+    }
+    if (data.containsKey('ordem')) {
+      context.handle(
+          _ordemMeta, ordem.isAcceptableOrUnknown(data['ordem']!, _ordemMeta));
     }
     context.handle(_tipoMeta, const VerificationResult.success());
     context.handle(_downloadStatusMeta, const VerificationResult.success());
@@ -2822,6 +2805,174 @@ class $ProvaAlunoTableTable extends ProvaAlunoTable
   }
 }
 
+class ProvaCadernoTableCompanion extends UpdateCompanion<ProvaCaderno> {
+  final Value<int> questaoLegadId;
+  final Value<int> provaId;
+  final Value<String> caderno;
+  final Value<int> ordem;
+  const ProvaCadernoTableCompanion({
+    this.questaoLegadId = const Value.absent(),
+    this.provaId = const Value.absent(),
+    this.caderno = const Value.absent(),
+    this.ordem = const Value.absent(),
+  });
+  ProvaCadernoTableCompanion.insert({
+    required int questaoLegadId,
+    required int provaId,
+    required String caderno,
+    required int ordem,
+  })  : questaoLegadId = Value(questaoLegadId),
+        provaId = Value(provaId),
+        caderno = Value(caderno),
+        ordem = Value(ordem);
+  static Insertable<ProvaCaderno> custom({
+    Expression<int>? questaoLegadId,
+    Expression<int>? provaId,
+    Expression<String>? caderno,
+    Expression<int>? ordem,
+  }) {
+    return RawValuesInsertable({
+      if (questaoLegadId != null) 'questao_legad_id': questaoLegadId,
+      if (provaId != null) 'prova_id': provaId,
+      if (caderno != null) 'caderno': caderno,
+      if (ordem != null) 'ordem': ordem,
+    });
+  }
+
+  ProvaCadernoTableCompanion copyWith(
+      {Value<int>? questaoLegadId,
+      Value<int>? provaId,
+      Value<String>? caderno,
+      Value<int>? ordem}) {
+    return ProvaCadernoTableCompanion(
+      questaoLegadId: questaoLegadId ?? this.questaoLegadId,
+      provaId: provaId ?? this.provaId,
+      caderno: caderno ?? this.caderno,
+      ordem: ordem ?? this.ordem,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (questaoLegadId.present) {
+      map['questao_legad_id'] = Variable<int>(questaoLegadId.value);
+    }
+    if (provaId.present) {
+      map['prova_id'] = Variable<int>(provaId.value);
+    }
+    if (caderno.present) {
+      map['caderno'] = Variable<String>(caderno.value);
+    }
+    if (ordem.present) {
+      map['ordem'] = Variable<int>(ordem.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProvaCadernoTableCompanion(')
+          ..write('questaoLegadId: $questaoLegadId, ')
+          ..write('provaId: $provaId, ')
+          ..write('caderno: $caderno, ')
+          ..write('ordem: $ordem')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProvaCadernoTableTable extends ProvaCadernoTable
+    with TableInfo<$ProvaCadernoTableTable, ProvaCaderno> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProvaCadernoTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _questaoLegadIdMeta =
+      const VerificationMeta('questaoLegadId');
+  @override
+  late final GeneratedColumn<int?> questaoLegadId = GeneratedColumn<int?>(
+      'questao_legad_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
+  @override
+  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
+      'prova_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _cadernoMeta = const VerificationMeta('caderno');
+  @override
+  late final GeneratedColumn<String?> caderno = GeneratedColumn<String?>(
+      'caderno', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _ordemMeta = const VerificationMeta('ordem');
+  @override
+  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
+      'ordem', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [questaoLegadId, provaId, caderno, ordem];
+  @override
+  String get aliasedName => _alias ?? 'prova_caderno_table';
+  @override
+  String get actualTableName => 'prova_caderno_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<ProvaCaderno> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('questao_legad_id')) {
+      context.handle(
+          _questaoLegadIdMeta,
+          questaoLegadId.isAcceptableOrUnknown(
+              data['questao_legad_id']!, _questaoLegadIdMeta));
+    } else if (isInserting) {
+      context.missing(_questaoLegadIdMeta);
+    }
+    if (data.containsKey('prova_id')) {
+      context.handle(_provaIdMeta,
+          provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
+    } else if (isInserting) {
+      context.missing(_provaIdMeta);
+    }
+    if (data.containsKey('caderno')) {
+      context.handle(_cadernoMeta,
+          caderno.isAcceptableOrUnknown(data['caderno']!, _cadernoMeta));
+    } else if (isInserting) {
+      context.missing(_cadernoMeta);
+    }
+    if (data.containsKey('ordem')) {
+      context.handle(
+          _ordemMeta, ordem.isAcceptableOrUnknown(data['ordem']!, _ordemMeta));
+    } else if (isInserting) {
+      context.missing(_ordemMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {questaoLegadId, provaId, caderno};
+  @override
+  ProvaCaderno map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProvaCaderno(
+      provaId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
+      caderno: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}caderno'])!,
+      ordem: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}ordem'])!,
+      questaoLegadId: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}questao_legad_id'])!,
+    );
+  }
+
+  @override
+  $ProvaCadernoTableTable createAlias(String alias) {
+    return $ProvaCadernoTableTable(attachedDatabase, alias);
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $ProvasDbTable provasDb = $ProvasDbTable(this);
@@ -2840,6 +2991,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $RespostaProvaTableTable(this);
   late final $ProvaAlunoTableTable provaAlunoTable =
       $ProvaAlunoTableTable(this);
+  late final $ProvaCadernoTableTable provaCadernoTable =
+      $ProvaCadernoTableTable(this);
   late final ArquivosVideosDao arquivosVideosDao =
       ArquivosVideosDao(this as AppDatabase);
   late final ArquivosAudioDao arquivosAudioDao =
@@ -2856,6 +3009,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final RespostaProvaDao respostaProvaDao =
       RespostaProvaDao(this as AppDatabase);
   late final ProvaAlunoDao provaAlunoDao = ProvaAlunoDao(this as AppDatabase);
+  late final ProvaCadernoDao provaCadernoDao =
+      ProvaCadernoDao(this as AppDatabase);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
@@ -2869,6 +3024,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         arquivosAudioDb,
         downloadProvasDb,
         respostaProvaTable,
-        provaAlunoTable
+        provaAlunoTable,
+        provaCadernoTable
       ];
 }

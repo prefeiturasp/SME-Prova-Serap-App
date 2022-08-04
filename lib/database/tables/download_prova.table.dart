@@ -8,6 +8,8 @@ class DownloadProvasDb extends Table {
 
   IntColumn get provaId => integer()();
 
+  IntColumn get ordem => integer().nullable()();
+
   IntColumn get tipo => intEnum<EnumDownloadTipo>()();
   IntColumn get downloadStatus => intEnum<EnumDownloadStatus>()();
 

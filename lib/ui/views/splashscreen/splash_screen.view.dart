@@ -92,6 +92,8 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
     _temaStore.fonteDoTexto = _principalStore.usuario.familiaFonte!;
     _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!, update: false);
 
+    await informarVersao();
+
     try {
       if (kDebugMode || !(await checkUpdate())) {
         _navegar();
@@ -100,8 +102,6 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
       _navegar();
       await recordError(e, stack);
     }
-
-    await informarVersao();
   }
 
   _navegar() {

@@ -8,11 +8,9 @@ part 'questao.model.g.dart';
 @JsonSerializable()
 class Questao implements Insertable<Questao> {
   int id;
-  int provaId;
 
   String? titulo;
   String descricao;
-  int ordem;
   EnumTipoQuestao tipo;
 
   int quantidadeAlternativas;
@@ -21,10 +19,8 @@ class Questao implements Insertable<Questao> {
 
   Questao({
     required this.id,
-    required this.provaId,
     this.titulo,
     required this.descricao,
-    required this.ordem,
     required this.tipo,
     required this.quantidadeAlternativas,
     required this.caderno,
@@ -35,7 +31,7 @@ class Questao implements Insertable<Questao> {
 
   @override
   String toString() {
-    return 'Questao(id: $id, titulo: $titulo, descricao: $descricao, ordem: $ordem, caderno: $caderno)';
+    return 'Questao(id: $id, titulo: $titulo, descricao: $descricao, caderno: $caderno)';
   }
 
   @override
@@ -44,10 +40,8 @@ class Questao implements Insertable<Questao> {
       id: Value(id),
       titulo: Value(titulo),
       descricao: Value(descricao),
-      ordem: Value(ordem),
       tipo: Value(tipo),
       quantidadeAlternativas: Value(quantidadeAlternativas),
-      provaId: Value(provaId),
       caderno: Value(caderno),
     ).toColumns(nullToAbsent);
   }

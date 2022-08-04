@@ -8,7 +8,7 @@ import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
-import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
+import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart';
 import 'package:appserap/dtos/questao_completa.response.dto.dart';
 import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/download_status.enum.dart';
@@ -20,6 +20,7 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
+import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -124,22 +125,24 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     info(' [Prova $provaId] - Carregando informações da prova');
     // carregar da url
-    var response = await ServiceLocator.get<ApiService>().prova.getResumoProva(idProva: provaId);
+    var response =
+        await ServiceLocator.get<ApiService>().prova.getResumoProvaCaderno(idProva: provaId, caderno: caderno);
 
     if (!response.isSuccessful) {
       return;
     }
 
-    ProvaDetalhesResponseDTO provaDetalhes = response.body!;
+    ProvaDetalhesCadernoResponseDTO provaDetalhes = response.body!;
 
     // adcionar o que nao tem no banco
     info(" [Prova $provaId] - Adicionando downloads da prova - Questão");
-    for (var idQuestao in provaDetalhes.questoesIds) {
-      if (!_containsId(downloads, idQuestao, EnumDownloadTipo.QUESTAO)) {
+    for (var questoes in provaDetalhes.questoes) {
+      if (!_containsId(downloads, questoes.questaoLegadoId, EnumDownloadTipo.QUESTAO)) {
         await salvarBanco(
           DownloadProvaDb(
-            id: idQuestao,
+            id: questoes.questaoLegadoId,
             provaId: provaId,
+            ordem: questoes.ordem,
             tipo: EnumDownloadTipo.QUESTAO,
             downloadStatus: EnumDownloadStatus.NAO_INICIADO,
             dataHoraInicio: DateTime.now(),
@@ -395,40 +398,51 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         }
 
         for (var questaoDTO in questoesDTO) {
-          var questao = Questao(
-            id: questaoDTO.id,
+          // verificar se a questao ja esta no banco
+          var questaoDb = await db.questaoDao.getById(questaoDTO.id);
+
+          if (questaoDb == null) {
+            var questao = Questao(
+              id: questaoDTO.id,
+              titulo: questaoDTO.titulo,
+              descricao: questaoDTO.descricao,
+              tipo: questaoDTO.tipo,
+              quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
+              caderno: caderno,
+            );
+
+            await db.questaoDao.inserirOuAtualizar(questao);
+
+            await baixarAlternativa(questaoDTO.alternativas);
+
+            if (questaoDTO.arquivos.isNotEmpty) {
+              await baixarArquivoImagem(questaoDTO.arquivos);
+            }
+
+            var deficnencias = ServiceLocator.get<UsuarioStore>().deficiencias;
+
+            for (var deficiencia in deficnencias) {
+              if (grupoSurdos.contains(deficiencia)) {
+                await baixarArquivoVideo(questaoDTO.videos);
+                break;
+              }
+            }
+
+            for (var deficiencia in deficnencias) {
+              if (grupoCegos.contains(deficiencia)) {
+                await baixarArquivoAudio(questaoDTO.audios);
+                break;
+              }
+            }
+          }
+
+          // salva referencia prova caderno questao
+          await db.provaCadernoDao.inserirOuAtualizar(ProvaCaderno(
+            questaoLegadId: questaoDTO.id,
             provaId: provaId,
-            titulo: questaoDTO.titulo,
-            descricao: questaoDTO.descricao,
-            ordem: questaoDTO.ordem,
-            tipo: questaoDTO.tipo,
-            quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
             caderno: caderno,
-          );
-
-          await db.questaoDao.inserirOuAtualizar(questao);
-
-          await baixarAlternativa(questaoDTO.alternativas);
-
-          if (questaoDTO.arquivos.isNotEmpty) {
-            await baixarArquivoImagem(questaoDTO.arquivos);
-          }
-
-          var deficnencias = ServiceLocator.get<UsuarioStore>().deficiencias;
-
-          for (var deficiencia in deficnencias) {
-            if (grupoSurdos.contains(deficiencia)) {
-              await baixarArquivoVideo(questaoDTO.videos);
-              break;
-            }
-          }
-
-          for (var deficiencia in deficnencias) {
-            if (grupoCegos.contains(deficiencia)) {
-              await baixarArquivoAudio(questaoDTO.audios);
-              break;
-            }
-          }
+            ordem: downloads.firstWhere((element) => element.id == questaoDTO.id).ordem!,
+          ));
         }
 
         await _updateDownloadsStatus(downloads, EnumDownloadStatus.CONCLUIDO);

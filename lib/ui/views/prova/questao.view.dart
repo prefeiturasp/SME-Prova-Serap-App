@@ -82,7 +82,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
 
-    questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, widget.ordem, provaStore.caderno);
+    questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
     alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
     imagens = await db.arquivoDao.obterPorQuestaoId(questao.id);
 
@@ -188,7 +188,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                                   Row(
                                     children: [
                                       Text(
-                                        'Questão ${questao.ordem + 1} ',
+                                        'Questão ${widget.ordem + 1} ',
                                         style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
                                           fontSize: temaStore.tTexto20,
                                           fontFamily: temaStore.fonteDoTexto.nomeFonte,

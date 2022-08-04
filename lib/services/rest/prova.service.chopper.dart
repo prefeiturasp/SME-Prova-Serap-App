@@ -33,6 +33,15 @@ class _$ProvaService extends ProvaService {
   }
 
   @override
+  Future<Response<ProvaDetalhesCadernoResponseDTO>> getResumoProvaCaderno(
+      {required int idProva, required String caderno}) {
+    final $url = '/v1/provas/${idProva}/detalhes-resumido-caderno/${caderno}';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<ProvaDetalhesCadernoResponseDTO,
+        ProvaDetalhesCadernoResponseDTO>($request);
+  }
+
+  @override
   Future<Response<int>> getStatusProva({required int idProva}) {
     final $url = '/v1/provas/${idProva}/status-aluno';
     final $request = Request('GET', $url, client.baseUrl);

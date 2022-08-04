@@ -11,10 +11,17 @@ void main() {
     verifier = SchemaVerifier(GeneratedHelper());
   });
 
-  test('upgrade from v15 to v19', () async {
+  test('upgrade from v15 to v20', () async {
     final connection = await verifier.startAt(15);
     final db = AppDatabase(connection.executor);
 
-    await verifier.migrateAndValidate(db, 19);
+    await verifier.migrateAndValidate(db, 20);
+  });
+
+  test('upgrade from v19 to v20', () async {
+    final connection = await verifier.startAt(19);
+    final db = AppDatabase(connection.executor);
+
+    await verifier.migrateAndValidate(db, 20);
   });
 }
