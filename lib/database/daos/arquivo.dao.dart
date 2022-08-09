@@ -42,4 +42,8 @@ class ArquivoDao extends DatabaseAccessor<AppDatabase> with _$ArquivoDaoMixin {
   Future<Arquivo?> findByLegadoId(int legadoId) {
     return (select(arquivosDb)..where((t) => t.legadoId.equals(legadoId))).getSingleOrNull();
   }
+
+  Future<Arquivo?> findById(int id) {
+    return (select(arquivosDb)..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
 }
