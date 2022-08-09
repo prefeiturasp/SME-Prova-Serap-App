@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -16,6 +18,7 @@ import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao_revisao.store.dart';
+import 'package:appserap/ui/views/prova/prova.view.util.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
@@ -47,7 +50,8 @@ class QuestaoRevisaoView extends BaseStatefulWidget {
   _QuestaoRevisaoViewState createState() => _QuestaoRevisaoViewState();
 }
 
-class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, QuestaoRevisaoStore> with Loggable {
+class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, QuestaoRevisaoStore>
+    with Loggable, ProvaViewUtil {
   late ProvaStore provaStore;
   late Questao questao;
   late List<Alternativa> alternativas;
@@ -153,52 +157,59 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
                               ],
                             ),
                             SizedBox(height: 8),
-                            Html(
-                              data: tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO),
-                              style: {
-                                '*': Style.fromTextStyle(
-                                  TemaUtil.temaTextoHtmlPadrao.copyWith(
-                                    fontSize: temaStore.tTexto16,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                  ),
-                                ),
-                                'span': Style.fromTextStyle(
-                                  TextStyle(
+                            buildTratamentoImagem(provaStore, imagens, questao, alternativas),
+                            Observer(builder: (_) {
+                              return Html(
+                                data: tratarArquivos(
+                                    questao.titulo, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem),
+                                style: {
+                                  '*': Style.fromTextStyle(
+                                    TemaUtil.temaTextoHtmlPadrao.copyWith(
                                       fontSize: temaStore.tTexto16,
                                       fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                      color: TemaUtil.pretoSemFoco3),
-                                ),
-                              },
-                              onImageTap: (url, _, attributes, element) {
-                                Uint8List imagem = base64.decode(url!.split(',').last);
+                                    ),
+                                  ),
+                                  'span': Style.fromTextStyle(
+                                    TextStyle(
+                                        fontSize: temaStore.tTexto16,
+                                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                        color: TemaUtil.pretoSemFoco3),
+                                  ),
+                                },
+                                onImageTap: (url, _, attributes, element) {
+                                  Uint8List imagem = base64.decode(url!.split(',').last);
 
-                                _exibirImagem(context, imagem);
-                              },
-                            ),
+                                  _exibirImagem(context, imagem);
+                                },
+                              );
+                            }),
                             SizedBox(height: 8),
-                            Html(
-                              data: tratarArquivos(questao.descricao, imagens, EnumTipoImagem.QUESTAO),
-                              style: {
-                                '*': Style.fromTextStyle(
-                                  TemaUtil.temaTextoHtmlPadrao.copyWith(
-                                    fontSize: temaStore.tTexto16,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                            Observer(builder: (_) {
+                              return Html(
+                                data: tratarArquivos(
+                                    questao.descricao, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem),
+                                style: {
+                                  '*': Style.fromTextStyle(
+                                    TemaUtil.temaTextoHtmlPadrao.copyWith(
+                                      fontSize: temaStore.tTexto16,
+                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                    ),
                                   ),
-                                ),
-                                'span': Style.fromTextStyle(
-                                  TextStyle(
-                                    fontSize: temaStore.tTexto16,
-                                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    color: TemaUtil.pretoSemFoco3,
+                                  'span': Style.fromTextStyle(
+                                    TextStyle(
+                                      fontSize: temaStore.tTexto16,
+                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                      color: TemaUtil.pretoSemFoco3,
+                                    ),
                                   ),
-                                ),
-                              },
-                              onImageTap: (url, _, attributes, element) {
-                                Uint8List imagem = base64.decode(url!.split(',').last);
+                                },
+                                onImageTap: (url, _, attributes, element) {
+                                  Uint8List imagem = base64.decode(url!.split(',').last);
 
-                                _exibirImagem(context, imagem);
-                              },
-                            ),
+                                  _exibirImagem(context, imagem);
+                                },
+                              );
+                            }),
                             SizedBox(height: 16),
                             Observer(builder: (_) {
                               return _buildResposta(questao);
@@ -430,17 +441,19 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
                   ),
                 ),
                 Expanded(
-                  child: Html(
-                    data: tratarArquivos(descricao, imagens, EnumTipoImagem.ALTERNATIVA),
-                    style: {
-                      '*': Style.fromTextStyle(
-                        TemaUtil.temaTextoPadrao.copyWith(
-                          fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      )
-                    },
-                  ),
+                  child: Observer(builder: (_) {
+                    return Html(
+                      data: tratarArquivos(descricao, imagens, EnumTipoImagem.ALTERNATIVA, provaStore.tratamentoImagem),
+                      style: {
+                        '*': Style.fromTextStyle(
+                          TemaUtil.temaTextoPadrao.copyWith(
+                            fontSize: temaStore.tTexto16,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                          ),
+                        )
+                      },
+                    );
+                  }),
                 ),
               ],
             ),
@@ -448,28 +461,6 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
         );
       },
     );
-  }
-
-  String tratarArquivos(String? texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
-    if (texto == null) {
-      return "";
-    }
-
-    if (tipoImagem == EnumTipoImagem.QUESTAO) {
-      texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-        return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
-      });
-    }
-
-    for (var arquivo in arquivos) {
-      var obterTipo = arquivo.caminho.split(".");
-      texto = texto!.replaceAll(
-          "#${arquivo.legadoId}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
-    }
-
-    texto = texto!.replaceAll("#0#", AssetsUtil.notfound);
-
-    return texto;
   }
 
   Widget _buildBotoes(Questao questao) {
