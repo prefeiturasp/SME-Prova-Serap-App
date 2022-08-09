@@ -4,23 +4,30 @@ import 'dart:typed_data';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/enums/tratamento_imagem.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
+import 'package:appserap/services/api.dart';
+import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
-class QuestaoAlunoWidget extends StatelessWidget {
+class QuestaoAlunoWidget extends StatelessWidget with Loggable {
   final TemaStore temaStore = ServiceLocator.get<TemaStore>();
   final controller = HtmlEditorController();
 
@@ -41,58 +48,141 @@ class QuestaoAlunoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Html(
-          data: tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO),
-          style: {
-            '*': Style.fromTextStyle(
-              TemaUtil.temaTextoHtmlPadrao.copyWith(
-                fontSize: temaStore.tTexto16,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-              ),
-            ),
-            'span': Style.fromTextStyle(
-              TextStyle(
+        _buildTratamentoImagem(),
+        Observer(builder: (_) {
+          return Html(
+            data: tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem),
+            style: {
+              '*': Style.fromTextStyle(
+                TemaUtil.temaTextoHtmlPadrao.copyWith(
                   fontSize: temaStore.tTexto16,
                   fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  color: TemaUtil.pretoSemFoco3),
-            ),
-          },
-          onImageTap: (url, _, attributes, element) {
-            Uint8List imagem = base64.decode(url!.split(',').last);
+                ),
+              ),
+              'span': Style.fromTextStyle(
+                TextStyle(
+                    fontSize: temaStore.tTexto16,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                    color: TemaUtil.pretoSemFoco3),
+              ),
+            },
+            onImageTap: (url, _, attributes, element) async {
+              late Uint8List imagem;
 
-            _exibirImagem(context, imagem);
-          },
-        ),
+              if (url!.startsWith('http')) {
+                imagem = (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
+              } else {
+                imagem = base64.decode(url.split(',').last);
+              }
+
+              _exibirImagem(context, imagem);
+            },
+          );
+        }),
         SizedBox(height: 8),
-        Html(
-          data: tratarArquivos(questao.descricao, imagens, EnumTipoImagem.QUESTAO),
-          style: {
-            '*': Style.fromTextStyle(
-              TemaUtil.temaTextoHtmlPadrao.copyWith(
-                fontSize: temaStore.tTexto16,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+        Observer(builder: (_) {
+          return Html(
+            data: tratarArquivos(questao.descricao, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem),
+            style: {
+              '*': Style.fromTextStyle(
+                TemaUtil.temaTextoHtmlPadrao.copyWith(
+                  fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                ),
               ),
-            ),
-            'span': Style.fromTextStyle(
-              TextStyle(
-                fontSize: temaStore.tTexto16,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                color: TemaUtil.pretoSemFoco3,
+              'span': Style.fromTextStyle(
+                TextStyle(
+                  fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  color: TemaUtil.pretoSemFoco3,
+                ),
               ),
-            ),
-          },
-          onImageTap: (url, _, attributes, element) {
-            Uint8List imagem = base64.decode(url!.split(',').last);
+            },
+            onImageTap: (url, _, attributes, element) async {
+              late Uint8List imagem;
 
-            _exibirImagem(context, imagem);
-          },
-        ),
+              if (url!.startsWith('http')) {
+                imagem = (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
+              } else {
+                imagem = base64.decode(url.split(',').last);
+              }
+
+              _exibirImagem(context, imagem);
+            },
+          );
+        }),
         SizedBox(height: 16),
         Observer(builder: (_) {
           return _buildResposta(questao);
         }),
       ],
     );
+  }
+
+  _buildTratamentoImagem() {
+    if (imagens.isNotEmpty) {
+      return InkWell(
+        onTap: () {
+          var usuarioStore = ServiceLocator.get<UsuarioStore>();
+
+          var html = _criarHTML();
+
+          if (html.isNotEmpty) {
+            if (provaStore.ultimaAtualizacaoLogImagem == null ||
+                DateTime.now().difference(provaStore.ultimaAtualizacaoLogImagem!).inSeconds > 15) {
+              ServiceLocator.get<ApiService>().log.logarNecessidadeDeUsoDaUrl(
+                    chaveAPI: AppConfigReader.getChaveApi(),
+                    prova: provaStore.id.toString(),
+                    aluno: usuarioStore.codigoEOL!,
+                    escola: usuarioStore.escola!,
+                    html: html,
+                  );
+
+              provaStore.ultimaAtualizacaoLogImagem = DateTime.now();
+            } else {
+              info('Envio cancelado, a ultima atualização foi menor que 15 segundos');
+            }
+          }
+
+          if (provaStore.tratamentoImagem == TratamentoImagemEnum.BASE64) {
+            provaStore.tratamentoImagem = TratamentoImagemEnum.URL;
+          } else {
+            provaStore.tratamentoImagem = TratamentoImagemEnum.BASE64;
+          }
+        },
+        child: Texto("Caso não consiga visualizar a(s) imagem(s), clique aqui"),
+      );
+    }
+
+    return Container();
+  }
+
+  String _criarHTML() {
+    String html = "";
+
+    if (questao.titulo != null) {
+      if (questao.titulo!.contains(RegExp(r'#\d+#'))) {
+        html += tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem);
+
+        html += "<br><br>";
+      }
+    }
+
+    if (questao.descricao.contains(RegExp(r'#\d+#'))) {
+      html += tratarArquivos(questao.descricao, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem);
+
+      html += "<br><br>";
+    }
+
+    for (var alternativa in alternativas) {
+      if (alternativa.descricao.contains(RegExp(r'#\d+#'))) {
+        html += tratarArquivos(alternativa.descricao, imagens, EnumTipoImagem.ALTERNATIVA, provaStore.tratamentoImagem);
+
+        html += "<br><br>";
+      }
+    }
+
+    return html;
   }
 
   Future<T?> _exibirImagem<T>(BuildContext context, Uint8List image) async {
@@ -298,17 +388,19 @@ class QuestaoAlunoWidget extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Html(
-                    data: tratarArquivos(descricao, imagens, EnumTipoImagem.ALTERNATIVA),
-                    style: {
-                      '*': Style.fromTextStyle(
-                        TemaUtil.temaTextoPadrao.copyWith(
-                          fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      )
-                    },
-                  ),
+                  child: Observer(builder: (_) {
+                    return Html(
+                      data: tratarArquivos(descricao, imagens, EnumTipoImagem.ALTERNATIVA, provaStore.tratamentoImagem),
+                      style: {
+                        '*': Style.fromTextStyle(
+                          TemaUtil.temaTextoPadrao.copyWith(
+                            fontSize: temaStore.tTexto16,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                          ),
+                        )
+                      },
+                    );
+                  }),
                 ),
               ],
             ),
@@ -318,7 +410,8 @@ class QuestaoAlunoWidget extends StatelessWidget {
     );
   }
 
-  String tratarArquivos(String? texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
+  String tratarArquivos(
+      String? texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem, TratamentoImagemEnum tratamentoImagem) {
     if (texto == null) {
       return "";
     }
@@ -330,9 +423,21 @@ class QuestaoAlunoWidget extends StatelessWidget {
     }
 
     for (var arquivo in arquivos) {
-      var obterTipo = arquivo.caminho.split(".");
-      texto = texto!.replaceAll(
-          "#${arquivo.legadoId}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
+      switch (tratamentoImagem) {
+        case TratamentoImagemEnum.BASE64:
+          var obterTipo = arquivo.caminho.split(".");
+          texto = texto!.replaceAll(
+            "#${arquivo.legadoId}#",
+            "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}",
+          );
+          break;
+        case TratamentoImagemEnum.URL:
+          texto = texto!.replaceAll(
+            "#${arquivo.legadoId}#",
+            arquivo.caminho,
+          );
+          break;
+      }
     }
 
     texto = texto!.replaceAll("#0#", AssetsUtil.notfound);

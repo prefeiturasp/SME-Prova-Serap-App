@@ -13,6 +13,7 @@ import 'package:http/io_client.dart' as httpio;
 import 'package:http/http.dart' as http;
 
 import 'rest/download.service.dart';
+import 'rest/log.service.dart';
 
 class ConnectionOptions {
   final String baseUrl;
@@ -54,11 +55,12 @@ class ApiService {
         DownloadService.create(),
         AdminService.create(),
         AutenticacaoAdminService.create(),
+        LogService.create(),
       ],
       interceptors: [
         CompressaoInterceptor(),
         CustomAuthInterceptor(),
-        // CurlInterceptor(),
+        CurlInterceptor(),
         // HttpLoggingInterceptor(),
       ],
     ));
@@ -79,4 +81,5 @@ class ApiService {
   DownloadService get download => chopper.getService<DownloadService>();
   AdminService get admin => chopper.getService<AdminService>();
   AutenticacaoAdminService get adminAuth => chopper.getService<AutenticacaoAdminService>();
+  LogService get log => chopper.getService<LogService>();
 }

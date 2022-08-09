@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/managers/tempo.manager.dart';
@@ -57,6 +58,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @observable
   Prova prova;
+
+  @observable
+  TratamentoImagemEnum tratamentoImagem = TratamentoImagemEnum.BASE64;
+
+  DateTime? ultimaAtualizacaoLogImagem;
 
   _ProvaStoreBase({
     required this.id,
