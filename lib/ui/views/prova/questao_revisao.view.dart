@@ -487,6 +487,8 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
                     await provaStore.respostas.sincronizarResposta();
                     store.posicaoQuestaoSendoRevisada++;
+                    provaStore.ultimaAtualizacaoLogImagem = null;
+
                     context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
                   } catch (e, stack) {
                     await recordError(e, stack);
@@ -517,6 +519,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
               );
 
               await provaStore.respostas.sincronizarResposta();
+              provaStore.ultimaAtualizacaoLogImagem = null;
 
               context.go("/prova/${provaStore.id}/resumo");
             } catch (e, stack) {
