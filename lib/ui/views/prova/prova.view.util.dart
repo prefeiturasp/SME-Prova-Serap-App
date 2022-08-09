@@ -47,8 +47,8 @@ abstract class ProvaViewUtil {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Texto("Caso não consiga visualizar a(s) imagem(s), clique aqui"),
               Icon(Icons.refresh, size: 14),
+              Texto(" Caso não consiga visualizar a(s) imagem(s), clique aqui"),
             ],
           ),
         ),
