@@ -12,39 +12,46 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:flutter/material.dart';
 
-class ProvaViewUtil {
+abstract class ProvaViewUtil {
   buildTratamentoImagem(ProvaStore provaStore, List<Arquivo> imagens, Questao questao, List<Alternativa> alternativas) {
     if (imagens.isNotEmpty) {
-      return InkWell(
-        onTap: () {
-          var usuarioStore = ServiceLocator.get<UsuarioStore>();
+      return Center(
+        child: InkWell(
+          onTap: () {
+            var usuarioStore = ServiceLocator.get<UsuarioStore>();
 
-          var html = _criarHTML(provaStore, imagens, questao, alternativas);
+            var html = _criarHTML(provaStore, imagens, questao, alternativas);
 
-          if (html.isNotEmpty) {
-            if (provaStore.ultimaAtualizacaoLogImagem == null ||
-                DateTime.now().difference(provaStore.ultimaAtualizacaoLogImagem!).inSeconds > 15) {
-              ServiceLocator.get<ApiService>().log.logarNecessidadeDeUsoDaUrl(
-                    chaveAPI: AppConfigReader.getChaveApi(),
-                    prova: provaStore.id.toString(),
-                    aluno: usuarioStore.codigoEOL!,
-                    escola: usuarioStore.escola!,
-                    html: html,
-                  );
+            if (html.isNotEmpty) {
+              if (provaStore.ultimaAtualizacaoLogImagem == null ||
+                  DateTime.now().difference(provaStore.ultimaAtualizacaoLogImagem!).inSeconds > 15) {
+                ServiceLocator.get<ApiService>().log.logarNecessidadeDeUsoDaUrl(
+                      chaveAPI: AppConfigReader.getChaveApi(),
+                      prova: provaStore.id.toString(),
+                      aluno: usuarioStore.codigoEOL!,
+                      escola: usuarioStore.escola!,
+                      html: html,
+                    );
 
-              provaStore.ultimaAtualizacaoLogImagem = DateTime.now();
+                provaStore.ultimaAtualizacaoLogImagem = DateTime.now();
+              }
             }
-          }
 
-          if (provaStore.tratamentoImagem == TratamentoImagemEnum.BASE64) {
-            provaStore.tratamentoImagem = TratamentoImagemEnum.URL;
-          } else {
-            provaStore.tratamentoImagem = TratamentoImagemEnum.BASE64;
-          }
-
-          print('Visualização da imagem alterada para: ${provaStore.tratamentoImagem}');
-        },
-        child: Texto("Caso não consiga visualizar a(s) imagem(s), clique aqui"),
+            if (provaStore.tratamentoImagem == TratamentoImagemEnum.BASE64) {
+              provaStore.tratamentoImagem = TratamentoImagemEnum.URL;
+            } else {
+              provaStore.tratamentoImagem = TratamentoImagemEnum.BASE64;
+            }
+          },
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Texto("Caso não consiga visualizar a(s) imagem(s), clique aqui"),
+              Icon(Icons.refresh, size: 14),
+            ],
+          ),
+        ),
       );
     }
 
