@@ -163,10 +163,26 @@ class AppDatabase extends _$AppDatabase {
           }
 
           if (from < 20) {
-            await m.addColumn(downloadProvasDb, downloadProvasDb.ordem);
             await m.create(provaCadernoTable);
+            await m.create(questaoArquivoTable);
+
             await m.addColumn(questoesDb, questoesDb.questaoLegadoId);
             await m.alterTable(TableMigration(questoesDb));
+
+            await m.addColumn(alternativasDb, alternativasDb.questaoLegadoId);
+            await m.alterTable(TableMigration(alternativasDb));
+
+            await m.addColumn(arquivosVideoDb, arquivosVideoDb.questaoLegadoId);
+            await m.alterTable(TableMigration(arquivosVideoDb));
+
+            await m.addColumn(arquivosAudioDb, arquivosAudioDb.questaoLegadoId);
+            await m.alterTable(TableMigration(arquivosAudioDb));
+
+            await m.addColumn(downloadProvasDb, downloadProvasDb.questaoLegadoId);
+            await m.addColumn(downloadProvasDb, downloadProvasDb.ordem);
+            await m.alterTable(TableMigration(downloadProvasDb));
+
+            await m.alterTable(TableMigration(arquivosDb));
           }
         });
 
@@ -208,23 +224,16 @@ class AppDatabase extends _$AppDatabase {
   Future limparBanco() {
     return transaction(() async {
       await customUpdate("delete from alternativas_db;");
-
-      await customUpdate("delete from questoes_db;");
-
-      await customUpdate("delete from arquivos_db;");
-
-      await customUpdate("delete from contextos_prova_db;");
-
-      await customUpdate("delete from arquivos_video_db;");
       await customUpdate("delete from arquivos_audio_db;");
-
-      await customUpdate("delete from provas_db;");
-
+      await customUpdate("delete from arquivos_video_db;");
+      await customUpdate("delete from arquivos_db;");
+      await customUpdate("delete from contextos_prova_db;");
       await customUpdate("delete from download_provas_db;");
-
       await customUpdate("delete from prova_aluno_table;");
-
       await customUpdate("delete from prova_caderno_table;");
+      await customUpdate("delete from provas_db;");
+      await customUpdate("delete from questao_arquivo_table;");
+      await customUpdate("delete from questoes_db;");
     });
   }
 }

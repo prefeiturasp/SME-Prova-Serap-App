@@ -41,7 +41,7 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
     }
   }
 
-  Future<List<Questao>> obterPorProvaId(int provaId, String caderno) async {
+  Future<List<Questao>> obterPorProvaECaderno(int provaId, String caderno) async {
     var query = select(questoesDb).join([
       innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadoId.equalsExp(questoesDb.questaoLegadoId)),
     ]);
@@ -57,21 +57,34 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
     }).toList();
   }
 
-  // Future<int> removerPorProvaId(int provaId) async {
-  //   var query = select(questoesDb).join([
-  //     innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadoId.equalsExp(questoesDb.id)),
-  //   ]);
+  Future<List<Questao>> obterPorProvaId(int provaId) async {
+    var query = select(questoesDb).join([
+      innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadoId.equalsExp(questoesDb.questaoLegadoId)),
+    ]);
+    query.where(provaCadernoTable.provaId.equals(provaId));
 
-  //   query.where(provaCadernoTable.provaId.equals(provaId));
+    var rows = await query.get();
 
-  //   var rows = await query.get();
+    return rows.map((resultRow) {
+      return resultRow.readTable(questoesDb);
+    }).toList();
+  }
 
-  //   var questoesId = rows.map((resultRow) {
-  //     return resultRow.read(questoesDb.id);
-  //   }).toList();
+  Future<int> removerPorProvaId(int provaId) async {
+    var query = select(questoesDb).join([
+      innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadoId.equalsExp(questoesDb.questaoLegadoId)),
+    ]);
 
-  //   return (delete(questoesDb)..where((t) => t.id.isIn(questoesId))).go();
-  // }
+    query.where(provaCadernoTable.provaId.equals(provaId));
+
+    var rows = await query.get();
+
+    var questoesLegadoId = rows.map((resultRow) {
+      return resultRow.read(questoesDb.questaoLegadoId);
+    }).toList();
+
+    return (delete(questoesDb)..where((t) => t.questaoLegadoId.isIn(questoesLegadoId))).go();
+  }
 
   Future<Questao> getByProvaEOrdem(int provaId, String caderno, int ordem) async {
     var query = select(questoesDb).join([

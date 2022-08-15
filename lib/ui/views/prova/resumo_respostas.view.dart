@@ -296,7 +296,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
 
     var db = ServiceLocator.get<AppDatabase>();
 
-    var questoes = await db.questaoDao.obterPorProvaId(widget.idProva, provaStore.caderno);
+    var questoes = await db.questaoDao.obterPorProvaECaderno(widget.idProva, provaStore.caderno);
 
     for (Questao questao in questoes) {
       var questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECaderno(widget.idProva, provaStore.caderno);

@@ -2,8 +2,6 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:drift/drift.dart';
 
-import 'prova.table.dart';
-
 @DataClassName("DownloadProvaDb")
 class DownloadProvasDb extends Table {
   IntColumn get id => integer()();

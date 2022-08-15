@@ -115,9 +115,6 @@ class QuestoesDb extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   QuestoesDb(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
-      'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
   late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
       'questao_legado_id', aliasedName, false,
       type: const IntType(), requiredDuringInsert: false);
@@ -138,7 +135,6 @@ class QuestoesDb extends Table with TableInfo {
           type: const IntType(), requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
-        id,
         questaoLegadoId,
         titulo,
         descricao,
@@ -174,6 +170,9 @@ class AlternativasDb extends Table with TableInfo {
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
       'id', aliasedName, false,
       type: const IntType(), requiredDuringInsert: false);
+  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      'questao_legado_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
   late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
       'descricao', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
@@ -183,18 +182,9 @@ class AlternativasDb extends Table with TableInfo {
   late final GeneratedColumn<String?> numeracao = GeneratedColumn<String?>(
       'numeracao', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> ultimaAtualizacao =
-      GeneratedColumn<DateTime?>('ultima_atualizacao', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, descricao, ordem, numeracao, ultimaAtualizacao, provaId, questaoId];
+      [id, questaoLegadoId, descricao, ordem, numeracao];
   @override
   String get aliasedName => _alias ?? 'alternativas_db';
   @override
@@ -232,18 +222,8 @@ class ArquivosDb extends Table with TableInfo {
   late final GeneratedColumn<String?> base64 = GeneratedColumn<String?>(
       'base64', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> ultimaAtualizacao =
-      GeneratedColumn<DateTime?>('ultima_atualizacao', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, legadoId, caminho, base64, ultimaAtualizacao, provaId, questaoId];
+  List<GeneratedColumn> get $columns => [id, legadoId, caminho, base64];
   @override
   String get aliasedName => _alias ?? 'arquivos_db';
   @override
@@ -324,17 +304,14 @@ class ArquivosVideoDb extends Table with TableInfo {
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
       'id', aliasedName, false,
       type: const IntType(), requiredDuringInsert: false);
+  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      'questao_legado_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
   late final GeneratedColumn<String?> path = GeneratedColumn<String?>(
       'path', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, path, questaoId, provaId];
+  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
   @override
   String get aliasedName => _alias ?? 'arquivos_video_db';
   @override
@@ -363,17 +340,14 @@ class ArquivosAudioDb extends Table with TableInfo {
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
       'id', aliasedName, false,
       type: const IntType(), requiredDuringInsert: false);
+  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      'questao_legado_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
   late final GeneratedColumn<String?> path = GeneratedColumn<String?>(
       'path', aliasedName, false,
       type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, path, questaoId, provaId];
+  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
   @override
   String get aliasedName => _alias ?? 'arquivos_audio_db';
   @override
@@ -405,6 +379,9 @@ class DownloadProvasDb extends Table with TableInfo {
   late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
       'prova_id', aliasedName, false,
       type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      'questao_legado_id', aliasedName, true,
+      type: const IntType(), requiredDuringInsert: false);
   late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
       'ordem', aliasedName, true,
       type: const IntType(), requiredDuringInsert: false);
@@ -421,8 +398,16 @@ class DownloadProvasDb extends Table with TableInfo {
       GeneratedColumn<DateTime?>('data_hora_fim', aliasedName, true,
           type: const IntType(), requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, provaId, ordem, tipo, downloadStatus, dataHoraInicio, dataHoraFim];
+  List<GeneratedColumn> get $columns => [
+        id,
+        provaId,
+        questaoLegadoId,
+        ordem,
+        tipo,
+        downloadStatus,
+        dataHoraInicio,
+        dataHoraFim
+      ];
   @override
   String get aliasedName => _alias ?? 'download_provas_db';
   @override
@@ -545,8 +530,11 @@ class ProvaCadernoTable extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   ProvaCadernoTable(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> questaoLegadId = GeneratedColumn<int?>(
-      'questao_legad_id', aliasedName, false,
+  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
+      'questao_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      'questao_legado_id', aliasedName, false,
       type: const IntType(), requiredDuringInsert: true);
   late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
       'prova_id', aliasedName, false,
@@ -559,13 +547,13 @@ class ProvaCadernoTable extends Table with TableInfo {
       type: const IntType(), requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [questaoLegadId, provaId, caderno, ordem];
+      [questaoId, questaoLegadoId, provaId, caderno, ordem];
   @override
   String get aliasedName => _alias ?? 'prova_caderno_table';
   @override
   String get actualTableName => 'prova_caderno_table';
   @override
-  Set<GeneratedColumn> get $primaryKey => {questaoLegadId, provaId, caderno};
+  Set<GeneratedColumn> get $primaryKey => {questaoLegadoId, provaId, caderno};
   @override
   Never map(Map<String, dynamic> data, {String? tablePrefix}) {
     throw UnsupportedError('TableInfo.map in schema verification code');
@@ -574,6 +562,39 @@ class ProvaCadernoTable extends Table with TableInfo {
   @override
   ProvaCadernoTable createAlias(String alias) {
     return ProvaCadernoTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => false;
+}
+
+class QuestaoArquivoTable extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  QuestaoArquivoTable(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      'questao_legado_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int?> arquivoLegadoId = GeneratedColumn<int?>(
+      'arquivo_legado_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [questaoLegadoId, arquivoLegadoId];
+  @override
+  String get aliasedName => _alias ?? 'questao_arquivo_table';
+  @override
+  String get actualTableName => 'questao_arquivo_table';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {questaoLegadoId, arquivoLegadoId};
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  QuestaoArquivoTable createAlias(String alias) {
+    return QuestaoArquivoTable(attachedDatabase, alias);
   }
 
   @override
@@ -593,6 +614,8 @@ class DatabaseAtV20 extends GeneratedDatabase {
   late final RespostaProvaTable respostaProvaTable = RespostaProvaTable(this);
   late final ProvaAlunoTable provaAlunoTable = ProvaAlunoTable(this);
   late final ProvaCadernoTable provaCadernoTable = ProvaCadernoTable(this);
+  late final QuestaoArquivoTable questaoArquivoTable =
+      QuestaoArquivoTable(this);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
@@ -607,7 +630,8 @@ class DatabaseAtV20 extends GeneratedDatabase {
         downloadProvasDb,
         respostaProvaTable,
         provaAlunoTable,
-        provaCadernoTable
+        provaCadernoTable,
+        questaoArquivoTable
       ];
   @override
   int get schemaVersion => 20;

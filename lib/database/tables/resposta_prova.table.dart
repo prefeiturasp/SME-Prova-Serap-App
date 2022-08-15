@@ -1,15 +1,12 @@
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:drift/drift.dart';
 
-import 'prova.table.dart';
-
 @UseRowClass(RespostaProva)
 class RespostaProvaTable extends Table {
   TextColumn get codigoEOL => text()();
 
   IntColumn get questaoId => integer()();
   IntColumn get provaId => integer()();
-  TextColumn get caderno => text()();
 
   IntColumn get alternativaId => integer().nullable()();
   TextColumn get resposta => text().nullable()();

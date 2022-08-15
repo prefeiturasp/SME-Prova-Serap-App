@@ -1,8 +1,5 @@
-import 'package:appserap/database/tables/questao.table.dart';
 import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:drift/drift.dart';
-
-import 'prova.table.dart';
 
 @UseRowClass(ProvaCaderno)
 class ProvaCadernoTable extends Table {
