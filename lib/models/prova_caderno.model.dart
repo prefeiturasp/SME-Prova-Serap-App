@@ -8,18 +8,25 @@ part 'prova_caderno.model.g.dart';
 class ProvaCaderno implements Insertable<ProvaCaderno> {
   int provaId;
   String caderno;
-  int questaoLegadId;
+  int questaoId;
+  int questaoLegadoId;
   int ordem;
 
   ProvaCaderno({
     required this.provaId,
     required this.caderno,
     required this.ordem,
-    required this.questaoLegadId,
+    required this.questaoId,
+    required this.questaoLegadoId,
   });
 
   factory ProvaCaderno.fromJson(Map<String, dynamic> json) => _$ProvaCadernoFromJson(json);
   Map<String, dynamic> toJson() => _$ProvaCadernoToJson(this);
+
+  @override
+  String toString() {
+    return 'ProvaCaderno{provaId: $provaId, caderno: $caderno, questaoId: $questaoId, questaoLegadoId: $questaoLegadoId, ordem: $ordem}';
+  }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -27,7 +34,8 @@ class ProvaCaderno implements Insertable<ProvaCaderno> {
       provaId: Value(provaId),
       caderno: Value(caderno),
       ordem: Value(ordem),
-      questaoLegadId: Value(questaoLegadId),
+      questaoLegadoId: Value(questaoLegadoId),
+      questaoId: Value(questaoId),
     ).toColumns(nullToAbsent);
   }
 }

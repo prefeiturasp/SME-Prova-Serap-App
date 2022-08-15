@@ -15,8 +15,7 @@ class ProvaDetalhesCadernoResponseDTO {
     required this.contextosProvaIds,
   });
 
-  factory ProvaDetalhesCadernoResponseDTO.fromJson(Map<String, dynamic> json) =>
-      _$ProvaDetalhesCadernoResponseDTOFromJson(json);
+  static const fromJson = _$ProvaDetalhesCadernoResponseDTOFromJson;
 
   Map<String, dynamic> toJson() => _$ProvaDetalhesCadernoResponseDTOToJson(this);
 }

@@ -10,6 +10,7 @@ ProvaDetalhesCadernoQuestaoResponseDTO
     _$ProvaDetalhesCadernoQuestaoResponseDTOFromJson(
             Map<String, dynamic> json) =>
         ProvaDetalhesCadernoQuestaoResponseDTO(
+          questaoId: json['questaoId'] as int,
           questaoLegadoId: json['questaoLegadoId'] as int,
           ordem: json['ordem'] as int,
         );
@@ -17,6 +18,7 @@ ProvaDetalhesCadernoQuestaoResponseDTO
 Map<String, dynamic> _$ProvaDetalhesCadernoQuestaoResponseDTOToJson(
         ProvaDetalhesCadernoQuestaoResponseDTO instance) =>
     <String, dynamic>{
+      'questaoId': instance.questaoId,
       'questaoLegadoId': instance.questaoLegadoId,
       'ordem': instance.ordem,
     };

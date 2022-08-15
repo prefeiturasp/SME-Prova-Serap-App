@@ -27,13 +27,23 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
     return select(questoesDb).get();
   }
 
-  Future<Questao?> getById(int id) {
-    return (select(questoesDb)..where((t) => t.id.equals(id))).getSingleOrNull();
+  Future<Questao?> getByQuestaoId(int questaoId) async {
+    var query = select(questoesDb).join([
+      innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadoId.equalsExp(questoesDb.questaoLegadoId)),
+    ]);
+
+    query.where(provaCadernoTable.questaoId.equals(questaoId));
+
+    var rows = await query.get();
+
+    if (rows.isNotEmpty) {
+      return rows.first.readTable(questoesDb);
+    }
   }
 
   Future<List<Questao>> obterPorProvaId(int provaId, String caderno) async {
     var query = select(questoesDb).join([
-      innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadId.equalsExp(questoesDb.id)),
+      innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadoId.equalsExp(questoesDb.questaoLegadoId)),
     ]);
 
     query.where(provaCadernoTable.provaId.equals(provaId) & provaCadernoTable.caderno.equals(caderno));
@@ -47,25 +57,25 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
     }).toList();
   }
 
-  Future<int> removerPorProvaId(int provaId) async {
-    var query = select(questoesDb).join([
-      innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadId.equalsExp(questoesDb.id)),
-    ]);
+  // Future<int> removerPorProvaId(int provaId) async {
+  //   var query = select(questoesDb).join([
+  //     innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadoId.equalsExp(questoesDb.id)),
+  //   ]);
 
-    query.where(provaCadernoTable.provaId.equals(provaId));
+  //   query.where(provaCadernoTable.provaId.equals(provaId));
 
-    var rows = await query.get();
+  //   var rows = await query.get();
 
-    var questoesId = rows.map((resultRow) {
-      return resultRow.read(questoesDb.id);
-    }).toList();
+  //   var questoesId = rows.map((resultRow) {
+  //     return resultRow.read(questoesDb.id);
+  //   }).toList();
 
-    return (delete(questoesDb)..where((t) => t.id.isIn(questoesId))).go();
-  }
+  //   return (delete(questoesDb)..where((t) => t.id.isIn(questoesId))).go();
+  // }
 
   Future<Questao> getByProvaEOrdem(int provaId, String caderno, int ordem) async {
     var query = select(questoesDb).join([
-      innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadId.equalsExp(questoesDb.id)),
+      innerJoin(provaCadernoTable, provaCadernoTable.questaoLegadoId.equalsExp(questoesDb.questaoLegadoId)),
     ]);
 
     query.where(provaCadernoTable.provaId.equals(provaId) &
@@ -75,5 +85,9 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
     var row = await query.getSingle();
 
     return row.readTable(questoesDb);
+  }
+
+  Future<Questao?> getByQuestaoLegadoId(int questaoLegadoId) {
+    return (select(questoesDb)..where((t) => t.questaoLegadoId.equals(questaoLegadoId))).getSingleOrNull();
   }
 }

@@ -9,6 +9,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
 setupFirebase() async {
+  if (Platform.isWindows || Platform.isLinux) {
+    return;
+  }
+
   try {
     logger.config('[Firebase] Configurando Firebase');
     await fb.Firebase.initializeApp();
@@ -33,6 +37,9 @@ recordError(
 }) async {
   if (!kIsWeb && !Platform.isWindows) {
     await FirebaseCrashlytics.instance.recordError(exception, stack);
+  } else {
+    print(exception);
+    print(stack);
   }
 }
 

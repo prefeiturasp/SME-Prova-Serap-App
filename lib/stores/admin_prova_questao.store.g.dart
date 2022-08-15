@@ -6,11 +6,11 @@ part of 'admin_prova_questao.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$AdminProvaQuestaoViewStore on _AdminProvaQuestaoViewStoreBase, Store {
-  final _$carregandoAtom =
-      Atom(name: '_AdminProvaQuestaoViewStoreBase.carregando');
+  late final _$carregandoAtom = Atom(
+      name: '_AdminProvaQuestaoViewStoreBase.carregando', context: context);
 
   @override
   bool get carregando {
@@ -25,7 +25,8 @@ mixin _$AdminProvaQuestaoViewStore on _AdminProvaQuestaoViewStoreBase, Store {
     });
   }
 
-  final _$detalhesAtom = Atom(name: '_AdminProvaQuestaoViewStoreBase.detalhes');
+  late final _$detalhesAtom =
+      Atom(name: '_AdminProvaQuestaoViewStoreBase.detalhes', context: context);
 
   @override
   AdminQuestaoDetalhesResponseDTO? get detalhes {
@@ -40,7 +41,8 @@ mixin _$AdminProvaQuestaoViewStore on _AdminProvaQuestaoViewStoreBase, Store {
     });
   }
 
-  final _$questaoAtom = Atom(name: '_AdminProvaQuestaoViewStoreBase.questao');
+  late final _$questaoAtom =
+      Atom(name: '_AdminProvaQuestaoViewStoreBase.questao', context: context);
 
   @override
   QuestaoResponseDTO? get questao {
@@ -55,8 +57,9 @@ mixin _$AdminProvaQuestaoViewStore on _AdminProvaQuestaoViewStoreBase, Store {
     });
   }
 
-  final _$carregarDetalhesQuestaoAsyncAction =
-      AsyncAction('_AdminProvaQuestaoViewStoreBase.carregarDetalhesQuestao');
+  late final _$carregarDetalhesQuestaoAsyncAction = AsyncAction(
+      '_AdminProvaQuestaoViewStoreBase.carregarDetalhesQuestao',
+      context: context);
 
   @override
   Future<void> carregarDetalhesQuestao(int idProva, int idQuestao) {
@@ -64,16 +67,18 @@ mixin _$AdminProvaQuestaoViewStore on _AdminProvaQuestaoViewStoreBase, Store {
         .run(() => super.carregarDetalhesQuestao(idProva, idQuestao));
   }
 
-  final _$carregarDetalhesAsyncAction =
-      AsyncAction('_AdminProvaQuestaoViewStoreBase.carregarDetalhes');
+  late final _$carregarDetalhesAsyncAction = AsyncAction(
+      '_AdminProvaQuestaoViewStoreBase.carregarDetalhes',
+      context: context);
 
   @override
   Future carregarDetalhes() {
     return _$carregarDetalhesAsyncAction.run(() => super.carregarDetalhes());
   }
 
-  final _$_AdminProvaQuestaoViewStoreBaseActionController =
-      ActionController(name: '_AdminProvaQuestaoViewStoreBase');
+  late final _$_AdminProvaQuestaoViewStoreBaseActionController =
+      ActionController(
+          name: '_AdminProvaQuestaoViewStoreBase', context: context);
 
   @override
   dynamic limpar() {

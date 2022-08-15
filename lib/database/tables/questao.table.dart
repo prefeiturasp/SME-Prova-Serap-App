@@ -4,15 +4,13 @@ import 'package:drift/drift.dart';
 
 @UseRowClass(Questao)
 class QuestoesDb extends Table {
-  IntColumn get id => integer()();
+  IntColumn get questaoLegadoId => integer()();
   TextColumn get titulo => text().nullable()();
   TextColumn get descricao => text()();
   IntColumn get tipo => intEnum<EnumTipoQuestao>()();
   DateTimeColumn get ultimaAtualizacao => dateTime().nullable()();
   IntColumn get quantidadeAlternativas => integer()();
 
-  TextColumn get caderno => text().withDefault(Constant("A"))();
-
   @override
-  Set<Column> get primaryKey => {id, caderno};
+  Set<Column> get primaryKey => {questaoLegadoId};
 }

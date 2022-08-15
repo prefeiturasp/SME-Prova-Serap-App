@@ -299,9 +299,11 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     var questoes = await db.questaoDao.obterPorProvaId(widget.idProva, provaStore.caderno);
 
     for (Questao questao in questoes) {
-      RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
+      var questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECaderno(widget.idProva, provaStore.caderno);
+
+      RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
       ProvaCaderno provaCaderno = await db.provaCadernoDao.findByQuestaoId(
-        questao.id,
+        questaoId,
         widget.idProva,
         provaStore.caderno,
       );
@@ -312,8 +314,8 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
 
       String ordemQuestaoTratada = provaCaderno.ordem < 10 ? '0${provaCaderno.ordem + 1}' : '${provaCaderno.ordem + 1}';
 
-      if (questao.id == resposta?.questaoId) {
-        var alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
+      if (questaoId == resposta?.questaoId) {
+        var alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
 
         for (var alternativa in alternativas) {
           if (alternativa.id == resposta!.alternativaId) {

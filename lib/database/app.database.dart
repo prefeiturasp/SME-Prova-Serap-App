@@ -18,6 +18,7 @@ import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/prova_caderno.model.dart';
+import 'package:appserap/models/questao_arquivo.model.dart';
 
 import 'daos/alternativa.dao.dart';
 import 'daos/arquivo.dao.dart';
@@ -27,6 +28,7 @@ import 'daos/prova.dao.dart';
 import 'daos/prova_aluno.dao.dart';
 import 'daos/prova_caderno.dao.dart';
 import 'daos/questao.dao.dart';
+import 'daos/questao_arquivo.dao.dart';
 import 'daos/resposta_prova.dao.dart';
 import 'tables/alternativa.table.dart';
 import 'tables/arquivo.table.dart';
@@ -38,6 +40,7 @@ import 'tables/prova.table.dart';
 import 'tables/prova_aluno.table.dart';
 import 'tables/prova_caderno.table.dart';
 import 'tables/questao.table.dart';
+import 'tables/questao_arquivo.table.dart';
 import 'tables/resposta_prova.table.dart';
 
 export 'core/shared.database.dart';
@@ -57,6 +60,7 @@ part 'app.database.g.dart';
     RespostaProvaTable,
     ProvaAlunoTable,
     ProvaCadernoTable,
+    QuestaoArquivoTable,
   ],
   daos: [
     ArquivosVideosDao,
@@ -70,6 +74,7 @@ part 'app.database.g.dart';
     RespostaProvaDao,
     ProvaAlunoDao,
     ProvaCadernoDao,
+    QuestaoArquivoDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -157,14 +162,10 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(provasDb, provasDb.caderno);
           }
 
-          if (from < 19) {
-            await m.addColumn(questoesDb, questoesDb.caderno);
-            await m.alterTable(TableMigration(questoesDb));
-          }
-
           if (from < 20) {
             await m.addColumn(downloadProvasDb, downloadProvasDb.ordem);
             await m.create(provaCadernoTable);
+            await m.addColumn(questoesDb, questoesDb.questaoLegadoId);
             await m.alterTable(TableMigration(questoesDb));
           }
         });
@@ -222,6 +223,8 @@ class AppDatabase extends _$AppDatabase {
       await customUpdate("delete from download_provas_db;");
 
       await customUpdate("delete from prova_aluno_table;");
+
+      await customUpdate("delete from prova_caderno_table;");
     });
   }
 }

@@ -6,10 +6,11 @@ part of 'prova.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$ProvaStore on _ProvaStoreBase, Store {
-  final _$conexaoStreamAtom = Atom(name: '_ProvaStoreBase.conexaoStream');
+  late final _$conexaoStreamAtom =
+      Atom(name: '_ProvaStoreBase.conexaoStream', context: context);
 
   @override
   ObservableStream<ConnectivityResult> get conexaoStream {
@@ -24,7 +25,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$isVisibleAtom = Atom(name: '_ProvaStoreBase.isVisible');
+  late final _$isVisibleAtom =
+      Atom(name: '_ProvaStoreBase.isVisible', context: context);
 
   @override
   bool get isVisible {
@@ -39,7 +41,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$provaAtom = Atom(name: '_ProvaStoreBase.prova');
+  late final _$provaAtom =
+      Atom(name: '_ProvaStoreBase.prova', context: context);
 
   @override
   Prova get prova {
@@ -54,7 +57,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$downloadStatusAtom = Atom(name: '_ProvaStoreBase.downloadStatus');
+  late final _$downloadStatusAtom =
+      Atom(name: '_ProvaStoreBase.downloadStatus', context: context);
 
   @override
   EnumDownloadStatus get downloadStatus {
@@ -69,7 +73,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$tempoCorrendoAtom = Atom(name: '_ProvaStoreBase.tempoCorrendo');
+  late final _$tempoCorrendoAtom =
+      Atom(name: '_ProvaStoreBase.tempoCorrendo', context: context);
 
   @override
   EnumTempoStatus get tempoCorrendo {
@@ -84,7 +89,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$statusAtom = Atom(name: '_ProvaStoreBase.status');
+  late final _$statusAtom =
+      Atom(name: '_ProvaStoreBase.status', context: context);
 
   @override
   EnumProvaStatus get status {
@@ -99,7 +105,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$tempoPrevistoAtom = Atom(name: '_ProvaStoreBase.tempoPrevisto');
+  late final _$tempoPrevistoAtom =
+      Atom(name: '_ProvaStoreBase.tempoPrevisto', context: context);
 
   @override
   double get tempoPrevisto {
@@ -114,8 +121,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$progressoDownloadAtom =
-      Atom(name: '_ProvaStoreBase.progressoDownload');
+  late final _$progressoDownloadAtom =
+      Atom(name: '_ProvaStoreBase.progressoDownload', context: context);
 
   @override
   double get progressoDownload {
@@ -130,7 +137,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$iconeAtom = Atom(name: '_ProvaStoreBase.icone');
+  late final _$iconeAtom =
+      Atom(name: '_ProvaStoreBase.icone', context: context);
 
   @override
   String get icone {
@@ -145,8 +153,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$codigoIniciarProvaAtom =
-      Atom(name: '_ProvaStoreBase.codigoIniciarProva');
+  late final _$codigoIniciarProvaAtom =
+      Atom(name: '_ProvaStoreBase.codigoIniciarProva', context: context);
 
   @override
   String get codigoIniciarProva {
@@ -161,8 +169,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$tempoExecucaoStoreAtom =
-      Atom(name: '_ProvaStoreBase.tempoExecucaoStore');
+  late final _$tempoExecucaoStoreAtom =
+      Atom(name: '_ProvaStoreBase.tempoExecucaoStore', context: context);
 
   @override
   ProvaTempoExecucaoStore? get tempoExecucaoStore {
@@ -177,7 +185,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$inicioQuestaoAtom = Atom(name: '_ProvaStoreBase.inicioQuestao');
+  late final _$inicioQuestaoAtom =
+      Atom(name: '_ProvaStoreBase.inicioQuestao', context: context);
 
   @override
   DateTime get inicioQuestao {
@@ -192,7 +201,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$fimQuestaoAtom = Atom(name: '_ProvaStoreBase.fimQuestao');
+  late final _$fimQuestaoAtom =
+      Atom(name: '_ProvaStoreBase.fimQuestao', context: context);
 
   @override
   DateTime get fimQuestao {
@@ -207,16 +217,17 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
-  final _$iniciarDownloadAsyncAction =
-      AsyncAction('_ProvaStoreBase.iniciarDownload');
+  late final _$iniciarDownloadAsyncAction =
+      AsyncAction('_ProvaStoreBase.iniciarDownload', context: context);
 
   @override
   Future iniciarDownload() {
     return _$iniciarDownloadAsyncAction.run(() => super.iniciarDownload());
   }
 
-  final _$_onRespondendoProvaChangeAsyncAction =
-      AsyncAction('_ProvaStoreBase._onRespondendoProvaChange');
+  late final _$_onRespondendoProvaChangeAsyncAction = AsyncAction(
+      '_ProvaStoreBase._onRespondendoProvaChange',
+      context: context);
 
   @override
   Future _onRespondendoProvaChange(bool isRepondendoProva) {
@@ -224,8 +235,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
         .run(() => super._onRespondendoProvaChange(isRepondendoProva));
   }
 
-  final _$onChangeConexaoAsyncAction =
-      AsyncAction('_ProvaStoreBase.onChangeConexao');
+  late final _$onChangeConexaoAsyncAction =
+      AsyncAction('_ProvaStoreBase.onChangeConexao', context: context);
 
   @override
   Future<dynamic> onChangeConexao(ConnectivityResult? resultado) {
@@ -233,31 +244,32 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
         .run(() => super.onChangeConexao(resultado));
   }
 
-  final _$iniciarProvaAsyncAction = AsyncAction('_ProvaStoreBase.iniciarProva');
+  late final _$iniciarProvaAsyncAction =
+      AsyncAction('_ProvaStoreBase.iniciarProva', context: context);
 
   @override
   Future iniciarProva() {
     return _$iniciarProvaAsyncAction.run(() => super.iniciarProva());
   }
 
-  final _$continuarProvaAsyncAction =
-      AsyncAction('_ProvaStoreBase.continuarProva');
+  late final _$continuarProvaAsyncAction =
+      AsyncAction('_ProvaStoreBase.continuarProva', context: context);
 
   @override
   Future continuarProva() {
     return _$continuarProvaAsyncAction.run(() => super.continuarProva());
   }
 
-  final _$configurarProvaAsyncAction =
-      AsyncAction('_ProvaStoreBase.configurarProva');
+  late final _$configurarProvaAsyncAction =
+      AsyncAction('_ProvaStoreBase.configurarProva', context: context);
 
   @override
   Future configurarProva() {
     return _$configurarProvaAsyncAction.run(() => super.configurarProva());
   }
 
-  final _$setStatusProvaAsyncAction =
-      AsyncAction('_ProvaStoreBase.setStatusProva');
+  late final _$setStatusProvaAsyncAction =
+      AsyncAction('_ProvaStoreBase.setStatusProva', context: context);
 
   @override
   Future setStatusProva(EnumProvaStatus provaStatus) {
@@ -265,8 +277,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
         .run(() => super.setStatusProva(provaStatus));
   }
 
-  final _$setHoraFimProvaAsyncAction =
-      AsyncAction('_ProvaStoreBase.setHoraFimProva');
+  late final _$setHoraFimProvaAsyncAction =
+      AsyncAction('_ProvaStoreBase.setHoraFimProva', context: context);
 
   @override
   Future<int> setHoraFimProva(DateTime dataFimProvaAluno) {
@@ -274,8 +286,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
         .run(() => super.setHoraFimProva(dataFimProvaAluno));
   }
 
-  final _$setHoraInicioProvaAsyncAction =
-      AsyncAction('_ProvaStoreBase.setHoraInicioProva');
+  late final _$setHoraInicioProvaAsyncAction =
+      AsyncAction('_ProvaStoreBase.setHoraInicioProva', context: context);
 
   @override
   Future<int> setHoraInicioProva(DateTime dataInicioProvaAluno) {
@@ -283,8 +295,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
         .run(() => super.setHoraInicioProva(dataInicioProvaAluno));
   }
 
-  final _$finalizarProvaAsyncAction =
-      AsyncAction('_ProvaStoreBase.finalizarProva');
+  late final _$finalizarProvaAsyncAction =
+      AsyncAction('_ProvaStoreBase.finalizarProva', context: context);
 
   @override
   Future<bool> finalizarProva([bool automaticamente = false]) {
@@ -292,8 +304,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
         .run(() => super.finalizarProva(automaticamente));
   }
 
-  final _$removerDownloadAsyncAction =
-      AsyncAction('_ProvaStoreBase.removerDownload');
+  late final _$removerDownloadAsyncAction =
+      AsyncAction('_ProvaStoreBase.removerDownload', context: context);
 
   @override
   Future removerDownload([bool manterRegistroProva = false]) {
@@ -301,8 +313,8 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
         .run(() => super.removerDownload(manterRegistroProva));
   }
 
-  final _$_ProvaStoreBaseActionController =
-      ActionController(name: '_ProvaStoreBase');
+  late final _$_ProvaStoreBaseActionController =
+      ActionController(name: '_ProvaStoreBase', context: context);
 
   @override
   dynamic setRespondendoProva(bool value) {

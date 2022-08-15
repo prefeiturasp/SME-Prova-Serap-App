@@ -118,6 +118,9 @@ class QuestoesDb extends Table with TableInfo {
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
       'id', aliasedName, false,
       type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      'questao_legado_id', aliasedName, false,
+      type: const IntType(), requiredDuringInsert: false);
   late final GeneratedColumn<String?> titulo = GeneratedColumn<String?>(
       'titulo', aliasedName, true,
       type: const StringType(), requiredDuringInsert: false);
@@ -133,27 +136,22 @@ class QuestoesDb extends Table with TableInfo {
   late final GeneratedColumn<int?> quantidadeAlternativas =
       GeneratedColumn<int?>('quantidade_alternativas', aliasedName, false,
           type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> caderno = GeneratedColumn<String?>(
-      'caderno', aliasedName, false,
-      type: const StringType(),
-      requiredDuringInsert: false,
-      defaultValue: Constant("A"));
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        questaoLegadoId,
         titulo,
         descricao,
         tipo,
         ultimaAtualizacao,
-        quantidadeAlternativas,
-        caderno
+        quantidadeAlternativas
       ];
   @override
   String get aliasedName => _alias ?? 'questoes_db';
   @override
   String get actualTableName => 'questoes_db';
   @override
-  Set<GeneratedColumn> get $primaryKey => {id, caderno};
+  Set<GeneratedColumn> get $primaryKey => {questaoLegadoId};
   @override
   Never map(Map<String, dynamic> data, {String? tablePrefix}) {
     throw UnsupportedError('TableInfo.map in schema verification code');

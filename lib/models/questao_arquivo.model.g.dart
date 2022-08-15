@@ -1,20 +1,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'arquivo_audio.model.dart';
+part of 'questao_arquivo.model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ArquivoAudio _$ArquivoAudioFromJson(Map<String, dynamic> json) => ArquivoAudio(
-      id: json['id'] as int,
-      path: json['path'] as String,
+QuestaoArquivo _$QuestaoArquivoFromJson(Map<String, dynamic> json) =>
+    QuestaoArquivo(
       questaoLegadoId: json['questaoLegadoId'] as int,
+      arquivoLegadoId: json['arquivoLegadoId'] as int,
     );
 
-Map<String, dynamic> _$ArquivoAudioToJson(ArquivoAudio instance) =>
+Map<String, dynamic> _$QuestaoArquivoToJson(QuestaoArquivo instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'path': instance.path,
       'questaoLegadoId': instance.questaoLegadoId,
+      'arquivoLegadoId': instance.arquivoLegadoId,
     };

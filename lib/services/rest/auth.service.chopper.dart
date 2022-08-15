@@ -6,7 +6,7 @@ part of 'auth.service.dart';
 // ChopperGenerator
 // **************************************************************************
 
-// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations
+// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations, unnecessary_brace_in_string_interps
 class _$AutenticacaoService extends AutenticacaoService {
   _$AutenticacaoService([ChopperClient? client]) {
     if (client == null) return;

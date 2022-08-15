@@ -4,16 +4,17 @@ part 'prova_detalhes_caderno_questao.response.dto.g.dart';
 
 @JsonSerializable()
 class ProvaDetalhesCadernoQuestaoResponseDTO {
+  int questaoId;
   int questaoLegadoId;
   int ordem;
 
   ProvaDetalhesCadernoQuestaoResponseDTO({
+    required this.questaoId,
     required this.questaoLegadoId,
     required this.ordem,
   });
 
-  factory ProvaDetalhesCadernoQuestaoResponseDTO.fromJson(Map<String, dynamic> json) =>
-      _$ProvaDetalhesCadernoQuestaoResponseDTOFromJson(json);
+  static const fromJson = _$ProvaDetalhesCadernoQuestaoResponseDTOFromJson;
 
   Map<String, dynamic> toJson() => _$ProvaDetalhesCadernoQuestaoResponseDTOToJson(this);
 }

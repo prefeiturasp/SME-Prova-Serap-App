@@ -38,7 +38,18 @@ class ProvaCadernoDao extends DatabaseAccessor<AppDatabase> with _$ProvaCadernoD
   Future<ProvaCaderno> findByQuestaoId(int questaoLegadoId, int provaId, String caderno) {
     return (select(provaCadernoTable)
           ..where(
-              (t) => t.questaoLegadId.equals(questaoLegadoId) & t.provaId.equals(provaId) & t.caderno.equals(caderno)))
+              (t) => t.questaoLegadoId.equals(questaoLegadoId) & t.provaId.equals(provaId) & t.caderno.equals(caderno)))
         .getSingle();
+  }
+
+  Future<ProvaCaderno> obterPorProvaECaderno(int idProva, String caderno) {
+    return (select(provaCadernoTable)..where((t) => t.provaId.equals(idProva) & t.caderno.equals(caderno))).getSingle();
+  }
+
+  Future<int> obterQuestaoIdPorProvaECaderno(int idProva, String caderno) async {
+    var questao = await (select(provaCadernoTable)..where((t) => t.provaId.equals(idProva) & t.caderno.equals(caderno)))
+        .getSingle();
+
+    return questao.questaoId;
   }
 }

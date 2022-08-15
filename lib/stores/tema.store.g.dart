@@ -6,10 +6,11 @@ part of 'tema.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$TemaStore on _TemaStoreBase, Store {
-  final _$incrementadorAtom = Atom(name: '_TemaStoreBase.incrementador');
+  late final _$incrementadorAtom =
+      Atom(name: '_TemaStoreBase.incrementador', context: context);
 
   @override
   double get incrementador {
@@ -24,7 +25,8 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
-  final _$tTexto10Atom = Atom(name: '_TemaStoreBase.tTexto10');
+  late final _$tTexto10Atom =
+      Atom(name: '_TemaStoreBase.tTexto10', context: context);
 
   @override
   double get tTexto10 {
@@ -39,7 +41,8 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
-  final _$tTexto12Atom = Atom(name: '_TemaStoreBase.tTexto12');
+  late final _$tTexto12Atom =
+      Atom(name: '_TemaStoreBase.tTexto12', context: context);
 
   @override
   double get tTexto12 {
@@ -54,7 +57,8 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
-  final _$tTexto14Atom = Atom(name: '_TemaStoreBase.tTexto14');
+  late final _$tTexto14Atom =
+      Atom(name: '_TemaStoreBase.tTexto14', context: context);
 
   @override
   double get tTexto14 {
@@ -69,7 +73,8 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
-  final _$tTexto16Atom = Atom(name: '_TemaStoreBase.tTexto16');
+  late final _$tTexto16Atom =
+      Atom(name: '_TemaStoreBase.tTexto16', context: context);
 
   @override
   double get tTexto16 {
@@ -84,7 +89,8 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
-  final _$tTexto18Atom = Atom(name: '_TemaStoreBase.tTexto18');
+  late final _$tTexto18Atom =
+      Atom(name: '_TemaStoreBase.tTexto18', context: context);
 
   @override
   double get tTexto18 {
@@ -99,7 +105,8 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
-  final _$tTexto20Atom = Atom(name: '_TemaStoreBase.tTexto20');
+  late final _$tTexto20Atom =
+      Atom(name: '_TemaStoreBase.tTexto20', context: context);
 
   @override
   double get tTexto20 {
@@ -114,7 +121,8 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
-  final _$tTexto24Atom = Atom(name: '_TemaStoreBase.tTexto24');
+  late final _$tTexto24Atom =
+      Atom(name: '_TemaStoreBase.tTexto24', context: context);
 
   @override
   double get tTexto24 {
@@ -129,7 +137,8 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
-  final _$fonteDoTextoAtom = Atom(name: '_TemaStoreBase.fonteDoTexto');
+  late final _$fonteDoTextoAtom =
+      Atom(name: '_TemaStoreBase.fonteDoTexto', context: context);
 
   @override
   FonteTipoEnum get fonteDoTexto {
@@ -144,8 +153,8 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
-  final _$_TemaStoreBaseActionController =
-      ActionController(name: '_TemaStoreBase');
+  late final _$_TemaStoreBaseActionController =
+      ActionController(name: '_TemaStoreBase', context: context);
 
   @override
   void fachadaAlterarTamanhoDoTexto(double valor, {bool update = true}) {

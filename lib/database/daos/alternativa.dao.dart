@@ -21,20 +21,12 @@ class AlternativaDao extends DatabaseAccessor<AppDatabase> with _$AlternativaDao
     return delete(alternativasDb).delete(entity);
   }
 
-  Future<List<Alternativa>> obterPorProvaId(int provaId) {
-    return (select(alternativasDb)..where((t) => t.provaId.equals(provaId))).get();
-  }
-
-  Future<List<Alternativa>> obterPorQuestaoId(int questaoId) {
-    return (select(alternativasDb)..where((t) => t.questaoId.equals(questaoId))).get();
+  Future<List<Alternativa>> obterPorQuestaoLegadoId(int questaoLegadoId) {
+    return (select(alternativasDb)..where((t) => t.questaoLegadoId.equals(questaoLegadoId))).get();
   }
 
   Future<List<Alternativa>> listarTodos() {
     return select(alternativasDb).get();
-  }
-
-  Future<List<Alternativa>> obterAlternativasPorProvaId(int provaId) {
-    return (select(alternativasDb)..where((t) => t.provaId.equals(provaId))).get();
   }
 
   Future<int> removerPorProvaId(int id) {

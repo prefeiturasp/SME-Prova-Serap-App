@@ -179,6 +179,7 @@ abstract class _LoginStoreBase with Store, Loggable {
       NotificacaoUtil.showSnackbarError(e.toString());
     } catch (e, stack) {
       NotificacaoUtil.showSnackbarError("Não foi possível estabelecer uma conexão com o servidor.");
+      await setUserIdentifier(codigoEOL);
       await recordError(e, stack);
     } finally {
       carregando = false;

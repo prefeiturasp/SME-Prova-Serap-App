@@ -9,7 +9,7 @@ import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart';
-import 'package:appserap/dtos/questao_completa.response.dto.dart';
+import 'package:appserap/dtos/questao_detalhes_legado.response.dto.dart';
 import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/download_tipo.enum.dart';
@@ -22,6 +22,7 @@ import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:appserap/models/questao_arquivo.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -136,13 +137,14 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     // adcionar o que nao tem no banco
     info(" [Prova $provaId] - Adicionando downloads da prova - Questão");
-    for (var questoes in provaDetalhes.questoes) {
-      if (!_containsId(downloads, questoes.questaoLegadoId, EnumDownloadTipo.QUESTAO)) {
+    for (var questao in provaDetalhes.questoes) {
+      if (!_containsId(downloads, questao.questaoLegadoId, EnumDownloadTipo.QUESTAO)) {
         await salvarBanco(
           DownloadProvaDb(
-            id: questoes.questaoLegadoId,
+            id: questao.questaoId,
+            questaoLegadoId: questao.questaoLegadoId,
             provaId: provaId,
-            ordem: questoes.ordem,
+            ordem: questao.ordem,
             tipo: EnumDownloadTipo.QUESTAO,
             downloadStatus: EnumDownloadStatus.NAO_INICIADO,
             dataHoraInicio: DateTime.now(),
@@ -386,63 +388,72 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     await _updateDownloadsStatus(downloads, EnumDownloadStatus.BAIXANDO);
 
     try {
-      Response<List<QuestaoCompletaResponseDTO>> response =
-          await apiService.questao.getQuestaoCompleta(ids: downloads.map((e) => e.id).toList());
+      Response<List<QuestaoDetalhesLegadoResponseDTO>> response = await apiService.questao
+          .getQuestaoCompletaLegado(idsLegado: downloads.map((e) => e.questaoLegadoId!).toList());
 
       if (response.isSuccessful) {
-        List<QuestaoCompletaResponseDTO> questoesDTO = response.body!;
+        List<QuestaoDetalhesLegadoResponseDTO> questoesDTO = response.body!;
 
         if (questoesDTO.isEmpty) {
           await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
           return;
         }
 
-        for (var questaoDTO in questoesDTO) {
+        for (QuestaoDetalhesLegadoResponseDTO questaoDTO in questoesDTO) {
           // verificar se a questao ja esta no banco
-          var questaoDb = await db.questaoDao.getById(questaoDTO.id);
+          var questaoDb = await db.questaoDao.getByQuestaoLegadoId(questaoDTO.questaoLegadoId);
 
           if (questaoDb == null) {
+            severe("[Prova $provaId] - Salvando questao ${questaoDTO.id}");
+
             var questao = Questao(
-              id: questaoDTO.id,
+              questaoLegadoId: questaoDTO.questaoLegadoId,
               titulo: questaoDTO.titulo,
               descricao: questaoDTO.descricao,
               tipo: questaoDTO.tipo,
               quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
-              caderno: caderno,
             );
 
             await db.questaoDao.inserirOuAtualizar(questao);
 
-            await baixarAlternativa(questaoDTO.alternativas);
+            await baixarAlternativa(questaoDTO.alternativas, questaoDTO.questaoLegadoId);
 
             if (questaoDTO.arquivos.isNotEmpty) {
-              await baixarArquivoImagem(questaoDTO.arquivos);
+              await baixarArquivoImagem(questaoDTO.arquivos, questaoDTO.questaoLegadoId);
             }
 
             var deficnencias = ServiceLocator.get<UsuarioStore>().deficiencias;
 
             for (var deficiencia in deficnencias) {
               if (grupoSurdos.contains(deficiencia)) {
-                await baixarArquivoVideo(questaoDTO.videos);
+                await baixarArquivoVideo(questaoDTO.videos, questaoDTO.questaoLegadoId);
                 break;
               }
             }
 
             for (var deficiencia in deficnencias) {
               if (grupoCegos.contains(deficiencia)) {
-                await baixarArquivoAudio(questaoDTO.audios);
+                await baixarArquivoAudio(questaoDTO.audios, questaoDTO.questaoLegadoId);
                 break;
               }
             }
+          } else {
+            severe("[Prova $provaId] - Questao ${questaoDTO.id} ja existe no banco");
           }
 
-          // salva referencia prova caderno questao
-          await db.provaCadernoDao.inserirOuAtualizar(ProvaCaderno(
-            questaoLegadId: questaoDTO.id,
+          DownloadProvaDb download =
+              downloads.where((element) => element.questaoLegadoId == questaoDTO.questaoLegadoId).first;
+
+          var provaCaderno = ProvaCaderno(
+            questaoId: download.id,
+            questaoLegadoId: questaoDTO.questaoLegadoId,
             provaId: provaId,
             caderno: caderno,
-            ordem: downloads.firstWhere((element) => element.id == questaoDTO.id).ordem!,
-          ));
+            ordem: download.ordem!,
+          );
+
+          // salva referencia prova caderno questao
+          await db.provaCadernoDao.inserirOuAtualizar(provaCaderno);
         }
 
         await _updateDownloadsStatus(downloads, EnumDownloadStatus.CONCLUIDO);
@@ -456,17 +467,16 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  baixarAlternativa(List<AlternativaResponseDTO> alternativas) async {
-    fine("[Prova $provaId] - Salvando ${alternativas.length} alternativas");
+  baixarAlternativa(List<AlternativaResponseDTO> alternativas, int questaoLegadoId) async {
+    //fine("[Prova $provaId] - Salvando ${alternativas.length} alternativas");
 
     for (var alternativaDTO in alternativas) {
       Alternativa alternativaDb = Alternativa(
         id: alternativaDTO.id,
-        provaId: provaId,
+        questaoLegadoId: questaoLegadoId,
         descricao: alternativaDTO.descricao,
         ordem: alternativaDTO.ordem,
         numeracao: alternativaDTO.numeracao,
-        questaoId: alternativaDTO.questaoId,
       );
 
       await db.alternativaDao.inserirOuAtualizar(alternativaDb);
@@ -506,8 +516,8 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  baixarArquivoImagem(List<ArquivoResponseDTO> arquivos) async {
-    fine("[Prova $provaId] - Salvando ${arquivos.length} arquivos de imagem");
+  baixarArquivoImagem(List<ArquivoResponseDTO> arquivos, int questaoLegadoId) async {
+    //fine("[Prova $provaId] - Salvando ${arquivos.length} arquivos de imagem");
 
     for (var arquivoDTO in arquivos) {
       try {
@@ -530,11 +540,9 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
             var arquivo = Arquivo(
               id: int.parse("${arquivoDTO.id}${arquivoDTO.questaoId}"),
-              provaId: provaId,
               legadoId: arquivoDTO.legadoId,
               caminho: arquivoDTO.caminho,
               base64: base64,
-              questaoId: arquivoDTO.questaoId,
             );
 
             await db.arquivoDao.inserirOuAtualizar(arquivo);
@@ -544,6 +552,14 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
             severe("[Prova $provaId] - Erro ao baixar arquivo ${arquivoDTO.id} - Status ${arquivoResponse.statusCode}");
           }
         }
+
+        // Vincular questao ao arquivo
+        var questaoArquivo = QuestaoArquivo(
+          questaoLegadoId: questaoLegadoId,
+          arquivoLegadoId: arquivoDTO.legadoId,
+        );
+
+        await db.questaoArquivoDao.inserirOuAtualizar(questaoArquivo);
       } catch (e) {
         severe("[Prova $provaId] - Erro ao baixar arquivo de imagem ${arquivoDTO.id} - ${e.toString()}");
 
@@ -552,12 +568,12 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  baixarArquivoVideo(List<ArquivoVideoResponseDTO> videos) async {
-    fine("[Prova $provaId] - Salvando ${videos.length} arquivos de video");
+  baixarArquivoVideo(List<ArquivoVideoResponseDTO> videos, int questaoLegadoId) async {
+    //fine("[Prova $provaId] - Salvando ${videos.length} arquivos de video");
 
     for (var arquivoVideoDTO in videos) {
       try {
-        var arquivoVideoDb = await db.arquivosVideosDao.findById(arquivoVideoDTO.id);
+        var arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoLegadoId(questaoLegadoId);
 
         String path = join(
           'prova',
@@ -571,8 +587,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
           var arquivoVideo = ArquivoVideoDb(
             id: arquivoVideoDTO.id,
-            provaId: provaId,
-            questaoId: arquivoVideoDTO.questaoId,
+            questaoLegadoId: questaoLegadoId,
             path: path,
           );
 
@@ -588,12 +603,12 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  baixarArquivoAudio(List<ArquivoResponseDTO> audios) async {
-    fine("[Prova $provaId] - Salvando ${audios.length} arquivos de audio");
+  baixarArquivoAudio(List<ArquivoResponseDTO> audios, int questaoLegadoId) async {
+    // fine("[Prova $provaId] - Salvando ${audios.length} arquivos de audio");
 
     for (var arquivoAudioDTO in audios) {
       try {
-        var arquivoAudioDb = await db.arquivosAudioDao.findById(arquivoAudioDTO.id);
+        var arquivoAudioDb = await db.arquivosAudioDao.findByQuestaoLegadoId(questaoLegadoId);
 
         String path = join(
           'prova',
@@ -607,8 +622,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
           var arquivoAudio = ArquivoAudioDb(
             id: arquivoAudioDTO.id,
-            provaId: provaId,
-            questaoId: arquivoAudioDTO.questaoId,
+            questaoLegadoId: questaoLegadoId,
             path: path,
           );
 
@@ -695,7 +709,6 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         getTempoPrevisto(downloadsDb),
       );
     }
-    fine("[Prova $provaId] - Porcentagem concluida: ${(porcentagem * 100).toStringAsFixed(2)}%");
   }
 
   deleteDownload() async {
@@ -706,13 +719,13 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     var questoes = await db.questaoDao.obterPorProvaId(provaId, caderno);
 
     for (var questao in questoes) {
-      var alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
+      var alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
       switch (questao.tipo) {
         case EnumTipoQuestao.MULTIPLA_ESCOLHA:
           if (alternativas.length != questao.quantidadeAlternativas) {
             throw ProvaDownloadException(
               provaId,
-              'Questão ${questao.id} deve conter ${questao.quantidadeAlternativas} alternatias, mas contem ${alternativas.length} alternativas',
+              'Questão ${questao.questaoLegadoId} deve conter ${questao.quantidadeAlternativas} alternatias, mas contem ${alternativas.length} alternativas',
             );
           }
 
@@ -722,7 +735,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
           if (alternativas.isNotEmpty) {
             throw ProvaDownloadException(
               provaId,
-              'Questão ${questao.id} não deve conter nenhuma alternativa',
+              'Questão ${questao.questaoLegadoId} não deve conter nenhuma alternativa',
             );
           }
           break;
@@ -734,7 +747,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   _validarArquivosImagem() async {
-    var arquivosImagem = await db.arquivoDao.findByProvaId(provaId);
+    var arquivosImagem = await db.arquivoDao.findByProvaECaderno(provaId, caderno);
 
     for (var arquivo in arquivosImagem) {
       if (arquivo.base64.isEmpty) {
@@ -749,76 +762,76 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   removerDownloadCompleto([bool manterRegistroProva = false]) async {
     info('[$provaId] Removendo conteudo da prova');
 
-    await removerContexto(provaId);
-    await removerQuestoes(provaId);
-    await removerAlternativas(provaId);
-    await removerArquivosImagem(provaId);
-    await removerArquivosAudio(provaId);
-    await removerArquivosVideo(provaId);
+    // await removerContexto(provaId);
+    // await removerQuestoes(provaId);
+    // await removerAlternativas(provaId);
+    // await removerArquivosImagem(provaId);
+    // await removerArquivosAudio(provaId);
+    // await removerArquivosVideo(provaId);
 
-    if (!manterRegistroProva) {
-      await removerCacheAluno(provaId);
-      await removerProva(provaId);
-    }
+    // if (!manterRegistroProva) {
+    //   await removerCacheAluno(provaId);
+    //   await removerProva(provaId);
+    // }
   }
 
-  removerContexto(int provaId) async {
-    int total = await db.contextoProvaDao.removerPorProvaId(provaId);
-    info("[Prova $provaId - Removido $total contextos");
-  }
+  // removerContexto(int provaId) async {
+  //   int total = await db.contextoProvaDao.removerPorProvaId(provaId);
+  //   info("[Prova $provaId - Removido $total contextos");
+  // }
 
-  removerQuestoes(int provaId) async {
-    int total = await db.questaoDao.removerPorProvaId(provaId);
-    info("[Prova $provaId - Removido $total questoes");
-  }
+  // removerQuestoes(int provaId) async {
+  //   int total = await db.questaoDao.removerPorProvaId(provaId);
+  //   info("[Prova $provaId - Removido $total questoes");
+  // }
 
-  removerAlternativas(int provaId) async {
-    int total = await db.alternativaDao.removerPorProvaId(provaId);
-    info("[Prova $provaId - Removido $total alternativas");
-  }
+  // removerAlternativas(int provaId) async {
+  //   int total = await db.alternativaDao.removerPorProvaId(provaId);
+  //   info("[Prova $provaId - Removido $total alternativas");
+  // }
 
-  removerArquivosImagem(int provaId) async {
-    var arquivos = await db.arquivoDao.findByProvaId(provaId);
+  // removerArquivosImagem(int provaId) async {
+  //   var arquivos = await db.arquivoDao.findByProvaId(provaId);
 
-    for (var arquivo in arquivos) {
-      fine("'Removendo arquivo de iamgem '${arquivo.caminho}'");
-      await db.arquivoDao.remover(arquivo);
-      await apagarArquivo(arquivo.caminho);
-    }
+  //   for (var arquivo in arquivos) {
+  //     fine("'Removendo arquivo de iamgem '${arquivo.caminho}'");
+  //     await db.arquivoDao.remover(arquivo);
+  //     await apagarArquivo(arquivo.caminho);
+  //   }
 
-    info("[Prova $provaId - Removido ${arquivos.length} arquivos de imagem");
-  }
+  //   info("[Prova $provaId - Removido ${arquivos.length} arquivos de imagem");
+  // }
 
-  removerArquivosAudio(int provaId) async {
-    var arquivos = await db.arquivosAudioDao.findByProvaId(provaId);
+  // removerArquivosAudio(int provaId) async {
+  //   var arquivos = await db.arquivosAudioDao.findByProvaId(provaId);
 
-    for (var arquivo in arquivos) {
-      fine("'Removendo arquivo de video '${arquivo.path}'");
-      await db.arquivosAudioDao.remover(arquivo);
-      await apagarArquivo(arquivo.path);
-    }
+  //   for (var arquivo in arquivos) {
+  //     fine("'Removendo arquivo de video '${arquivo.path}'");
+  //     await db.arquivosAudioDao.remover(arquivo);
+  //     await apagarArquivo(arquivo.path);
+  //   }
 
-    info("[Prova $provaId - Removido ${arquivos.length} arquivos de audio");
-  }
+  //   info("[Prova $provaId - Removido ${arquivos.length} arquivos de audio");
+  // }
 
-  removerArquivosVideo(int provaId) async {
-    var arquivos = await db.arquivosVideosDao.findByProvaId(provaId);
+  // removerArquivosVideo(int provaId) async {
+  //   var arquivos = await db.arquivosVideosDao.findByProvaId(provaId);
 
-    for (var arquivo in arquivos) {
-      fine("'Removendo arquivo de audio '${arquivo.path}'");
-      await db.arquivosVideosDao.remover(arquivo);
-      await apagarArquivo(arquivo.path);
-    }
+  //   for (var arquivo in arquivos) {
+  //     fine("'Removendo arquivo de audio '${arquivo.path}'");
+  //     await db.arquivosVideosDao.remover(arquivo);
+  //     await apagarArquivo(arquivo.path);
+  //   }
 
-    info("[Prova $provaId - Removido ${arquivos.length} arquivos de video");
-  }
+  //   info("[Prova $provaId - Removido ${arquivos.length} arquivos de video");
+  // }
 
-  removerCacheAluno(int provaId) async {
-    int total = await db.provaAlunoDao.removerPorProvaId(provaId);
-    info("[Prova $provaId - Removido $total caches de provas");
-  }
+  // removerCacheAluno(int provaId) async {
+  //   int total = await db.provaAlunoDao.removerPorProvaId(provaId);
+  //   info("[Prova $provaId - Removido $total caches de provas");
+  // }
 
-  removerProva(int provaId) async {
-    await db.provaDao.deleteByProva(provaId);
-  }
+  // removerProva(int provaId) async {
+  //   await db.provaDao.deleteByProva(provaId);
+  // }
 }

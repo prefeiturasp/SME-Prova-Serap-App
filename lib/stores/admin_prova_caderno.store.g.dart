@@ -6,11 +6,11 @@ part of 'admin_prova_caderno.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$AdminProvaCadernoViewStore on _AdminProvaCadernoViewStoreBase, Store {
-  final _$carregandoAtom =
-      Atom(name: '_AdminProvaCadernoViewStoreBase.carregando');
+  late final _$carregandoAtom = Atom(
+      name: '_AdminProvaCadernoViewStoreBase.carregando', context: context);
 
   @override
   bool get carregando {
@@ -25,7 +25,8 @@ mixin _$AdminProvaCadernoViewStore on _AdminProvaCadernoViewStoreBase, Store {
     });
   }
 
-  final _$cadernosAtom = Atom(name: '_AdminProvaCadernoViewStoreBase.cadernos');
+  late final _$cadernosAtom =
+      Atom(name: '_AdminProvaCadernoViewStoreBase.cadernos', context: context);
 
   @override
   ObservableList<String> get cadernos {
@@ -40,8 +41,9 @@ mixin _$AdminProvaCadernoViewStore on _AdminProvaCadernoViewStoreBase, Store {
     });
   }
 
-  final _$carregarCadernosAsyncAction =
-      AsyncAction('_AdminProvaCadernoViewStoreBase.carregarCadernos');
+  late final _$carregarCadernosAsyncAction = AsyncAction(
+      '_AdminProvaCadernoViewStoreBase.carregarCadernos',
+      context: context);
 
   @override
   Future carregarCadernos(int idProva) {

@@ -53,6 +53,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   late List<Alternativa> alternativas;
   late List<Arquivo> imagens;
   late Uint8List arquivoVideo;
+  late int questaoId;
 
   ArquivoVideoDb? arquivoVideoDb;
   ArquivoAudioDb? arquivoAudioDb;
@@ -83,14 +84,15 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
 
     questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
-    alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
-    imagens = await db.arquivoDao.obterPorQuestaoId(questao.id);
+    alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
+    imagens = await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
+    questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECaderno(widget.idProva, provaStore.caderno);
 
     loadVideos(questao);
   }
 
   loadVideos(Questao questao) async {
-    arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoId(questao.id);
+    arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoLegadoId(questao.questaoLegadoId);
 
     if (arquivoVideoDb != null && kIsWeb) {
       IdbFile idbFile = IdbFile(arquivoVideoDb!.path);
@@ -104,7 +106,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   Future<Uint8List?> loadAudio(Questao questao) async {
-    arquivoAudioDb = await db.arquivosAudioDao.obterPorQuestaoId(questao.id);
+    arquivoAudioDb = await db.arquivosAudioDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
 
     if (arquivoAudioDb != null) {
       IdbFile idbFile = IdbFile(arquivoAudioDb!.path);
@@ -206,6 +208,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                                   SizedBox(height: 8),
                                   QuestaoAlunoWidget(
                                     provaStore: provaStore,
+                                    questaoId: questaoId,
                                     questao: questao,
                                     alternativas: alternativas,
                                     imagens: imagens,
@@ -331,7 +334,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       onPressed: () async {
         provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
         await provaStore.respostas.definirTempoResposta(
-          questao.id,
+          questaoId,
           tempoQuestao: provaStore.segundos,
         );
         await provaStore.respostas.sincronizarResposta();
@@ -354,14 +357,14 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
             if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
               await provaStore.respostas.definirResposta(
-                questao.id,
+                questaoId,
                 textoResposta: await controller.getText(),
                 tempoQuestao: provaStore.segundos,
               );
             }
             if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA) {
               await provaStore.respostas.definirTempoResposta(
-                questao.id,
+                questaoId,
                 tempoQuestao: provaStore.segundos,
               );
             }
@@ -384,7 +387,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         try {
           provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
           await provaStore.respostas.definirTempoResposta(
-            questao.id,
+            questaoId,
             tempoQuestao: provaStore.segundos,
           );
           provaStore.segundos = 0;

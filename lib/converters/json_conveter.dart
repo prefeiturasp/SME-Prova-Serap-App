@@ -15,8 +15,11 @@ import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/dtos/prova_anterior.response.dto.dart';
 import 'package:appserap/dtos/admin_prova_caderno.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
+import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart';
+import 'package:appserap/dtos/prova_detalhes_caderno_questao.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/dtos/questao_completa.response.dto.dart';
+import 'package:appserap/dtos/questao_detalhes_legado.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.response.dto.dart';
 import 'package:appserap/dtos/versao_atualizacao.respose.dto.dart';
 import 'package:chopper/chopper.dart' hide Post;
@@ -86,4 +89,7 @@ final jsonConverter = JsonSerializableConverter({
   "AdminQuestaoDetalhesResponseDTO": AdminQuestaoDetalhesResponseDTO.fromJson,
   "VersaoAtualizacaoResponseDTO": VersaoAtualizacaoResponseDTO.fromJson,
   "QuestaoCompletaResponseDTO": QuestaoCompletaResponseDTO.fromJson,
+  "ProvaDetalhesCadernoQuestaoResponseDTO": ProvaDetalhesCadernoQuestaoResponseDTO.fromJson,
+  "ProvaDetalhesCadernoResponseDTO": ProvaDetalhesCadernoResponseDTO.fromJson,
+  "QuestaoDetalhesLegadoResponseDTO": QuestaoDetalhesLegadoResponseDTO.fromJson,
 });

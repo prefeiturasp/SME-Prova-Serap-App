@@ -25,6 +25,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
   final controller = HtmlEditorController();
 
   final ProvaStore provaStore;
+  final int questaoId;
   final Questao questao;
   final List<Arquivo> imagens;
   final List<Alternativa> alternativas;
@@ -32,6 +33,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
   QuestaoAlunoWidget({
     Key? key,
     required this.provaStore,
+    required this.questaoId,
     required this.questao,
     required this.imagens,
     required this.alternativas,
@@ -39,10 +41,12 @@ class QuestaoAlunoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String tituloQuestaoHTML = tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO);
+
     return Column(
       children: [
         Html(
-          data: tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO),
+          data: tituloQuestaoHTML,
           style: {
             '*': Style.fromTextStyle(
               TemaUtil.temaTextoHtmlPadrao.copyWith(
@@ -172,7 +176,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
   }
 
   _buildRespostaConstruida(Questao questao) {
-    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.questaoLegadoId);
 
     return Column(
       children: [
@@ -193,7 +197,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
                     controller.setText(provaResposta?.resposta ?? "");
                   },
                   onChangeContent: (String? textoDigitado) {
-                    provaStore.respostas.definirResposta(questao.id, textoResposta: textoDigitado);
+                    provaStore.respostas.definirResposta(questaoId, textoResposta: textoDigitado);
                   },
                 ),
                 htmlToolbarOptions: HtmlToolbarOptions(
@@ -260,7 +264,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
   }
 
   Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
 
     return Observer(
       builder: (_) {
@@ -283,7 +287,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
             groupValue: resposta?.alternativaId,
             onChanged: (value) async {
               await provaStore.respostas.definirResposta(
-                questao.id,
+                questaoId,
                 alternativaId: value,
                 tempoQuestao: provaStore.segundos,
               );

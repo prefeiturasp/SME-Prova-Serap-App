@@ -2,6 +2,8 @@ import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:drift/drift.dart';
 
+import 'prova.table.dart';
+
 @UseRowClass(ContextoProva)
 class ContextosProvaDb extends Table {
   IntColumn get id => integer()();

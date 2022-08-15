@@ -6,10 +6,11 @@ part of 'contexto_prova_view.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$ContextoProvaViewStore on _ContextoProvaViewStoreBase, Store {
-  final _$loadingAtom = Atom(name: '_ContextoProvaViewStoreBase.loading');
+  late final _$loadingAtom =
+      Atom(name: '_ContextoProvaViewStoreBase.loading', context: context);
 
   @override
   bool get loading {
@@ -24,8 +25,8 @@ mixin _$ContextoProvaViewStore on _ContextoProvaViewStoreBase, Store {
     });
   }
 
-  final _$contextoProvaAtom =
-      Atom(name: '_ContextoProvaViewStoreBase.contextoProva');
+  late final _$contextoProvaAtom =
+      Atom(name: '_ContextoProvaViewStoreBase.contextoProva', context: context);
 
   @override
   List<ContextoProva>? get contextoProva {
@@ -40,8 +41,9 @@ mixin _$ContextoProvaViewStore on _ContextoProvaViewStoreBase, Store {
     });
   }
 
-  final _$carregarContextoProvaAsyncAction =
-      AsyncAction('_ContextoProvaViewStoreBase.carregarContextoProva');
+  late final _$carregarContextoProvaAsyncAction = AsyncAction(
+      '_ContextoProvaViewStoreBase.carregarContextoProva',
+      context: context);
 
   @override
   Future carregarContextoProva(int provaId) {
