@@ -86,7 +86,8 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
     alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
     imagens = await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
-    questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECaderno(widget.idProva, provaStore.caderno);
+    questaoId =
+        await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
 
     loadVideos(questao);
   }
