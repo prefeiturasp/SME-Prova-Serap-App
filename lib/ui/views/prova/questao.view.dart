@@ -370,6 +370,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
             }
             await provaStore.respostas.sincronizarResposta();
             provaStore.segundos = 0;
+            provaStore.ultimaAtualizacaoLogImagem = null;
 
             context.push("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
           } catch (e, stack) {
