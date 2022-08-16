@@ -14,8 +14,10 @@ class ProvasDb extends Table {
   IntColumn get tempoExecucao => integer()();
   IntColumn get tempoExtra => integer()();
   IntColumn get status => intEnum<EnumProvaStatus>()();
+
   DateTimeColumn get dataInicio => dateTime()();
   DateTimeColumn get dataFim => dateTime().nullable()();
+
   DateTimeColumn get dataInicioProvaAluno => dateTime().nullable()();
   DateTimeColumn get dataFimProvaAluno => dateTime().nullable()();
 

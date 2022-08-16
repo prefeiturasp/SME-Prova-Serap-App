@@ -8,8 +8,7 @@ part of 'alternativa.model.dart';
 
 Alternativa _$AlternativaFromJson(Map<String, dynamic> json) => Alternativa(
       id: json['id'] as int,
-      provaId: json['provaId'] as int,
-      questaoId: json['questaoId'] as int,
+      questaoLegadoId: json['questaoLegadoId'] as int,
       descricao: json['descricao'] as String,
       ordem: json['ordem'] as int,
       numeracao: json['numeracao'] as String,
@@ -18,8 +17,7 @@ Alternativa _$AlternativaFromJson(Map<String, dynamic> json) => Alternativa(
 Map<String, dynamic> _$AlternativaToJson(Alternativa instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'provaId': instance.provaId,
-      'questaoId': instance.questaoId,
+      'questaoLegadoId': instance.questaoLegadoId,
       'descricao': instance.descricao,
       'ordem': instance.ordem,
       'numeracao': instance.numeracao,

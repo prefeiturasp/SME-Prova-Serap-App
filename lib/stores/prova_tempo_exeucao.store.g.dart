@@ -6,7 +6,7 @@ part of 'prova_tempo_exeucao.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$ProvaTempoExecucaoStore on _ProvaTempoExecucaoStoreBase, Store {
   Computed<bool>? _$isTempoNormalEmExecucaoComputed;
@@ -31,7 +31,8 @@ mixin _$ProvaTempoExecucaoStore on _ProvaTempoExecucaoStoreBase, Store {
               name: '_ProvaTempoExecucaoStoreBase.possuiTempoRestante'))
       .value;
 
-  final _$statusAtom = Atom(name: '_ProvaTempoExecucaoStoreBase.status');
+  late final _$statusAtom =
+      Atom(name: '_ProvaTempoExecucaoStoreBase.status', context: context);
 
   @override
   EnumProvaTempoEventType get status {
@@ -46,8 +47,8 @@ mixin _$ProvaTempoExecucaoStore on _ProvaTempoExecucaoStoreBase, Store {
     });
   }
 
-  final _$porcentagemAtom =
-      Atom(name: '_ProvaTempoExecucaoStoreBase.porcentagem');
+  late final _$porcentagemAtom =
+      Atom(name: '_ProvaTempoExecucaoStoreBase.porcentagem', context: context);
 
   @override
   double get porcentagem {
@@ -62,8 +63,8 @@ mixin _$ProvaTempoExecucaoStore on _ProvaTempoExecucaoStoreBase, Store {
     });
   }
 
-  final _$horaFinalTurnoAtom =
-      Atom(name: '_ProvaTempoExecucaoStoreBase.horaFinalTurno');
+  late final _$horaFinalTurnoAtom = Atom(
+      name: '_ProvaTempoExecucaoStoreBase.horaFinalTurno', context: context);
 
   @override
   int get horaFinalTurno {
@@ -78,8 +79,8 @@ mixin _$ProvaTempoExecucaoStore on _ProvaTempoExecucaoStoreBase, Store {
     });
   }
 
-  final _$tempoRestanteAtom =
-      Atom(name: '_ProvaTempoExecucaoStoreBase.tempoRestante');
+  late final _$tempoRestanteAtom = Atom(
+      name: '_ProvaTempoExecucaoStoreBase.tempoRestante', context: context);
 
   @override
   Duration get tempoRestante {
@@ -94,8 +95,8 @@ mixin _$ProvaTempoExecucaoStore on _ProvaTempoExecucaoStoreBase, Store {
     });
   }
 
-  final _$tempoAcabandoAtom =
-      Atom(name: '_ProvaTempoExecucaoStoreBase.tempoAcabando');
+  late final _$tempoAcabandoAtom = Atom(
+      name: '_ProvaTempoExecucaoStoreBase.tempoAcabando', context: context);
 
   @override
   bool get tempoAcabando {
@@ -110,8 +111,9 @@ mixin _$ProvaTempoExecucaoStore on _ProvaTempoExecucaoStoreBase, Store {
     });
   }
 
-  final _$mostrarAlertaDeTempoAcabandoAtom =
-      Atom(name: '_ProvaTempoExecucaoStoreBase.mostrarAlertaDeTempoAcabando');
+  late final _$mostrarAlertaDeTempoAcabandoAtom = Atom(
+      name: '_ProvaTempoExecucaoStoreBase.mostrarAlertaDeTempoAcabando',
+      context: context);
 
   @override
   bool get mostrarAlertaDeTempoAcabando {
@@ -127,8 +129,8 @@ mixin _$ProvaTempoExecucaoStore on _ProvaTempoExecucaoStoreBase, Store {
     });
   }
 
-  final _$_ProvaTempoExecucaoStoreBaseActionController =
-      ActionController(name: '_ProvaTempoExecucaoStoreBase');
+  late final _$_ProvaTempoExecucaoStoreBaseActionController =
+      ActionController(name: '_ProvaTempoExecucaoStoreBase', context: context);
 
   @override
   dynamic iniciarContador(DateTime dataHoraInicioProva) {

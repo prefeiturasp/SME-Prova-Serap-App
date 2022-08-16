@@ -6,7 +6,7 @@ part of 'usuario.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$UsuarioStore on _UsuarioStoreBase, Store {
   Computed<bool>? _$isLogadoComputed;
@@ -17,7 +17,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
               name: '_UsuarioStoreBase.isLogado'))
           .value;
 
-  final _$tokenAtom = Atom(name: '_UsuarioStoreBase.token');
+  late final _$tokenAtom =
+      Atom(name: '_UsuarioStoreBase.token', context: context);
 
   @override
   String? get token {
@@ -32,8 +33,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$tokenDataHoraExpiracaoAtom =
-      Atom(name: '_UsuarioStoreBase.tokenDataHoraExpiracao');
+  late final _$tokenDataHoraExpiracaoAtom =
+      Atom(name: '_UsuarioStoreBase.tokenDataHoraExpiracao', context: context);
 
   @override
   DateTime? get tokenDataHoraExpiracao {
@@ -49,7 +50,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$ultimoLoginAtom = Atom(name: '_UsuarioStoreBase.ultimoLogin');
+  late final _$ultimoLoginAtom =
+      Atom(name: '_UsuarioStoreBase.ultimoLogin', context: context);
 
   @override
   DateTime? get ultimoLogin {
@@ -64,7 +66,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$nomeAtom = Atom(name: '_UsuarioStoreBase.nome');
+  late final _$nomeAtom =
+      Atom(name: '_UsuarioStoreBase.nome', context: context);
 
   @override
   String? get nome {
@@ -79,7 +82,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$codigoEOLAtom = Atom(name: '_UsuarioStoreBase.codigoEOL');
+  late final _$codigoEOLAtom =
+      Atom(name: '_UsuarioStoreBase.codigoEOL', context: context);
 
   @override
   String? get codigoEOL {
@@ -94,7 +98,7 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$anoAtom = Atom(name: '_UsuarioStoreBase.ano');
+  late final _$anoAtom = Atom(name: '_UsuarioStoreBase.ano', context: context);
 
   @override
   String? get ano {
@@ -109,7 +113,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$tipoTurnoAtom = Atom(name: '_UsuarioStoreBase.tipoTurno');
+  late final _$tipoTurnoAtom =
+      Atom(name: '_UsuarioStoreBase.tipoTurno', context: context);
 
   @override
   String? get tipoTurno {
@@ -124,7 +129,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$tamanhoFonteAtom = Atom(name: '_UsuarioStoreBase.tamanhoFonte');
+  late final _$tamanhoFonteAtom =
+      Atom(name: '_UsuarioStoreBase.tamanhoFonte', context: context);
 
   @override
   double? get tamanhoFonte {
@@ -139,7 +145,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$modalidadeAtom = Atom(name: '_UsuarioStoreBase.modalidade');
+  late final _$modalidadeAtom =
+      Atom(name: '_UsuarioStoreBase.modalidade', context: context);
 
   @override
   ModalidadeEnum get modalidade {
@@ -154,7 +161,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$inicioTurnoAtom = Atom(name: '_UsuarioStoreBase.inicioTurno');
+  late final _$inicioTurnoAtom =
+      Atom(name: '_UsuarioStoreBase.inicioTurno', context: context);
 
   @override
   int get inicioTurno {
@@ -169,7 +177,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$fimTurnoAtom = Atom(name: '_UsuarioStoreBase.fimTurno');
+  late final _$fimTurnoAtom =
+      Atom(name: '_UsuarioStoreBase.fimTurno', context: context);
 
   @override
   int get fimTurno {
@@ -184,7 +193,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$dreAbreviacaoAtom = Atom(name: '_UsuarioStoreBase.dreAbreviacao');
+  late final _$dreAbreviacaoAtom =
+      Atom(name: '_UsuarioStoreBase.dreAbreviacao', context: context);
 
   @override
   String? get dreAbreviacao {
@@ -199,7 +209,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$escolaAtom = Atom(name: '_UsuarioStoreBase.escola');
+  late final _$escolaAtom =
+      Atom(name: '_UsuarioStoreBase.escola', context: context);
 
   @override
   String? get escola {
@@ -214,7 +225,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$turmaAtom = Atom(name: '_UsuarioStoreBase.turma');
+  late final _$turmaAtom =
+      Atom(name: '_UsuarioStoreBase.turma', context: context);
 
   @override
   String? get turma {
@@ -229,7 +241,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$familiaFonteAtom = Atom(name: '_UsuarioStoreBase.familiaFonte');
+  late final _$familiaFonteAtom =
+      Atom(name: '_UsuarioStoreBase.familiaFonte', context: context);
 
   @override
   FonteTipoEnum? get familiaFonte {
@@ -244,7 +257,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$deficienciasAtom = Atom(name: '_UsuarioStoreBase.deficiencias');
+  late final _$deficienciasAtom =
+      Atom(name: '_UsuarioStoreBase.deficiencias', context: context);
 
   @override
   ObservableList<DeficienciaEnum> get deficiencias {
@@ -259,8 +273,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$isRespondendoProvaAtom =
-      Atom(name: '_UsuarioStoreBase.isRespondendoProva');
+  late final _$isRespondendoProvaAtom =
+      Atom(name: '_UsuarioStoreBase.isRespondendoProva', context: context);
 
   @override
   bool get isRespondendoProva {
@@ -275,7 +289,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$isAdminAtom = Atom(name: '_UsuarioStoreBase.isAdmin');
+  late final _$isAdminAtom =
+      Atom(name: '_UsuarioStoreBase.isAdmin', context: context);
 
   @override
   bool get isAdmin {
@@ -290,16 +305,16 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
     });
   }
 
-  final _$carregarUsuarioAsyncAction =
-      AsyncAction('_UsuarioStoreBase.carregarUsuario');
+  late final _$carregarUsuarioAsyncAction =
+      AsyncAction('_UsuarioStoreBase.carregarUsuario', context: context);
 
   @override
   Future<void> carregarUsuario() {
     return _$carregarUsuarioAsyncAction.run(() => super.carregarUsuario());
   }
 
-  final _$atualizarDadosAsyncAction =
-      AsyncAction('_UsuarioStoreBase.atualizarDados');
+  late final _$atualizarDadosAsyncAction =
+      AsyncAction('_UsuarioStoreBase.atualizarDados', context: context);
 
   @override
   Future atualizarDados(
@@ -336,8 +351,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
         deficiencias: deficiencias));
   }
 
-  final _$atualizarDadosAdmAsyncAction =
-      AsyncAction('_UsuarioStoreBase.atualizarDadosAdm');
+  late final _$atualizarDadosAdmAsyncAction =
+      AsyncAction('_UsuarioStoreBase.atualizarDadosAdm', context: context);
 
   @override
   Future<void> atualizarDadosAdm(
@@ -349,8 +364,8 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
         nome: nome, isAdmin: isAdmin, codigoEOL: codigoEOL, token: token));
   }
 
-  final _$_UsuarioStoreBaseActionController =
-      ActionController(name: '_UsuarioStoreBase');
+  late final _$_UsuarioStoreBaseActionController =
+      ActionController(name: '_UsuarioStoreBase', context: context);
 
   @override
   void dispose() {

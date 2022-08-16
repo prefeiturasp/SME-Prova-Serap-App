@@ -6,10 +6,11 @@ part of 'login.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$LoginStore on _LoginStoreBase, Store {
-  final _$codigoEOLAtom = Atom(name: '_LoginStoreBase.codigoEOL');
+  late final _$codigoEOLAtom =
+      Atom(name: '_LoginStoreBase.codigoEOL', context: context);
 
   @override
   String get codigoEOL {
@@ -24,7 +25,8 @@ mixin _$LoginStore on _LoginStoreBase, Store {
     });
   }
 
-  final _$carregandoAtom = Atom(name: '_LoginStoreBase.carregando');
+  late final _$carregandoAtom =
+      Atom(name: '_LoginStoreBase.carregando', context: context);
 
   @override
   bool get carregando {
@@ -39,7 +41,8 @@ mixin _$LoginStore on _LoginStoreBase, Store {
     });
   }
 
-  final _$senhaAtom = Atom(name: '_LoginStoreBase.senha');
+  late final _$senhaAtom =
+      Atom(name: '_LoginStoreBase.senha', context: context);
 
   @override
   String get senha {
@@ -54,7 +57,8 @@ mixin _$LoginStore on _LoginStoreBase, Store {
     });
   }
 
-  final _$ocultarSenhaAtom = Atom(name: '_LoginStoreBase.ocultarSenha');
+  late final _$ocultarSenhaAtom =
+      Atom(name: '_LoginStoreBase.ocultarSenha', context: context);
 
   @override
   bool get ocultarSenha {
@@ -69,22 +73,24 @@ mixin _$LoginStore on _LoginStoreBase, Store {
     });
   }
 
-  final _$onPostLoginAsyncAction = AsyncAction('_LoginStoreBase.onPostLogin');
+  late final _$onPostLoginAsyncAction =
+      AsyncAction('_LoginStoreBase.onPostLogin', context: context);
 
   @override
   Future onPostLogin(AutenticacaoDadosResponseDTO usuarioDados) {
     return _$onPostLoginAsyncAction.run(() => super.onPostLogin(usuarioDados));
   }
 
-  final _$autenticarAsyncAction = AsyncAction('_LoginStoreBase.autenticar');
+  late final _$autenticarAsyncAction =
+      AsyncAction('_LoginStoreBase.autenticar', context: context);
 
   @override
   Future<bool> autenticar() {
     return _$autenticarAsyncAction.run(() => super.autenticar());
   }
 
-  final _$_LoginStoreBaseActionController =
-      ActionController(name: '_LoginStoreBase');
+  late final _$_LoginStoreBaseActionController =
+      ActionController(name: '_LoginStoreBase', context: context);
 
   @override
   dynamic setCodigoEOL(String valor) {
@@ -161,7 +167,8 @@ mixin _$AutenticacaoErroStore on _AutenticacaoErroStoreBase, Store {
               name: '_AutenticacaoErroStoreBase.possuiErros'))
           .value;
 
-  final _$codigoEOLAtom = Atom(name: '_AutenticacaoErroStoreBase.codigoEOL');
+  late final _$codigoEOLAtom =
+      Atom(name: '_AutenticacaoErroStoreBase.codigoEOL', context: context);
 
   @override
   String? get codigoEOL {
@@ -176,7 +183,8 @@ mixin _$AutenticacaoErroStore on _AutenticacaoErroStoreBase, Store {
     });
   }
 
-  final _$senhaAtom = Atom(name: '_AutenticacaoErroStoreBase.senha');
+  late final _$senhaAtom =
+      Atom(name: '_AutenticacaoErroStoreBase.senha', context: context);
 
   @override
   String? get senha {

@@ -7,16 +7,14 @@ part 'alternativa.model.g.dart';
 @JsonSerializable()
 class Alternativa implements Insertable<Alternativa> {
   int id;
-  int provaId;
-  int questaoId;
+  int questaoLegadoId;
   String descricao;
   int ordem;
   String numeracao;
 
   Alternativa({
     required this.id,
-    required this.provaId,
-    required this.questaoId,
+    required this.questaoLegadoId,
     required this.descricao,
     required this.ordem,
     required this.numeracao,
@@ -27,15 +25,14 @@ class Alternativa implements Insertable<Alternativa> {
 
   @override
   String toString() {
-    return 'Alternativa(id: $id, descricao: $descricao, ordem: $ordem, numeracao: $numeracao, questaoId: $questaoId)';
+    return 'Alternativa(id: $id, descricao: $descricao, ordem: $ordem, numeracao: $numeracao, questaoLegadoId: $questaoLegadoId)';
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     return AlternativasDbCompanion(
       id: Value(id),
-      provaId: Value(provaId),
-      questaoId: Value(questaoId),
+      questaoLegadoId: Value(questaoLegadoId),
       descricao: Value(descricao),
       ordem: Value(ordem),
       numeracao: Value(numeracao),
