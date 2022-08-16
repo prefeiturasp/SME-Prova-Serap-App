@@ -57,6 +57,22 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
     });
   }
 
+  late final _$tratamentoImagemAtom =
+      Atom(name: '_ProvaStoreBase.tratamentoImagem', context: context);
+
+  @override
+  TratamentoImagemEnum get tratamentoImagem {
+    _$tratamentoImagemAtom.reportRead();
+    return super.tratamentoImagem;
+  }
+
+  @override
+  set tratamentoImagem(TratamentoImagemEnum value) {
+    _$tratamentoImagemAtom.reportWrite(value, super.tratamentoImagem, () {
+      super.tratamentoImagem = value;
+    });
+  }
+
   late final _$downloadStatusAtom =
       Atom(name: '_ProvaStoreBase.downloadStatus', context: context);
 
@@ -377,6 +393,7 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
 conexaoStream: ${conexaoStream},
 isVisible: ${isVisible},
 prova: ${prova},
+tratamentoImagem: ${tratamentoImagem},
 downloadStatus: ${downloadStatus},
 tempoCorrendo: ${tempoCorrendo},
 status: ${status},

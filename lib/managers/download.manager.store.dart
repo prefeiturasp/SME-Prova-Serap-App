@@ -528,7 +528,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       try {
         Arquivo? arquivoDb;
         try {
-          arquivoDb = await db.arquivoDao.findById(arquivoDTO.id);
+          arquivoDb = await db.arquivoDao.findByLegadoId(arquivoDTO.legadoId);
         } catch (e, stack) {
           await recordError(e, stack);
         }
