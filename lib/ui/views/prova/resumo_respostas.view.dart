@@ -299,7 +299,11 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     var questoes = await db.questaoDao.obterPorProvaECaderno(widget.idProva, provaStore.caderno);
 
     for (Questao questao in questoes) {
-      var questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECaderno(widget.idProva, provaStore.caderno);
+      var questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEQuestao(
+        widget.idProva,
+        provaStore.caderno,
+        questao.questaoLegadoId,
+      );
 
       RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
       ProvaCaderno provaCaderno = await db.provaCadernoDao.findByQuestaoId(
