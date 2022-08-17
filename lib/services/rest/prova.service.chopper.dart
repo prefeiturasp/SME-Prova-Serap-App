@@ -6,7 +6,7 @@ part of 'prova.service.dart';
 // ChopperGenerator
 // **************************************************************************
 
-// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations
+// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations, unnecessary_brace_in_string_interps
 class _$ProvaService extends ProvaService {
   _$ProvaService([ChopperClient? client]) {
     if (client == null) return;
@@ -30,6 +30,15 @@ class _$ProvaService extends ProvaService {
     final $request = Request('GET', $url, client.baseUrl);
     return client
         .send<ProvaDetalhesResponseDTO, ProvaDetalhesResponseDTO>($request);
+  }
+
+  @override
+  Future<Response<ProvaDetalhesCadernoResponseDTO>> getResumoProvaCaderno(
+      {required int idProva, required String caderno}) {
+    final $url = '/v1/provas/${idProva}/detalhes-resumido-caderno/${caderno}';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<ProvaDetalhesCadernoResponseDTO,
+        ProvaDetalhesCadernoResponseDTO>($request);
   }
 
   @override

@@ -8,4 +8,8 @@ part of 'arquivo.dao.dart';
 
 mixin _$ArquivoDaoMixin on DatabaseAccessor<AppDatabase> {
   $ArquivosDbTable get arquivosDb => attachedDatabase.arquivosDb;
+  $QuestaoArquivoTableTable get questaoArquivoTable =>
+      attachedDatabase.questaoArquivoTable;
+  $ProvaCadernoTableTable get provaCadernoTable =>
+      attachedDatabase.provaCadernoTable;
 }

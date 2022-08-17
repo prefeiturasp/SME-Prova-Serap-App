@@ -9,4 +9,6 @@ part of 'questao.dao.dart';
 mixin _$QuestaoDaoMixin on DatabaseAccessor<AppDatabase> {
   $QuestoesDbTable get questoesDb => attachedDatabase.questoesDb;
   $AlternativasDbTable get alternativasDb => attachedDatabase.alternativasDb;
+  $ProvaCadernoTableTable get provaCadernoTable =>
+      attachedDatabase.provaCadernoTable;
 }

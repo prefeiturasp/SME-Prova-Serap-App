@@ -6,11 +6,11 @@ part of 'questao_revisao.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
-  final _$questoesParaRevisarAtom =
-      Atom(name: '_QuestaoRevisaoStoreBase.questoesParaRevisar');
+  late final _$questoesParaRevisarAtom = Atom(
+      name: '_QuestaoRevisaoStoreBase.questoesParaRevisar', context: context);
 
   @override
   ObservableList<Questao> get questoesParaRevisar {
@@ -25,8 +25,8 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
-  final _$mapaDeQuestoesAtom =
-      Atom(name: '_QuestaoRevisaoStoreBase.mapaDeQuestoes');
+  late final _$mapaDeQuestoesAtom =
+      Atom(name: '_QuestaoRevisaoStoreBase.mapaDeQuestoes', context: context);
 
   @override
   ObservableList<Map<String, dynamic>> get mapaDeQuestoes {
@@ -41,8 +41,9 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
-  final _$posicaoQuestaoSendoRevisadaAtom =
-      Atom(name: '_QuestaoRevisaoStoreBase.posicaoQuestaoSendoRevisada');
+  late final _$posicaoQuestaoSendoRevisadaAtom = Atom(
+      name: '_QuestaoRevisaoStoreBase.posicaoQuestaoSendoRevisada',
+      context: context);
 
   @override
   int get posicaoQuestaoSendoRevisada {
@@ -58,8 +59,9 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
-  final _$totalDeQuestoesParaRevisarAtom =
-      Atom(name: '_QuestaoRevisaoStoreBase.totalDeQuestoesParaRevisar');
+  late final _$totalDeQuestoesParaRevisarAtom = Atom(
+      name: '_QuestaoRevisaoStoreBase.totalDeQuestoesParaRevisar',
+      context: context);
 
   @override
   int get totalDeQuestoesParaRevisar {
@@ -75,8 +77,9 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
-  final _$quantidadeDeQuestoesSemRespostasAtom =
-      Atom(name: '_QuestaoRevisaoStoreBase.quantidadeDeQuestoesSemRespostas');
+  late final _$quantidadeDeQuestoesSemRespostasAtom = Atom(
+      name: '_QuestaoRevisaoStoreBase.quantidadeDeQuestoesSemRespostas',
+      context: context);
 
   @override
   int get quantidadeDeQuestoesSemRespostas {
@@ -92,8 +95,8 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
-  final _$botaoOcupadoAtom =
-      Atom(name: '_QuestaoRevisaoStoreBase.botaoOcupado');
+  late final _$botaoOcupadoAtom =
+      Atom(name: '_QuestaoRevisaoStoreBase.botaoOcupado', context: context);
 
   @override
   bool get botaoOcupado {
@@ -108,8 +111,8 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
-  final _$botaoFinalizarOcupadoAtom =
-      Atom(name: '_QuestaoRevisaoStoreBase.botaoFinalizarOcupado');
+  late final _$botaoFinalizarOcupadoAtom = Atom(
+      name: '_QuestaoRevisaoStoreBase.botaoFinalizarOcupado', context: context);
 
   @override
   bool get botaoFinalizarOcupado {
@@ -125,7 +128,8 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
     });
   }
 
-  final _$isLoadingAtom = Atom(name: '_QuestaoRevisaoStoreBase.isLoading');
+  late final _$isLoadingAtom =
+      Atom(name: '_QuestaoRevisaoStoreBase.isLoading', context: context);
 
   @override
   bool get isLoading {

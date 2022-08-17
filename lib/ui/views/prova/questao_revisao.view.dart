@@ -56,6 +56,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   late Questao questao;
   late List<Alternativa> alternativas;
   late List<Arquivo> imagens;
+  late int questaoId;
 
   ArquivoAudioDb? arquivoAudioDb;
 
@@ -83,9 +84,11 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
     }
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
-    questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, widget.ordem, provaStore.caderno);
-    alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
-    imagens = await db.arquivoDao.obterPorQuestaoId(questao.id);
+    questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
+    alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
+    imagens = await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
+    questaoId =
+        await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
   }
 
   @override
@@ -141,7 +144,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
                             Row(
                               children: [
                                 Text(
-                                  'Questão ${questao.ordem + 1} ',
+                                  'Questão ${widget.ordem + 1} ',
                                   style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
                                     fontSize: temaStore.tTexto20,
                                     fontFamily: temaStore.fonteDoTexto.nomeFonte,
@@ -315,7 +318,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   _buildRespostaConstruida(Questao questao) {
-    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questaoId);
 
     return Column(
       children: [
@@ -336,7 +339,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
                     controller.setText(provaResposta?.resposta ?? "");
                   },
                   onChangeContent: (String? textoDigitado) {
-                    provaStore.respostas.definirResposta(questao.id, textoResposta: textoDigitado);
+                    provaStore.respostas.definirResposta(questaoId, textoResposta: textoDigitado);
                   },
                 ),
                 htmlToolbarOptions: HtmlToolbarOptions(
@@ -403,7 +406,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
 
     return Observer(
       builder: (_) {
@@ -426,7 +429,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
             groupValue: resposta?.alternativaId,
             onChanged: (value) async {
               await provaStore.respostas.definirResposta(
-                questao.id,
+                questaoId,
                 alternativaId: value,
                 tempoQuestao: provaStore.segundos,
               );
@@ -481,7 +484,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
                     provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
                     await provaStore.respostas.definirTempoResposta(
-                      questao.id,
+                      questaoId,
                       tempoQuestao: provaStore.segundos,
                     );
 
@@ -514,7 +517,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
               provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
               await provaStore.respostas.definirTempoResposta(
-                questao.id,
+                questaoId,
                 tempoQuestao: provaStore.segundos,
               );
 
@@ -534,7 +537,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   Future<Uint8List?> loadAudio(Questao questao) async {
-    arquivoAudioDb = await db.arquivosAudioDao.obterPorQuestaoId(questao.id);
+    arquivoAudioDb = await db.arquivosAudioDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
 
     if (arquivoAudioDb != null) {
       IdbFile idbFile = IdbFile(arquivoAudioDb!.path);

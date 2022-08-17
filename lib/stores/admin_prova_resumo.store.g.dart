@@ -6,11 +6,11 @@ part of 'admin_prova_resumo.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$AdminProvaResumoViewStore on _AdminProvaResumoViewStoreBase, Store {
-  final _$carregandoAtom =
-      Atom(name: '_AdminProvaResumoViewStoreBase.carregando');
+  late final _$carregandoAtom =
+      Atom(name: '_AdminProvaResumoViewStoreBase.carregando', context: context);
 
   @override
   bool get carregando {
@@ -25,7 +25,8 @@ mixin _$AdminProvaResumoViewStore on _AdminProvaResumoViewStoreBase, Store {
     });
   }
 
-  final _$resumoAtom = Atom(name: '_AdminProvaResumoViewStoreBase.resumo');
+  late final _$resumoAtom =
+      Atom(name: '_AdminProvaResumoViewStoreBase.resumo', context: context);
 
   @override
   ObservableList<AdminProvaResumoResponseDTO> get resumo {
@@ -40,8 +41,9 @@ mixin _$AdminProvaResumoViewStore on _AdminProvaResumoViewStoreBase, Store {
     });
   }
 
-  final _$carregarResumoAsyncAction =
-      AsyncAction('_AdminProvaResumoViewStoreBase.carregarResumo');
+  late final _$carregarResumoAsyncAction = AsyncAction(
+      '_AdminProvaResumoViewStoreBase.carregarResumo',
+      context: context);
 
   @override
   Future carregarResumo(int idProva, {String? caderno}) {
