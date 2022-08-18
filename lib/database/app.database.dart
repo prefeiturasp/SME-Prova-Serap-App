@@ -7,7 +7,6 @@ import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 
 import 'package:drift/drift.dart';
-import 'package:drift_dev/api/migrations.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:appserap/models/prova_aluno.model.dart';
@@ -194,12 +193,6 @@ class AppDatabase extends _$AppDatabase {
       }, beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = FULL;');
         await customStatement('PRAGMA foreign_keys = ON;');
-
-        if (kDebugMode) {
-          // This check pulls in a fair amount of code that's not needed
-          // anywhere else, so we recommend only doing it in debug builds.
-          await validateDatabaseSchema();
-        }
       });
 
   Future limpar() {
