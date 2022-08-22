@@ -338,7 +338,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
           questaoId,
           tempoQuestao: provaStore.segundos,
         );
-        await provaStore.respostas.sincronizarResposta();
+        provaStore.respostas.sincronizarResposta();
         // Navega para a proxima questão
         context.push("/prova/${widget.idProva}/questao/${widget.ordem - 1}");
       },
@@ -369,7 +369,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                 tempoQuestao: provaStore.segundos,
               );
             }
-            await provaStore.respostas.sincronizarResposta();
+            provaStore.respostas.sincronizarResposta();
             provaStore.segundos = 0;
             provaStore.ultimaAtualizacaoLogImagem = null;
 
