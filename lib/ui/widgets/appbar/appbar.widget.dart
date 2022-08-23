@@ -23,7 +23,7 @@ import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite_viewer/sqlite_viewer.dart';
 
-class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
+class AppBarWidget extends StatelessWidget {
   final bool popView;
   final bool exibirSair;
   final String? subtitulo;
@@ -43,15 +43,13 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
   @override
-  Size get preferredSize => Size.fromHeight(78);
-
-  @override
   Widget build(BuildContext context) {
     return _buildAppbarCompleta(context);
   }
 
   Widget _buildAppbarCompleta(BuildContext context) {
     return AppBar(
+      toolbarHeight: 120,
       title: Observer(
         builder: (_) {
           return Column(

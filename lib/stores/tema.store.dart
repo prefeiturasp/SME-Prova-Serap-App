@@ -36,6 +36,9 @@ abstract class _TemaStoreBase with Store {
   @observable
   double tTexto24 = 24;
 
+  @observable
+  double appbarHeight = 78;
+
   double size(double size) {
     if (size == 10) {
       return tTexto10;
@@ -76,6 +79,18 @@ abstract class _TemaStoreBase with Store {
     tTexto18 = 6 + (incrementador - 4);
     tTexto20 = 8 + (incrementador - 4);
     tTexto24 = 10 + (incrementador - 4);
+
+    if (incrementador >= 24) {
+      appbarHeight = 128;
+    } else if (incrementador >= 22) {
+      appbarHeight = 120;
+    } else if (incrementador >= 20) {
+      appbarHeight = 108;
+    } else if (incrementador >= 18) {
+      appbarHeight = 98;
+    } else {
+      appbarHeight = 78;
+    }
 
     if (update) {
       enviarPreferencias();

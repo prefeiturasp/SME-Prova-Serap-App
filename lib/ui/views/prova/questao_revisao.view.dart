@@ -98,7 +98,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   double get defaultPadding => 0;
 
   @override
-  PreferredSizeWidget buildAppBar() {
+  AppBarWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
       subtitulo: provaStore.prova.descricao,

@@ -30,7 +30,7 @@ class _AdminProvaCadernoViewState extends BaseStateWidget<AdminProvaCadernoView,
   }
 
   @override
-  PreferredSizeWidget buildAppBar() {
+  AppBarWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
       leading: _buildBotaoVoltarLeading(context),
