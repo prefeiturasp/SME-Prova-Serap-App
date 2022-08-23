@@ -177,7 +177,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
               child: _builLayout(
                 body: SingleChildScrollView(
                   child: Padding(
-                    padding: arquivoVideoDb != null ? getPadding() : EdgeInsets.zero,
+                    padding: getPadding(),
                     child: Column(
                       children: [
                         SizedBox(
