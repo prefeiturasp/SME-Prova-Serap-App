@@ -37,7 +37,7 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
   }
 
   @override
-  PreferredSizeWidget buildAppBar() {
+  AppBarWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
       leading: _buildBotaoVoltarLeading(context),
