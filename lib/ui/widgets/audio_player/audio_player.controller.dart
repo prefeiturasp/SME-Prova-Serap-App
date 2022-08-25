@@ -35,7 +35,7 @@ abstract class _AudioPlayerControllerBase with Store, Disposable {
   Uint8List? fileByte;
 
   Future<void> init() async {
-    await _audioPlayer.openAudioSession();
+    await _audioPlayer.openPlayer();
     await _audioPlayer.setSubscriptionDuration(Duration(milliseconds: 50));
     _mPlayerSubscription = _audioPlayer.onProgress!.listen((e) {
       setPos(e.position.inMilliseconds);
@@ -117,6 +117,6 @@ abstract class _AudioPlayerControllerBase with Store, Disposable {
     stopPlayer();
     cancelPlayerSubscriptions();
 
-    _audioPlayer.closeAudioSession();
+    _audioPlayer.closePlayer();
   }
 }

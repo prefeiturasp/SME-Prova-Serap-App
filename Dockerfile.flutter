@@ -1,12 +1,11 @@
-FROM cirrusci/flutter:2.10.5 as build
+FROM cirrusci/flutter:3.0.1 as build
 
 WORKDIR /usr/src/app
 
 COPY . .
 
 RUN flutter pub get
-RUN flutter pub run build_runner build --delete-conflicting-outputs
-RUN flutter build web --profile
+RUN flutter build web --web-renderer html
 
 FROM nginx:1.20.1-alpine
 

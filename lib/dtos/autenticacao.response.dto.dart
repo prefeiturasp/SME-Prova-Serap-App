@@ -8,11 +8,7 @@ class AutenticacaoResponseDTO {
   final DateTime dataHoraExpiracao;
   DateTime? ultimoLogin;
 
-  AutenticacaoResponseDTO({
-    required this.token,
-    required this.dataHoraExpiracao,
-    this.ultimoLogin 
-  });
+  AutenticacaoResponseDTO({required this.token, required this.dataHoraExpiracao, this.ultimoLogin});
 
   static const fromJson = _$AutenticacaoResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$AutenticacaoResponseDTOToJson(this);

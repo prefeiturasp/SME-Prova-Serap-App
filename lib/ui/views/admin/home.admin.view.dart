@@ -121,10 +121,9 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
               child: Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: DropdownSearch<ModalidadeEnum>(
-                  mode: Mode.MENU,
                   showClearButton: true,
                   items: ModalidadeEnum.values.filter((element) => element.codigo != 0).toList(),
-                  itemAsString: (item) => item?.nome ?? "",
+                  itemAsString: (item) => item.nome,
                   dropdownSearchDecoration: InputDecoration(
                     hintText: "Selecione a modalidade",
                     labelText: "Modalidade",
@@ -143,10 +142,9 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
             Expanded(
               flex: 4,
               child: DropdownSearch<String>(
-                mode: Mode.MENU,
                 showClearButton: true,
                 items: List<String>.generate(9, (i) => (i + 1).toString()),
-                itemAsString: (item) => item! + "º",
+                itemAsString: (item) => item + "º",
                 dropdownSearchDecoration: InputDecoration(
                   hintText: "Selecione o ano de aplicação da prova",
                   labelText: "Ano",

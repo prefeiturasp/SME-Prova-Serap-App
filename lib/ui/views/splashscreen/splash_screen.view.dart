@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
@@ -5,12 +7,14 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:device_information/device_information.dart';
+import 'package:appserap/utils/firebase.util.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:imei_plugin/imei_plugin.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -79,23 +83,25 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
             );
           }
         }
-      } catch (e) {
+      } catch (e, stack) {
         await _principalStore.sair();
+        await recordError(e, stack);
       }
     }
 
     _temaStore.fonteDoTexto = _principalStore.usuario.familiaFonte!;
     _temaStore.fachadaAlterarTamanhoDoTexto(_principalStore.usuario.tamanhoFonte!, update: false);
 
+    await informarVersao();
+
     try {
       if (kDebugMode || !(await checkUpdate())) {
         _navegar();
       }
-    } catch (e) {
+    } catch (e, stack) {
       _navegar();
+      await recordError(e, stack);
     }
-
-    await informarVersao();
   }
 
   _navegar() {
@@ -144,7 +150,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
   }
 
   informarVersao() async {
-    if (kIsWeb) {
+    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
       return;
     }
 
@@ -161,29 +167,33 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
         SharedPreferences prefs = ServiceLocator.get();
         PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-        int buildNumber = prefs.getInt("buildNumber") ?? 0;
-        String version = prefs.getString("version") ?? "1.0.0";
+        int buildNumber = prefs.getInt("_buildNumber") ?? 0;
+        String version = prefs.getString("_version") ?? "1.0.0";
+
+        String? imei = await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
+
+        await FirebaseCrashlytics.instance.setCustomKey('imei', imei!);
 
         if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
-          String imei = await DeviceInformation.deviceIMEINumber;
-
           info("Informando versão...");
           info("IMEI: $imei Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
 
-          await GetIt.I.get<ApiService>().versao.informarVersao(
-                chaveAPI: AppConfigReader.getChaveApi(),
-                versaoCodigo: int.parse(packageInfo.buildNumber),
-                versaoDescricao: packageInfo.version,
-                dispositivoImei: imei,
-                atualizadoEm: DateTime.now().toIso8601String(),
-              );
+          if (ServiceLocator.get<PrincipalStore>().temConexao) {
+            await GetIt.I.get<ApiService>().versao.informarVersao(
+                  chaveAPI: AppConfigReader.getChaveApi(),
+                  versaoCodigo: int.parse(packageInfo.buildNumber),
+                  versaoDescricao: packageInfo.version,
+                  dispositivoImei: imei,
+                  atualizadoEm: DateTime.now().toIso8601String(),
+                );
 
-          await prefs.setInt("buildNumber", int.parse(packageInfo.buildNumber));
-          await prefs.setString("version", packageInfo.version);
+            await prefs.setInt("_buildNumber", int.parse(packageInfo.buildNumber));
+            await prefs.setString("_version", packageInfo.version);
+          }
         }
       }
-    } on PlatformException catch (e) {
-      severe("Erro ao informar versão: ${e.message}");
+    } on PlatformException catch (e, stack) {
+      await recordError(e, stack, reason: "Erro ao informar versão");
     }
   }
 }

@@ -240,7 +240,11 @@ class QuestaoAdminWidget extends StatelessWidget {
     );
   }
 
-  String tratarArquivos(String texto, List<ArquivoResponseDTO> arquivos, EnumTipoImagem tipoImagem) {
+  String tratarArquivos(String? texto, List<ArquivoResponseDTO> arquivos, EnumTipoImagem tipoImagem) {
+    if (texto == null) {
+      return '';
+    }
+
     if (tipoImagem == EnumTipoImagem.QUESTAO) {
       texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
         return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
@@ -248,10 +252,10 @@ class QuestaoAdminWidget extends StatelessWidget {
     }
 
     for (var arquivo in arquivos) {
-      texto = texto.replaceAll("#${arquivo.id}#", arquivo.caminho.replaceFirst('http://', 'https://'));
+      texto = texto!.replaceAll("#${arquivo.legadoId}#", arquivo.caminho.replaceFirst('http://', 'https://'));
     }
 
-    texto = texto.replaceAll("#0#", AssetsUtil.notfound);
+    texto = texto!.replaceAll("#0#", AssetsUtil.notfound);
 
     return texto;
   }

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
@@ -11,78 +12,102 @@ import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/views/prova/prova.view.util.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
-import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 
-class QuestaoAlunoWidget extends StatelessWidget {
+class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   final TemaStore temaStore = ServiceLocator.get<TemaStore>();
   final controller = HtmlEditorController();
 
   final ProvaStore provaStore;
+  final int questaoId;
   final Questao questao;
+  final List<Arquivo> imagens;
+  final List<Alternativa> alternativas;
 
   QuestaoAlunoWidget({
     Key? key,
     required this.provaStore,
+    required this.questaoId,
     required this.questao,
+    required this.imagens,
+    required this.alternativas,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Html(
-          data: tratarArquivos(questao.titulo, questao.arquivos, EnumTipoImagem.QUESTAO),
-          style: {
-            '*': Style.fromTextStyle(
-              TemaUtil.temaTextoHtmlPadrao.copyWith(
-                fontSize: temaStore.tTexto16,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-              ),
-            ),
-            'span': Style.fromTextStyle(
-              TextStyle(
+        buildTratamentoImagem(provaStore, imagens, questao, alternativas),
+        Observer(builder: (_) {
+          return Html(
+            data: tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem),
+            style: {
+              '*': Style.fromTextStyle(
+                TemaUtil.temaTextoHtmlPadrao.copyWith(
                   fontSize: temaStore.tTexto16,
                   fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  color: TemaUtil.pretoSemFoco3),
-            ),
-          },
-          onImageTap: (url, _, attributes, element) {
-            Uint8List imagem = base64.decode(url!.split(',').last);
+                ),
+              ),
+              'span': Style.fromTextStyle(
+                TextStyle(
+                    fontSize: temaStore.tTexto16,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                    color: TemaUtil.pretoSemFoco3),
+              ),
+            },
+            onImageTap: (url, _, attributes, element) async {
+              late Uint8List imagem;
 
-            _exibirImagem(context, imagem);
-          },
-        ),
+              if (url!.startsWith('http')) {
+                imagem = (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
+              } else {
+                imagem = base64.decode(url.split(',').last);
+              }
+
+              _exibirImagem(context, imagem);
+            },
+          );
+        }),
         SizedBox(height: 8),
-        Html(
-          data: tratarArquivos(questao.descricao, questao.arquivos, EnumTipoImagem.QUESTAO),
-          style: {
-            '*': Style.fromTextStyle(
-              TemaUtil.temaTextoHtmlPadrao.copyWith(
-                fontSize: temaStore.tTexto16,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+        Observer(builder: (_) {
+          return Html(
+            data: tratarArquivos(questao.descricao, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem),
+            style: {
+              '*': Style.fromTextStyle(
+                TemaUtil.temaTextoHtmlPadrao.copyWith(
+                  fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                ),
               ),
-            ),
-            'span': Style.fromTextStyle(
-              TextStyle(
-                fontSize: temaStore.tTexto16,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                color: TemaUtil.pretoSemFoco3,
+              'span': Style.fromTextStyle(
+                TextStyle(
+                  fontSize: temaStore.tTexto16,
+                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  color: TemaUtil.pretoSemFoco3,
+                ),
               ),
-            ),
-          },
-          onImageTap: (url, _, attributes, element) {
-            Uint8List imagem = base64.decode(url!.split(',').last);
+            },
+            onImageTap: (url, _, attributes, element) async {
+              late Uint8List imagem;
 
-            _exibirImagem(context, imagem);
-          },
-        ),
+              if (url!.startsWith('http')) {
+                imagem = (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
+              } else {
+                imagem = base64.decode(url.split(',').last);
+              }
+
+              _exibirImagem(context, imagem);
+            },
+          );
+        }),
         SizedBox(height: 16),
         Observer(builder: (_) {
           return _buildResposta(questao);
@@ -168,7 +193,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
   }
 
   _buildRespostaConstruida(Questao questao) {
-    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.questaoLegadoId);
 
     return Column(
       children: [
@@ -189,7 +214,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
                     controller.setText(provaResposta?.resposta ?? "");
                   },
                   onChangeContent: (String? textoDigitado) {
-                    provaStore.respostas.definirResposta(questao.id, textoResposta: textoDigitado);
+                    provaStore.respostas.definirResposta(questaoId, textoResposta: textoDigitado);
                   },
                 ),
                 htmlToolbarOptions: HtmlToolbarOptions(
@@ -239,13 +264,11 @@ class QuestaoAlunoWidget extends StatelessWidget {
   }
 
   _buildAlternativas(Questao questao) {
-    List<Alternativa> alternativasQuestoes = questao.alternativas;
-
-    alternativasQuestoes.sort((a, b) => a.ordem.compareTo(b.ordem));
+    alternativas.sort((a, b) => a.ordem.compareTo(b.ordem));
     return ListTileTheme.merge(
       horizontalTitleGap: 0,
       child: Column(
-        children: alternativasQuestoes
+        children: alternativas
             .map((e) => _buildAlternativa(
                   e.id,
                   e.numeracao,
@@ -258,7 +281,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
   }
 
   Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
+    RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
 
     return Observer(
       builder: (_) {
@@ -281,7 +304,7 @@ class QuestaoAlunoWidget extends StatelessWidget {
             groupValue: resposta?.alternativaId,
             onChanged: (value) async {
               await provaStore.respostas.definirResposta(
-                questao.id,
+                questaoId,
                 alternativaId: value,
                 tempoQuestao: provaStore.segundos,
               );
@@ -296,17 +319,19 @@ class QuestaoAlunoWidget extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Html(
-                    data: tratarArquivos(descricao, questao.arquivos, EnumTipoImagem.ALTERNATIVA),
-                    style: {
-                      '*': Style.fromTextStyle(
-                        TemaUtil.temaTextoPadrao.copyWith(
-                          fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      )
-                    },
-                  ),
+                  child: Observer(builder: (_) {
+                    return Html(
+                      data: tratarArquivos(descricao, imagens, EnumTipoImagem.ALTERNATIVA, provaStore.tratamentoImagem),
+                      style: {
+                        '*': Style.fromTextStyle(
+                          TemaUtil.temaTextoPadrao.copyWith(
+                            fontSize: temaStore.tTexto16,
+                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                          ),
+                        )
+                      },
+                    );
+                  }),
                 ),
               ],
             ),
@@ -314,23 +339,5 @@ class QuestaoAlunoWidget extends StatelessWidget {
         );
       },
     );
-  }
-
-  String tratarArquivos(String texto, List<Arquivo> arquivos, EnumTipoImagem tipoImagem) {
-    if (tipoImagem == EnumTipoImagem.QUESTAO) {
-      texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-        return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
-      });
-    }
-
-    for (var arquivo in arquivos) {
-      var obterTipo = arquivo.caminho.split(".");
-      texto =
-          texto.replaceAll("#${arquivo.id}#", "data:image/${obterTipo[obterTipo.length - 1]};base64,${arquivo.base64}");
-    }
-
-    texto = texto.replaceAll("#0#", AssetsUtil.notfound);
-
-    return texto;
   }
 }

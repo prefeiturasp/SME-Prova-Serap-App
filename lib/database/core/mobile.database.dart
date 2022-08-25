@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,7 +11,10 @@ AppDatabase constructDb() {
   final db = LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'serapdb.sqlite'));
-    return NativeDatabase(file);
+    return NativeDatabase(
+      file,
+      logStatements: AppConfigReader.debugSql(),
+    );
   });
   return AppDatabase(db);
 }

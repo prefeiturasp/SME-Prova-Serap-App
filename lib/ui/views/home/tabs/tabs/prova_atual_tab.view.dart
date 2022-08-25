@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
@@ -425,7 +426,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           LinearPercentIndicator(
             lineHeight: 4.0,
             percent: provaStore.progressoDownload,
-            linearStrokeCap: LinearStrokeCap.roundAll,
+            barRadius: const Radius.circular(16),
             progressColor: TemaUtil.vermelhoErro,
           ),
           Padding(
@@ -468,7 +469,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             child: LinearPercentIndicator(
               lineHeight: 4.0,
               percent: provaStore.progressoDownload,
-              linearStrokeCap: LinearStrokeCap.roundAll,
+              barRadius: const Radius.circular(16),
               progressColor: TemaUtil.vermelhoErro,
             ),
           ),
@@ -548,7 +549,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           LinearPercentIndicator(
             lineHeight: 7.0,
             percent: 1,
-            linearStrokeCap: LinearStrokeCap.roundAll,
+            barRadius: const Radius.circular(16),
             progressColor: TemaUtil.laranja02,
           ),
           Padding(
@@ -624,13 +625,11 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                       left: 16,
                       right: 16,
                     ),
-                    child: Observer(builder: (_) {
-                      return Texto(
-                        "Insira a senha informada para iniciar a prova",
-                        center: true,
-                        fontSize: tamanhoFonte,
-                      );
-                    }),
+                    child: Texto(
+                      "Insira a senha informada para iniciar a prova",
+                      center: true,
+                      fontSize: tamanhoFonte,
+                    ),
                   ),
                   corpo: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -697,7 +696,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     if (iniciarProva) {
-      if (provaStore.prova.contextosProva != null && provaStore.prova.contextosProva!.isNotEmpty) {
+      if (await ServiceLocator.get<AppDatabase>().contextoProvaDao.possuiContexto(provaStore.id)) {
         context.go("/prova/${provaStore.id}/contexto");
       } else {
         context.go("/prova/${provaStore.id}");
@@ -727,7 +726,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             //animationDuration: 1000,
             lineHeight: 4.0,
             percent: prova.progressoDownload,
-            linearStrokeCap: LinearStrokeCap.roundAll,
+            barRadius: const Radius.circular(16),
             progressColor: TemaUtil.verde01,
           ),
           Padding(

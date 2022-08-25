@@ -1,8 +1,10 @@
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
@@ -17,6 +19,7 @@ import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +41,6 @@ class ResumoRespostasView extends BaseStatefulWidget {
 
 class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, QuestaoRevisaoStore> with Loggable {
   late final ProvaStore provaStore;
-
-  List<Map<String, dynamic>> mapaDeQuestoes = [];
 
   int flexQuestao = 18;
   int flexAlternativa = 4;
@@ -138,8 +139,16 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
                                 child: BotaoDefaultWidget(
                                   textoBotao: 'FINALIZAR E ENVIAR',
                                   largura: 392,
+                                  desabilitado: store.botaoFinalizarOcupado,
                                   onPressed: () async {
-                                    await finalizarProva();
+                                    try {
+                                      store.botaoFinalizarOcupado = true;
+                                      await finalizarProva();
+                                    } catch (e, stack) {
+                                      await recordError(e, stack);
+                                    } finally {
+                                      store.botaoFinalizarOcupado = false;
+                                    }
                                   },
                                 ),
                               )
@@ -252,7 +261,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
   List<Widget> _buildListaRespostas() {
     List<Widget> questoes = [];
 
-    for (var item in mapaDeQuestoes) {
+    for (var item in store.mapaDeQuestoes) {
       questoes.add(
         Padding(
           padding: EdgeInsets.symmetric(vertical: 4),
@@ -269,28 +278,50 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     return questoes;
   }
 
-  String tratarTexto(String texto) {
+  String tratarTexto(String? texto) {
+    if (texto == null) {
+      return '';
+    }
+
     RegExp r = RegExp(r"<[^>]*>");
     String textoNovo = texto.replaceAll(r, '');
     textoNovo = textoNovo.replaceAll('\n', ' ').replaceAll(':', ': ');
     return textoNovo;
   }
 
-  void popularMapaDeQuestoes() {
+  Future<void> popularMapaDeQuestoes() async {
     store.quantidadeDeQuestoesSemRespostas = 0;
     store.questoesParaRevisar.clear();
+    store.mapaDeQuestoes.clear();
 
-    for (Questao questao in provaStore.prova.questoes) {
-      RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
+    var db = ServiceLocator.get<AppDatabase>();
+
+    var questoes = await db.questaoDao.obterPorProvaECaderno(widget.idProva, provaStore.caderno);
+
+    for (Questao questao in questoes) {
+      var questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEQuestao(
+        widget.idProva,
+        provaStore.caderno,
+        questao.questaoLegadoId,
+      );
+
+      RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
+      ProvaCaderno provaCaderno = await db.provaCadernoDao.findByQuestaoId(
+        questaoId,
+        widget.idProva,
+        provaStore.caderno,
+      );
 
       String alternativaSelecionada = "";
       String respostaNaTela = "";
       String questaoProva = tratarTexto(questao.titulo) + tratarTexto(questao.descricao);
 
-      String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
+      String ordemQuestaoTratada = provaCaderno.ordem < 10 ? '0${provaCaderno.ordem + 1}' : '${provaCaderno.ordem + 1}';
 
-      if (questao.id == resposta?.questaoId) {
-        for (var alternativa in questao.alternativas) {
+      if (questaoId == resposta?.questaoId) {
+        var alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
+
+        for (var alternativa in alternativas) {
           if (alternativa.id == resposta!.alternativaId) {
             alternativaSelecionada = alternativa.numeracao;
           }
@@ -329,15 +360,15 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         store.quantidadeDeQuestoesSemRespostas++;
       }
 
-      mapaDeQuestoes.add(
+      store.mapaDeQuestoes.add(
         {
           'questao': '$ordemQuestaoTratada - $questaoProva',
           'resposta': respostaNaTela,
-          'questao_ordem': questao.ordem,
+          'questao_ordem': provaCaderno.ordem,
         },
       );
 
-      mapaDeQuestoes.sort(
+      store.mapaDeQuestoes.sort(
         (questao1, questao2) {
           return questao1['questao_ordem'].compareTo(
             questao2['questao_ordem'],

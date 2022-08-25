@@ -50,7 +50,7 @@ class BarraProgresso extends StatelessWidget {
             child: LinearPercentIndicator(
               lineHeight: 8.0,
               percent: value,
-              linearStrokeCap: LinearStrokeCap.roundAll,
+              barRadius: const Radius.circular(16),
               progressColor: _getColor(),
             ),
           ),

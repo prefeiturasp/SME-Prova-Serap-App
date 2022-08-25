@@ -1,39 +1,26 @@
+import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:drift/drift.dart';
 import 'package:json_annotation/json_annotation.dart';
-
-import 'alternativa.model.dart';
-import 'arquivo.model.dart';
-import 'arquivo_audio.model.dart';
-import 'arquivo_video.model.dart';
 
 part 'questao.model.g.dart';
 
 @JsonSerializable()
-class Questao {
-  int id;
-  String titulo;
+class Questao implements Insertable<Questao> {
+  int questaoLegadoId;
+
+  String? titulo;
   String descricao;
-  int ordem;
   EnumTipoQuestao tipo;
 
   int quantidadeAlternativas;
 
-  List<Alternativa> alternativas;
-  List<Arquivo> arquivos;
-  List<ArquivoVideo> arquivosVideos;
-  List<ArquivoAudio> arquivosAudio;
-
   Questao({
-    required this.id,
-    required this.titulo,
+    required this.questaoLegadoId,
+    this.titulo,
     required this.descricao,
-    required this.ordem,
-    required this.alternativas,
-    required this.arquivos,
     required this.tipo,
     required this.quantidadeAlternativas,
-    required this.arquivosVideos,
-    required this.arquivosAudio,
   });
 
   factory Questao.fromJson(Map<String, dynamic> json) => _$QuestaoFromJson(json);
@@ -41,6 +28,17 @@ class Questao {
 
   @override
   String toString() {
-    return 'Questao(id: $id, titulo: $titulo, descricao: $descricao, ordem: $ordem, alternativas: $alternativas, arquivos: $arquivos, videos: $arquivosVideos)';
+    return 'Questao(questaoLegadoId: $questaoLegadoId, titulo: $titulo, descricao: $descricao)';
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    return QuestoesDbCompanion(
+      questaoLegadoId: Value(questaoLegadoId),
+      titulo: Value(titulo),
+      descricao: Value(descricao),
+      tipo: Value(tipo),
+      quantidadeAlternativas: Value(quantidadeAlternativas),
+    ).toColumns(nullToAbsent);
   }
 }

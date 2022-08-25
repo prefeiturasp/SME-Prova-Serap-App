@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:appserap/dtos/error.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:chopper/chopper.dart';
 
 class JsonErrorConverter with Loggable implements ErrorConverter {
@@ -13,7 +14,7 @@ class JsonErrorConverter with Loggable implements ErrorConverter {
 
       return response.copyWith<ErrorResponseDTO>(body: body);
     } catch (e, stack) {
-      severe(e, stack);
+      recordError(e, stack);
       rethrow;
     }
   }

@@ -1,3 +1,4 @@
+// ignore: camel_case_types
 enum APP_PAGE {
   ERRO,
   SPLASH,

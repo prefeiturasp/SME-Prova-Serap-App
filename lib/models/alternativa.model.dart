@@ -1,21 +1,23 @@
+import 'package:appserap/database/app.database.dart';
+import 'package:drift/drift.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'alternativa.model.g.dart';
 
 @JsonSerializable()
-class Alternativa {
+class Alternativa implements Insertable<Alternativa> {
   int id;
+  int questaoLegadoId;
   String descricao;
   int ordem;
   String numeracao;
-  int questaoId;
 
   Alternativa({
     required this.id,
+    required this.questaoLegadoId,
     required this.descricao,
     required this.ordem,
     required this.numeracao,
-    required this.questaoId,
   });
 
   factory Alternativa.fromJson(Map<String, dynamic> json) => _$AlternativaFromJson(json);
@@ -23,6 +25,17 @@ class Alternativa {
 
   @override
   String toString() {
-    return 'Alternativa(id: $id, descricao: $descricao, ordem: $ordem, numeracao: $numeracao, questaoId: $questaoId)';
+    return 'Alternativa(id: $id, descricao: $descricao, ordem: $ordem, numeracao: $numeracao, questaoLegadoId: $questaoLegadoId)';
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    return AlternativasDbCompanion(
+      id: Value(id),
+      questaoLegadoId: Value(questaoLegadoId),
+      descricao: Value(descricao),
+      ordem: Value(ordem),
+      numeracao: Value(numeracao),
+    ).toColumns(nullToAbsent);
   }
 }

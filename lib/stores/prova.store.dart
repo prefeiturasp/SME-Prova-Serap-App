@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
-import 'package:cross_connectivity/cross_connectivity.dart';
+import 'package:appserap/utils/firebase.util.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -24,15 +26,16 @@ import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
 
+import 'principal.store.dart';
+
 part 'prova.store.g.dart';
 
 class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
   ProvaStore({
-    required int id,
     required Prova prova,
-    required ProvaRespostaStore respostas,
-  }) : super(id: id, prova: prova, respostas: respostas) {
+  }) : super(id: prova.id, caderno: prova.caderno, prova: prova) {
     downloadManagerStore = DownloadManagerStore(provaStore: this);
+    respostas = ProvaRespostaStore(idProva: id);
   }
 }
 
@@ -41,30 +44,34 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   List<ReactionDisposer> _reactions = [];
 
   @observable
-  ObservableStream<ConnectivityStatus> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
-
-  // late GerenciadorDownload gerenciadorDownload;
+  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   late DownloadManagerStore downloadManagerStore;
 
+  late ProvaRespostaStore respostas;
+
   int id;
+  String caderno;
+
+  @observable
+  bool isVisible = true;
 
   @observable
   Prova prova;
 
   @observable
-  bool isVisible = true;
+  TratamentoImagemEnum tratamentoImagem = TratamentoImagemEnum.BASE64;
+
+  DateTime? ultimaAtualizacaoLogImagem;
 
   _ProvaStoreBase({
     required this.id,
+    required this.caderno,
     required this.prova,
-    required this.respostas,
   }) {
     status = prova.status;
+    downloadStatus = prova.downloadStatus;
   }
-
-  @observable
-  ProvaRespostaStore respostas;
 
   @observable
   EnumDownloadStatus downloadStatus = EnumDownloadStatus.NAO_INICIADO;
@@ -120,11 +127,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     await downloadManagerStore.iniciarDownload();
 
-    await respostas.carregarRespostasServidor(prova);
-
-    var obterProva = await Prova.carregaProvaCache(id);
-
-    prova = obterProva!;
+    await respostas.carregarRespostasServidor();
 
     fine("[Prova $id] - Download Concluído");
   }
@@ -186,16 +189,16 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  Future onChangeConexao(ConnectivityStatus? resultado) async {
+  Future onChangeConexao(ConnectivityResult? resultado) async {
     if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
-    if (resultado == ConnectivityStatus.none &&
+    if (resultado == ConnectivityResult.none &&
         (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
       downloadStatus = EnumDownloadStatus.PAUSADO;
       downloadManagerStore.pauseAllDownloads();
-    } else if (resultado != ConnectivityStatus.none &&
+    } else if (resultado != ConnectivityResult.none &&
         (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
       await iniciarDownload();
     }
@@ -222,23 +225,22 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   iniciarProva() async {
-    setStatusProva(EnumProvaStatus.INICIADA);
-    prova.dataInicioProvaAluno = DateTime.now();
+    await setStatusProva(EnumProvaStatus.INICIADA);
+    await setHoraInicioProva(DateTime.now());
 
-    var connectionStatus = await Connectivity().checkConnectivity();
-    if (connectionStatus != ConnectivityStatus.none) {
+    if (ServiceLocator.get<PrincipalStore>().temConexao) {
       try {
         await GetIt.I.get<ApiService>().prova.setStatusProva(
               idProva: id,
               tipoDispositivo: kDeviceType.index,
               status: EnumProvaStatus.INICIADA.index,
+              dataInicio: getTicks(prova.dataInicioProvaAluno!),
             );
-      } catch (e) {
-        warning(e);
+      } catch (e, stack) {
+        await recordError(e, stack);
       }
     }
 
-    await saveProva();
     iniciarTemporizador();
   }
 
@@ -259,7 +261,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     setRespondendoProva(true);
 
-    await respostas.carregarRespostasServidor(prova);
+    await respostas.carregarRespostasServidor();
     await _configureControlesTempoProva();
 
     if (prova.status == EnumProvaStatus.NAO_INICIADA) {
@@ -334,37 +336,22 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  setStatusProva(EnumProvaStatus provaStatus) {
+  setStatusProva(EnumProvaStatus provaStatus) async {
     prova.status = provaStatus;
     status = provaStatus;
+    await ServiceLocator.get<AppDatabase>().provaDao.atualizarStatus(id, provaStatus);
   }
 
-  saveProva() async {
-    AppDatabase db = GetIt.I.get();
+  @action
+  Future<int> setHoraFimProva(DateTime dataFimProvaAluno) async {
+    prova.dataFimProvaAluno = dataFimProvaAluno;
+    return await ServiceLocator.get<AppDatabase>().provaDao.atualizaDataFimProvaAluno(id, dataFimProvaAluno);
+  }
 
-    await db.provaDao.inserirOuAtualizar(
-      ProvaDb(
-        id: prova.id,
-        descricao: prova.descricao,
-        downloadStatus: prova.downloadStatus,
-        tempoExtra: prova.tempoExtra,
-        tempoExecucao: prova.tempoExecucao,
-        tempoAlerta: prova.tempoAlerta,
-        status: prova.status.index,
-        itensQuantidade: prova.itensQuantidade,
-        dataInicio: prova.dataInicio,
-        dataFim: prova.dataFim,
-        ultimaAtualizacao: DateTime.now(),
-        dataInicioProvaAluno: prova.dataInicioProvaAluno,
-        dataFimProvaAluno: prova.dataFimProvaAluno,
-        senha: prova.senha,
-        quantidadeRespostaSincronizacao: prova.quantidadeRespostaSincronizacao,
-        ultimaAlteracao: prova.ultimaAlteracao,
-        idDownload: prova.idDownload,
-      ),
-    );
-    var provaSalva = await db.provaDao.obterPorProvaId(prova.id);
-    fine('[ULTIMO SALVAMENTO] ${provaSalva.ultimaAtualizacao}');
+  @action
+  Future<int> setHoraInicioProva(DateTime dataInicioProvaAluno) async {
+    prova.dataInicioProvaAluno = dataInicioProvaAluno;
+    return await ServiceLocator.get<AppDatabase>().provaDao.atualizaDataInicioProvaAluno(id, dataInicioProvaAluno);
   }
 
   @action
@@ -372,23 +359,21 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     try {
       BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
 
-      ConnectivityStatus resultado = await (Connectivity().checkConnectivity());
-      prova.dataFimProvaAluno = DateTime.now();
       setRespondendoProva(false);
 
-      if (resultado == ConnectivityStatus.none) {
+      await setHoraFimProva(DateTime.now());
+
+      if (!ServiceLocator.get<PrincipalStore>().temConexao) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');
         // Se estiver sem internet alterar status para pendente (worker ira sincronizar)
 
-        setStatusProva(EnumProvaStatus.PENDENTE);
-        await saveProva();
+        await setStatusProva(EnumProvaStatus.PENDENTE);
 
         var retorno = await mostrarDialogSemInternet(context);
         return retorno ?? false;
       } else {
         // Atualiza para finalizada
-        setStatusProva(EnumProvaStatus.FINALIZADA);
-        await saveProva();
+        await setStatusProva(EnumProvaStatus.FINALIZADA);
 
         await respostas.sincronizarResposta(force: true);
 
@@ -397,6 +382,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               idProva: id,
               status: EnumProvaStatus.FINALIZADA.index,
               tipoDispositivo: kDeviceType.index,
+              dataInicio: getTicks(prova.dataInicioProvaAluno!),
               dataFim: getTicks(prova.dataFimProvaAluno!),
             );
 
@@ -418,7 +404,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
               AppDatabase db = GetIt.I.get();
 
               // Remove respostas do banco local
-              await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
+              await db.respostaProvaDao.removerSincronizadasPorProva(id);
 
               mostrarDialogProvaJaEnviada(context);
               break;
@@ -427,10 +413,15 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       }
 
       return true;
-    } catch (e) {
-      severe(e);
+    } catch (e, stack) {
+      await recordError(e, stack);
       return false;
     }
+  }
+
+  @action
+  removerDownload([bool manterRegistroProva = false]) async {
+    await downloadManagerStore.removerDownloadCompleto(manterRegistroProva);
   }
 
   @override
@@ -439,6 +430,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       _reaction();
     }
     tempoExecucaoStore?.onDispose();
+    tempoExecucaoStore = null;
   }
 
   bool possuiTempoExecucao() {
