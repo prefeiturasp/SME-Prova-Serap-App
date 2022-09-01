@@ -7,3 +7,8 @@ registerInjection<T extends Object>(T instance) {
     di.registerSingleton<T>(instance);
   }
 }
+
+unregisterInjection<T extends Object>() async {
+  final di = GetIt.instance;
+  await di.unregister<T>();
+}
