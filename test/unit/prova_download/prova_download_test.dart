@@ -196,18 +196,29 @@ void main() {
       int provaId = 179;
       String caderno = 'A';
 
+      var provas = await GetIt.instance.get<ApiService>().prova.getProvas();
+
+      GetIt.instance.get<AppDatabase>().provaDao.inserirOuAtualizar(provas.body!.first.toProvaModel());
+
       DownloadManagerStore downloadManagerStore = DownloadManagerStore(
         provaId: provaId,
         caderno: caderno,
+      );
+
+      downloadManagerStore.onError(
+        (mensagem) => expect(mensagem, 'Não foi possível baixar todo o conteúdo da prova id: 179'),
       );
 
       await downloadManagerStore.iniciarDownload();
 
       var db = GetIt.instance.get<AppDatabase>();
 
+      var prova = await db.provaDao.obterPorProvaId(provaId);
+      expect(prova.downloadStatus, EnumDownloadStatus.ERRO);
+
       var questoes = await db.questaoDao.obterPorProvaId(provaId);
 
-      expect(questoes.length, 5);
+      expect(questoes.length, 4);
     });
   });
 }
