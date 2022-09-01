@@ -6,6 +6,7 @@ import 'package:appserap/main.route.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -123,6 +124,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     downloadManagerStore.onTempoPrevistoChange((tempoPrevisto) {
       this.tempoPrevisto = tempoPrevisto;
+    });
+
+    downloadManagerStore.onError((mensagem) {
+      NotificacaoUtil.showSnackbarError(mensagem);
     });
 
     await downloadManagerStore.iniciarDownload();
