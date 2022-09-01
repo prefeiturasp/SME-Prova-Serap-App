@@ -42,6 +42,8 @@ import 'tables/questao.table.dart';
 import 'tables/questao_arquivo.table.dart';
 import 'tables/resposta_prova.table.dart';
 
+import 'core/shared.database.dart' as impl;
+
 export 'core/shared.database.dart';
 
 part 'app.database.g.dart';
@@ -77,7 +79,11 @@ part 'app.database.g.dart';
   ],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase(QueryExecutor e) : super(e);
+  AppDatabase() : super.connect(impl.connect());
+
+  AppDatabase.executor(QueryExecutor e) : super(e);
+
+  AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
   int get schemaVersion => 20;

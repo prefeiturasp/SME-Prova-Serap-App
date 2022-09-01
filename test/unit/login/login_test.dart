@@ -7,10 +7,12 @@ import 'package:mockito/mockito.dart';
 
 import 'package:http/testing.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../fixtures/user/http.fixture.dart';
 import '../../fixtures/user/locator.fixture.dart';
 import '../../fixtures/user/user.fixture.dart';
+import 'login_test.mocks.dart';
 
 @GenerateMocks([
   ApiService,
@@ -20,7 +22,10 @@ main() {
 
   group('Auth -', () {
     setUp(() async {
-      await registerLocators(defaultPreferences: {"token": UserFixture().autenticacaoResponse.token});
+      SharedPreferences.setMockInitialValues({"token": UserFixture().autenticacaoResponse.token});
+
+      registerInjection<ApiService>(MockApiService());
+      registerInjection<SharedPreferences>(await SharedPreferences.getInstance());
     });
 
     tearDown(() async {
@@ -32,8 +37,6 @@ main() {
       final userPassword = UserFixture().userPassword;
 
       final autenticacaoResponse = UserFixture().autenticacaoResponse;
-
-      await registerLocators();
 
       MockClient httpClient = createHttpClient(
         UserJsonFixture().autenticacaoResponseJson,
@@ -83,7 +86,7 @@ main() {
 
         final autenticacaoDadosResponse = UserFixture().autenticacaoDadosResponse;
 
-        await registerLocators(defaultPreferences: {"token": token});
+        SharedPreferences.setMockInitialValues({"token": UserFixture().autenticacaoResponse.token});
 
         bool first = true;
         final httpClient = MockClient((req) async {

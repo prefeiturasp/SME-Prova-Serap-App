@@ -153,7 +153,7 @@ abstract class _UsuarioStoreBase with Store {
   }
 
   @action
-  atualizarDados({
+  Future<void> atualizarDados({
     required String nome,
     String? codigoEOL,
     String? token,

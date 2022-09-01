@@ -84,7 +84,7 @@ class BaixarProvaJob with Job, Loggable, Database {
         info('Iniciando download prova $idProva - ${provaResumo.descricao}');
         await _saveProva(provaResumo);
 
-        DownloadManagerStore gerenciadorDownload = DownloadManagerStore(provaId: idProva);
+        DownloadManagerStore gerenciadorDownload = DownloadManagerStore(provaId: idProva, caderno: provaResumo.caderno);
 
         await gerenciadorDownload.iniciarDownload();
 

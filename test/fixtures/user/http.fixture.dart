@@ -1,13 +1,15 @@
 import 'package:appserap/converters/error_converter.dart';
 import 'package:appserap/converters/json_conveter.dart';
 import 'package:appserap/interceptors/autenticacao.interceptor.dart';
-import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/services/rest/auth.service.dart';
 import 'package:chopper/chopper.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:http/testing.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
+
+import 'http.fixture.mocks.dart';
 
 Response<T> createResponse<T>(
   int status,
@@ -46,4 +48,18 @@ createHttpClient(String response, [int statusCode = 200, Function(http.Request)?
   });
 
   return httpClient;
+}
+
+@GenerateMocks([
+  http.BaseResponse,
+])
+Response<T> buildResponse<T extends Object>(T instance, {int statusCode = 200}) {
+  var mockBaseResponse = MockBaseResponse();
+
+  when(mockBaseResponse.statusCode).thenReturn(statusCode);
+
+  return Response(
+    mockBaseResponse,
+    instance,
+  );
 }

@@ -317,7 +317,7 @@ mixin _$UsuarioStore on _UsuarioStoreBase, Store {
       AsyncAction('_UsuarioStoreBase.atualizarDados', context: context);
 
   @override
-  Future atualizarDados(
+  Future<void> atualizarDados(
       {required String nome,
       String? codigoEOL,
       String? token,
