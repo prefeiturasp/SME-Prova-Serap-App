@@ -35,10 +35,9 @@ class ProvaCadernoDao extends DatabaseAccessor<AppDatabase> with _$ProvaCadernoD
     });
   }
 
-  Future<ProvaCaderno> findByQuestaoId(int questaoLegadoId, int provaId, String caderno) {
+  Future<ProvaCaderno> findByQuestaoId(int questaoId, int provaId, String caderno) {
     return (select(provaCadernoTable)
-          ..where(
-              (t) => t.questaoLegadoId.equals(questaoLegadoId) & t.provaId.equals(provaId) & t.caderno.equals(caderno)))
+          ..where((t) => t.questaoId.equals(questaoId) & t.provaId.equals(provaId) & t.caderno.equals(caderno)))
         .getSingle();
   }
 
