@@ -1,0 +1,52 @@
+[
+  {
+    "id": 88709,
+    "questaoLegadoId": 21312,
+    "titulo": "<p>Elaborar uma regionalização mundial significa realizar uma divisão do mundo em conjuntos de países de acordo com suas características e com o seu desenvolvimento econômico.</p><p><img src=\"#49853381#\" id=\"49853381\"></p>",
+    "descricao": "<p>Tal regionalização transforma a geopolítica internacional em um sistema</p>",
+    "ordem": 4,
+    "tipo": 1,
+    "quantidadeAlternativas": 4,
+    "arquivos": [
+      {
+        "id": 15238,
+        "legadoId": 49853381,
+        "questaoId": 88709,
+        "caminho": "https://hom-serap.sme.prefeitura.sp.gov.br/Files/Texto_Base/2021/4/c86ebf4b-d8e3-4ac3-8a02-db348272ba3c__.jpeg",
+        "tamanhoBytes": 113737
+      }
+    ],
+    "audios": [],
+    "videos": [],
+    "alternativas": [
+      {
+        "questaoId": 88709,
+        "id": 352489,
+        "descricao": "<p>imperialista.</p>\n",
+        "ordem": 0,
+        "numeracao": "A)"
+      },
+      {
+        "questaoId": 88709,
+        "id": 352490,
+        "descricao": "<p>multipolar.</p>\n",
+        "ordem": 1,
+        "numeracao": "B)"
+      },
+      {
+        "questaoId": 88709,
+        "id": 352491,
+        "descricao": "<p>anárquico.</p>\n",
+        "ordem": 2,
+        "numeracao": "C)"
+      },
+      {
+        "questaoId": 88709,
+        "id": 352492,
+        "descricao": "<p>bipolar.</p>\n",
+        "ordem": 3,
+        "numeracao": "D)"
+      }
+    ]
+  }
+]

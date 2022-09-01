@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:android_id/android_id.dart';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
@@ -61,6 +62,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   late int downloadAtual;
   bool _isPauseAllDownloads = false;
   var quantidadeDownloads = 2;
+  var maxTentativas = 3;
 
   StatusChangeCallback? onStatusChangeCallback;
 
@@ -90,7 +92,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
           await _salvarProva();
           await _validarProva();
         },
-        maxAttempts: 5,
+        maxAttempts: maxTentativas,
         onRetry: (e) {
           fine('[Prova $provaId] - Tentativa de download da prova');
           severe(e);
@@ -292,9 +294,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       modeloDispositivo = webBrowserInfo.userAgent!;
       versao = webBrowserInfo.appVersion!;
     } else if (Platform.isAndroid) {
+      const _androidId = AndroidId();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       modeloDispositivo = "${androidInfo.manufacturer!} ${androidInfo.model!}";
-      dispositivoId = androidInfo.androidId!;
+      dispositivoId = (await _androidId.getId())!;
       versao = "Android ${androidInfo.version.release} (SDK ${androidInfo.version.release})";
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
@@ -435,6 +438,12 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         }
 
         for (QuestaoDetalhesLegadoResponseDTO questaoDTO in questoesDTO) {
+          DownloadProvaDb download = downloads
+              .where(
+                (element) => element.questaoLegadoId == questaoDTO.questaoLegadoId,
+              )
+              .first;
+
           // verificar se a questao ja esta no banco
           var questaoDb = await db.questaoDao.getByQuestaoLegadoId(questaoDTO.questaoLegadoId);
 
@@ -475,12 +484,6 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
           } else {
             severe("[Prova $provaId] - Questao ${questaoDTO.id} ja existe no banco");
           }
-
-          DownloadProvaDb download = downloads
-              .where(
-                (element) => element.questaoLegadoId == questaoDTO.questaoLegadoId,
-              )
-              .first;
 
           var provaCaderno = ProvaCaderno(
             questaoId: download.id,
@@ -567,7 +570,6 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         await db.questaoArquivoDao.inserirOuAtualizar(questaoArquivo);
       } catch (e) {
         severe("[Prova $provaId] - Erro ao baixar arquivo de imagem ${arquivoDTO.id} - ${e.toString()}");
-
         rethrow;
       }
     }

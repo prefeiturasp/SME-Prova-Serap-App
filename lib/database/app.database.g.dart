@@ -2951,6 +2951,7 @@ class $QuestaoArquivoTableTable extends QuestaoArquivoTable
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$AppDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $ProvasDbTable provasDb = $ProvasDbTable(this);
   late final $QuestoesDbTable questoesDb = $QuestoesDbTable(this);
   late final $AlternativasDbTable alternativasDb = $AlternativasDbTable(this);
