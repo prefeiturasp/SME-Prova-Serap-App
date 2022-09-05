@@ -106,11 +106,9 @@ void main() {
       )).thenAnswer((realInvocation) => getInformarDownloadResponse());
     }
 
-    setUpAll(() {
-      registerInjection<AppDatabase>(AppDatabase.executor(NativeDatabase.memory()));
-    });
-
     setUp(() async {
+      registerInjection<AppDatabase>(AppDatabase.executor(NativeDatabase.memory()));
+
       registerInjection<ApiService>(MockApiService());
       registerInjection<ProvaService>(MockProvaService());
       registerInjection<QuestaoService>(MockQuestaoService());
@@ -127,7 +125,9 @@ void main() {
       mocksDownloadService();
     });
 
-    tearDown(() async {});
+    tearDown(() {
+      unregisterInjection<AppDatabase>();
+    });
 
     test('Deve fazer o download da prova', () async {
       var questaoServiceMock = MockQuestaoService();
