@@ -7,66 +7,66 @@ class ProvasDb extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   ProvasDb(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<String> descricao = GeneratedColumn<String>(
       'descricao', aliasedName, false,
       additionalChecks:
           GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 150),
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> ultimaAtualizacao =
-      GeneratedColumn<DateTime?>('ultima_atualizacao', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> downloadStatus = GeneratedColumn<int?>(
+  late final GeneratedColumn<DateTime> ultimaAtualizacao =
+      GeneratedColumn<DateTime>('ultima_atualizacao', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  late final GeneratedColumn<int> downloadStatus = GeneratedColumn<int>(
       'download_status', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> itensQuantidade = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> itensQuantidade = GeneratedColumn<int>(
       'itens_quantidade', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> tempoAlerta = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> tempoAlerta = GeneratedColumn<int>(
       'tempo_alerta', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> tempoExecucao = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<int> tempoExecucao = GeneratedColumn<int>(
       'tempo_execucao', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> tempoExtra = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> tempoExtra = GeneratedColumn<int>(
       'tempo_extra', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> status = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
       'status', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> dataInicio = GeneratedColumn<DateTime?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> dataInicio = GeneratedColumn<DateTime>(
       'data_inicio', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> dataFim = GeneratedColumn<DateTime?>(
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> dataFim = GeneratedColumn<DateTime>(
       'data_fim', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<DateTime?> dataInicioProvaAluno =
-      GeneratedColumn<DateTime?>('data_inicio_prova_aluno', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<DateTime?> dataFimProvaAluno =
-      GeneratedColumn<DateTime?>('data_fim_prova_aluno', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<String?> senha = GeneratedColumn<String?>(
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> dataInicioProvaAluno =
+      GeneratedColumn<DateTime>('data_inicio_prova_aluno', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> dataFimProvaAluno =
+      GeneratedColumn<DateTime>('data_fim_prova_aluno', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  late final GeneratedColumn<String> senha = GeneratedColumn<String>(
       'senha', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  late final GeneratedColumn<String?> idDownload = GeneratedColumn<String?>(
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> idDownload = GeneratedColumn<String>(
       'id_download', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> quantidadeRespostaSincronizacao =
-      GeneratedColumn<int?>(
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<int> quantidadeRespostaSincronizacao =
+      GeneratedColumn<int>(
           'quantidade_resposta_sincronizacao', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> ultimaAlteracao =
-      GeneratedColumn<DateTime?>('ultima_alteracao', aliasedName, false,
-          type: const IntType(),
+          type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> ultimaAlteracao =
+      GeneratedColumn<DateTime>('ultima_alteracao', aliasedName, false,
+          type: DriftSqlType.dateTime,
           requiredDuringInsert: false,
           defaultValue: currentDateAndTime);
-  late final GeneratedColumn<String?> caderno = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> caderno = GeneratedColumn<String>(
       'caderno', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: Constant("A"));
   @override
@@ -115,24 +115,24 @@ class QuestoesDb extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   QuestoesDb(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
       'questao_legado_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<String?> titulo = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<String> titulo = GeneratedColumn<String>(
       'titulo', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> descricao = GeneratedColumn<String>(
       'descricao', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> tipo = GeneratedColumn<int?>(
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> tipo = GeneratedColumn<int>(
       'tipo', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> ultimaAtualizacao =
-      GeneratedColumn<DateTime?>('ultima_atualizacao', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> quantidadeAlternativas =
-      GeneratedColumn<int?>('quantidade_alternativas', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> ultimaAtualizacao =
+      GeneratedColumn<DateTime>('ultima_atualizacao', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  late final GeneratedColumn<int> quantidadeAlternativas = GeneratedColumn<int>(
+      'quantidade_alternativas', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
         questaoLegadoId,
@@ -167,21 +167,21 @@ class AlternativasDb extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   AlternativasDb(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
       'questao_legado_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> descricao = GeneratedColumn<String>(
       'descricao', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> ordem = GeneratedColumn<int>(
       'ordem', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> numeracao = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> numeracao = GeneratedColumn<String>(
       'numeracao', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
       [id, questaoLegadoId, descricao, ordem, numeracao];
@@ -210,18 +210,18 @@ class ArquivosDb extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   ArquivosDb(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> legadoId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<int> legadoId = GeneratedColumn<int>(
       'legado_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> caminho = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> caminho = GeneratedColumn<String>(
       'caminho', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> base64 = GeneratedColumn<String?>(
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> base64 = GeneratedColumn<String>(
       'base64', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [id, legadoId, caminho, base64];
   @override
@@ -249,30 +249,30 @@ class ContextosProvaDb extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   ContextosProvaDb(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
       'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> imagem = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> imagem = GeneratedColumn<String>(
       'imagem', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> imagemBase64 = GeneratedColumn<String?>(
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> imagemBase64 = GeneratedColumn<String>(
       'imagem_base64', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> posicionamento = GeneratedColumn<int?>(
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> posicionamento = GeneratedColumn<int>(
       'posicionamento', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> ordem = GeneratedColumn<int>(
       'ordem', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> titulo = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> titulo = GeneratedColumn<String>(
       'titulo', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> texto = GeneratedColumn<String?>(
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> texto = GeneratedColumn<String>(
       'texto', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
       [id, provaId, imagem, imagemBase64, posicionamento, ordem, titulo, texto];
@@ -301,15 +301,15 @@ class ArquivosVideoDb extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   ArquivosVideoDb(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
       'questao_legado_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> path = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
       'path', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
   @override
@@ -337,15 +337,15 @@ class ArquivosAudioDb extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   ArquivosAudioDb(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
       'questao_legado_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> path = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
       'path', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
   @override
@@ -373,30 +373,30 @@ class DownloadProvasDb extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   DownloadProvasDb(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
       'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
       'questao_legado_id', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<int> ordem = GeneratedColumn<int>(
       'ordem', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> tipo = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<int> tipo = GeneratedColumn<int>(
       'tipo', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> downloadStatus = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> downloadStatus = GeneratedColumn<int>(
       'download_status', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> dataHoraInicio =
-      GeneratedColumn<DateTime?>('data_hora_inicio', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> dataHoraFim =
-      GeneratedColumn<DateTime?>('data_hora_fim', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> dataHoraInicio =
+      GeneratedColumn<DateTime>('data_hora_inicio', aliasedName, false,
+          type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> dataHoraFim = GeneratedColumn<DateTime>(
+      'data_hora_fim', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -428,81 +428,17 @@ class DownloadProvasDb extends Table with TableInfo {
   bool get dontWriteConstraints => false;
 }
 
-class RespostaProvaTable extends Table with TableInfo {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  RespostaProvaTable(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<String?> codigoEOL = GeneratedColumn<String?>(
-      'codigo_e_o_l', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> alternativaId = GeneratedColumn<int?>(
-      'alternativa_id', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
-  late final GeneratedColumn<String?> resposta = GeneratedColumn<String?>(
-      'resposta', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  late final GeneratedColumn<int?> tempoRespostaAluno = GeneratedColumn<int?>(
-      'tempo_resposta_aluno', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime?> dataHoraResposta =
-      GeneratedColumn<DateTime?>('data_hora_resposta', aliasedName, true,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
-  late final GeneratedColumn<bool?> sincronizado = GeneratedColumn<bool?>(
-      'sincronizado', aliasedName, false,
-      type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (sincronizado IN (0, 1))');
-  @override
-  List<GeneratedColumn> get $columns => [
-        codigoEOL,
-        questaoId,
-        provaId,
-        alternativaId,
-        resposta,
-        tempoRespostaAluno,
-        dataHoraResposta,
-        sincronizado
-      ];
-  @override
-  String get aliasedName => _alias ?? 'resposta_prova_table';
-  @override
-  String get actualTableName => 'resposta_prova_table';
-  @override
-  Set<GeneratedColumn> get $primaryKey => {codigoEOL, provaId, questaoId};
-  @override
-  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
-    throw UnsupportedError('TableInfo.map in schema verification code');
-  }
-
-  @override
-  RespostaProvaTable createAlias(String alias) {
-    return RespostaProvaTable(attachedDatabase, alias);
-  }
-
-  @override
-  bool get dontWriteConstraints => false;
-}
-
 class ProvaAlunoTable extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   ProvaAlunoTable(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<String?> codigoEOL = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> codigoEOL = GeneratedColumn<String>(
       'codigo_e_o_l', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
       'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [codigoEOL, provaId];
   @override
@@ -530,21 +466,21 @@ class ProvaCadernoTable extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   ProvaCadernoTable(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> questaoId = GeneratedColumn<int>(
       'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
       'questao_legado_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
       'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<String?> caderno = GeneratedColumn<String?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> caderno = GeneratedColumn<String>(
       'caderno', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> ordem = GeneratedColumn<int>(
       'ordem', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
       [questaoId, questaoLegadoId, provaId, caderno, ordem];
@@ -573,12 +509,12 @@ class QuestaoArquivoTable extends Table with TableInfo {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   QuestaoArquivoTable(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<int?> questaoLegadoId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
       'questao_legado_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  late final GeneratedColumn<int?> arquivoLegadoId = GeneratedColumn<int?>(
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> arquivoLegadoId = GeneratedColumn<int>(
       'arquivo_legado_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [questaoLegadoId, arquivoLegadoId];
   @override
@@ -602,7 +538,8 @@ class QuestaoArquivoTable extends Table with TableInfo {
 }
 
 class DatabaseAtV20 extends GeneratedDatabase {
-  DatabaseAtV20(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  DatabaseAtV20(QueryExecutor e) : super(e);
+  DatabaseAtV20.connect(DatabaseConnection c) : super.connect(c);
   late final ProvasDb provasDb = ProvasDb(this);
   late final QuestoesDb questoesDb = QuestoesDb(this);
   late final AlternativasDb alternativasDb = AlternativasDb(this);
@@ -611,13 +548,13 @@ class DatabaseAtV20 extends GeneratedDatabase {
   late final ArquivosVideoDb arquivosVideoDb = ArquivosVideoDb(this);
   late final ArquivosAudioDb arquivosAudioDb = ArquivosAudioDb(this);
   late final DownloadProvasDb downloadProvasDb = DownloadProvasDb(this);
-  late final RespostaProvaTable respostaProvaTable = RespostaProvaTable(this);
   late final ProvaAlunoTable provaAlunoTable = ProvaAlunoTable(this);
   late final ProvaCadernoTable provaCadernoTable = ProvaCadernoTable(this);
   late final QuestaoArquivoTable questaoArquivoTable =
       QuestaoArquivoTable(this);
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, dynamic>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         provasDb,
@@ -628,7 +565,6 @@ class DatabaseAtV20 extends GeneratedDatabase {
         arquivosVideoDb,
         arquivosAudioDb,
         downloadProvasDb,
-        respostaProvaTable,
         provaAlunoTable,
         provaCadernoTable,
         questaoArquivoTable

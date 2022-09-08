@@ -91,7 +91,7 @@ dependencies:
   flutter_screenutil: ^5.5.3+2
 
   # Database
-  drift: ^1.7.1
+  drift: ^2.1.0
   sqlite3_flutter_libs: ^0.5.7
   path_provider: ^2.0.9
   path_provider_android: any
@@ -131,10 +131,10 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^1.0.0
 
-  build_runner: ^2.1.2
+  build_runner: ^2.2.0
   chopper_generator: ^4.0.6
   mobx_codegen: ^2.0.0
-  drift_dev: ^1.7.0
+  drift_dev: ^2.1.0
   json_serializable: ^6.3.1
   mockito: ^5.0.15
 

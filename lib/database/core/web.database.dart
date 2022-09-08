@@ -10,6 +10,6 @@ DatabaseConnection connect([String dbName = 'serap', bool external = false]) {
       logStatements: AppConfigReader.debugSql(),
     );
 
-    return DatabaseConnection.fromExecutor(databaseImpl);
+    return DatabaseConnection(databaseImpl);
   }));
 }
