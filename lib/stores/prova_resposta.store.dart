@@ -1,5 +1,6 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
+import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/services/api_service.dart';
@@ -17,11 +18,9 @@ part 'prova_resposta.store.g.dart';
 
 class ProvaRespostaStore = _ProvaRespostaStoreBase with _$ProvaRespostaStore;
 
-abstract class _ProvaRespostaStoreBase with Store, Loggable {
+abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   final _service = GetIt.I.get<ApiService>().questaoResposta;
   final _serviceProva = GetIt.I.get<ApiService>().prova;
-
-  final AppDatabase db = ServiceLocator.get();
 
   @observable
   int idProva;
@@ -61,7 +60,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
             sincronizado: true,
           );
 
-          await db.respostaProvaDao.inserirOuAtualizar(entity);
+          await dbRespostas.respostaProvaDao.inserirOuAtualizar(entity);
           respostasLocal[questaoResponse.questaoId] = entity;
 
           finer(
@@ -88,7 +87,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   @action
   sincronizarResposta({bool force = false}) async {
     fine('[$idProva] - Sincronizando respostas para o servidor');
-    var respostasNaoSincronizadas = await db.respostaProvaDao.obterTodasNaoSincronizadasPorCodigoEProva(
+    var respostasNaoSincronizadas = await dbRespostas.respostaProvaDao.obterTodasNaoSincronizadasPorCodigoEProva(
       codigoEOL,
       idProva,
     );
@@ -125,7 +124,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
         if (response.isSuccessful) {
           for (var resposta in respostasNaoSincronizadas) {
             fine("[$idProva] - Resposta Sincronizada - ${resposta.questaoId} | ${resposta.alternativaId}");
-            await db.respostaProvaDao.definirSincronizado(resposta, true);
+            await dbRespostas.respostaProvaDao.definirSincronizado(resposta, true);
             respostasLocal[resposta.questaoId]!.sincronizado = true;
           }
         }
@@ -150,7 +149,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
       dataHoraResposta: DateTime.now(),
     );
 
-    await db.respostaProvaDao.inserirOuAtualizar(resposta);
+    await dbRespostas.respostaProvaDao.inserirOuAtualizar(resposta);
     respostasLocal[questaoId] = resposta;
   }
 
@@ -164,7 +163,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
 
       info('[$idProva] - Questao $questaoId - Tempo de resposta: ${resposta.tempoRespostaAluno} + $tempoQuestao');
 
-      await db.respostaProvaDao.inserirOuAtualizar(resposta);
+      await dbRespostas.respostaProvaDao.inserirOuAtualizar(resposta);
     } else {
       await definirResposta(questaoId, tempoQuestao: tempoQuestao);
 
@@ -173,7 +172,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable {
   }
 
   Future<Map<int, RespostaProva>> carregarRespostasLocal() async {
-    var respostasBanco = await db.respostaProvaDao.obterPorProvaIdECodigoEOL(idProva, codigoEOL);
+    var respostasBanco = await dbRespostas.respostaProvaDao.obterPorProvaIdECodigoEOL(idProva, codigoEOL);
 
     Map<int, RespostaProva> respostas = {};
 

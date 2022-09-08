@@ -1,4 +1,4 @@
-import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/respostas.database.dart';
 import 'package:drift/drift.dart';
 import 'package:json_annotation/json_annotation.dart';
 

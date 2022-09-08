@@ -2,10 +2,9 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/web.dart';
 
-/// Obtains a database connection for running drift on the web.
-DatabaseConnection connect({bool isInWebWorker = false}) {
+DatabaseConnection connect([String dbName = 'serap', bool external = false]) {
   return DatabaseConnection.delayed(Future.sync(() async {
-    final webDb = await DriftWebStorage.indexedDbIfSupported('serap');
+    final webDb = await DriftWebStorage.indexedDbIfSupported(dbName);
     final databaseImpl = WebDatabase.withStorage(
       webDb,
       logStatements: AppConfigReader.debugSql(),

@@ -37,6 +37,7 @@ google-services.json
 .pub/
 /build/
 /ios/build/
+/android/app/build
 
 # Windows related
 **/generated_plugin_registrant.*

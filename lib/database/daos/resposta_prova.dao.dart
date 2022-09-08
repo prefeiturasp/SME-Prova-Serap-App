@@ -1,13 +1,14 @@
-import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/resposta_prova.table.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:drift/drift.dart';
 
+import '../respostas.database.dart';
+
 part 'resposta_prova.dao.g.dart';
 
 @DriftAccessor(tables: [RespostaProvaTable])
-class RespostaProvaDao extends DatabaseAccessor<AppDatabase> with _$RespostaProvaDaoMixin {
-  RespostaProvaDao(AppDatabase db) : super(db);
+class RespostaProvaDao extends DatabaseAccessor<RespostasDatabase> with _$RespostaProvaDaoMixin {
+  RespostaProvaDao(RespostasDatabase db) : super(db);
 
   Future inserir(RespostaProva entity) {
     return into(respostaProvaTable).insert(entity);

@@ -59,7 +59,7 @@ class FinalizarProvasPendenteJob with Job, Loggable, Database {
         await SincronizarRespostasJob().run();
 
         // Remove respostas do banco local
-        await db.respostaProvaDao.removerSincronizadasPorProva(prova.id);
+        await dbRespostas.respostaProvaDao.removerSincronizadasPorProva(prova.id);
 
         // Atualiza Status da prova
         await db.provaDao.atualizarStatus(prova.id, EnumProvaStatus.FINALIZADA);

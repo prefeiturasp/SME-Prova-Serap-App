@@ -1,4 +1,3 @@
-import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/job.interface.dart';
@@ -28,8 +27,6 @@ class SincronizarRespostasJob with Job, Loggable, Database {
   @override
   run() async {
     fine('Sincronizando respostas para o servidor');
-
-    AppDatabase db = ServiceLocator.get();
 
     var respostasParaSincronizar = await carregaRespostasNaoSincronizadas();
     fine('${respostasParaSincronizar.length} respostas ainda não sincronizadas');
@@ -63,7 +60,7 @@ class SincronizarRespostasJob with Job, Loggable, Database {
         for (var resposta in respostasParaSincronizar) {
           fine("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
 
-          await db.respostaProvaDao.definirSincronizado(resposta, true);
+          await dbRespostas.respostaProvaDao.definirSincronizado(resposta, true);
         }
       }
     } catch (e, stack) {
@@ -74,7 +71,6 @@ class SincronizarRespostasJob with Job, Loggable, Database {
   }
 
   Future<List> carregaRespostasNaoSincronizadas() async {
-    AppDatabase db = ServiceLocator.get();
-    return await db.respostaProvaDao.obterTodasNaoSincronizadas();
+    return await dbRespostas.respostaProvaDao.obterTodasNaoSincronizadas();
   }
 }
