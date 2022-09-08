@@ -52,6 +52,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
         for (var questaoResponse in questoesResponse) {
           var entity = RespostaProva(
             codigoEOL: codigoEOL,
+            dispositivoId: ServiceLocator<PrincipalStore>().dispositivoId,
             provaId: idProva,
             questaoId: questaoResponse.questaoId,
             alternativaId: questaoResponse.alternativaId,
@@ -106,6 +107,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
         respostas.add(
           QuestaoRespostaDTO(
             alunoRa: codigoEOL,
+            dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
             questaoId: resposta.questaoId,
             alternativaId: resposta.alternativaId,
             resposta: resposta.resposta,
@@ -140,6 +142,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int tempoQuestao = 0}) async {
     var resposta = RespostaProva(
       codigoEOL: codigoEOL,
+      dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
       provaId: idProva,
       questaoId: questaoId,
       alternativaId: alternativaId,

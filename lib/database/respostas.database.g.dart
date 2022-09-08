@@ -11,6 +11,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
   final Value<String> codigoEOL;
   final Value<int> questaoId;
   final Value<int> provaId;
+  final Value<String> dispositivoId;
   final Value<int?> alternativaId;
   final Value<String?> resposta;
   final Value<int> tempoRespostaAluno;
@@ -20,6 +21,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
     this.codigoEOL = const Value.absent(),
     this.questaoId = const Value.absent(),
     this.provaId = const Value.absent(),
+    this.dispositivoId = const Value.absent(),
     this.alternativaId = const Value.absent(),
     this.resposta = const Value.absent(),
     this.tempoRespostaAluno = const Value.absent(),
@@ -30,6 +32,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
     required String codigoEOL,
     required int questaoId,
     required int provaId,
+    required String dispositivoId,
     this.alternativaId = const Value.absent(),
     this.resposta = const Value.absent(),
     required int tempoRespostaAluno,
@@ -38,12 +41,14 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
   })  : codigoEOL = Value(codigoEOL),
         questaoId = Value(questaoId),
         provaId = Value(provaId),
+        dispositivoId = Value(dispositivoId),
         tempoRespostaAluno = Value(tempoRespostaAluno),
         sincronizado = Value(sincronizado);
   static Insertable<RespostaProva> custom({
     Expression<String>? codigoEOL,
     Expression<int>? questaoId,
     Expression<int>? provaId,
+    Expression<String>? dispositivoId,
     Expression<int>? alternativaId,
     Expression<String>? resposta,
     Expression<int>? tempoRespostaAluno,
@@ -54,6 +59,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
       if (codigoEOL != null) 'codigo_e_o_l': codigoEOL,
       if (questaoId != null) 'questao_id': questaoId,
       if (provaId != null) 'prova_id': provaId,
+      if (dispositivoId != null) 'dispositivo_id': dispositivoId,
       if (alternativaId != null) 'alternativa_id': alternativaId,
       if (resposta != null) 'resposta': resposta,
       if (tempoRespostaAluno != null)
@@ -67,6 +73,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
       {Value<String>? codigoEOL,
       Value<int>? questaoId,
       Value<int>? provaId,
+      Value<String>? dispositivoId,
       Value<int?>? alternativaId,
       Value<String?>? resposta,
       Value<int>? tempoRespostaAluno,
@@ -76,6 +83,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
       codigoEOL: codigoEOL ?? this.codigoEOL,
       questaoId: questaoId ?? this.questaoId,
       provaId: provaId ?? this.provaId,
+      dispositivoId: dispositivoId ?? this.dispositivoId,
       alternativaId: alternativaId ?? this.alternativaId,
       resposta: resposta ?? this.resposta,
       tempoRespostaAluno: tempoRespostaAluno ?? this.tempoRespostaAluno,
@@ -95,6 +103,9 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
     }
     if (provaId.present) {
       map['prova_id'] = Variable<int>(provaId.value);
+    }
+    if (dispositivoId.present) {
+      map['dispositivo_id'] = Variable<String>(dispositivoId.value);
     }
     if (alternativaId.present) {
       map['alternativa_id'] = Variable<int>(alternativaId.value);
@@ -120,6 +131,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
           ..write('codigoEOL: $codigoEOL, ')
           ..write('questaoId: $questaoId, ')
           ..write('provaId: $provaId, ')
+          ..write('dispositivoId: $dispositivoId, ')
           ..write('alternativaId: $alternativaId, ')
           ..write('resposta: $resposta, ')
           ..write('tempoRespostaAluno: $tempoRespostaAluno, ')
@@ -151,6 +163,12 @@ class $RespostaProvaTableTable extends RespostaProvaTable
   late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
       'prova_id', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  final VerificationMeta _dispositivoIdMeta =
+      const VerificationMeta('dispositivoId');
+  @override
+  late final GeneratedColumn<String> dispositivoId = GeneratedColumn<String>(
+      'dispositivo_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _alternativaIdMeta =
       const VerificationMeta('alternativaId');
   @override
@@ -189,6 +207,7 @@ class $RespostaProvaTableTable extends RespostaProvaTable
         codigoEOL,
         questaoId,
         provaId,
+        dispositivoId,
         alternativaId,
         resposta,
         tempoRespostaAluno,
@@ -223,6 +242,14 @@ class $RespostaProvaTableTable extends RespostaProvaTable
           provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
     } else if (isInserting) {
       context.missing(_provaIdMeta);
+    }
+    if (data.containsKey('dispositivo_id')) {
+      context.handle(
+          _dispositivoIdMeta,
+          dispositivoId.isAcceptableOrUnknown(
+              data['dispositivo_id']!, _dispositivoIdMeta));
+    } else if (isInserting) {
+      context.missing(_dispositivoIdMeta);
     }
     if (data.containsKey('alternativa_id')) {
       context.handle(
@@ -267,6 +294,8 @@ class $RespostaProvaTableTable extends RespostaProvaTable
     return RespostaProva(
       codigoEOL: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}codigo_e_o_l'])!,
+      dispositivoId: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}dispositivo_id'])!,
       provaId: attachedDatabase.options.types
           .read(DriftSqlType.int, data['${effectivePrefix}prova_id'])!,
       questaoId: attachedDatabase.options.types

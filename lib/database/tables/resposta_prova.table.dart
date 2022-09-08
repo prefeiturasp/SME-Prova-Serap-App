@@ -7,6 +7,7 @@ class RespostaProvaTable extends Table {
 
   IntColumn get questaoId => integer()();
   IntColumn get provaId => integer()();
+  TextColumn get dispositivoId => text()();
 
   IntColumn get alternativaId => integer().nullable()();
   TextColumn get resposta => text().nullable()();

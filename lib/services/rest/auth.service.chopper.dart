@@ -18,9 +18,15 @@ class _$AutenticacaoService extends AutenticacaoService {
 
   @override
   Future<Response<AutenticacaoResponseDTO>> login(
-      {required String login, required String senha}) {
+      {required String login,
+      required String senha,
+      required String dispositivo}) {
     final $url = '/v1/autenticacao';
-    final $body = <String, dynamic>{'login': login, 'senha': senha};
+    final $body = <String, dynamic>{
+      'login': login,
+      'senha': senha,
+      'dispositivo': dispositivo
+    };
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client
         .send<AutenticacaoResponseDTO, AutenticacaoResponseDTO>($request);
