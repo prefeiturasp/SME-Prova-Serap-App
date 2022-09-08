@@ -10,7 +10,6 @@ import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:appserap/models/prova_aluno.model.dart';
-import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/models/questao.model.dart';
@@ -28,7 +27,6 @@ import 'daos/prova_aluno.dao.dart';
 import 'daos/prova_caderno.dao.dart';
 import 'daos/questao.dao.dart';
 import 'daos/questao_arquivo.dao.dart';
-import 'daos/resposta_prova.dao.dart';
 import 'tables/alternativa.table.dart';
 import 'tables/arquivo.table.dart';
 import 'tables/arquivo_audio.table.dart';
@@ -40,7 +38,6 @@ import 'tables/prova_aluno.table.dart';
 import 'tables/prova_caderno.table.dart';
 import 'tables/questao.table.dart';
 import 'tables/questao_arquivo.table.dart';
-import 'tables/resposta_prova.table.dart';
 
 import 'core/shared.database.dart' as impl;
 
@@ -58,7 +55,6 @@ part 'app.database.g.dart';
     ArquivosVideoDb,
     ArquivosAudioDb,
     DownloadProvasDb,
-    RespostaProvaTable,
     ProvaAlunoTable,
     ProvaCadernoTable,
     QuestaoArquivoTable,
@@ -72,7 +68,6 @@ part 'app.database.g.dart';
     ArquivoDao,
     ContextoProvaDao,
     ProvaDao,
-    RespostaProvaDao,
     ProvaAlunoDao,
     ProvaCadernoDao,
     QuestaoArquivoDao,
@@ -130,10 +125,6 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(downloadProvasDb);
           }
 
-          if (from < 11) {
-            await m.createTable(respostaProvaTable);
-          }
-
           if (from < 12) {
             await m.addColumn(provasDb, provasDb.ultimaAlteracao);
           }
@@ -152,10 +143,6 @@ class AppDatabase extends _$AppDatabase {
 
           if (from < 15) {
             await m.alterTable(TableMigration(questoesDb));
-          }
-
-          if (from < 16) {
-            await m.alterTable(TableMigration(respostaProvaTable));
           }
 
           if (from < 17) {

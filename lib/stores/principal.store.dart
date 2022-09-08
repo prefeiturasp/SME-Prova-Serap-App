@@ -1,4 +1,5 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
@@ -68,6 +69,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   @action
   Future<void> sair() async {
     AppDatabase db = GetIt.I.get();
+    RespostasDatabase dbRespostas = GetIt.I.get();
 
     await setUserIdentifier("");
 
@@ -92,7 +94,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
     await _limparDadosLocais();
 
-    await db.respostaProvaDao.removerSincronizadas();
+    await dbRespostas.respostaProvaDao.removerSincronizadas();
 
     await db.limpar();
 

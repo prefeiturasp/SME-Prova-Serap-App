@@ -102,6 +102,7 @@ dependencies:
   sqlite_viewer:
     git: 
       url: https://github.com/frgmt/flutter-sqlite-viewer
+  external_path: ^1.0.3
 
   # Informações do dispoisitivo
   device_info_plus: ^4.1.2

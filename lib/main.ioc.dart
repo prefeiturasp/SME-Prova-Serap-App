@@ -16,6 +16,7 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'database/respostas.database.dart';
 import 'main.route.dart';
 import 'stores/admin_prova_caderno.store.dart';
 import 'stores/admin_prova_contexto.store.dart';
@@ -42,6 +43,7 @@ class DependenciasIoC with Loggable {
   registrarServicos() {
     registerSingletonAsync<SharedPreferences>(() => SharedPreferences.getInstance());
     registerSingleton<AppDatabase>(AppDatabase());
+    registerSingleton<RespostasDatabase>(RespostasDatabase());
     registerSingleton<ApiService>(ApiService.build(
       ConnectionOptions(
         baseUrl: AppConfigReader.getApiHost(),

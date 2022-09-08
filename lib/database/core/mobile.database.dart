@@ -7,6 +7,9 @@ import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:external_path/external_path.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 /// Obtains a database connection for running drift in a Dart VM.
 ///
@@ -14,13 +17,26 @@ import 'package:path/path.dart' as p;
 /// To move synchronous database work off the main thread, we use a
 /// [DriftIsolate], which can run queries in a background isolate under the
 /// hood.
-DatabaseConnection connect() {
+DatabaseConnection connect([String dbName = 'serapdb', bool external = false]) {
   return DatabaseConnection.delayed(Future.sync(() async {
-    // Background isolates can't use platform channels, so let's use
-    // `path_provider` in the main isolate and just send the result containing
-    // the path over to the background isolate.
-    final appDir = await getApplicationDocumentsDirectory();
-    final dbPath = p.join(appDir.path, 'serapdb.sqlite');
+    late String path;
+
+    if (!external) {
+      final appDir = await getApplicationDocumentsDirectory();
+      path = appDir.path;
+    }else {
+      await askPermission();
+
+      String externalPath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOCUMENTS);
+      var dir = Directory(p.join(externalPath, 'SERAp'));
+      if(!dir.existsSync()){
+        dir.create(recursive: true);
+      }
+
+      path = dir.path;
+    }
+
+    final dbPath = p.join(path, '$dbName.sqlite');
 
     final receiveDriftIsolate = ReceivePort();
     await Isolate.spawn(_entrypointForDriftIsolate, _IsolateStartRequest(receiveDriftIsolate.sendPort, dbPath));
@@ -28,6 +44,15 @@ DatabaseConnection connect() {
     final driftIsolate = await receiveDriftIsolate.first as DriftIsolate;
     return driftIsolate.connect();
   }));
+}
+
+Future<void> askPermission() async{
+  PermissionStatus status = await Permission.storage.request();
+  if(status.isPermanentlyDenied) {
+    await openAppSettings();
+  }else if(status.isDenied == true) {
+    askPermission();
+  }
 }
 
 /// The entrypoint of isolates can only take a single message, but we need two
