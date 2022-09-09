@@ -7,6 +7,7 @@ part 'resposta_prova.model.g.dart';
 @JsonSerializable()
 class RespostaProva implements Insertable<RespostaProva> {
   String codigoEOL;
+  String dispositivoId;
   int provaId;
   int questaoId;
   int? alternativaId;
@@ -17,6 +18,7 @@ class RespostaProva implements Insertable<RespostaProva> {
 
   RespostaProva({
     required this.codigoEOL,
+    required this.dispositivoId,
     required this.provaId,
     required this.questaoId,
     this.alternativaId,
@@ -31,13 +33,14 @@ class RespostaProva implements Insertable<RespostaProva> {
 
   @override
   String toString() {
-    return 'RespostaProva(codigoEOL: $codigoEOL, questaoId: $questaoId, alternativaId: $alternativaId, resposta: $resposta, sincronizado: $sincronizado, dataHoraResposta: $dataHoraResposta)';
+    return 'RespostaProva(codigoEOL: $codigoEOL, dispositivoId: $dispositivoId, questaoId: $questaoId, alternativaId: $alternativaId, resposta: $resposta, sincronizado: $sincronizado, dataHoraResposta: $dataHoraResposta)';
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     return RespostaProvaTableCompanion(
       codigoEOL: Value(codigoEOL),
+      dispositivoId: Value(dispositivoId),
       provaId: Value(provaId),
       questaoId: Value(questaoId),
       alternativaId: Value(alternativaId),

@@ -47,6 +47,7 @@ main() {
       var dadosResponse = await service.login(
         login: userEOL,
         senha: userPassword,
+        dispositivo: "idDispositivo",
       );
 
       expect(dadosResponse.isSuccessful, isTrue);

@@ -17,6 +17,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:updater/updater.dart';
 
@@ -159,20 +160,20 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
       int buildNumber = prefs.getInt("_buildNumber") ?? 0;
       String version = prefs.getString("_version") ?? "1.0.0";
 
-      String? imei = "";
+      String? deviceId = await PlatformDeviceId.getDeviceId;
 
-      await FirebaseCrashlytics.instance.setCustomKey('imei', imei);
+      await FirebaseCrashlytics.instance.setCustomKey('deviceId', deviceId!);
 
       if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
         info("Informando versão...");
-        info("IMEI: $imei Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
+        info("Id do Dispositivo: $deviceId Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
 
         if (ServiceLocator.get<PrincipalStore>().temConexao) {
           await GetIt.I.get<ApiService>().versao.informarVersao(
                 chaveAPI: AppConfigReader.getChaveApi(),
                 versaoCodigo: int.parse(packageInfo.buildNumber),
                 versaoDescricao: packageInfo.version,
-                dispositivoImei: imei,
+                dispositivoImei: deviceId,
                 atualizadoEm: DateTime.now().toIso8601String(),
               );
 
