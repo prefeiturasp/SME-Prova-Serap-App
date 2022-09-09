@@ -44,13 +44,13 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
       Atom(name: '_PrincipalStoreBase.dispositivoId', context: context);
 
   @override
-  String get dispositivoId {
+  String? get dispositivoId {
     _$dispositivoIdAtom.reportRead();
     return super.dispositivoId;
   }
 
   @override
-  set dispositivoId(String value) {
+  set dispositivoId(String? value) {
     _$dispositivoIdAtom.reportWrite(value, super.dispositivoId, () {
       super.dispositivoId = value;
     });

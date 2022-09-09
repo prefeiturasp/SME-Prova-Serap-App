@@ -41,7 +41,7 @@ class SincronizarRespostasJob with Job, Loggable, Database {
     var respostasDTO = respostasParaSincronizar
         .map((e) => QuestaoRespostaDTO(
               alunoRa: e.codigoEOL,
-              dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
+              dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId!,
               questaoId: e.questaoId,
               alternativaId: e.alternativaId,
               resposta: e.resposta,
