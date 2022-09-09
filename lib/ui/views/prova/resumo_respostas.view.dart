@@ -75,7 +75,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
   bool get willPop => false;
 
   @override
-  PreferredSizeWidget buildAppBar() {
+  AppBarWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
       subtitulo: provaStore.prova.descricao,

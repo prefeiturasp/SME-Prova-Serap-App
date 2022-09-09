@@ -48,7 +48,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
   }
 
   @override
-  PreferredSizeWidget buildAppBar() {
+  AppBarWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
       mostrarBotaoVoltar: false,

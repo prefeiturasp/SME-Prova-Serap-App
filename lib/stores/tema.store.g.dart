@@ -137,6 +137,22 @@ mixin _$TemaStore on _TemaStoreBase, Store {
     });
   }
 
+  late final _$appbarHeightAtom =
+      Atom(name: '_TemaStoreBase.appbarHeight', context: context);
+
+  @override
+  double get appbarHeight {
+    _$appbarHeightAtom.reportRead();
+    return super.appbarHeight;
+  }
+
+  @override
+  set appbarHeight(double value) {
+    _$appbarHeightAtom.reportWrite(value, super.appbarHeight, () {
+      super.appbarHeight = value;
+    });
+  }
+
   late final _$fonteDoTextoAtom =
       Atom(name: '_TemaStoreBase.fonteDoTexto', context: context);
 
@@ -189,6 +205,7 @@ tTexto16: ${tTexto16},
 tTexto18: ${tTexto18},
 tTexto20: ${tTexto20},
 tTexto24: ${tTexto24},
+appbarHeight: ${appbarHeight},
 fonteDoTexto: ${fonteDoTexto}
     ''';
   }

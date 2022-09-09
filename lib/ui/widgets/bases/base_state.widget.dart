@@ -57,35 +57,37 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
     WidgetsBinding.instance.addPostFrameCallback((_) => onAfterBuild(context));
 
     return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-        backgroundColor: backgroundColor,
-        appBar: showAppBar ? buildAppBar() : null,
-        bottomNavigationBar: _buildBottomNavigationBar(),
-        persistentFooterButtons: _buildPersistentFooterButtons(),
-        floatingActionButton: buildFloatingActionButton(),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: WillPopScope(
-                onWillPop: () async {
-                  return willPop;
-                },
-                child: Container(
-                  padding: EdgeInsets.only(
-                    left: defaultPadding,
-                    right: defaultPadding,
-                    top: defaultPaddingTop ?? defaultPadding,
-                    bottom: showBottomNaviationBar ? 0 : defaultPadding,
+      child: Observer(builder: (_) {
+        return Scaffold(
+          resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+          backgroundColor: backgroundColor,
+          appBar: _showAppBar(),
+          bottomNavigationBar: _buildBottomNavigationBar(),
+          persistentFooterButtons: _buildPersistentFooterButtons(),
+          floatingActionButton: buildFloatingActionButton(),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: WillPopScope(
+                  onWillPop: () async {
+                    return willPop;
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(
+                      left: defaultPadding,
+                      right: defaultPadding,
+                      top: defaultPaddingTop ?? defaultPadding,
+                      bottom: showBottomNaviationBar ? 0 : defaultPadding,
+                    ),
+                    child: builder(context),
                   ),
-                  child: builder(context),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -99,7 +101,18 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
     }
   }
 
-  PreferredSizeWidget buildAppBar() {
+  PreferredSizeWidget? _showAppBar() {
+    if (!showAppBar) {
+      return null;
+    }
+
+    return PreferredSize(
+      preferredSize: Size.fromHeight(temaStore.appbarHeight),
+      child: buildAppBar(),
+    );
+  }
+
+  AppBarWidget buildAppBar() {
     return AppBarWidget(
       popView: false,
       exibirSair: exibirSair,
