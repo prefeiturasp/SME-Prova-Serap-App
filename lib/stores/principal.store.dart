@@ -36,7 +36,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   ReactionDisposer? _disposer;
 
   @observable
-  late String dispositivoId;
+  String? dispositivoId;
 
   setup() async {
     _disposer = reaction((_) => conexaoStream.value, onChangeConexao);

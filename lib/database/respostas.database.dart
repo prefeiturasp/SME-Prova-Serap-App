@@ -24,4 +24,18 @@ class RespostasDatabase extends _$RespostasDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) {
+        return m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {},
+      beforeOpen: (details) async {
+        await customStatement('PRAGMA auto_vacuum = FULL;');
+        await customStatement('PRAGMA foreign_keys = ON;');
+      },
+    );
+  }
 }
