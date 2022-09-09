@@ -10,7 +10,6 @@ import 'package:path/path.dart' as p;
 import 'package:external_path/external_path.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
 /// Obtains a database connection for running drift in a Dart VM.
 ///
 /// The [NativeDatabase] from drift will synchronously use sqlite3's C APIs.
@@ -24,12 +23,12 @@ DatabaseConnection connect([String dbName = 'serapdb', bool external = false]) {
     if (!external) {
       final appDir = await getApplicationDocumentsDirectory();
       path = appDir.path;
-    }else {
+    } else {
       await askPermission();
 
       String externalPath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOCUMENTS);
       var dir = Directory(p.join(externalPath, 'SERAp'));
-      if(!dir.existsSync()){
+      if (!dir.existsSync()) {
         dir.create(recursive: true);
       }
 
@@ -46,11 +45,11 @@ DatabaseConnection connect([String dbName = 'serapdb', bool external = false]) {
   }));
 }
 
-Future<void> askPermission() async{
+Future<void> askPermission() async {
   PermissionStatus status = await Permission.storage.request();
-  if(status.isPermanentlyDenied) {
+  if (status.isPermanentlyDenied) {
     await openAppSettings();
-  }else if(status.isDenied == true) {
+  } else if (status.isDenied == true) {
     askPermission();
   }
 }
@@ -80,7 +79,7 @@ void _entrypointForDriftIsolate(_IsolateStartRequest request) {
 
   // We can use DriftIsolate.inCurrent because this function is the entrypoint
   // of a background isolate itself.
-  final driftServer = DriftIsolate.inCurrent(() => DatabaseConnection.fromExecutor(databaseImpl));
+  final driftServer = DriftIsolate.inCurrent(() => DatabaseConnection(databaseImpl));
 
   // Inform the main isolate about the server we just created.
   request.talkToMain.send(driftServer);

@@ -80,7 +80,7 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
     var rows = await query.get();
 
     var questoesLegadoId = rows.map((resultRow) {
-      return resultRow.read(questoesDb.questaoLegadoId);
+      return resultRow.read(questoesDb.questaoLegadoId)!;
     }).toList();
 
     return (delete(questoesDb)..where((t) => t.questaoLegadoId.isIn(questoesLegadoId))).go();

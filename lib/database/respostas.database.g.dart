@@ -3,7 +3,7 @@
 part of 'respostas.database.dart';
 
 // **************************************************************************
-// MoorGenerator
+// DriftDatabaseGenerator
 // **************************************************************************
 
 // ignore_for_file: type=lint
@@ -44,10 +44,10 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
     Expression<String>? codigoEOL,
     Expression<int>? questaoId,
     Expression<int>? provaId,
-    Expression<int?>? alternativaId,
-    Expression<String?>? resposta,
+    Expression<int>? alternativaId,
+    Expression<String>? resposta,
     Expression<int>? tempoRespostaAluno,
-    Expression<DateTime?>? dataHoraResposta,
+    Expression<DateTime>? dataHoraResposta,
     Expression<bool>? sincronizado,
   }) {
     return RawValuesInsertable({
@@ -97,16 +97,16 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
       map['prova_id'] = Variable<int>(provaId.value);
     }
     if (alternativaId.present) {
-      map['alternativa_id'] = Variable<int?>(alternativaId.value);
+      map['alternativa_id'] = Variable<int>(alternativaId.value);
     }
     if (resposta.present) {
-      map['resposta'] = Variable<String?>(resposta.value);
+      map['resposta'] = Variable<String>(resposta.value);
     }
     if (tempoRespostaAluno.present) {
       map['tempo_resposta_aluno'] = Variable<int>(tempoRespostaAluno.value);
     }
     if (dataHoraResposta.present) {
-      map['data_hora_resposta'] = Variable<DateTime?>(dataHoraResposta.value);
+      map['data_hora_resposta'] = Variable<DateTime>(dataHoraResposta.value);
     }
     if (sincronizado.present) {
       map['sincronizado'] = Variable<bool>(sincronizado.value);
@@ -138,50 +138,50 @@ class $RespostaProvaTableTable extends RespostaProvaTable
   $RespostaProvaTableTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codigoEOLMeta = const VerificationMeta('codigoEOL');
   @override
-  late final GeneratedColumn<String?> codigoEOL = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> codigoEOL = GeneratedColumn<String>(
       'codigo_e_o_l', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _questaoIdMeta = const VerificationMeta('questaoId');
   @override
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> questaoId = GeneratedColumn<int>(
       'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
   @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
       'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _alternativaIdMeta =
       const VerificationMeta('alternativaId');
   @override
-  late final GeneratedColumn<int?> alternativaId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> alternativaId = GeneratedColumn<int>(
       'alternativa_id', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: false);
   final VerificationMeta _respostaMeta = const VerificationMeta('resposta');
   @override
-  late final GeneratedColumn<String?> resposta = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> resposta = GeneratedColumn<String>(
       'resposta', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
+      type: DriftSqlType.string, requiredDuringInsert: false);
   final VerificationMeta _tempoRespostaAlunoMeta =
       const VerificationMeta('tempoRespostaAluno');
   @override
-  late final GeneratedColumn<int?> tempoRespostaAluno = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> tempoRespostaAluno = GeneratedColumn<int>(
       'tempo_resposta_aluno', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _dataHoraRespostaMeta =
       const VerificationMeta('dataHoraResposta');
   @override
-  late final GeneratedColumn<DateTime?> dataHoraResposta =
-      GeneratedColumn<DateTime?>('data_hora_resposta', aliasedName, true,
-          type: const IntType(),
+  late final GeneratedColumn<DateTime> dataHoraResposta =
+      GeneratedColumn<DateTime>('data_hora_resposta', aliasedName, true,
+          type: DriftSqlType.dateTime,
           requiredDuringInsert: false,
           defaultValue: currentDateAndTime);
   final VerificationMeta _sincronizadoMeta =
       const VerificationMeta('sincronizado');
   @override
-  late final GeneratedColumn<bool?> sincronizado = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> sincronizado = GeneratedColumn<bool>(
       'sincronizado', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       defaultConstraints: 'CHECK (sincronizado IN (0, 1))');
   @override
@@ -265,22 +265,22 @@ class $RespostaProvaTableTable extends RespostaProvaTable
   RespostaProva map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return RespostaProva(
-      codigoEOL: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}codigo_e_o_l'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
-      questaoId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}questao_id'])!,
-      alternativaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}alternativa_id']),
-      resposta: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}resposta']),
-      sincronizado: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}sincronizado'])!,
-      dataHoraResposta: const DateTimeType().mapFromDatabaseResponse(
-          data['${effectivePrefix}data_hora_resposta']),
-      tempoRespostaAluno: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}tempo_resposta_aluno'])!,
+      codigoEOL: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}codigo_e_o_l'])!,
+      provaId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}prova_id'])!,
+      questaoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}questao_id'])!,
+      alternativaId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}alternativa_id']),
+      resposta: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}resposta']),
+      sincronizado: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}sincronizado'])!,
+      dataHoraResposta: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}data_hora_resposta']),
+      tempoRespostaAluno: attachedDatabase.options.types.read(
+          DriftSqlType.int, data['${effectivePrefix}tempo_resposta_aluno'])!,
     );
   }
 
@@ -291,15 +291,15 @@ class $RespostaProvaTableTable extends RespostaProvaTable
 }
 
 abstract class _$RespostasDatabase extends GeneratedDatabase {
-  _$RespostasDatabase(QueryExecutor e)
-      : super(SqlTypeSystem.defaultInstance, e);
+  _$RespostasDatabase(QueryExecutor e) : super(e);
   _$RespostasDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $RespostaProvaTableTable respostaProvaTable =
       $RespostaProvaTableTable(this);
   late final RespostaProvaDao respostaProvaDao =
       RespostaProvaDao(this as RespostasDatabase);
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, dynamic>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [respostaProvaTable];
 }
