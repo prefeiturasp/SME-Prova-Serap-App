@@ -1,4 +1,3 @@
-import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/job.interface.dart';
@@ -6,6 +5,7 @@ import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api_service.dart';
+import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
@@ -29,8 +29,6 @@ class SincronizarRespostasJob with Job, Loggable, Database {
   run() async {
     fine('Sincronizando respostas para o servidor');
 
-    AppDatabase db = ServiceLocator.get();
-
     var respostasParaSincronizar = await carregaRespostasNaoSincronizadas();
     fine('${respostasParaSincronizar.length} respostas ainda não sincronizadas');
 
@@ -43,6 +41,7 @@ class SincronizarRespostasJob with Job, Loggable, Database {
     var respostasDTO = respostasParaSincronizar
         .map((e) => QuestaoRespostaDTO(
               alunoRa: e.codigoEOL,
+              dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId!,
               questaoId: e.questaoId,
               alternativaId: e.alternativaId,
               resposta: e.resposta,
@@ -63,7 +62,7 @@ class SincronizarRespostasJob with Job, Loggable, Database {
         for (var resposta in respostasParaSincronizar) {
           fine("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
 
-          await db.respostaProvaDao.definirSincronizado(resposta, true);
+          await dbRespostas.respostaProvaDao.definirSincronizado(resposta, true);
         }
       }
     } catch (e, stack) {
@@ -74,7 +73,6 @@ class SincronizarRespostasJob with Job, Loggable, Database {
   }
 
   Future<List> carregaRespostasNaoSincronizadas() async {
-    AppDatabase db = ServiceLocator.get();
-    return await db.respostaProvaDao.obterTodasNaoSincronizadas();
+    return await dbRespostas.respostaProvaDao.obterTodasNaoSincronizadas();
   }
 }

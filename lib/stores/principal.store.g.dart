@@ -40,6 +40,22 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
     });
   }
 
+  late final _$dispositivoIdAtom =
+      Atom(name: '_PrincipalStoreBase.dispositivoId', context: context);
+
+  @override
+  String? get dispositivoId {
+    _$dispositivoIdAtom.reportRead();
+    return super.dispositivoId;
+  }
+
+  @override
+  set dispositivoId(String? value) {
+    _$dispositivoIdAtom.reportWrite(value, super.dispositivoId, () {
+      super.dispositivoId = value;
+    });
+  }
+
   late final _$statusAtom =
       Atom(name: '_PrincipalStoreBase.status', context: context);
 
@@ -101,6 +117,7 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
   String toString() {
     return '''
 conexaoStream: ${conexaoStream},
+dispositivoId: ${dispositivoId},
 status: ${status},
 versaoApp: ${versaoApp},
 temConexao: ${temConexao},

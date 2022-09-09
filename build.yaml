@@ -15,3 +15,6 @@ targets:
                 generate_for:
                     - lib/**/*.dto.dart 
                     - lib/**/*.model.dart
+            drift_dev:
+                options:
+                    generate_connect_constructor: true

@@ -1,3 +1,5 @@
-import 'package:appserap/database/app.database.dart';
+import 'package:drift/drift.dart';
 
-AppDatabase constructDb() => throw 'Platform not supported';
+DatabaseConnection connect([String dbName = '', bool external = false]) {
+  throw UnsupportedError('No suitable database implementation was found on this platform.');
+}

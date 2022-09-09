@@ -5,6 +5,7 @@ part 'questao_resposta.dto.g.dart';
 @JsonSerializable()
 class QuestaoRespostaDTO {
   String alunoRa;
+  String dispositivoId;
   int questaoId;
   int? alternativaId;
   String? resposta;
@@ -13,6 +14,7 @@ class QuestaoRespostaDTO {
 
   QuestaoRespostaDTO({
     required this.alunoRa,
+    required this.dispositivoId,
     required this.questaoId,
     this.alternativaId,
     this.resposta,

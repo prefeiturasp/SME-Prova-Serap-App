@@ -13,6 +13,7 @@ abstract class AutenticacaoService extends ChopperService {
   Future<Response<AutenticacaoResponseDTO>> login({
     @Field() required String login,
     @Field() required String senha,
+    @Field() required String dispositivo,
   });
 
   @Post(path: 'revalidar')

@@ -14,11 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:imei_plugin/imei_plugin.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:updater/updater.dart';
 
@@ -155,41 +154,31 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
     }
 
     try {
-      PermissionStatus status = await Permission.contacts.status;
+      SharedPreferences prefs = ServiceLocator.get();
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-      if (!status.isGranted) {
-        status = await Permission.phone.request();
-      } else if (status.isPermanentlyDenied || status.isDenied) {
-        await openAppSettings();
-      }
+      int buildNumber = prefs.getInt("_buildNumber") ?? 0;
+      String version = prefs.getString("_version") ?? "1.0.0";
 
-      if (status.isGranted) {
-        SharedPreferences prefs = ServiceLocator.get();
-        PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String? deviceId = await PlatformDeviceId.getDeviceId;
 
-        int buildNumber = prefs.getInt("_buildNumber") ?? 0;
-        String version = prefs.getString("_version") ?? "1.0.0";
+      await FirebaseCrashlytics.instance.setCustomKey('deviceId', deviceId!);
 
-        String? imei = await ImeiPlugin.getImei(shouldShowRequestPermissionRationale: false);
+      if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
+        info("Informando versão...");
+        info("Id do Dispositivo: $deviceId Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
 
-        await FirebaseCrashlytics.instance.setCustomKey('imei', imei!);
+        if (ServiceLocator.get<PrincipalStore>().temConexao) {
+          await GetIt.I.get<ApiService>().versao.informarVersao(
+                chaveAPI: AppConfigReader.getChaveApi(),
+                versaoCodigo: int.parse(packageInfo.buildNumber),
+                versaoDescricao: packageInfo.version,
+                dispositivoImei: deviceId,
+                atualizadoEm: DateTime.now().toIso8601String(),
+              );
 
-        if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
-          info("Informando versão...");
-          info("IMEI: $imei Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
-
-          if (ServiceLocator.get<PrincipalStore>().temConexao) {
-            await GetIt.I.get<ApiService>().versao.informarVersao(
-                  chaveAPI: AppConfigReader.getChaveApi(),
-                  versaoCodigo: int.parse(packageInfo.buildNumber),
-                  versaoDescricao: packageInfo.version,
-                  dispositivoImei: imei,
-                  atualizadoEm: DateTime.now().toIso8601String(),
-                );
-
-            await prefs.setInt("_buildNumber", int.parse(packageInfo.buildNumber));
-            await prefs.setString("_version", packageInfo.version);
-          }
+          await prefs.setInt("_buildNumber", int.parse(packageInfo.buildNumber));
+          await prefs.setString("_version", packageInfo.version);
         }
       }
     } on PlatformException catch (e, stack) {

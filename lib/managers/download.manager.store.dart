@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:android_id/android_id.dart';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
@@ -43,6 +44,9 @@ part 'download.manager.store.g.dart';
 
 typedef StatusChangeCallback = void Function(
     EnumDownloadStatus downloadStatus, double porcentagem, double tempoPrevisto);
+
+typedef OnErrorCallback = void Function(String mensagem);
+
 typedef TempoPrevistoChangeCallback = void Function(double tempoPrevisto);
 
 class DownloadManagerStore = _DownloadManagerStoreBase with _$DownloadManagerStore;
@@ -61,8 +65,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   late int downloadAtual;
   bool _isPauseAllDownloads = false;
   var quantidadeDownloads = 2;
+  var maxTentativas = 3;
 
   StatusChangeCallback? onStatusChangeCallback;
+  OnErrorCallback? onErrorCallback;
 
   Timer? timer;
   TempoPrevistoChangeCallback? onTempoPrevistoChangeCallback;
@@ -90,14 +96,14 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
           await _salvarProva();
           await _validarProva();
         },
-        maxAttempts: 5,
+        maxAttempts: maxTentativas,
         onRetry: (e) {
           fine('[Prova $provaId] - Tentativa de download da prova');
           severe(e);
         },
       );
     } on ProvaDownloadException catch (e, stack) {
-      NotificacaoUtil.showSnackbarError(e.toString());
+      onErrorNotify(e.toString());
       await _updateProvaDownloadStatus(provaId, EnumDownloadStatus.ERRO);
       await recordError(e, stack);
     } on Exception catch (e, stack) {
@@ -292,9 +298,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       modeloDispositivo = webBrowserInfo.userAgent!;
       versao = webBrowserInfo.appVersion!;
     } else if (Platform.isAndroid) {
+      const _androidId = AndroidId();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       modeloDispositivo = "${androidInfo.manufacturer!} ${androidInfo.model!}";
-      dispositivoId = androidInfo.androidId!;
+      dispositivoId = (await _androidId.getId())!;
       versao = "Android ${androidInfo.version.release} (SDK ${androidInfo.version.release})";
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
@@ -355,6 +362,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
   onTempoPrevistoChange(void Function(double tempoPrevisto) onTempoPrevistoChangeCallback) {
     this.onTempoPrevistoChangeCallback = onTempoPrevistoChangeCallback;
+  }
+
+  onError(void Function(String mensagem) onErrorCallback) {
+    this.onErrorCallback = onErrorCallback;
   }
 
   startTimer() {
@@ -435,66 +446,71 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         }
 
         for (QuestaoDetalhesLegadoResponseDTO questaoDTO in questoesDTO) {
-          // verificar se a questao ja esta no banco
-          var questaoDb = await db.questaoDao.getByQuestaoLegadoId(questaoDTO.questaoLegadoId);
-
-          if (questaoDb == null) {
-            severe("[Prova $provaId] - Salvando questao ${questaoDTO.id}");
-
-            var questao = Questao(
-              questaoLegadoId: questaoDTO.questaoLegadoId,
-              titulo: questaoDTO.titulo,
-              descricao: questaoDTO.descricao,
-              tipo: questaoDTO.tipo,
-              quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
-            );
-
-            await db.questaoDao.inserirOuAtualizar(questao);
-
-            await baixarAlternativa(questaoDTO.alternativas, questaoDTO.questaoLegadoId);
-
-            if (questaoDTO.arquivos.isNotEmpty) {
-              await baixarArquivoImagem(questaoDTO.arquivos, questaoDTO.questaoLegadoId);
-            }
-
-            var deficnencias = ServiceLocator.get<UsuarioStore>().deficiencias;
-
-            for (var deficiencia in deficnencias) {
-              if (grupoSurdos.contains(deficiencia)) {
-                await baixarArquivoVideo(questaoDTO.videos, questaoDTO.questaoLegadoId);
-                break;
-              }
-            }
-
-            for (var deficiencia in deficnencias) {
-              if (grupoCegos.contains(deficiencia)) {
-                await baixarArquivoAudio(questaoDTO.audios, questaoDTO.questaoLegadoId);
-                break;
-              }
-            }
-          } else {
-            severe("[Prova $provaId] - Questao ${questaoDTO.id} ja existe no banco");
-          }
-
           DownloadProvaDb download = downloads
               .where(
                 (element) => element.questaoLegadoId == questaoDTO.questaoLegadoId,
               )
               .first;
 
-          var provaCaderno = ProvaCaderno(
-            questaoId: download.id,
-            questaoLegadoId: questaoDTO.questaoLegadoId,
-            provaId: provaId,
-            caderno: caderno,
-            ordem: download.ordem!,
-          );
+          try {
+            // verificar se a questao ja esta no banco
+            var questaoDb = await db.questaoDao.getByQuestaoLegadoId(questaoDTO.questaoLegadoId);
 
-          // salva referencia prova caderno questao
-          await db.provaCadernoDao.inserirOuAtualizar(provaCaderno);
+            if (questaoDb == null) {
+              info("[Prova $provaId] - Salvando questao ${questaoDTO.id}");
+
+              await baixarAlternativa(questaoDTO.alternativas, questaoDTO.questaoLegadoId);
+
+              if (questaoDTO.arquivos.isNotEmpty) {
+                await baixarArquivoImagem(questaoDTO.arquivos, questaoDTO.questaoLegadoId);
+              }
+
+              var deficnencias = ServiceLocator.get<UsuarioStore>().deficiencias;
+
+              for (var deficiencia in deficnencias) {
+                if (grupoSurdos.contains(deficiencia)) {
+                  await baixarArquivoVideo(questaoDTO.videos, questaoDTO.questaoLegadoId);
+                  break;
+                }
+              }
+
+              for (var deficiencia in deficnencias) {
+                if (grupoCegos.contains(deficiencia)) {
+                  await baixarArquivoAudio(questaoDTO.audios, questaoDTO.questaoLegadoId);
+                  break;
+                }
+              }
+
+              var questao = Questao(
+                questaoLegadoId: questaoDTO.questaoLegadoId,
+                titulo: questaoDTO.titulo,
+                descricao: questaoDTO.descricao,
+                tipo: questaoDTO.tipo,
+                quantidadeAlternativas: questaoDTO.quantidadeAlternativas,
+              );
+
+              await db.questaoDao.inserirOuAtualizar(questao);
+            } else {
+              severe("[Prova $provaId] - Questao ${questaoDTO.id} ja existe no banco");
+            }
+
+            var provaCaderno = ProvaCaderno(
+              questaoId: download.id,
+              questaoLegadoId: questaoDTO.questaoLegadoId,
+              provaId: provaId,
+              caderno: caderno,
+              ordem: download.ordem!,
+            );
+
+            // salva referencia prova caderno questao
+            await db.provaCadernoDao.inserirOuAtualizar(provaCaderno);
+
+            await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
+          } catch (e, stack) {
+            await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+            await recordError(e, stack);
+          }
         }
-
-        await _updateDownloadsStatus(downloads, EnumDownloadStatus.CONCLUIDO);
       } else {
         await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
       }
@@ -554,7 +570,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
             fine("[Prova $provaId] - Arquivo salvo: ${arquivo.caminho}");
           } else {
-            severe("[Prova $provaId] - Erro ao baixar arquivo ${arquivoDTO.id} - Status ${arquivoResponse.statusCode}");
+            throw ProvaDownloadException(
+              provaId,
+              "Erro ao baixar arquivo ${arquivoDTO.id} - Status ${arquivoResponse.statusCode}",
+            );
           }
         }
 
@@ -567,7 +586,6 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         await db.questaoArquivoDao.inserirOuAtualizar(questaoArquivo);
       } catch (e) {
         severe("[Prova $provaId] - Erro ao baixar arquivo de imagem ${arquivoDTO.id} - ${e.toString()}");
-
         rethrow;
       }
     }
@@ -674,10 +692,14 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   _validarProva() async {
     var downloads = await db.downloadProvaDao.getByProva(provaId);
 
-    if ((await getDownlodsByStatus(EnumDownloadStatus.ERRO)).isNotEmpty) {
+    var downloadsComErro = await getDownlodsByStatus(EnumDownloadStatus.ERRO);
+    if (downloadsComErro.isNotEmpty) {
       throw ProvaDownloadException(
           provaId, "Não foi possível baixar todo o conteúdo da prova ${provaStore?.prova.descricao ?? 'id: $provaId'}");
-    } else if ((await getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO)).length == downloads.length) {
+    }
+
+    var downloadsConcluidos = await getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO);
+    if (downloadsConcluidos.length == downloads.length) {
       // Validar quantidade de alternativa das questões
       await _validarQuestoes();
       await _validarArquivosImagem();
@@ -713,6 +735,12 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         porcentagem,
         getTempoPrevisto(downloadsDb),
       );
+    }
+  }
+
+  void onErrorNotify(String mensagem) {
+    if (onErrorCallback != null) {
+      onErrorCallback!(mensagem);
     }
   }
 

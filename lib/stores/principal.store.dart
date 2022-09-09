@@ -1,4 +1,5 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
@@ -13,6 +14,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -23,6 +25,7 @@ class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 abstract class _PrincipalStoreBase with Store, Loggable {
   _PrincipalStoreBase() {
     Connectivity().checkConnectivity().then((value) => status = value);
+    PlatformDeviceId.getDeviceId.then((value) => dispositivoId = value!);
   }
 
   final usuario = GetIt.I.get<UsuarioStore>();
@@ -31,6 +34,9 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   ReactionDisposer? _disposer;
+
+  @observable
+  String? dispositivoId;
 
   setup() async {
     _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
@@ -68,6 +74,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   @action
   Future<void> sair() async {
     AppDatabase db = GetIt.I.get();
+    RespostasDatabase dbRespostas = GetIt.I.get();
 
     await setUserIdentifier("");
 
@@ -92,7 +99,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
     await _limparDadosLocais();
 
-    await db.respostaProvaDao.removerSincronizadas();
+    await dbRespostas.respostaProvaDao.removerSincronizadas();
 
     await db.limpar();
 

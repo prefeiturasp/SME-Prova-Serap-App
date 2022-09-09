@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/tratamento_imagem.enum.dart';
+import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -39,7 +41,7 @@ class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
   }
 }
 
-abstract class _ProvaStoreBase with Store, Loggable, Disposable {
+abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   var _usuarioStore = ServiceLocator.get<UsuarioStore>();
   List<ReactionDisposer> _reactions = [];
 
@@ -123,6 +125,10 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
     downloadManagerStore.onTempoPrevistoChange((tempoPrevisto) {
       this.tempoPrevisto = tempoPrevisto;
+    });
+
+    downloadManagerStore.onError((mensagem) {
+      NotificacaoUtil.showSnackbarError(mensagem);
     });
 
     await downloadManagerStore.iniciarDownload();
@@ -401,10 +407,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
           switch (response.statusCode) {
             // Prova ja finalizada
             case 411:
-              AppDatabase db = GetIt.I.get();
-
               // Remove respostas do banco local
-              await db.respostaProvaDao.removerSincronizadasPorProva(id);
+              await dbRespostas.respostaProvaDao.removerSincronizadasPorProva(id);
 
               mostrarDialogProvaJaEnviada(context);
               break;

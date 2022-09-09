@@ -86,7 +86,7 @@ class Worker with Loggable {
         config.taskName,
         frequency: config.frequency,
         constraints: config.constraints,
-        initialDelay: Duration(seconds: 30),
+        initialDelay: Duration(minutes: 1),
         existingWorkPolicy: ExistingWorkPolicy.replace,
         backoffPolicy: BackoffPolicy.linear,
       );
