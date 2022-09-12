@@ -71,8 +71,8 @@ pipeline {
             sh 'cp $GOOGLEJSONHOM android/app/google-services.json'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release"
             sh 'ls -ltra build/app/outputs/flutter-apk/'
-            sh "cd ~/ && /opt/android-sdk-linux/build-tools/30.0.2/apksigner sign --ks ~/key.jks --ks-pass file:key.pass build/app/outputs/apk/release/app-release.apk"
-            stash includes: 'build/app/outputs/apk/release/**/*.apk', name: 'appbuild'
+            sh "cd ~/ && /opt/android-sdk-linux/build-tools/30.0.2/apksigner sign --ks ~/key.jks --ks-pass file:key.pass build/app/outputs/flutter-apk/app-release.apk"
+            stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
           }
         }
       }
@@ -184,7 +184,7 @@ pipeline {
                         unstash 'appbuild'
                     }
                     sh ("echo \"app-${env.branchname}.apk\"")
-	                  sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/apk/release/app-release.apk --replace")
+	                  sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/flutter-apk/app-release.apk --replace")
                 }
             } 
             catch (err) {
