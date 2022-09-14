@@ -4,10 +4,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:appserap/services/api.dart' as _i3;
-import 'package:appserap/services/rest/admin.service.dart' as _i6;
-import 'package:appserap/services/rest/auth.admin.service.dart' as _i7;
-import 'package:appserap/services/rest/download.service.dart' as _i5;
-import 'package:appserap/services/rest/log.service.dart' as _i8;
+import 'package:appserap/services/rest/admin.service.dart' as _i5;
+import 'package:appserap/services/rest/auth.admin.service.dart' as _i6;
 import 'package:appserap/services/rest/usuario.service.dart' as _i4;
 import 'package:chopper/chopper.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
@@ -87,24 +85,30 @@ class _FakeContextoProvaService_10 extends _i1.SmartFake
 }
 
 class _FakeDownloadService_11 extends _i1.SmartFake
-    implements _i5.DownloadService {
+    implements _i3.DownloadService {
   _FakeDownloadService_11(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeAdminService_12 extends _i1.SmartFake implements _i6.AdminService {
+class _FakeAdminService_12 extends _i1.SmartFake implements _i5.AdminService {
   _FakeAdminService_12(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
 class _FakeAutenticacaoAdminService_13 extends _i1.SmartFake
-    implements _i7.AutenticacaoAdminService {
+    implements _i6.AutenticacaoAdminService {
   _FakeAutenticacaoAdminService_13(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeLogService_14 extends _i1.SmartFake implements _i8.LogService {
+class _FakeLogService_14 extends _i1.SmartFake implements _i3.LogService {
   _FakeLogService_14(Object parent, Invocation parentInvocation)
+      : super(parent, parentInvocation);
+}
+
+class _FakeConfiguracaoService_15 extends _i1.SmartFake
+    implements _i3.ConfiguracaoService {
+  _FakeConfiguracaoService_15(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
@@ -176,23 +180,28 @@ class MockApiService extends _i1.Mock implements _i3.ApiService {
                   this, Invocation.getter(#contextoProva)))
           as _i3.ContextoProvaService);
   @override
-  _i5.DownloadService get download =>
+  _i3.DownloadService get download =>
       (super.noSuchMethod(Invocation.getter(#download),
               returnValue:
                   _FakeDownloadService_11(this, Invocation.getter(#download)))
-          as _i5.DownloadService);
+          as _i3.DownloadService);
   @override
-  _i6.AdminService get admin => (super.noSuchMethod(Invocation.getter(#admin),
+  _i5.AdminService get admin => (super.noSuchMethod(Invocation.getter(#admin),
           returnValue: _FakeAdminService_12(this, Invocation.getter(#admin)))
-      as _i6.AdminService);
+      as _i5.AdminService);
   @override
-  _i7.AutenticacaoAdminService get adminAuth =>
+  _i6.AutenticacaoAdminService get adminAuth =>
       (super.noSuchMethod(Invocation.getter(#adminAuth),
               returnValue: _FakeAutenticacaoAdminService_13(
                   this, Invocation.getter(#adminAuth)))
-          as _i7.AutenticacaoAdminService);
+          as _i6.AutenticacaoAdminService);
   @override
-  _i8.LogService get log => (super.noSuchMethod(Invocation.getter(#log),
+  _i3.LogService get log => (super.noSuchMethod(Invocation.getter(#log),
           returnValue: _FakeLogService_14(this, Invocation.getter(#log)))
-      as _i8.LogService);
+      as _i3.LogService);
+  @override
+  _i3.ConfiguracaoService get configuracao => (super.noSuchMethod(
+      Invocation.getter(#configuracao),
+      returnValue: _FakeConfiguracaoService_15(
+          this, Invocation.getter(#configuracao))) as _i3.ConfiguracaoService);
 }

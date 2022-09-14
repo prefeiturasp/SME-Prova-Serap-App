@@ -121,7 +121,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
       body: Center(
         child: Container(
           child: Lottie.asset('assets/images/students.json'),
-        ),
+            ),
       ),
     );
   }
@@ -185,4 +185,5 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
       await recordError(e, stack, reason: "Erro ao informar versão");
     }
   }
+
 }
