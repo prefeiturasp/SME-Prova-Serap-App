@@ -697,7 +697,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
         DateTime dataHoraServidor = body.dataHora;
         int tolerancia = body.tolerancia;
 
-        if (dataHoraServidor.difference(DateTime.now()).inMinutes >= tolerancia) {
+        if ((dataHoraServidor.difference(DateTime.now()).inMinutes).abs() >= tolerancia ) {
           await horaDispositivoIncorreta(context, dataHoraServidor);
         }
       }
