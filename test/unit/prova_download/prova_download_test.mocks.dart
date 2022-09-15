@@ -3,30 +3,28 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i10;
+import 'dart:async' as _i8;
 
-import 'package:appserap/dtos/prova.response.dto.dart' as _i11;
-import 'package:appserap/dtos/prova_anterior.response.dto.dart' as _i15;
-import 'package:appserap/dtos/prova_detalhes.response.dto.dart' as _i12;
-import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart' as _i13;
-import 'package:appserap/dtos/questao.response.dto.dart' as _i16;
-import 'package:appserap/dtos/questao_completa.response.dto.dart' as _i17;
+import 'package:appserap/dtos/prova.response.dto.dart' as _i9;
+import 'package:appserap/dtos/prova_anterior.response.dto.dart' as _i13;
+import 'package:appserap/dtos/prova_detalhes.response.dto.dart' as _i10;
+import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart' as _i11;
+import 'package:appserap/dtos/questao.response.dto.dart' as _i14;
+import 'package:appserap/dtos/questao_completa.response.dto.dart' as _i15;
 import 'package:appserap/dtos/questao_detalhes_legado.response.dto.dart'
-    as _i18;
-import 'package:appserap/dtos/questao_resposta.response.dto.dart' as _i14;
-import 'package:appserap/enums/deficiencia.enum.dart' as _i22;
-import 'package:appserap/enums/fonte_tipo.enum.dart' as _i21;
-import 'package:appserap/enums/modalidade.enum.dart' as _i20;
+    as _i16;
+import 'package:appserap/dtos/questao_resposta.response.dto.dart' as _i12;
+import 'package:appserap/enums/deficiencia.enum.dart' as _i20;
+import 'package:appserap/enums/fonte_tipo.enum.dart' as _i19;
+import 'package:appserap/enums/modalidade.enum.dart' as _i18;
 import 'package:appserap/services/api.dart' as _i3;
-import 'package:appserap/services/rest/admin.service.dart' as _i6;
-import 'package:appserap/services/rest/auth.admin.service.dart' as _i7;
-import 'package:appserap/services/rest/download.service.dart' as _i5;
-import 'package:appserap/services/rest/log.service.dart' as _i8;
+import 'package:appserap/services/rest/admin.service.dart' as _i5;
+import 'package:appserap/services/rest/auth.admin.service.dart' as _i6;
 import 'package:appserap/services/rest/usuario.service.dart' as _i4;
-import 'package:appserap/stores/usuario.store.dart' as _i19;
+import 'package:appserap/stores/usuario.store.dart' as _i17;
 import 'package:chopper/chopper.dart' as _i2;
-import 'package:http/http.dart' as _i23;
-import 'package:mobx/mobx.dart' as _i9;
+import 'package:http/http.dart' as _i21;
+import 'package:mobx/mobx.dart' as _i7;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -104,47 +102,53 @@ class _FakeContextoProvaService_10 extends _i1.SmartFake
 }
 
 class _FakeDownloadService_11 extends _i1.SmartFake
-    implements _i5.DownloadService {
+    implements _i3.DownloadService {
   _FakeDownloadService_11(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeAdminService_12 extends _i1.SmartFake implements _i6.AdminService {
+class _FakeAdminService_12 extends _i1.SmartFake implements _i5.AdminService {
   _FakeAdminService_12(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
 class _FakeAutenticacaoAdminService_13 extends _i1.SmartFake
-    implements _i7.AutenticacaoAdminService {
+    implements _i6.AutenticacaoAdminService {
   _FakeAutenticacaoAdminService_13(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeLogService_14 extends _i1.SmartFake implements _i8.LogService {
+class _FakeLogService_14 extends _i1.SmartFake implements _i3.LogService {
   _FakeLogService_14(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeType_15 extends _i1.SmartFake implements Type {
-  _FakeType_15(Object parent, Invocation parentInvocation)
+class _FakeConfiguracaoService_15 extends _i1.SmartFake
+    implements _i3.ConfiguracaoService {
+  _FakeConfiguracaoService_15(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeResponse_16<BodyType> extends _i1.SmartFake
+class _FakeType_16 extends _i1.SmartFake implements Type {
+  _FakeType_16(Object parent, Invocation parentInvocation)
+      : super(parent, parentInvocation);
+}
+
+class _FakeResponse_17<BodyType> extends _i1.SmartFake
     implements _i2.Response<BodyType> {
-  _FakeResponse_16(Object parent, Invocation parentInvocation)
+  _FakeResponse_17(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeObservableList_17<T> extends _i1.SmartFake
-    implements _i9.ObservableList<T> {
-  _FakeObservableList_17(Object parent, Invocation parentInvocation)
+class _FakeObservableList_18<T> extends _i1.SmartFake
+    implements _i7.ObservableList<T> {
+  _FakeObservableList_18(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeReactiveContext_18 extends _i1.SmartFake
-    implements _i9.ReactiveContext {
-  _FakeReactiveContext_18(Object parent, Invocation parentInvocation)
+class _FakeReactiveContext_19 extends _i1.SmartFake
+    implements _i7.ReactiveContext {
+  _FakeReactiveContext_19(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
@@ -216,25 +220,30 @@ class MockApiService extends _i1.Mock implements _i3.ApiService {
                   this, Invocation.getter(#contextoProva)))
           as _i3.ContextoProvaService);
   @override
-  _i5.DownloadService get download =>
+  _i3.DownloadService get download =>
       (super.noSuchMethod(Invocation.getter(#download),
               returnValue:
                   _FakeDownloadService_11(this, Invocation.getter(#download)))
-          as _i5.DownloadService);
+          as _i3.DownloadService);
   @override
-  _i6.AdminService get admin => (super.noSuchMethod(Invocation.getter(#admin),
+  _i5.AdminService get admin => (super.noSuchMethod(Invocation.getter(#admin),
           returnValue: _FakeAdminService_12(this, Invocation.getter(#admin)))
-      as _i6.AdminService);
+      as _i5.AdminService);
   @override
-  _i7.AutenticacaoAdminService get adminAuth =>
+  _i6.AutenticacaoAdminService get adminAuth =>
       (super.noSuchMethod(Invocation.getter(#adminAuth),
               returnValue: _FakeAutenticacaoAdminService_13(
                   this, Invocation.getter(#adminAuth)))
-          as _i7.AutenticacaoAdminService);
+          as _i6.AutenticacaoAdminService);
   @override
-  _i8.LogService get log => (super.noSuchMethod(Invocation.getter(#log),
+  _i3.LogService get log => (super.noSuchMethod(Invocation.getter(#log),
           returnValue: _FakeLogService_14(this, Invocation.getter(#log)))
-      as _i8.LogService);
+      as _i3.LogService);
+  @override
+  _i3.ConfiguracaoService get configuracao => (super.noSuchMethod(
+      Invocation.getter(#configuracao),
+      returnValue: _FakeConfiguracaoService_15(
+          this, Invocation.getter(#configuracao))) as _i3.ConfiguracaoService);
 }
 
 /// A class which mocks [ProvaService].
@@ -257,49 +266,49 @@ class MockProvaService extends _i1.Mock implements _i3.ProvaService {
   @override
   Type get definitionType => (super.noSuchMethod(
           Invocation.getter(#definitionType),
-          returnValue: _FakeType_15(this, Invocation.getter(#definitionType)))
+          returnValue: _FakeType_16(this, Invocation.getter(#definitionType)))
       as Type);
   @override
-  _i10.Future<_i2.Response<List<_i11.ProvaResponseDTO>>> getProvas() => (super
-          .noSuchMethod(Invocation.method(#getProvas, []),
+  _i8.Future<_i2.Response<List<_i9.ProvaResponseDTO>>> getProvas() =>
+      (super.noSuchMethod(Invocation.method(#getProvas, []),
               returnValue:
-                  _i10.Future<_i2.Response<List<_i11.ProvaResponseDTO>>>.value(
-                      _FakeResponse_16<List<_i11.ProvaResponseDTO>>(
+                  _i8.Future<_i2.Response<List<_i9.ProvaResponseDTO>>>.value(
+                      _FakeResponse_17<List<_i9.ProvaResponseDTO>>(
                           this, Invocation.method(#getProvas, []))))
-      as _i10.Future<_i2.Response<List<_i11.ProvaResponseDTO>>>);
+          as _i8.Future<_i2.Response<List<_i9.ProvaResponseDTO>>>);
   @override
-  _i10.Future<_i2.Response<_i12.ProvaDetalhesResponseDTO>> getResumoProva(
+  _i8.Future<_i2.Response<_i10.ProvaDetalhesResponseDTO>> getResumoProva(
           {int? idProva}) =>
       (super.noSuchMethod(Invocation.method(#getResumoProva, [], {#idProva: idProva}),
               returnValue:
-                  _i10.Future<_i2.Response<_i12.ProvaDetalhesResponseDTO>>.value(
-                      _FakeResponse_16<_i12.ProvaDetalhesResponseDTO>(
+                  _i8.Future<_i2.Response<_i10.ProvaDetalhesResponseDTO>>.value(
+                      _FakeResponse_17<_i10.ProvaDetalhesResponseDTO>(
                           this,
                           Invocation.method(
                               #getResumoProva, [], {#idProva: idProva}))))
-          as _i10.Future<_i2.Response<_i12.ProvaDetalhesResponseDTO>>);
+          as _i8.Future<_i2.Response<_i10.ProvaDetalhesResponseDTO>>);
   @override
-  _i10.Future<_i2.Response<_i13.ProvaDetalhesCadernoResponseDTO>> getResumoProvaCaderno(
+  _i8.Future<_i2.Response<_i11.ProvaDetalhesCadernoResponseDTO>> getResumoProvaCaderno(
           {int? idProva, String? caderno}) =>
       (super.noSuchMethod(Invocation.method(#getResumoProvaCaderno, [], {#idProva: idProva, #caderno: caderno}),
               returnValue:
-                  _i10.Future<_i2.Response<_i13.ProvaDetalhesCadernoResponseDTO>>.value(
-                      _FakeResponse_16<_i13.ProvaDetalhesCadernoResponseDTO>(
+                  _i8.Future<_i2.Response<_i11.ProvaDetalhesCadernoResponseDTO>>.value(
+                      _FakeResponse_17<_i11.ProvaDetalhesCadernoResponseDTO>(
                           this,
                           Invocation.method(
                               #getResumoProvaCaderno, [], {#idProva: idProva, #caderno: caderno}))))
-          as _i10.Future<_i2.Response<_i13.ProvaDetalhesCadernoResponseDTO>>);
+          as _i8.Future<_i2.Response<_i11.ProvaDetalhesCadernoResponseDTO>>);
   @override
-  _i10.Future<_i2.Response<int>> getStatusProva({int? idProva}) => (super
+  _i8.Future<_i2.Response<int>> getStatusProva({int? idProva}) => (super
       .noSuchMethod(Invocation.method(#getStatusProva, [], {#idProva: idProva}),
-          returnValue: _i10.Future<_i2.Response<int>>.value(
-              _FakeResponse_16<int>(
+          returnValue: _i8.Future<_i2.Response<int>>.value(
+              _FakeResponse_17<int>(
                   this,
                   Invocation.method(
-                      #getStatusProva, [], {#idProva: idProva})))) as _i10
+                      #getStatusProva, [], {#idProva: idProva})))) as _i8
       .Future<_i2.Response<int>>);
   @override
-  _i10.Future<_i2.Response<bool>> setStatusProva(
+  _i8.Future<_i2.Response<bool>> setStatusProva(
           {int? idProva,
           int? status,
           int? tipoDispositivo,
@@ -314,7 +323,7 @@ class MockProvaService extends _i1.Mock implements _i3.ProvaService {
             #dataFim: dataFim
           }),
           returnValue:
-              _i10.Future<_i2.Response<bool>>.value(_FakeResponse_16<bool>(
+              _i8.Future<_i2.Response<bool>>.value(_FakeResponse_17<bool>(
                   this,
                   Invocation.method(#setStatusProva, [], {
                     #idProva: idProva,
@@ -322,25 +331,25 @@ class MockProvaService extends _i1.Mock implements _i3.ProvaService {
                     #tipoDispositivo: tipoDispositivo,
                     #dataInicio: dataInicio,
                     #dataFim: dataFim
-                  })))) as _i10.Future<_i2.Response<bool>>);
+                  })))) as _i8.Future<_i2.Response<bool>>);
   @override
-  _i10.Future<_i2.Response<List<_i14.QuestaoRespostaResponseDTO>>>
+  _i8.Future<_i2.Response<List<_i12.QuestaoRespostaResponseDTO>>>
       getRespostasPorProvaId({int? idProva}) => (super.noSuchMethod(
           Invocation.method(#getRespostasPorProvaId, [], {#idProva: idProva}),
           returnValue:
-              _i10.Future<_i2.Response<List<_i14.QuestaoRespostaResponseDTO>>>.value(
-                  _FakeResponse_16<List<_i14.QuestaoRespostaResponseDTO>>(this,
-                      Invocation.method(#getRespostasPorProvaId, [], {#idProva: idProva})))) as _i10
-          .Future<_i2.Response<List<_i14.QuestaoRespostaResponseDTO>>>);
+              _i8.Future<_i2.Response<List<_i12.QuestaoRespostaResponseDTO>>>.value(
+                  _FakeResponse_17<List<_i12.QuestaoRespostaResponseDTO>>(this,
+                      Invocation.method(#getRespostasPorProvaId, [], {#idProva: idProva})))) as _i8
+          .Future<_i2.Response<List<_i12.QuestaoRespostaResponseDTO>>>);
   @override
-  _i10.Future<_i2.Response<List<_i15.ProvaAnteriorResponseDTO>>>
+  _i8.Future<_i2.Response<List<_i13.ProvaAnteriorResponseDTO>>>
       getProvasAnteriores() => (super.noSuchMethod(
           Invocation.method(#getProvasAnteriores, []),
           returnValue:
-              _i10.Future<_i2.Response<List<_i15.ProvaAnteriorResponseDTO>>>.value(
-                  _FakeResponse_16<List<_i15.ProvaAnteriorResponseDTO>>(this,
-                      Invocation.method(#getProvasAnteriores, [])))) as _i10
-          .Future<_i2.Response<List<_i15.ProvaAnteriorResponseDTO>>>);
+              _i8.Future<_i2.Response<List<_i13.ProvaAnteriorResponseDTO>>>.value(
+                  _FakeResponse_17<List<_i13.ProvaAnteriorResponseDTO>>(this,
+                      Invocation.method(#getProvasAnteriores, [])))) as _i8
+          .Future<_i2.Response<List<_i13.ProvaAnteriorResponseDTO>>>);
 }
 
 /// A class which mocks [QuestaoService].
@@ -363,43 +372,42 @@ class MockQuestaoService extends _i1.Mock implements _i3.QuestaoService {
   @override
   Type get definitionType => (super.noSuchMethod(
           Invocation.getter(#definitionType),
-          returnValue: _FakeType_15(this, Invocation.getter(#definitionType)))
+          returnValue: _FakeType_16(this, Invocation.getter(#definitionType)))
       as Type);
   @override
-  _i10.Future<_i2.Response<_i16.QuestaoResponseDTO>> getQuestao({int? idQuestao}) =>
+  _i8.Future<_i2.Response<_i14.QuestaoResponseDTO>> getQuestao({int? idQuestao}) =>
       (super.noSuchMethod(
           Invocation.method(#getQuestao, [], {#idQuestao: idQuestao}),
-          returnValue: _i10.Future<_i2.Response<_i16.QuestaoResponseDTO>>.value(
-              _FakeResponse_16<_i16.QuestaoResponseDTO>(
+          returnValue: _i8.Future<_i2.Response<_i14.QuestaoResponseDTO>>.value(
+              _FakeResponse_17<_i14.QuestaoResponseDTO>(
                   this,
                   Invocation.method(
-                      #getQuestao, [], {#idQuestao: idQuestao})))) as _i10
-          .Future<_i2.Response<_i16.QuestaoResponseDTO>>);
+                      #getQuestao, [], {#idQuestao: idQuestao})))) as _i8
+          .Future<_i2.Response<_i14.QuestaoResponseDTO>>);
   @override
-  _i10.Future<_i2.Response<List<_i17.QuestaoCompletaResponseDTO>>>
+  _i8.Future<_i2.Response<List<_i15.QuestaoCompletaResponseDTO>>>
       getQuestaoCompleta({List<int>? ids}) => (super.noSuchMethod(
-              Invocation.method(#getQuestaoCompleta, [], {#ids: ids}),
-              returnValue:
-                  _i10.Future<_i2.Response<List<_i17.QuestaoCompletaResponseDTO>>>.value(
-                      _FakeResponse_16<List<_i17.QuestaoCompletaResponseDTO>>(
-                          this,
-                          Invocation.method(#getQuestaoCompleta, [], {#ids: ids}))))
-          as _i10.Future<_i2.Response<List<_i17.QuestaoCompletaResponseDTO>>>);
+          Invocation.method(#getQuestaoCompleta, [], {#ids: ids}),
+          returnValue:
+              _i8.Future<_i2.Response<List<_i15.QuestaoCompletaResponseDTO>>>.value(
+                  _FakeResponse_17<List<_i15.QuestaoCompletaResponseDTO>>(this,
+                      Invocation.method(#getQuestaoCompleta, [], {#ids: ids})))) as _i8
+          .Future<_i2.Response<List<_i15.QuestaoCompletaResponseDTO>>>);
   @override
-  _i10.Future<_i2.Response<List<_i18.QuestaoDetalhesLegadoResponseDTO>>>
+  _i8.Future<_i2.Response<List<_i16.QuestaoDetalhesLegadoResponseDTO>>>
       getQuestaoCompletaLegado({List<int>? idsLegado}) => (super
           .noSuchMethod(Invocation.method(#getQuestaoCompletaLegado, [], {#idsLegado: idsLegado}),
-              returnValue: _i10.Future<_i2.Response<List<_i18.QuestaoDetalhesLegadoResponseDTO>>>.value(
-                  _FakeResponse_16<List<_i18.QuestaoDetalhesLegadoResponseDTO>>(
+              returnValue: _i8.Future<_i2.Response<List<_i16.QuestaoDetalhesLegadoResponseDTO>>>.value(
+                  _FakeResponse_17<List<_i16.QuestaoDetalhesLegadoResponseDTO>>(
                       this,
-                      Invocation.method(#getQuestaoCompletaLegado, [], {#idsLegado: idsLegado})))) as _i10
-          .Future<_i2.Response<List<_i18.QuestaoDetalhesLegadoResponseDTO>>>);
+                      Invocation.method(#getQuestaoCompletaLegado, [], {#idsLegado: idsLegado})))) as _i8
+          .Future<_i2.Response<List<_i16.QuestaoDetalhesLegadoResponseDTO>>>);
 }
 
 /// A class which mocks [UsuarioStore].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUsuarioStore extends _i1.Mock implements _i19.UsuarioStore {
+class MockUsuarioStore extends _i1.Mock implements _i17.UsuarioStore {
   MockUsuarioStore() {
     _i1.throwOnMissingStub(this);
   }
@@ -436,11 +444,11 @@ class MockUsuarioStore extends _i1.Mock implements _i19.UsuarioStore {
       super.noSuchMethod(Invocation.setter(#tamanhoFonte, _tamanhoFonte),
           returnValueForMissingStub: null);
   @override
-  _i20.ModalidadeEnum get modalidade => (super.noSuchMethod(
+  _i18.ModalidadeEnum get modalidade => (super.noSuchMethod(
       Invocation.getter(#modalidade),
-      returnValue: _i20.ModalidadeEnum.NAO_CADASTRADO) as _i20.ModalidadeEnum);
+      returnValue: _i18.ModalidadeEnum.NAO_CADASTRADO) as _i18.ModalidadeEnum);
   @override
-  set modalidade(_i20.ModalidadeEnum? _modalidade) =>
+  set modalidade(_i18.ModalidadeEnum? _modalidade) =>
       super.noSuchMethod(Invocation.setter(#modalidade, _modalidade),
           returnValueForMissingStub: null);
   @override
@@ -471,17 +479,17 @@ class MockUsuarioStore extends _i1.Mock implements _i19.UsuarioStore {
       super.noSuchMethod(Invocation.setter(#turma, _turma),
           returnValueForMissingStub: null);
   @override
-  set familiaFonte(_i21.FonteTipoEnum? _familiaFonte) =>
+  set familiaFonte(_i19.FonteTipoEnum? _familiaFonte) =>
       super.noSuchMethod(Invocation.setter(#familiaFonte, _familiaFonte),
           returnValueForMissingStub: null);
   @override
-  _i9.ObservableList<_i22.DeficienciaEnum> get deficiencias =>
+  _i7.ObservableList<_i20.DeficienciaEnum> get deficiencias =>
       (super.noSuchMethod(Invocation.getter(#deficiencias),
-              returnValue: _FakeObservableList_17<_i22.DeficienciaEnum>(
+              returnValue: _FakeObservableList_18<_i20.DeficienciaEnum>(
                   this, Invocation.getter(#deficiencias)))
-          as _i9.ObservableList<_i22.DeficienciaEnum>);
+          as _i7.ObservableList<_i20.DeficienciaEnum>);
   @override
-  set deficiencias(_i9.ObservableList<_i22.DeficienciaEnum>? _deficiencias) =>
+  set deficiencias(_i7.ObservableList<_i20.DeficienciaEnum>? _deficiencias) =>
       super.noSuchMethod(Invocation.setter(#deficiencias, _deficiencias),
           returnValueForMissingStub: null);
   @override
@@ -505,22 +513,21 @@ class MockUsuarioStore extends _i1.Mock implements _i19.UsuarioStore {
       (super.noSuchMethod(Invocation.getter(#isLogado), returnValue: false)
           as bool);
   @override
-  _i9.ReactiveContext get context =>
+  _i7.ReactiveContext get context =>
       (super.noSuchMethod(Invocation.getter(#context),
               returnValue:
-                  _FakeReactiveContext_18(this, Invocation.getter(#context)))
-          as _i9.ReactiveContext);
+                  _FakeReactiveContext_19(this, Invocation.getter(#context)))
+          as _i7.ReactiveContext);
   @override
   void dispose() => super.noSuchMethod(Invocation.method(#dispose, []),
       returnValueForMissingStub: null);
   @override
-  _i10.Future<void> carregarUsuario() =>
-      (super.noSuchMethod(Invocation.method(#carregarUsuario, []),
-              returnValue: _i10.Future<void>.value(),
-              returnValueForMissingStub: _i10.Future<void>.value())
-          as _i10.Future<void>);
+  _i8.Future<void> carregarUsuario() => (super.noSuchMethod(
+      Invocation.method(#carregarUsuario, []),
+      returnValue: _i8.Future<void>.value(),
+      returnValueForMissingStub: _i8.Future<void>.value()) as _i8.Future<void>);
   @override
-  _i10.Future<void> atualizarDados(
+  _i8.Future<void> atualizarDados(
           {String? nome,
           String? codigoEOL,
           String? token,
@@ -528,14 +535,14 @@ class MockUsuarioStore extends _i1.Mock implements _i19.UsuarioStore {
           String? tipoTurno,
           DateTime? ultimoLogin,
           double? tamanhoFonte,
-          _i21.FonteTipoEnum? familiaFonte,
-          _i20.ModalidadeEnum? modalidade,
+          _i19.FonteTipoEnum? familiaFonte,
+          _i18.ModalidadeEnum? modalidade,
           int? inicioTurno,
           int? fimTurno,
           String? dreAbreviacao,
           String? escola,
           String? turma,
-          List<_i22.DeficienciaEnum>? deficiencias}) =>
+          List<_i20.DeficienciaEnum>? deficiencias}) =>
       (super.noSuchMethod(
               Invocation.method(#atualizarDados, [], {
                 #nome: nome,
@@ -554,11 +561,11 @@ class MockUsuarioStore extends _i1.Mock implements _i19.UsuarioStore {
                 #turma: turma,
                 #deficiencias: deficiencias
               }),
-              returnValue: _i10.Future<void>.value(),
-              returnValueForMissingStub: _i10.Future<void>.value())
-          as _i10.Future<void>);
+              returnValue: _i8.Future<void>.value(),
+              returnValueForMissingStub: _i8.Future<void>.value())
+          as _i8.Future<void>);
   @override
-  _i10.Future<void> atualizarDadosAdm(
+  _i8.Future<void> atualizarDadosAdm(
           {String? nome, bool? isAdmin, String? codigoEOL, String? token}) =>
       (super.noSuchMethod(
               Invocation.method(#atualizarDadosAdm, [], {
@@ -567,15 +574,15 @@ class MockUsuarioStore extends _i1.Mock implements _i19.UsuarioStore {
                 #codigoEOL: codigoEOL,
                 #token: token
               }),
-              returnValue: _i10.Future<void>.value(),
-              returnValueForMissingStub: _i10.Future<void>.value())
-          as _i10.Future<void>);
+              returnValue: _i8.Future<void>.value(),
+              returnValueForMissingStub: _i8.Future<void>.value())
+          as _i8.Future<void>);
 }
 
 /// A class which mocks [DownloadService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDownloadService extends _i1.Mock implements _i5.DownloadService {
+class MockDownloadService extends _i1.Mock implements _i3.DownloadService {
   MockDownloadService() {
     _i1.throwOnMissingStub(this);
   }
@@ -592,10 +599,10 @@ class MockDownloadService extends _i1.Mock implements _i5.DownloadService {
   @override
   Type get definitionType => (super.noSuchMethod(
           Invocation.getter(#definitionType),
-          returnValue: _FakeType_15(this, Invocation.getter(#definitionType)))
+          returnValue: _FakeType_16(this, Invocation.getter(#definitionType)))
       as Type);
   @override
-  _i10.Future<_i2.Response<String>> informarDownloadConcluido(
+  _i8.Future<_i2.Response<String>> informarDownloadConcluido(
           {int? provaId,
           int? tipoDispositivo,
           String? dispositivoId,
@@ -612,7 +619,7 @@ class MockDownloadService extends _i1.Mock implements _i5.DownloadService {
             #dataHora: dataHora
           }),
           returnValue:
-              _i10.Future<_i2.Response<String>>.value(_FakeResponse_16<String>(
+              _i8.Future<_i2.Response<String>>.value(_FakeResponse_17<String>(
                   this,
                   Invocation.method(#informarDownloadConcluido, [], {
                     #provaId: provaId,
@@ -621,24 +628,24 @@ class MockDownloadService extends _i1.Mock implements _i5.DownloadService {
                     #modeloDispositivo: modeloDispositivo,
                     #versao: versao,
                     #dataHora: dataHora
-                  })))) as _i10.Future<_i2.Response<String>>);
+                  })))) as _i8.Future<_i2.Response<String>>);
   @override
-  _i10.Future<_i2.Response<void>> removerDownloads(
+  _i8.Future<_i2.Response<void>> removerDownloads(
           {String? chaveAPI, List<String>? ids}) =>
       (super.noSuchMethod(Invocation.method(#removerDownloads, [], {#chaveAPI: chaveAPI, #ids: ids}),
-          returnValue: _i10.Future<_i2.Response<void>>.value(
-              _FakeResponse_16<void>(
+          returnValue: _i8.Future<_i2.Response<void>>.value(
+              _FakeResponse_17<void>(
                   this,
                   Invocation.method(#removerDownloads, [], {
                     #chaveAPI: chaveAPI,
                     #ids: ids
-                  })))) as _i10.Future<_i2.Response<void>>);
+                  })))) as _i8.Future<_i2.Response<void>>);
 }
 
 /// A class which mocks [BaseResponse].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockBaseResponse extends _i1.Mock implements _i23.BaseResponse {
+class MockBaseResponse extends _i1.Mock implements _i21.BaseResponse {
   MockBaseResponse() {
     _i1.throwOnMissingStub(this);
   }

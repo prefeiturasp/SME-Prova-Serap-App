@@ -402,6 +402,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
             retorno = await mostrarDialogProvaEnviada(context);
           }
 
+          await dbRespostas.respostaProvaDao.removerSincronizadas();
+
           return retorno ?? false;
         } else {
           switch (response.statusCode) {

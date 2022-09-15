@@ -7,6 +7,7 @@ import 'package:appserap/dtos/autenticacao.dto.dart';
 import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/dtos/autenticacao_dados.response.dto.dart';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
+import 'package:appserap/dtos/data_hora_servidor.response.dto.dart';
 import 'package:appserap/dtos/listagem_prova.admin.response.dto.dart';
 import 'package:appserap/dtos/preferencias_usuario.response.dto.dart';
 import 'package:appserap/dtos/orientacao_inicial.response.dto.dart';
@@ -92,4 +93,5 @@ final jsonConverter = JsonSerializableConverter({
   "ProvaDetalhesCadernoQuestaoResponseDTO": ProvaDetalhesCadernoQuestaoResponseDTO.fromJson,
   "ProvaDetalhesCadernoResponseDTO": ProvaDetalhesCadernoResponseDTO.fromJson,
   "QuestaoDetalhesLegadoResponseDTO": QuestaoDetalhesLegadoResponseDTO.fromJson,
+  "DataHoraServidorDTO": DataHoraServidorDTO.fromJson,
 });

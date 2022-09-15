@@ -8,3 +8,6 @@ export 'rest/versao.service.dart';
 export 'rest/questao_resposta.service.dart';
 export 'rest/orientacao_inicial.service.dart';
 export 'rest/contexto_prova.service.dart';
+export 'rest/log.service.dart';
+export 'rest/download.service.dart';
+export 'rest/configuracao.service.dart';

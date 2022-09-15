@@ -46,11 +46,15 @@ DatabaseConnection connect([String dbName = 'serapdb', bool external = false]) {
 }
 
 Future<void> askPermission() async {
-  PermissionStatus status = await Permission.storage.request();
-  if (status.isPermanentlyDenied) {
-    await openAppSettings();
-  } else if (status.isDenied == true) {
-    askPermission();
+  var isGranted = await Permission.storage.isGranted;
+
+  if(!isGranted) {
+    PermissionStatus status = await Permission.storage.request();
+    if (status.isPermanentlyDenied) {
+      await openAppSettings();
+    } else if (status.isDenied == true) {
+      askPermission();
+    }
   }
 }
 
