@@ -173,7 +173,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
                 chaveAPI: AppConfigReader.getChaveApi(),
                 versaoCodigo: int.parse(packageInfo.buildNumber),
                 versaoDescricao: packageInfo.version,
-                dispositivoImei: deviceId,
+                dispositivoId: deviceId,
                 atualizadoEm: DateTime.now().toIso8601String(),
               );
 
