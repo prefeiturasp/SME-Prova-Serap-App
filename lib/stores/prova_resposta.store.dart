@@ -135,6 +135,8 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
       }
     }
 
+    await dbRespostas.respostaProvaDao.removerSincronizadas();
+
     fine('[$idProva] - Sincronização com o servidor servidor concluida');
   }
 
