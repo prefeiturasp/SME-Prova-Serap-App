@@ -67,8 +67,6 @@ executarJobs(String task) async {
     await jobDao.definirStatus(task, statusUltimaExecucao: EnumJobStatus.ERRO);
 
     return Future.error(e);
-  } finally {
-    ServiceLocator.get<AppDatabase>().close();
   }
 }
 

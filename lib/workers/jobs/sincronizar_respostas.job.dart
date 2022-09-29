@@ -19,9 +19,9 @@ class SincronizarRespostasJob with Job, Loggable, Database {
       frequency: Duration(seconds: 15),
       taskName: 'SincronizarRespostas',
       uniqueName: 'respostas-sincronizar',
-      // constraints: Constraints(
-      //   networkType: NetworkType.connected,
-      // ),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ),
     );
   }
 

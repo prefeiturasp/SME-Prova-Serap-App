@@ -17,6 +17,7 @@ import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
@@ -92,6 +93,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
       child: Column(
         children: [
           TempoExecucaoWidget(provaStore: provaStore),
+          StatusSincronizacao(),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
