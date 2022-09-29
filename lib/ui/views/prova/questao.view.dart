@@ -23,6 +23,7 @@ import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.widget.dart';
 import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
 import 'package:appserap/utils/file.util.dart';
 import 'package:appserap/utils/idb_file.util.dart';
@@ -173,6 +174,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
           children: [
             TempoExecucaoWidget(provaStore: provaStore),
             _buildAudioPlayer(),
+            StatusSincronizacao(),
             Expanded(
               child: _builLayout(
                 body: SingleChildScrollView(

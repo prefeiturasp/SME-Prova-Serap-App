@@ -682,7 +682,7 @@ Future<bool?> mostrarDialogNaoPossuiTempoTotalDisponivel(BuildContext context, D
 horaDispositivoIncorreta(BuildContext context, DateTime dataHoraServidor) {
   final temaStore = GetIt.I.get<TemaStore>();
 
-  String dataHora = DateFormat("dd/MM/yyyy - H:m'h'").format(dataHoraServidor);
+  String dataHora = DateFormat("dd/MM/yyyy - H:mm'h'").format(dataHoraServidor);
 
   String mensagem1 = "O seu dispositivo está com data/hora diferente do servidor que é $dataHora.";
   String mensagem2 = "Sugerimos que você ajuste a data/hora antes de iniciar a prova.";

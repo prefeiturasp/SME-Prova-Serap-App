@@ -1,11 +1,22 @@
+import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/enums/job_status.enum.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/models/job.model.dart';
 import 'package:appserap/stores/home.store.dart';
+import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/ui/views/home/tabs/tabs/provas_anteriores_tab.view.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_terceario.widget.dart';
+import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:appserap/workers/jobs.enum.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -65,6 +76,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          StatusSincronizacao(),
           Padding(
             padding: getPadding(),
             child: Align(
