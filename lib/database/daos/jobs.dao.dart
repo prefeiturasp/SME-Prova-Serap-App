@@ -27,6 +27,10 @@ class JobDao extends DatabaseAccessor<AppDatabase> with _$JobDaoMixin {
     return select(jobsTable).get();
   }
 
+  Future<Job?> getByName(String nomeJob) {
+    return (select(jobsTable)..where((t) => t.nome.equals(nomeJob))).getSingleOrNull();
+  }
+
   Future<int> definirUltimaExecucao(String jobNome, {DateTime? ultimaExecucao}) async {
     return (update(jobsTable)
           ..where(

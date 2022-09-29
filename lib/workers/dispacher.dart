@@ -97,11 +97,14 @@ class Worker with Loggable, Database {
 
     info('Configurando task a cada ${config.frequency} - ${config.taskName}');
 
-    await db.jobDao.inserirOuAtualizar(model.Job(
-      id: config.uniqueName,
-      nome: config.taskName,
-      intervalo: config.frequency.inSeconds,
-    ));
+    var existe = await db.jobDao.getByName(config.taskName);
+    if (existe == null) {
+      await db.jobDao.inserirOuAtualizar(model.Job(
+        id: config.uniqueName,
+        nome: config.taskName,
+        intervalo: config.frequency.inSeconds,
+      ));
+    }
 
     if (!kIsWeb && Platform.isAndroid) {
       await Workmanager().registerPeriodicTask(

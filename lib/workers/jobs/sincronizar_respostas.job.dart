@@ -16,7 +16,7 @@ class SincronizarRespostasJob with Job, Loggable, Database {
   @override
   JobConfig configuration() {
     return JobConfig(
-      frequency: Duration(seconds: 15),
+      frequency: Duration(minutes: 15),
       taskName: 'SincronizarRespostas',
       uniqueName: 'respostas-sincronizar',
       constraints: Constraints(

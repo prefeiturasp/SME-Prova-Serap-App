@@ -30,8 +30,8 @@ class StatusSincronizacao extends StatelessWidget {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey,
-                    blurRadius: 10.0, // soften the shadow
-                    spreadRadius: 1.0, //extend the shadow
+                    blurRadius: 10.0,
+                    spreadRadius: 1.0,
                   )
                 ],
               ),
@@ -41,8 +41,8 @@ class StatusSincronizacao extends StatelessWidget {
                     print('Status - ${snapshot.data}');
 
                     var status = Icon(
-                      Icons.cancel_rounded,
-                      color: Colors.red,
+                      Icons.sync,
+                      color: Colors.grey,
                       size: 24,
                     );
 
@@ -53,10 +53,10 @@ class StatusSincronizacao extends StatelessWidget {
                           color: Colors.green,
                           size: 24,
                         );
-                      } else if (snapshot.data!.statusUltimaExecucao == EnumJobStatus.EXECUTANDO) {
+                      } else if (snapshot.data!.statusUltimaExecucao == EnumJobStatus.ERRO) {
                         status = Icon(
-                          Icons.sync,
-                          color: Colors.grey,
+                          Icons.cancel_rounded,
+                          color: Colors.red,
                           size: 24,
                         );
                       }

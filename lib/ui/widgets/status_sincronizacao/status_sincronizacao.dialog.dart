@@ -16,7 +16,7 @@ mostrarDetalhesSincronizacaoResposta(BuildContext context) async {
   RespostasDatabase dbRespostas = ServiceLocator.get();
 
   var job = await db.jobDao.getByJobName(JobsEnum.SINCRONIZAR_RESPOSTAS);
-  var ultimaSincronizacao = formatDateddMMyyykkmm(job?.ultimaExecucao);
+  var ultimaSincronizacao = formatDateddMMyyykkmmss(job?.ultimaExecucao);
 
   var totalSincronizadas = await dbRespostas.respostaProvaDao.getTotalSincronizadas();
   var totalTotalPendentes = await dbRespostas.respostaProvaDao.getTotalPendentes();
