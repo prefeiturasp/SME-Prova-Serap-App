@@ -16,12 +16,12 @@ class SincronizarRespostasJob with Job, Loggable, Database {
   @override
   JobConfig configuration() {
     return JobConfig(
-      frequency: Duration(minutes: 15),
+      frequency: Duration(seconds: 15),
       taskName: 'SincronizarRespostas',
       uniqueName: 'respostas-sincronizar',
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ),
+      // constraints: Constraints(
+      //   networkType: NetworkType.connected,
+      // ),
     );
   }
 

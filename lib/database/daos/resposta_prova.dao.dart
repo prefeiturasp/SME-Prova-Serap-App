@@ -78,4 +78,8 @@ class RespostaProvaDao extends DatabaseAccessor<RespostasDatabase> with _$Respos
   Future<int> removerSincronizadas() {
     return (delete(respostaProvaTable)..where((t) => t.sincronizado)).go();
   }
+
+  getTotalSincronizadas() {}
+
+  getTotalPendentes() {}
 }

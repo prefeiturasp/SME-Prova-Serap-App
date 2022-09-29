@@ -5,6 +5,7 @@ import 'package:appserap/enums/download_tipo.enum.dart';
 import 'package:appserap/enums/posicionamento_imagem.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/enums/job_status.enum.dart';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
@@ -17,11 +18,13 @@ import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao_arquivo.model.dart';
+import 'package:appserap/models/job.model.dart';
 
 import 'daos/alternativa.dao.dart';
 import 'daos/arquivo.dao.dart';
 import 'daos/arquivo_audio.dao.dart';
 import 'daos/contexto_prova.dao.dart';
+import 'daos/jobs.dao.dart';
 import 'daos/prova.dao.dart';
 import 'daos/prova_aluno.dao.dart';
 import 'daos/prova_caderno.dao.dart';
@@ -33,6 +36,7 @@ import 'tables/arquivo_audio.table.dart';
 import 'tables/arquivo_video.table.dart';
 import 'tables/contexto_prova.table.dart';
 import 'tables/download_prova.table.dart';
+import 'tables/jobs.table.dart';
 import 'tables/prova.table.dart';
 import 'tables/prova_aluno.table.dart';
 import 'tables/prova_caderno.table.dart';
@@ -58,6 +62,7 @@ part 'app.database.g.dart';
     ProvaAlunoTable,
     ProvaCadernoTable,
     QuestaoArquivoTable,
+    JobsTable,
   ],
   daos: [
     ArquivosVideosDao,
@@ -71,6 +76,7 @@ part 'app.database.g.dart';
     ProvaAlunoDao,
     ProvaCadernoDao,
     QuestaoArquivoDao,
+    JobDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -81,7 +87,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 20;
+  int get schemaVersion => 21;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -176,6 +182,10 @@ class AppDatabase extends _$AppDatabase {
 
             await m.alterTable(TableMigration(arquivosDb));
           }
+
+          if (from < 21) {
+            await m.createTable(jobsTable);
+          }
         });
 
         // Assert that the schema is valid after migrations
@@ -220,6 +230,7 @@ class AppDatabase extends _$AppDatabase {
       await customUpdate("delete from provas_db;");
       await customUpdate("delete from questao_arquivo_table;");
       await customUpdate("delete from questoes_db;");
+      await customUpdate("delete from jobs_table;");
     });
   }
 }
