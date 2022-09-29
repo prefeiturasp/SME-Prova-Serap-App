@@ -2658,6 +2658,201 @@ class $QuestaoArquivoTableTable extends QuestaoArquivoTable
   }
 }
 
+class JobsTableCompanion extends UpdateCompanion<Job> {
+  final Value<String> id;
+  final Value<String> nome;
+  final Value<EnumJobStatus?> statusUltimaExecucao;
+  final Value<DateTime?> ultimaExecucao;
+  final Value<int> intervalo;
+  const JobsTableCompanion({
+    this.id = const Value.absent(),
+    this.nome = const Value.absent(),
+    this.statusUltimaExecucao = const Value.absent(),
+    this.ultimaExecucao = const Value.absent(),
+    this.intervalo = const Value.absent(),
+  });
+  JobsTableCompanion.insert({
+    required String id,
+    required String nome,
+    this.statusUltimaExecucao = const Value.absent(),
+    this.ultimaExecucao = const Value.absent(),
+    required int intervalo,
+  })  : id = Value(id),
+        nome = Value(nome),
+        intervalo = Value(intervalo);
+  static Insertable<Job> custom({
+    Expression<String>? id,
+    Expression<String>? nome,
+    Expression<int>? statusUltimaExecucao,
+    Expression<DateTime>? ultimaExecucao,
+    Expression<int>? intervalo,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nome != null) 'nome': nome,
+      if (statusUltimaExecucao != null)
+        'status_ultima_execucao': statusUltimaExecucao,
+      if (ultimaExecucao != null) 'ultima_execucao': ultimaExecucao,
+      if (intervalo != null) 'intervalo': intervalo,
+    });
+  }
+
+  JobsTableCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? nome,
+      Value<EnumJobStatus?>? statusUltimaExecucao,
+      Value<DateTime?>? ultimaExecucao,
+      Value<int>? intervalo}) {
+    return JobsTableCompanion(
+      id: id ?? this.id,
+      nome: nome ?? this.nome,
+      statusUltimaExecucao: statusUltimaExecucao ?? this.statusUltimaExecucao,
+      ultimaExecucao: ultimaExecucao ?? this.ultimaExecucao,
+      intervalo: intervalo ?? this.intervalo,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (nome.present) {
+      map['nome'] = Variable<String>(nome.value);
+    }
+    if (statusUltimaExecucao.present) {
+      final converter = $JobsTableTable.$converter0n;
+      map['status_ultima_execucao'] =
+          Variable<int>(converter.toSql(statusUltimaExecucao.value));
+    }
+    if (ultimaExecucao.present) {
+      map['ultima_execucao'] = Variable<DateTime>(ultimaExecucao.value);
+    }
+    if (intervalo.present) {
+      map['intervalo'] = Variable<int>(intervalo.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('nome: $nome, ')
+          ..write('statusUltimaExecucao: $statusUltimaExecucao, ')
+          ..write('ultimaExecucao: $ultimaExecucao, ')
+          ..write('intervalo: $intervalo')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $JobsTableTable extends JobsTable with TableInfo<$JobsTableTable, Job> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobsTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _nomeMeta = const VerificationMeta('nome');
+  @override
+  late final GeneratedColumn<String> nome = GeneratedColumn<String>(
+      'nome', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _statusUltimaExecucaoMeta =
+      const VerificationMeta('statusUltimaExecucao');
+  @override
+  late final GeneratedColumnWithTypeConverter<EnumJobStatus?, int>
+      statusUltimaExecucao = GeneratedColumn<int>(
+              'status_ultima_execucao', aliasedName, true,
+              type: DriftSqlType.int, requiredDuringInsert: false)
+          .withConverter<EnumJobStatus?>($JobsTableTable.$converter0n);
+  final VerificationMeta _ultimaExecucaoMeta =
+      const VerificationMeta('ultimaExecucao');
+  @override
+  late final GeneratedColumn<DateTime> ultimaExecucao =
+      GeneratedColumn<DateTime>('ultima_execucao', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  final VerificationMeta _intervaloMeta = const VerificationMeta('intervalo');
+  @override
+  late final GeneratedColumn<int> intervalo = GeneratedColumn<int>(
+      'intervalo', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, nome, statusUltimaExecucao, ultimaExecucao, intervalo];
+  @override
+  String get aliasedName => _alias ?? 'jobs_table';
+  @override
+  String get actualTableName => 'jobs_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<Job> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('nome')) {
+      context.handle(
+          _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
+    } else if (isInserting) {
+      context.missing(_nomeMeta);
+    }
+    context.handle(
+        _statusUltimaExecucaoMeta, const VerificationResult.success());
+    if (data.containsKey('ultima_execucao')) {
+      context.handle(
+          _ultimaExecucaoMeta,
+          ultimaExecucao.isAcceptableOrUnknown(
+              data['ultima_execucao']!, _ultimaExecucaoMeta));
+    }
+    if (data.containsKey('intervalo')) {
+      context.handle(_intervaloMeta,
+          intervalo.isAcceptableOrUnknown(data['intervalo']!, _intervaloMeta));
+    } else if (isInserting) {
+      context.missing(_intervaloMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Job map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Job(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      nome: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}nome'])!,
+      statusUltimaExecucao: $JobsTableTable.$converter0n.fromSql(
+          attachedDatabase.options.types.read(DriftSqlType.int,
+              data['${effectivePrefix}status_ultima_execucao'])),
+      ultimaExecucao: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}ultima_execucao']),
+      intervalo: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}intervalo'])!,
+    );
+  }
+
+  @override
+  $JobsTableTable createAlias(String alias) {
+    return $JobsTableTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<EnumJobStatus, int> $converter0 =
+      const EnumIndexConverter<EnumJobStatus>(EnumJobStatus.values);
+  static TypeConverter<EnumJobStatus?, int?> $converter0n =
+      NullAwareTypeConverter.wrap($converter0);
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   _$AppDatabase.connect(DatabaseConnection c) : super.connect(c);
@@ -2679,6 +2874,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $ProvaCadernoTableTable(this);
   late final $QuestaoArquivoTableTable questaoArquivoTable =
       $QuestaoArquivoTableTable(this);
+  late final $JobsTableTable jobsTable = $JobsTableTable(this);
   late final ArquivosVideosDao arquivosVideosDao =
       ArquivosVideosDao(this as AppDatabase);
   late final ArquivosAudioDao arquivosAudioDao =
@@ -2697,6 +2893,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       ProvaCadernoDao(this as AppDatabase);
   late final QuestaoArquivoDao questaoArquivoDao =
       QuestaoArquivoDao(this as AppDatabase);
+  late final JobDao jobDao = JobDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, dynamic>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2712,6 +2909,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         downloadProvasDb,
         provaAlunoTable,
         provaCadernoTable,
-        questaoArquivoTable
+        questaoArquivoTable,
+        jobsTable
       ];
 }

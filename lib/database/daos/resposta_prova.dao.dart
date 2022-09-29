@@ -78,4 +78,28 @@ class RespostaProvaDao extends DatabaseAccessor<RespostasDatabase> with _$Respos
   Future<int> removerSincronizadas() {
     return (delete(respostaProvaTable)..where((t) => t.sincronizado)).go();
   }
+
+  Future<int?>? getTotalSincronizadas() async {
+    final count = respostaProvaTable.sincronizado.count();
+
+    final query = selectOnly(respostaProvaTable)
+      ..addColumns([count])
+      ..where(respostaProvaTable.sincronizado.not());
+
+    final result = await query.get();
+
+    return result.first.read(count);
+  }
+
+  Future<int?>? getTotalPendentes() async {
+    final count = respostaProvaTable.sincronizado.count();
+
+    final query = selectOnly(respostaProvaTable)
+      ..addColumns([count])
+      ..where(respostaProvaTable.sincronizado);
+
+    final result = await query.get();
+
+    return result.first.read(count);
+  }
 }
