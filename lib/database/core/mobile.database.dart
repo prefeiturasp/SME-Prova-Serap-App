@@ -41,14 +41,14 @@ DatabaseConnection connect([String dbName = 'serapdb', bool external = false]) {
     await Isolate.spawn(_entrypointForDriftIsolate, _IsolateStartRequest(receiveDriftIsolate.sendPort, dbPath));
 
     final driftIsolate = await receiveDriftIsolate.first as DriftIsolate;
-    return driftIsolate.connect();
+    return await driftIsolate.connect();
   }));
 }
 
 Future<void> askPermission() async {
   var isGranted = await Permission.storage.isGranted;
 
-  if(!isGranted) {
+  if (!isGranted) {
     PermissionStatus status = await Permission.storage.request();
     if (status.isPermanentlyDenied) {
       await openAppSettings();

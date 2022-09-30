@@ -1,14 +1,17 @@
-import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/job_status.enum.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/models/job.model.dart';
+import 'package:appserap/stores/job.store.dart';
 import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.dialog.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/workers/jobs.enum.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class StatusSincronizacao extends StatelessWidget {
-  const StatusSincronizacao({super.key});
+  StatusSincronizacao({super.key});
+
+  final jobStore = ServiceLocator.get<JobStore>();
 
   @override
   Widget build(BuildContext context) {
@@ -35,47 +38,53 @@ class StatusSincronizacao extends StatelessWidget {
                   )
                 ],
               ),
-              child: StreamBuilder<Job>(
-                  stream: ServiceLocator.get<AppDatabase>().jobDao.watchJob(JobsEnum.SINCRONIZAR_RESPOSTAS),
-                  builder: (context, snapshot) {
-                    print('Status - ${snapshot.data}');
+              child: Observer(builder: (_) {
+                var jobStatus = jobStore.statusJob[JobsEnum.SINCRONIZAR_RESPOSTAS];
 
-                    var status = Icon(
+                if (kDebugMode) {
+                  print('Status - $jobStatus');
+                }
+
+                var status = Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.green,
+                  size: 24,
+                );
+
+                switch (jobStatus) {
+                  case EnumJobStatus.EXECUTANDO:
+                    status = Icon(
                       Icons.sync,
                       color: Colors.grey,
                       size: 24,
                     );
+                    break;
 
-                    if (snapshot.hasData) {
-                      if (snapshot.data!.statusUltimaExecucao == EnumJobStatus.COMPLETADO) {
-                        status = Icon(
-                          Icons.check_circle_rounded,
-                          color: Colors.green,
-                          size: 24,
-                        );
-                      } else if (snapshot.data!.statusUltimaExecucao == EnumJobStatus.ERRO) {
-                        status = Icon(
-                          Icons.cancel_rounded,
-                          color: Colors.red,
-                          size: 24,
-                        );
-                      }
-                    }
-
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Texto(
-                          "Sincronização:",
-                          fontSize: 14,
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        status,
-                      ],
+                  case EnumJobStatus.ERRO:
+                    status = Icon(
+                      Icons.cancel_rounded,
+                      color: Colors.red,
+                      size: 24,
                     );
-                  }),
+                    break;
+
+                  default:
+                }
+
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Texto(
+                      "Sincronização:",
+                      fontSize: 14,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    status,
+                  ],
+                );
+              }),
             ),
           ],
         ),
