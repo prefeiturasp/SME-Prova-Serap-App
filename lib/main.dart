@@ -24,6 +24,7 @@ import 'package:path_provider_ios/path_provider_ios.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 
+import 'main.isolate.dart';
 import 'utils/firebase.util.dart';
 
 var logger = Logger('Main');
@@ -72,6 +73,7 @@ configure() async {
   await setupAppConfig();
 
   await DependenciasIoC().setup();
+  await AppIsolates().setup();
 
   TelaAdaptativaUtil().setup();
 }
