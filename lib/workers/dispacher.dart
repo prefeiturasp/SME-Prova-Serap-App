@@ -73,19 +73,19 @@ executarJobs(String task) async {
 }
 
 sendStatus(SendPort? sendPort, JobsEnum job, EnumJobStatus status) {
+  var db = ServiceLocator.get<AppDatabase>();
+
+  if (status == EnumJobStatus.EXECUTANDO) {
+    db.jobDao.definirUltimaExecucao(job.taskName, ultimaExecucao: DateTime.now());
+  }
+
+  db.jobDao.definirStatus(job.taskName, statusUltimaExecucao: status);
+
   if (sendPort != null) {
     StatusJob statusJob = StatusJob(job, status);
     sendPort.send(statusJob);
   } else {
     ServiceLocator.get<JobStore>().statusJob[job] = status;
-
-    var db = ServiceLocator.get<AppDatabase>();
-
-    if (status == EnumJobStatus.EXECUTANDO) {
-      db.jobDao.definirUltimaExecucao(job.taskName, ultimaExecucao: DateTime.now());
-    }
-
-    db.jobDao.definirStatus(job.taskName, statusUltimaExecucao: status);
   }
 }
 
