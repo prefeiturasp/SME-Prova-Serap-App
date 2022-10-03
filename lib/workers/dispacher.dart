@@ -44,9 +44,6 @@ executarJobs(String task) async {
     await setupAppConfig();
     await DependenciasIoC().setup();
 
-    var jobDao = ServiceLocator.get<AppDatabase>().jobDao;
-    await jobDao.definirUltimaExecucao(task, ultimaExecucao: DateTime.now());
-
     sendStatus(sendPort, job, EnumJobStatus.EXECUTANDO);
 
     switch (job) {
@@ -79,6 +76,16 @@ sendStatus(SendPort? sendPort, JobsEnum job, EnumJobStatus status) {
   if (sendPort != null) {
     StatusJob statusJob = StatusJob(job, status);
     sendPort.send(statusJob);
+  } else {
+    ServiceLocator.get<JobStore>().statusJob[job] = status;
+
+    var db = ServiceLocator.get<AppDatabase>();
+
+    if (status == EnumJobStatus.EXECUTANDO) {
+      db.jobDao.definirUltimaExecucao(job.taskName, ultimaExecucao: DateTime.now());
+    }
+
+    db.jobDao.definirStatus(job.taskName, statusUltimaExecucao: status);
   }
 }
 
@@ -131,7 +138,17 @@ class Worker with Loggable, Database {
     } else {
       await interval(config.frequency, (timer) async {
         info('Executando job ${config.taskName}');
-        await job.run();
+
+        final JobsEnum jobEnum = JobsEnum.parse(config.taskName)!;
+
+        try {
+          sendStatus(null, jobEnum, EnumJobStatus.EXECUTANDO);
+          await job.run();
+          sendStatus(null, jobEnum, EnumJobStatus.COMPLETADO);
+        } catch (e, stack) {
+          sendStatus(null, jobEnum, EnumJobStatus.ERRO);
+          await recordError(e, stack);
+        }
       });
     }
   }
