@@ -7,10 +7,17 @@ class AdaptativeWidget extends StatelessWidget {
   final List<Widget> children;
   final AdaptativeWidgetMode mode;
 
+  final CrossAxisAlignment crossAxisAlignment;
+  final MainAxisAlignment mainAxisAlignment;
+  final MainAxisSize mainAxisSize;
+
   const AdaptativeWidget({
     Key? key,
     required this.children,
     this.mode = AdaptativeWidgetMode.AUTO,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
+    this.mainAxisAlignment = MainAxisAlignment.start,
+    this.mainAxisSize = MainAxisSize.max,
   }) : super(key: key);
 
   @override
@@ -31,13 +38,18 @@ class AdaptativeWidget extends StatelessWidget {
 
   _buildColumn() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: crossAxisAlignment,
+      mainAxisAlignment: mainAxisAlignment,
+      mainAxisSize: mainAxisSize,
       children: children,
     );
   }
 
   _buildRow() {
     return Row(
+      crossAxisAlignment: crossAxisAlignment,
+      mainAxisAlignment: mainAxisAlignment,
+      mainAxisSize: mainAxisSize,
       children: children,
     );
   }
