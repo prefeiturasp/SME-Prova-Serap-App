@@ -31,6 +31,10 @@ abstract class _JobStoreBase with Store, Database {
 
   updateDatabase(ObservableMap<JobsEnum, EnumJobStatus> statusJob) {
     for (var element in statusJob.entries) {
+      if (element.value == EnumJobStatus.EXECUTANDO) {
+        db.jobDao.definirUltimaExecucao(element.key.taskName, ultimaExecucao: DateTime.now());
+      }
+
       db.jobDao.definirStatus(element.key.taskName, statusUltimaExecucao: element.value);
     }
   }
