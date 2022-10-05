@@ -5,7 +5,6 @@ import 'package:appserap/dtos/questao_detalhes_legado.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/services/rest/download.service.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
 import 'package:chopper/chopper.dart';

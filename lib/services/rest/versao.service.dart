@@ -21,7 +21,8 @@ abstract class VersaoService extends ChopperService {
     @Header('chave-api') required String chaveAPI,
     @Field() required int versaoCodigo,
     @Field() required String versaoDescricao,
-    @Field() required String dispositivoImei,
+    @Field() String? dispositivoImei,
     @Field() required String atualizadoEm,
+    @Field() String? dispositivoId,
   });
 }

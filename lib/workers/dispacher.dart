@@ -2,6 +2,8 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/job_status.enum.dart';
@@ -9,6 +11,8 @@ import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/job.interface.dart';
 import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.isolate.dart';
+import 'package:appserap/stores/job.store.dart';
 import 'package:appserap/utils/timer.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/foundation.dart';
@@ -31,17 +35,16 @@ callbackDispatcher() {
 }
 
 executarJobs(String task) async {
+  final sendPort = IsolateNameServer.lookupPortByName(kIsolateBackground);
+  JobsEnum job = JobsEnum.parse(task)!;
+
   try {
     registerPluginsForIsolate();
     setupLogging();
     await setupAppConfig();
     await DependenciasIoC().setup();
 
-    var jobDao = ServiceLocator.get<AppDatabase>().jobDao;
-    await jobDao.definirUltimaExecucao(task, ultimaExecucao: DateTime.now());
-    await jobDao.definirStatus(task, statusUltimaExecucao: EnumJobStatus.EXECUTANDO);
-
-    JobsEnum job = JobsEnum.parse(task)!;
+    sendStatus(sendPort, job, EnumJobStatus.EXECUTANDO);
 
     switch (job) {
       case JobsEnum.SINCRONIZAR_RESPOSTAS:
@@ -57,16 +60,32 @@ executarJobs(String task) async {
         break;
     }
 
-    await jobDao.definirStatus(task, statusUltimaExecucao: EnumJobStatus.COMPLETADO);
+    sendStatus(sendPort, job, EnumJobStatus.COMPLETADO);
 
     return Future.value(true);
   } catch (e, stack) {
     await recordError(e, stack);
 
-    var jobDao = ServiceLocator.get<AppDatabase>().jobDao;
-    await jobDao.definirStatus(task, statusUltimaExecucao: EnumJobStatus.ERRO);
+    sendStatus(sendPort, job, EnumJobStatus.ERRO);
 
     return Future.error(e);
+  }
+}
+
+sendStatus(SendPort? sendPort, JobsEnum job, EnumJobStatus status) {
+  var db = ServiceLocator.get<AppDatabase>();
+
+  if (status == EnumJobStatus.EXECUTANDO) {
+    db.jobDao.definirUltimaExecucao(job.taskName, ultimaExecucao: DateTime.now());
+  }
+
+  db.jobDao.definirStatus(job.taskName, statusUltimaExecucao: status);
+
+  if (sendPort != null) {
+    StatusJob statusJob = StatusJob(job, status);
+    sendPort.send(statusJob);
+  } else {
+    ServiceLocator.get<JobStore>().statusJob[job] = status;
   }
 }
 
@@ -119,7 +138,17 @@ class Worker with Loggable, Database {
     } else {
       await interval(config.frequency, (timer) async {
         info('Executando job ${config.taskName}');
-        await job.run();
+
+        final JobsEnum jobEnum = JobsEnum.parse(config.taskName)!;
+
+        try {
+          sendStatus(null, jobEnum, EnumJobStatus.EXECUTANDO);
+          await job.run();
+          sendStatus(null, jobEnum, EnumJobStatus.COMPLETADO);
+        } catch (e, stack) {
+          sendStatus(null, jobEnum, EnumJobStatus.ERRO);
+          await recordError(e, stack);
+        }
       });
     }
   }

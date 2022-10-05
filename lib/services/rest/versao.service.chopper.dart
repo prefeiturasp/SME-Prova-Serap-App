@@ -43,8 +43,9 @@ class _$VersaoService extends VersaoService {
       {required String chaveAPI,
       required int versaoCodigo,
       required String versaoDescricao,
-      required String dispositivoImei,
-      required String atualizadoEm}) {
+      String? dispositivoImei,
+      required String atualizadoEm,
+      String? dispositivoId}) {
     final $url = '/v1/versoes/dispositivo';
     final $headers = {
       'chave-api': chaveAPI,
@@ -54,7 +55,8 @@ class _$VersaoService extends VersaoService {
       'versaoCodigo': versaoCodigo,
       'versaoDescricao': versaoDescricao,
       'dispositivoImei': dispositivoImei,
-      'atualizadoEm': atualizadoEm
+      'atualizadoEm': atualizadoEm,
+      'dispositivoId': dispositivoId
     };
     final $request =
         Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
