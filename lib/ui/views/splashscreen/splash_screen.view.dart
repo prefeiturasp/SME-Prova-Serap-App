@@ -12,9 +12,9 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lottie/lottie.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:platform_device_id/platform_device_id.dart';
@@ -119,31 +119,36 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Container(
-          child: Lottie.asset('assets/images/students.json'),
-            ),
+        child: SvgPicture.asset(
+          'assets/images/estudantes.svg',
+        ),
       ),
     );
   }
 
   Future<bool> checkUpdate() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    int buildNumber = int.parse(packageInfo.buildNumber);
+
+    int buildNumber = int.parse(packageInfo.buildNumber.isEmpty ? '0' : packageInfo.buildNumber);
 
     info("Versão: ${packageInfo.version} Build: $buildNumber");
 
-    bool isAvailable = await Updater(
-      context: context,
-      url: AppConfigReader.getApiHost() + "/v1/versoes/atualizacao",
-      titleText: 'Atualização disponível!',
-      confirmText: "Atualizar",
-      backgroundDownload: false,
-      allowSkip: false,
-      callBack: (versionName, versionCode, contentText, minSupport, downloadUrl) {
-        info("Ultima Versão: $versionName Build: $versionCode");
-      },
-      controller: controller,
-    ).check();
+    bool isAvailable = false;
+
+    if (!kIsWeb && Platform.isAndroid) {
+      isAvailable = await Updater(
+        context: context,
+        url: AppConfigReader.getApiHost() + "/v1/versoes/atualizacao",
+        titleText: 'Atualização disponível!',
+        confirmText: "Atualizar",
+        backgroundDownload: false,
+        allowSkip: false,
+        callBack: (versionName, versionCode, contentText, minSupport, downloadUrl) {
+          info("Ultima Versão: $versionName Build: $versionCode");
+        },
+        controller: controller,
+      ).check();
+    }
 
     return isAvailable;
   }
@@ -185,5 +190,4 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
       await recordError(e, stack, reason: "Erro ao informar versão");
     }
   }
-
 }
