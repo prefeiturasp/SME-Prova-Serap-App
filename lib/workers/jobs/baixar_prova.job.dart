@@ -107,6 +107,7 @@ class BaixarProvaJob with Job, Loggable, Database {
       tempoExtra: provaResponse.tempoExtra,
       tempoAlerta: provaResponse.tempoAlerta,
       dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
+      dataFimProvaAluno: provaResponse.dataFimProvaAluno,
       senha: provaResponse.senha,
       quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
       ultimaAlteracao: provaResponse.ultimaAlteracao,
