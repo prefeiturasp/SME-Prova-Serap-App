@@ -615,7 +615,6 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
         ],
       ),
       onPressed: () async {
-
         await verificarHoraServidor();
 
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
@@ -688,6 +687,10 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   }
 
   verificarHoraServidor() async {
+    if (!_principalStore.temConexao) {
+      return;
+    }
+
     try {
       var response = await ServiceLocator.get<ApiService>().configuracao.getDataHoraServidor();
 
@@ -697,7 +700,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
         DateTime dataHoraServidor = body.dataHora;
         int tolerancia = body.tolerancia;
 
-        if ((dataHoraServidor.difference(DateTime.now()).inMinutes).abs() >= tolerancia ) {
+        if ((dataHoraServidor.difference(DateTime.now()).inMinutes).abs() >= tolerancia) {
           await horaDispositivoIncorreta(context, dataHoraServidor);
         }
       }

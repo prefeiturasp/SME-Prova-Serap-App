@@ -229,7 +229,12 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                               right: 24,
                               bottom: 20,
                             ),
-                            child: _buildBotoes(questao),
+                            child: Column(
+                              children: [
+                                // kDebugMode ? _buildBotaoFinalizarProva() : Container(),
+                                _buildBotoes(questao),
+                              ],
+                            ),
                           );
                         }),
                       ],
@@ -385,6 +390,10 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       );
     }
 
+    return _buildBotaoFinalizarProva();
+  }
+
+  Widget _buildBotaoFinalizarProva() {
     return BotaoDefaultWidget(
       textoBotao: 'Finalizar prova',
       onPressed: () async {
