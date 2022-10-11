@@ -17,7 +17,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
 
   @override
   FutureOr<Request?> authenticate(Request request, Response<dynamic> response, [Request? originalRequest]) async {
-    SharedPreferences prefs = GetIt.I.get();
+    SharedPreferences prefs = await ServiceLocator.getAsync();
 
     if (response.statusCode == 401 && !refreshtoken) {
       refreshtoken = true;
@@ -71,7 +71,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
         DateTime expiration = response.body!.dataHoraExpiracao;
         fine('Novo token - Data Expiracao ($expiration) $newToken');
 
-        SharedPreferences prefs = GetIt.I.get();
+        SharedPreferences prefs = await ServiceLocator.getAsync();
         await prefs.setString('token', newToken);
         await prefs.setString('token_expiration', expiration.toIso8601String());
         return newToken;
@@ -100,8 +100,8 @@ class CustomAuthInterceptor implements RequestInterceptor {
   CustomAuthInterceptor();
 
   @override
-  FutureOr<Request> onRequest(Request request) {
-    SharedPreferences prefs = GetIt.I.get();
+  FutureOr<Request> onRequest(Request request) async {
+    SharedPreferences prefs = await ServiceLocator.getAsync();
     String? token = prefs.getString('token');
 
     if (token != null) {

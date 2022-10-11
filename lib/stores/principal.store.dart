@@ -127,7 +127,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   }
 
   _limparDadosLocais() async {
-    SharedPreferences prefs = GetIt.I.get();
+    SharedPreferences prefs = await ServiceLocator.getAsync();
 
     for (var item in prefs.getKeys()) {
       if (!item.startsWith('_')) {
