@@ -1,6 +1,5 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/respostas.database.dart';
-import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_dispositivo.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/principal.store.dart';
@@ -13,7 +12,6 @@ import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/jobs.enum.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 
 mostrarDetalhesSincronizacaoResposta(BuildContext context) async {
   bool conectado = ServiceLocator.get<PrincipalStore>().temConexao;
