@@ -1,8 +1,8 @@
 import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -68,6 +68,10 @@ abstract class _UsuarioStoreBase with Store {
   @computed
   bool get isLogado => codigoEOL != null;
 
+  _UsuarioStoreBase() {
+    carregarUsuario();
+  }
+
   @action
   void dispose() {
     if (ano != null && ano!.isNotEmpty) {
@@ -90,7 +94,7 @@ abstract class _UsuarioStoreBase with Store {
 
   @action
   Future<void> carregarUsuario() async {
-    SharedPreferences prefs = GetIt.I.get();
+    SharedPreferences prefs = await ServiceLocator.getAsync();
     nome = prefs.getString("serapUsuarioNome");
     token = prefs.getString("serapUsuarioToken");
     codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
@@ -184,7 +188,7 @@ abstract class _UsuarioStoreBase with Store {
     this.escola = escola;
     this.turma = turma;
 
-    SharedPreferences prefs = GetIt.I.get();
+    SharedPreferences prefs = await ServiceLocator.getAsync();
     await prefs.setString('serapUsuarioNome', nome);
 
     if (token != null && token.isNotEmpty) {
@@ -233,7 +237,7 @@ abstract class _UsuarioStoreBase with Store {
     this.codigoEOL = codigoEOL;
     this.token = token;
 
-    SharedPreferences prefs = GetIt.I.get();
+    SharedPreferences prefs = await ServiceLocator.getAsync();
     await prefs.setString('serapUsuarioNome', nome);
     await prefs.setBool('serapIsAdmin', isAdmin);
 

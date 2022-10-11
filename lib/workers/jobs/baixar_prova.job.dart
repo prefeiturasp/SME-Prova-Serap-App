@@ -23,8 +23,9 @@ class BaixarProvaJob with Job, Loggable, Database {
       if (_usuarioStore.isRespondendoProva) {
         return;
       }
+      SharedPreferences prefs = await ServiceLocator.getAsync();
 
-      String? token = ServiceLocator.get<SharedPreferences>().getString("token");
+      String? token = prefs.getString("token");
       if (token == null) {
         return;
       }
