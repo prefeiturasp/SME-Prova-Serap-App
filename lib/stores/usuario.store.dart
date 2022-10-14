@@ -146,14 +146,6 @@ abstract class _UsuarioStoreBase with Store {
     if (prefs.containsKey('serapIsAdmin')) {
       isAdmin = prefs.getBool("serapIsAdmin")!;
     }
-
-    if (ano != null && ano!.isNotEmpty) {
-      await inscreverTurmaFirebase(ano!);
-    }
-
-    if (codigoEOL != null && codigoEOL!.isNotEmpty) {
-      await setUserIdentifier(codigoEOL!);
-    }
   }
 
   @action
@@ -199,7 +191,6 @@ abstract class _UsuarioStoreBase with Store {
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
       await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
-      await setUserIdentifier(codigoEOL);
     }
 
     await prefs.setString('serapUsuarioAno', ano);
@@ -222,8 +213,6 @@ abstract class _UsuarioStoreBase with Store {
 
     this.deficiencias = ObservableList.of(deficiencias);
     await prefs.setStringList('serapUsuarioDeficiencia', deficiencias.map((e) => e.index.toString()).toList());
-
-    await inscreverTurmaFirebase(ano);
   }
 
   @action

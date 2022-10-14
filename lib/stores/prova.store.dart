@@ -115,7 +115,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-    fine("[Prova $id] - Configurando Download");
+    fine("[Prova $id - $caderno] - Configurando Download");
 
     downloadManagerStore.listen((downloadStatus, progressoDownload, tempoPrevisto) {
       this.downloadStatus = downloadStatus;
@@ -135,7 +135,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
 
     await respostas.carregarRespostasServidor();
 
-    fine("[Prova $id] - Download Concluído");
+    fine("[Prova $id - $caderno] - Download Concluído");
   }
 
   @action
@@ -145,7 +145,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   }
 
   _setupReactions() {
-    fine('[Prova $id] - Configurando reactions');
+    fine('[Prova $id - $caderno] - Configurando reactions');
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction(
@@ -183,12 +183,12 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
     }
 
     if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
-      info("[Prova $id] - Download Pausado");
+      info("[Prova $id - $caderno] - Download Pausado");
       downloadStatus = EnumDownloadStatus.PAUSADO;
       downloadManagerStore.pauseAllDownloads();
     }
     if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
-      info("[Prova $id] - Download Resumido");
+      info("[Prova $id - $caderno] - Download Resumido");
 
       await iniciarDownload();
     }
@@ -263,7 +263,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
 
   @action
   configurarProva() async {
-    info("[Prova $id] - Configurando prova");
+    info("[Prova $id - $caderno] - Configurando prova");
 
     setRespondendoProva(true);
 
@@ -276,11 +276,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
       await continuarProva();
     }
 
-    info("[Prova $id] - Configuração concluida");
+    info("[Prova $id - $caderno] - Configuração concluida");
   }
 
   _configureControlesTempoProva() async {
-    info("[Prova $id] - Configurando controles de tempo");
+    info("[Prova $id - $caderno] - Configurando controles de tempo");
     if (tempoExecucaoStore != null) {
       switch (tempoExecucaoStore!.status) {
         case EnumProvaTempoEventType.EXTENDIDO:
@@ -330,7 +330,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   @action
   _configurarTempoExecucao() {
     if (prova.tempoExecucao > 0) {
-      fine('[Prova $id] - Configurando controlador de tempo');
+      fine('[Prova $id - $caderno] - Configurando controlador de tempo');
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
         horaFinalTurno: ServiceLocator.get<UsuarioStore>().fimTurno,

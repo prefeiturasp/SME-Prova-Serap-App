@@ -95,6 +95,9 @@ abstract class _LoginStoreBase with Store, Loggable {
       usuarioDados.tamanhoFonte = 16;
     }
     defineFonte(usuarioDados.familiaFonte, usuarioDados.tamanhoFonte);
+
+    await inscreverTurmaFirebase(usuarioDados.ano);
+    await setUserIdentifier(codigoEOL);
   }
 
   @action
