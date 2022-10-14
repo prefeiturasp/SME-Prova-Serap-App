@@ -26,7 +26,8 @@ class BaixarProvaJob with Job, Loggable, Database {
       SharedPreferences prefs = await ServiceLocator.getAsync();
 
       String? token = prefs.getString("token");
-      if (token == null) {
+      String? codigoEol = prefs.getString("serapUsuarioCodigoEOL");
+      if (token == null || codigoEol == null) {
         return;
       }
 
@@ -41,7 +42,9 @@ class BaixarProvaJob with Job, Loggable, Database {
       List<ProvaResponseDTO> provasRemoto = provasResponse.body!;
       List<int> idsProvasRemoto = provasRemoto.filter((e) => !e.isFinalizada()).map((e) => e.id).toList();
 
-      List<int> idsProvasLocal = await getProvasCacheIds();
+      List<Prova> provasLocais = await db.provaDao.listarTodosPorAluno(codigoEol);
+      List<int> idsProvasLocal = provasLocais.filter((e) => !e.isFinalizada()).map((e) => e.id).toList();
+
       List<int> idsToDownload = idsProvasRemoto.toSet().difference(idsProvasLocal.toSet()).toList();
 
       List<int> idsParaVerificar = idsProvasLocal.toSet().difference(idsToDownload.toSet()).toList();
@@ -52,25 +55,29 @@ class BaixarProvaJob with Job, Loggable, Database {
         if (provaLocal == null) {
           continue;
         }
+
         var provaRemoto = provasRemoto.firstWhere((element) => element.id == provaLocal.id);
 
         // Caderno de questões alterado
         if (provaLocal.caderno != provaRemoto.caderno) {
           info("[Prova ${provaLocal.id}] - Caderno alterado ${provaLocal.caderno} -> ${provaRemoto.caderno}");
-          await DownloadManagerStore(provaId: provaLocal.id).removerDownloadCompleto();
+          await DownloadManagerStore(provaId: provaLocal.id, caderno: provaLocal.caderno).removerDownloadCompleto();
           idsToDownload.add(idProva);
+          continue;
+        }
+
+        // Prova alterada
+        if (!isSameDates(provaLocal.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
+          info('[Prova ${provaLocal.id}] - Prova alterada - Baixando Novamente...');
+          await DownloadManagerStore(provaId: provaLocal.id, caderno: provaLocal.caderno).removerDownloadCompleto();
+          idsToDownload.add(idProva);
+          continue;
         }
 
         // Prova não baixada
         if (provaLocal.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
           idsToDownload.add(idProva);
-        }
-
-        // Prova alterada
-        if (!isSameDates(provaLocal.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
-          info('[Prova ${provaLocal.id}] Prova alterada - Baixando Novamente...');
-          await DownloadManagerStore(provaId: provaLocal.id).removerDownloadCompleto();
-          idsToDownload.add(idProva);
+          continue;
         }
       }
 

@@ -80,7 +80,9 @@ part 'app.database.g.dart';
   ],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super.connect(impl.connect());
+  AppDatabase() : super.connect(impl.connect()) {
+    driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+  }
 
   AppDatabase.executor(QueryExecutor e) : super(e);
 

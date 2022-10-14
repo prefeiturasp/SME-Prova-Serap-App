@@ -6,7 +6,7 @@ main() {
     testWidgets(
       'Quando o usuario clicar em logar, deve fazer o login',
       (WidgetTester widgetTester) async {
-        await configure();
+        await configure(false);
 
         await widgetTester.pumpWidget(MyApp());
       },

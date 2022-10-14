@@ -159,7 +159,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
     }
 
     try {
-      SharedPreferences prefs = ServiceLocator.get();
+      SharedPreferences prefs = await ServiceLocator.getAsync();
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
       int buildNumber = prefs.getInt("_buildNumber") ?? 0;

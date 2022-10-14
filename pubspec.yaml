@@ -46,9 +46,9 @@ dependencies:
   flutter_html: ^2.2.1
 
   # Firebase
-  firebase_messaging: ^13.0.1
-  firebase_core: ^1.22.0
-  firebase_crashlytics: ^2.8.10
+  firebase_messaging: ^13.1.0
+  firebase_core: ^1.24.0
+  firebase_crashlytics: ^2.9.0
 
   # Http api
   chopper: ^4.0.6
