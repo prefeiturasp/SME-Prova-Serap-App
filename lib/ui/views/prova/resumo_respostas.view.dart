@@ -301,7 +301,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     var questoes = await db.questaoDao.obterPorProvaECaderno(widget.idProva, provaStore.caderno);
 
     for (Questao questao in questoes) {
-      var questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEQuestao(
+      int questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEQuestao(
         widget.idProva,
         provaStore.caderno,
         questao.questaoLegadoId,
@@ -436,6 +436,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
       onTap: () {
         provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
         store.posicaoQuestaoSendoRevisada = questaoOrdem;
+
         if ((provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido) &&
             resposta == "") {
           store.quantidadeDeQuestoesSemRespostas = 0;
