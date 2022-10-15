@@ -5,7 +5,6 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/appbar/popup_submenu_item.dart';
@@ -141,7 +140,6 @@ class AppBarWidget extends StatelessWidget {
           await _principalStore.sair();
 
           await ServiceLocator.get<HomeStore>().onDispose();
-          await ServiceLocator.get<ProvaStore>().onDispose();
 
           if (popView) {
             var prova = GetIt.I.get<ProvaViewStore>();

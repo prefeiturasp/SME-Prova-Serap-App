@@ -109,7 +109,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   @override
   Widget builder(BuildContext context) {
     var questoes = store.questoesParaRevisar.toList();
-    store.totalDeQuestoesParaRevisar = questoes.length - 1;
+    store.totalDeQuestoesParaRevisar = questoes.length;
 
     return Observer(builder: (_) {
       if (store.isLoading) {
@@ -473,37 +473,45 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Observer(
-          builder: (context) {
-            if (store.posicaoQuestaoSendoRevisada != store.totalDeQuestoesParaRevisar) {
-              return BotaoDefaultWidget(
-                textoBotao: 'Próximo item da revisão',
-                onPressed: () async {
-                  try {
-                    if (store.botaoOcupado) return;
+        FutureBuilder<int?>(
+          future: store.obterProximaQuestaoRevisao(
+            provaStore,
+            questao.questaoLegadoId,
+            store.posicaoQuestaoSendoRevisada,
+          ),
+          builder: (context, snapshot) {
+            int? proximaQuestao = snapshot.data;
 
-                    store.botaoOcupado = true;
-
-                    provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-                    await provaStore.respostas.definirTempoResposta(
-                      questaoId,
-                      tempoQuestao: provaStore.segundos,
-                    );
-
-                    await provaStore.respostas.sincronizarResposta();
-                    store.posicaoQuestaoSendoRevisada++;
-                    provaStore.ultimaAtualizacaoLogImagem = null;
-
-                    context.push("/prova/${widget.idProva}/revisao/${store.posicaoQuestaoSendoRevisada}");
-                  } catch (e, stack) {
-                    await recordError(e, stack);
-                  } finally {
-                    store.botaoOcupado = false;
-                  }
-                },
-              );
+            if (!snapshot.hasData || proximaQuestao == widget.ordem) {
+              return Container();
             }
-            return Container();
+
+            return BotaoDefaultWidget(
+              textoBotao: 'Próximo item da revisão',
+              onPressed: () async {
+                try {
+                  if (store.botaoOcupado) return;
+
+                  store.botaoOcupado = true;
+
+                  provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
+                  await provaStore.respostas.definirTempoResposta(
+                    questaoId,
+                    tempoQuestao: provaStore.segundos,
+                  );
+
+                  await provaStore.respostas.sincronizarResposta();
+                  store.posicaoQuestaoSendoRevisada++;
+                  provaStore.ultimaAtualizacaoLogImagem = null;
+
+                  context.push("/prova/${widget.idProva}/revisao/$proximaQuestao");
+                } catch (e, stack) {
+                  await recordError(e, stack);
+                } finally {
+                  store.botaoOcupado = false;
+                }
+              },
+            );
           },
         ),
         SizedBox(

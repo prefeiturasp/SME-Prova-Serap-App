@@ -185,8 +185,8 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
   @override
   onDispose() {
-    limpar();
     cancelarTimers();
+    limpar();
   }
 
   @action

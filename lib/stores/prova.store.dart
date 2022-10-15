@@ -334,8 +334,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
         horaFinalTurno: ServiceLocator.get<UsuarioStore>().fimTurno,
-        duracaoProva: Duration(seconds: prova.tempoExecucao),
-        duracaoTempoExtra: Duration(seconds: prova.tempoExtra),
+        duracaoProva: Duration(seconds: 15),
+        duracaoTempoExtra: Duration(hours: 1),
         duracaoTempoFinalizando: Duration(seconds: prova.tempoAlerta ?? 0),
       );
     }

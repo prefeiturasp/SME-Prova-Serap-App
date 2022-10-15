@@ -10,7 +10,6 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:appserap/utils/provas.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
