@@ -54,6 +54,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   late List<Alternativa> alternativas;
   late List<Arquivo> imagens;
   late Uint8List arquivoVideo;
+  late Uint8List arquivoAudio;
   late int questaoId;
 
   ArquivoVideoDb? arquivoVideoDb;
@@ -90,10 +91,20 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     questaoId =
         await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
 
-    loadVideos(questao);
+    await _carregarArquivos();
   }
 
-  loadVideos(Questao questao) async {
+  _carregarArquivos() async {
+    if (_verificarDeficienciaVisual()) {
+      await loadAudio(questao);
+    }
+
+    if (_verificarDeficienciaAuditiva()) {
+      await loadVideos(questao);
+    }
+  }
+
+  Future<void> loadVideos(Questao questao) async {
     arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoLegadoId(questao.questaoLegadoId);
 
     if (arquivoVideoDb != null && kIsWeb) {
@@ -107,16 +118,16 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     }
   }
 
-  Future<Uint8List?> loadAudio(Questao questao) async {
+  Future<void> loadAudio(Questao questao) async {
     arquivoAudioDb = await db.arquivosAudioDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
 
-    if (arquivoAudioDb != null) {
+    if (arquivoAudioDb != null && kIsWeb) {
       IdbFile idbFile = IdbFile(arquivoAudioDb!.path);
 
       if (await idbFile.exists()) {
         Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
         info('abrindo audio ${formatBytes(readContents.lengthInBytes, 2)}');
-        return readContents;
+        arquivoAudio = readContents;
       }
     }
   }
@@ -272,17 +283,8 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     }
 
     if (kIsWeb) {
-      return FutureBuilder<Uint8List?>(
-        future: loadAudio(questao),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return AudioPlayerWidget(
-              audioBytes: snapshot.data,
-            );
-          }
-
-          return SizedBox.shrink();
-        },
+      return AudioPlayerWidget(
+        audioBytes: arquivoAudio,
       );
     } else {
       if (arquivoAudioDb != null) {
@@ -433,11 +435,16 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       return false;
     }
 
+    return _verificarDeficienciaVisual();
+  }
+
+  _verificarDeficienciaVisual() {
     for (var deficiencia in principalStore.usuario.deficiencias) {
       if (grupoCegos.contains(deficiencia)) {
         return true;
       }
     }
+
     return false;
   }
 
@@ -446,6 +453,10 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       return false;
     }
 
+    return _verificarDeficienciaAuditiva();
+  }
+
+  _verificarDeficienciaAuditiva() {
     for (var deficiencia in principalStore.usuario.deficiencias) {
       if (grupoSurdos.contains(deficiencia)) {
         return true;
