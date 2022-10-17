@@ -339,25 +339,25 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
 
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
         } else if (resposta.resposta != null && resposta.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
         } else if (podeAdicionarRespostaVazia) {
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
           store.quantidadeDeQuestoesSemRespostas++;
         } else if (removeQuestaoQueNaoPodeRevisar) {
           store.questoesParaRevisar.remove(questao);
           store.quantidadeDeQuestoesSemRespostas++;
         } else if (provaStore.tempoExecucaoStore == null) {
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
           store.quantidadeDeQuestoesSemRespostas++;
         } else {
           store.quantidadeDeQuestoesSemRespostas++;
         }
       } else {
         if (provaStore.tempoExecucaoStore == null) {
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
         }
         store.quantidadeDeQuestoesSemRespostas++;
       }

@@ -13,13 +13,13 @@ mixin _$QuestaoRevisaoStore on _QuestaoRevisaoStoreBase, Store {
       name: '_QuestaoRevisaoStoreBase.questoesParaRevisar', context: context);
 
   @override
-  ObservableList<Questao> get questoesParaRevisar {
+  ObservableMap<int, Questao> get questoesParaRevisar {
     _$questoesParaRevisarAtom.reportRead();
     return super.questoesParaRevisar;
   }
 
   @override
-  set questoesParaRevisar(ObservableList<Questao> value) {
+  set questoesParaRevisar(ObservableMap<int, Questao> value) {
     _$questoesParaRevisarAtom.reportWrite(value, super.questoesParaRevisar, () {
       super.questoesParaRevisar = value;
     });

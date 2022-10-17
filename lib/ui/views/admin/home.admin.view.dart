@@ -179,8 +179,6 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     return ListView.builder(
       itemCount: store.provas.length + 1,
       itemBuilder: (_, index) {
-        print("store.provas.isEmpty ${store.provas.isEmpty} - store.carregando ${store.carregando}");
-
         if (store.provas.isEmpty && !store.carregando) {
           return Center(
             child: SizedBox(
