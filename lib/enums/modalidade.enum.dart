@@ -2,73 +2,36 @@ import 'package:json_annotation/json_annotation.dart';
 
 enum ModalidadeEnum {
   @JsonValue(0)
-  NAO_CADASTRADO,
+  NAO_CADASTRADO("Não Cadastrado", "NAO_CADASTRADO", 0, false),
 
   @JsonValue(1)
-  EI,
+  EI("Educação Infantil", "EI", 1, true),
 
   @JsonValue(3)
-  EJA,
+  EJA("Educação de Jovens e Adultos", "EJA", 3, true),
 
   @JsonValue(4)
-  CIEJA,
+  CIEJA("CIEJA", "CIEJA", 4, false),
 
   @JsonValue(5)
-  FUNDAMENTAL,
+  FUNDAMENTAL("Ensino Fundamental", "EF", 5, true),
 
   @JsonValue(6)
-  MEDIO,
+  MEDIO("Ensino Médio", "EM", 6, false),
 
   @JsonValue(7)
-  CMCT,
+  CMCT("CMCT", "CMCT", 7, false),
 
   @JsonValue(8)
-  MOVA,
+  MOVA("MOVA", "MOVA", 8, false),
 
   @JsonValue(9)
-  ETEC
-}
+  ETEC("ETEC", "ETEC", 9, false);
 
-extension ModalidadeEnumExtension on ModalidadeEnum {
-  static const nomes = {
-    ModalidadeEnum.NAO_CADASTRADO: 'Não Cadastrado',
-    ModalidadeEnum.EI: 'Educação Infantil',
-    ModalidadeEnum.EJA: 'Educação de Jovens e Adultos',
-    ModalidadeEnum.CIEJA: 'CIEJA',
-    ModalidadeEnum.FUNDAMENTAL: 'Ensino Fundamental',
-    ModalidadeEnum.MEDIO: 'Ensino Médio',
-    ModalidadeEnum.CMCT: 'CMCT',
-    ModalidadeEnum.MOVA: 'MOVA',
-    ModalidadeEnum.ETEC: 'ETEC',
-  };
+  const ModalidadeEnum(this.nome, this.abreviacao, this.codigo, this.visivel);
 
-  String get nome => nomes[this]!;
-
-  static const abreviacoes = {
-    ModalidadeEnum.NAO_CADASTRADO: 'NAO_CADASTRADO',
-    ModalidadeEnum.EI: 'EI',
-    ModalidadeEnum.EJA: 'EJA',
-    ModalidadeEnum.CIEJA: 'CIEJA',
-    ModalidadeEnum.FUNDAMENTAL: 'EF',
-    ModalidadeEnum.MEDIO: 'EM',
-    ModalidadeEnum.CMCT: 'CMCT',
-    ModalidadeEnum.MOVA: 'MOVA',
-    ModalidadeEnum.ETEC: 'ETEC',
-  };
-
-  String get abreviacao => abreviacoes[this]!;
-
-  static const codigos = {
-    ModalidadeEnum.NAO_CADASTRADO: 0,
-    ModalidadeEnum.EI: 1,
-    ModalidadeEnum.EJA: 3,
-    ModalidadeEnum.CIEJA: 4,
-    ModalidadeEnum.FUNDAMENTAL: 5,
-    ModalidadeEnum.MEDIO: 6,
-    ModalidadeEnum.CMCT: 7,
-    ModalidadeEnum.MOVA: 8,
-    ModalidadeEnum.ETEC: 9,
-  };
-
-  int get codigo => codigos[this]!;
+  final String nome;
+  final String abreviacao;
+  final int codigo;
+  final bool visivel;
 }

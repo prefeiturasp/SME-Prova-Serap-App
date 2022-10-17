@@ -104,7 +104,7 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                       store.desricao = value;
                     },
                     onFieldSubmitted: (value) async {
-                      if (value.length > 3 || value.isEmpty) {
+                      if (value.length >= 3 || value.isEmpty) {
                         await store.filtrar();
                       }
                     },
@@ -122,7 +122,7 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
                 padding: const EdgeInsets.only(right: 8),
                 child: DropdownSearch<ModalidadeEnum>(
                   showClearButton: true,
-                  items: ModalidadeEnum.values.filter((element) => element.codigo != 0).toList(),
+                  items: ModalidadeEnum.values.filter((element) => element.visivel).toList(),
                   itemAsString: (item) => item.nome,
                   dropdownSearchDecoration: InputDecoration(
                     hintText: "Selecione a modalidade",
@@ -179,6 +179,8 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
     return ListView.builder(
       itemCount: store.provas.length + 1,
       itemBuilder: (_, index) {
+        print("store.provas.isEmpty ${store.provas.isEmpty} - store.carregando ${store.carregando}");
+
         if (store.provas.isEmpty && !store.carregando) {
           return Center(
             child: SizedBox(
