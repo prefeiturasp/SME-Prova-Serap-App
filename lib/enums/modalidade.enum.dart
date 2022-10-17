@@ -5,7 +5,7 @@ enum ModalidadeEnum {
   NAO_CADASTRADO("Não Cadastrado", "NAO_CADASTRADO", 0, false),
 
   @JsonValue(1)
-  EI("Educação Infantil", "EI", 1, true),
+  EI("Educação Infantil", "EI", 1, false),
 
   @JsonValue(3)
   EJA("Educação de Jovens e Adultos", "EJA", 3, true),
@@ -17,7 +17,7 @@ enum ModalidadeEnum {
   FUNDAMENTAL("Ensino Fundamental", "EF", 5, true),
 
   @JsonValue(6)
-  MEDIO("Ensino Médio", "EM", 6, false),
+  MEDIO("Ensino Médio", "EM", 6, true),
 
   @JsonValue(7)
   CMCT("CMCT", "CMCT", 7, false),
