@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -14,6 +13,7 @@ import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao.store.dart';
+import 'package:appserap/ui/views/prova/prova.media.util.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_aluno.widget.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
@@ -48,7 +48,7 @@ class QuestaoView extends BaseStatefulWidget {
   _QuestaoViewState createState() => _QuestaoViewState();
 }
 
-class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable {
+class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable, ProvaMediaUtil {
   late ProvaStore provaStore;
   late Questao questao;
   late List<Alternativa> alternativas;
@@ -95,11 +95,11 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   _carregarArquivos() async {
-    if (_verificarDeficienciaVisual()) {
+    if (verificarDeficienciaVisual()) {
       await loadAudio(questao);
     }
 
-    if (_verificarDeficienciaAuditiva()) {
+    if (verificarDeficienciaAuditiva()) {
       await loadVideos(questao);
     }
   }
@@ -187,7 +187,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
             _buildAudioPlayer(),
             StatusSincronizacao(),
             Expanded(
-              child: _builLayout(
+              child: _buildLayout(
                 body: SingleChildScrollView(
                   child: Padding(
                     padding: getPadding(),
@@ -260,7 +260,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     });
   }
 
-  _builLayout({required Widget body}) {
+  Widget _buildLayout({required Widget body}) {
     if (exibirVideo()) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,17 +435,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       return false;
     }
 
-    return _verificarDeficienciaVisual();
-  }
-
-  _verificarDeficienciaVisual() {
-    for (var deficiencia in principalStore.usuario.deficiencias) {
-      if (grupoCegos.contains(deficiencia)) {
-        return true;
-      }
-    }
-
-    return false;
+    return verificarDeficienciaVisual();
   }
 
   bool exibirVideo() {
@@ -453,16 +443,6 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       return false;
     }
 
-    return _verificarDeficienciaAuditiva();
-  }
-
-  _verificarDeficienciaAuditiva() {
-    for (var deficiencia in principalStore.usuario.deficiencias) {
-      if (grupoSurdos.contains(deficiencia)) {
-        return true;
-      }
-    }
-
-    return false;
+    return verificarDeficienciaAuditiva();
   }
 }
