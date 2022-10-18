@@ -459,7 +459,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
             var questaoDb = await db.questaoDao.getByQuestaoLegadoId(questaoDTO.questaoLegadoId);
 
             if (questaoDb == null) {
-              info("[Prova $provaId - $caderno] - Salvando questao ${questaoDTO.id}");
+              info("[Prova $provaId - $caderno] - Salvando questao ${questaoDTO.questaoLegadoId}");
 
               await baixarAlternativa(questaoDTO.alternativas, questaoDTO.questaoLegadoId);
 
@@ -493,7 +493,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
               await db.questaoDao.inserirOuAtualizar(questao);
             } else {
-              severe("[Prova $provaId - $caderno] - Questao ${questaoDTO.id} ja existe no banco");
+              severe("[Prova $provaId - $caderno] - Questao ${questaoDTO.questaoLegadoId} ja existe no banco");
             }
 
             var provaCaderno = ProvaCaderno(
