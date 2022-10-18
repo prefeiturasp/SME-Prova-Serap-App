@@ -321,7 +321,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   Future<void> _finalizarProva() async {
     var confirm = await finalizarProva(true);
     if (confirm) {
-      onDispose();
       ServiceLocator.get<AppRouter>().router.go("/");
     }
   }
@@ -362,6 +361,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
 
   @action
   Future<bool> finalizarProva([bool automaticamente = false]) async {
+    bool confirmacao = false;
+
     try {
       BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
 
@@ -404,7 +405,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
 
           await dbRespostas.respostaProvaDao.removerSincronizadas();
 
-          return retorno ?? false;
+          confirmacao = retorno ?? false;
         } else {
           switch (response.statusCode) {
             // Prova ja finalizada
@@ -418,11 +419,15 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
         }
       }
 
-      return true;
+      confirmacao = true;
     } catch (e, stack) {
       await recordError(e, stack);
-      return false;
+      confirmacao = false;
     }
+
+    await onDispose();
+
+    return confirmacao;
   }
 
   @action

@@ -138,7 +138,8 @@ class AppBarWidget extends StatelessWidget {
         if (sair) {
           await _principalStore.sair();
 
-          await ServiceLocator.get<HomeStore>().onDispose();
+          HomeStore homeStore = ServiceLocator.get<HomeStore>();
+          await homeStore.onDispose();
 
           if (popView) {
             var prova = GetIt.I.get<ProvaViewStore>();
