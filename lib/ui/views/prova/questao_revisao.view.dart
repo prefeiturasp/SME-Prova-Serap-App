@@ -608,7 +608,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
           store.posicaoQuestaoSendoRevisada++;
           provaStore.ultimaAtualizacaoLogImagem = null;
 
-          context.push("/prova/${widget.idProva}/revisao/$ordemProximaQuestao");
+          context.go("/prova/${widget.idProva}/revisao/$ordemProximaQuestao");
         } catch (e, stack) {
           await recordError(e, stack);
         } finally {

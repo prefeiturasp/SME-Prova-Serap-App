@@ -16,7 +16,10 @@ import 'package:supercharged_dart/supercharged_dart.dart';
 class ProvaView extends BaseStatefulWidget {
   final int idProva;
 
-  const ProvaView({required this.idProva}) : super(title: "Prova");
+  const ProvaView({
+    super.key,
+    required this.idProva,
+  }) : super(title: "Prova");
 
   @override
   _ProvaViewState createState() => _ProvaViewState();

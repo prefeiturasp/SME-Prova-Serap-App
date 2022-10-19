@@ -10,10 +10,10 @@ class VideoPlayerWidget extends StatefulWidget {
   final String? videoUrl;
 
   VideoPlayerWidget({
-    Key? key,
+    super.key,
     this.videoPath,
     this.videoUrl,
-  }) : super(key: key);
+  });
 
   @override
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
@@ -32,6 +32,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
       _videoPlayerController = VideoPlayerController.network(widget.videoUrl!);
     } else {
       _videoPlayerController = VideoPlayerController.file(File(widget.videoPath!));
+      info(widget.videoPath!);
     }
 
     _chewieController = ChewieController(
@@ -48,6 +49,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
   @override
   void dispose() {
     _videoPlayerController.pause();
+
     _chewieController.dispose();
     _videoPlayerController.dispose();
 

@@ -233,38 +233,32 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
   }
 
   Widget _buildBotaoProximo() {
-    try {
-      if (widget.ordem < widget.resumo.length - 1) {
-        return BotaoDefaultWidget(
-          textoBotao: 'Próximo item',
-          onPressed: () async {
-            if (widget.nomeCaderno != null) {
-              context.push(
-                "/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/questao/${widget.ordem + 1}",
-                extra: widget.resumo.toList(),
-              );
-            } else {
-              context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem + 1}", extra: widget.resumo.toList());
-            }
-          },
-        );
-      }
-
+    if (widget.ordem < widget.resumo.length - 1) {
       return BotaoDefaultWidget(
-        textoBotao: 'Voltar para o resumo',
+        textoBotao: 'Próximo item',
         onPressed: () async {
           if (widget.nomeCaderno != null) {
-            context.go("/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/resumo");
+            context.push(
+              "/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/questao/${widget.ordem + 1}",
+              extra: widget.resumo.toList(),
+            );
           } else {
-            context.go("/admin/prova/${widget.idProva}/resumo");
+            context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem + 1}", extra: widget.resumo.toList());
           }
         },
       );
-    } on Exception catch (e,stack) {
-      print("Erro ir para proxima questao prova_questao.admin.view.dart $e");
-      print("Erro ir para proxima questao prova_questao.admin.view.dart $stack");
-      return Container();
     }
+
+    return BotaoDefaultWidget(
+      textoBotao: 'Voltar para o resumo',
+      onPressed: () async {
+        if (widget.nomeCaderno != null) {
+          context.go("/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/resumo");
+        } else {
+          context.go("/admin/prova/${widget.idProva}/resumo");
+        }
+      },
+    );
   }
 
   Future<Widget> showVideoPlayer() async {

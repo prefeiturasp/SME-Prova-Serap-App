@@ -349,29 +349,21 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         );
         provaStore.respostas.sincronizarResposta();
         // Navega para a proxima questão
-        context.push("/prova/${widget.idProva}/questao/${widget.ordem - 1}");
+        context.go("/prova/${widget.idProva}/questao/${widget.ordem - 1}");
       },
     );
   }
 
   Widget _buildBotaoProximo(Questao questao) {
-    print(questao);
-    print("Imprimiu a questão");
-    print('widget.ordem ${widget.ordem}');
-    print('provaStore.prova.itensQuantidade ${provaStore.prova.itensQuantidade}');
     if (widget.ordem < provaStore.prova.itensQuantidade - 1) {
-      print('entrou no if');
       return BotaoDefaultWidget(
         textoBotao: 'Próxima questão',
         desabilitado: store.botaoOcupado,
         onPressed: () async {
           try {
-            print('entrou no try');
             store.botaoOcupado = true;
 
             provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-            print('390');
-            print('questao.tipo ${questao.tipo}');
             if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
               await provaStore.respostas.definirResposta(
                 questaoId,
@@ -379,26 +371,18 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                 tempoQuestao: provaStore.segundos,
               );
             }
-            print('398');
             if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA) {
               await provaStore.respostas.definirTempoResposta(
                 questaoId,
                 tempoQuestao: provaStore.segundos,
               );
             }
-            print('405');
             provaStore.respostas.sincronizarResposta();
             provaStore.segundos = 0;
             provaStore.ultimaAtualizacaoLogImagem = null;
-            print('409');
-            print("widget.idProva ${widget.idProva}");
-            print("{widget.ordem ${widget.ordem}");
-            print("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
 
-            context.push("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
+            context.go("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
           } on Exception catch (e, stack) {
-            print("Erro ir para proxima questao  questao.view.dart $e");
-            print("Erro ir para proxima questao questao.view.dart $stack");
             await recordError(e, stack);
           } finally {
             store.botaoOcupado = false;
@@ -406,7 +390,6 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         },
       );
     }
-    print('saiu do if');
     return _buildBotaoFinalizarProva();
   }
 
