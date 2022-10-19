@@ -25,7 +25,6 @@ import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 
 import 'main.isolate.dart';
-import 'utils/firebase.util.dart';
 
 var logger = Logger('Main');
 

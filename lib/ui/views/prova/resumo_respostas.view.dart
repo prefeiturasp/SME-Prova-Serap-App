@@ -33,8 +33,9 @@ class ResumoRespostasView extends BaseStatefulWidget {
   final int idProva;
 
   ResumoRespostasView({
+    Key? key,
     required this.idProva,
-  }) : super(title: "Resumo das respostas");
+  }) : super(key: key, title: "Resumo das respostas");
 
   @override
   _ResumoRespostasViewState createState() => _ResumoRespostasViewState();
