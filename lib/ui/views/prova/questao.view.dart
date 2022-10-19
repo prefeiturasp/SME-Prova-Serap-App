@@ -42,13 +42,15 @@ class QuestaoView extends BaseStatefulWidget {
   final int idProva;
   final int ordem;
 
-  QuestaoView({Key? key, required this.idProva, required this.ordem}) : super(key: key);
+  QuestaoView({Key? key, required this.idProva, required this.ordem})
+      : super(key: key);
 
   @override
   _QuestaoViewState createState() => _QuestaoViewState();
 }
 
-class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable, ProvaMediaUtil {
+class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore>
+    with Loggable, ProvaMediaUtil {
   late ProvaStore provaStore;
   late Questao questao;
   late List<Alternativa> alternativas;
@@ -83,13 +85,17 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       return;
     }
 
-    provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
+    provaStore =
+        provas.filter((prova) => prova.key == widget.idProva).first.value;
 
-    questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
-    alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
-    imagens = await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
-    questaoId =
-        await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
+    questao = await db.questaoDao
+        .getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
+    alternativas = await db.alternativaDao
+        .obterPorQuestaoLegadoId(questao.questaoLegadoId);
+    imagens =
+        await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
+    questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(
+        widget.idProva, provaStore.caderno, widget.ordem);
 
     await _carregarArquivos();
   }
@@ -105,13 +111,15 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   Future<void> loadVideos(Questao questao) async {
-    arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoLegadoId(questao.questaoLegadoId);
+    arquivoVideoDb = await db.arquivosVideosDao
+        .findByQuestaoLegadoId(questao.questaoLegadoId);
 
     if (arquivoVideoDb != null && kIsWeb) {
       IdbFile idbFile = IdbFile(arquivoVideoDb!.path);
 
       if (await idbFile.exists()) {
-        Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
+        Uint8List readContents =
+            Uint8List.fromList(await idbFile.readAsBytes());
         info('abrindo video ${formatBytes(readContents.lengthInBytes, 2)}');
         arquivoVideo = readContents;
       }
@@ -119,13 +127,15 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   Future<void> loadAudio(Questao questao) async {
-    arquivoAudioDb = await db.arquivosAudioDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
+    arquivoAudioDb = await db.arquivosAudioDao
+        .obterPorQuestaoLegadoId(questao.questaoLegadoId);
 
     if (arquivoAudioDb != null && kIsWeb) {
       IdbFile idbFile = IdbFile(arquivoAudioDb!.path);
 
       if (await idbFile.exists()) {
-        Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
+        Uint8List readContents =
+            Uint8List.fromList(await idbFile.readAsBytes());
         info('abrindo audio ${formatBytes(readContents.lengthInBytes, 2)}');
         arquivoAudio = readContents;
       }
@@ -194,10 +204,13 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                     child: Column(
                       children: [
                         SizedBox(
-                          width: arquivoVideoDb != null ? MediaQuery.of(context).size.width * 0.5 : null,
+                          width: arquivoVideoDb != null
+                              ? MediaQuery.of(context).size.width * 0.5
+                              : null,
                           child: Observer(builder: (_) {
                             return Container(
-                              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 16),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -205,16 +218,21 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                                     children: [
                                       Text(
                                         'Questão ${widget.ordem + 1} ',
-                                        style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                        style: TemaUtil.temaTextoNumeroQuestoes
+                                            .copyWith(
                                           fontSize: temaStore.tTexto20,
-                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                          fontFamily:
+                                              temaStore.fonteDoTexto.nomeFonte,
                                         ),
                                       ),
                                       Text(
                                         'de ${provaStore.prova.itensQuantidade}',
-                                        style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                        style: TemaUtil
+                                            .temaTextoNumeroQuestoesTotal
+                                            .copyWith(
                                           fontSize: temaStore.tTexto20,
-                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                          fontFamily:
+                                              temaStore.fonteDoTexto.nomeFonte,
                                         ),
                                       ),
                                     ],
@@ -304,7 +322,9 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
       child: FutureBuilder<Widget>(
         future: showVideoPlayer(),
         builder: (context, snapshot) {
-          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
+          return snapshot.connectionState == ConnectionState.done
+              ? snapshot.data!
+              : Container();
         },
       ),
     );
@@ -356,16 +376,23 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
   Widget _buildBotaoProximo(Questao questao) {
     print(questao);
+    print("Imprimiu a questão");
+    print('widget.ordem ${widget.ordem}');
+    print(
+        'provaStore.prova.itensQuantidade ${provaStore.prova.itensQuantidade}');
     if (widget.ordem < provaStore.prova.itensQuantidade - 1) {
+      print('entrou no if');
       return BotaoDefaultWidget(
         textoBotao: 'Próxima questão',
         desabilitado: store.botaoOcupado,
         onPressed: () async {
           try {
+            print('entrou no try');
             store.botaoOcupado = true;
 
             provaStore.tempoCorrendo = EnumTempoStatus.PARADO;
-
+            print('390');
+            print('questao.tipo ${questao.tipo}');
             if (questao.tipo == EnumTipoQuestao.RESPOSTA_CONTRUIDA) {
               await provaStore.respostas.definirResposta(
                 questaoId,
@@ -373,18 +400,25 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                 tempoQuestao: provaStore.segundos,
               );
             }
+            print('398');
             if (questao.tipo == EnumTipoQuestao.MULTIPLA_ESCOLHA) {
               await provaStore.respostas.definirTempoResposta(
                 questaoId,
                 tempoQuestao: provaStore.segundos,
               );
             }
+            print('405');
             provaStore.respostas.sincronizarResposta();
             provaStore.segundos = 0;
             provaStore.ultimaAtualizacaoLogImagem = null;
+            print('409');
+            print("widget.idProva ${widget.idProva}");
+            print("{widget.ordem ${widget.ordem}");
+            print("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
 
-            context.push("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
-          } catch (e, stack) {
+            context
+                .push("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
+          } on Exception catch (e, stack) {
             print("Erro ir para proxima questao  questao.view.dart $e");
             print("Erro ir para proxima questao questao.view.dart $stack");
             await recordError(e, stack);
@@ -394,7 +428,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         },
       );
     }
-
+    print('saiu do if');
     return _buildBotaoFinalizarProva();
   }
 
