@@ -44,9 +44,7 @@ class ProvaAtualTabView extends BaseStatefulWidget {
   State<ProvaAtualTabView> createState() => _ProvaAtualTabViewState();
 }
 
-class _ProvaAtualTabViewState
-    extends BaseTabWidget<ProvaAtualTabView, HomeStore>
-    with Loggable, HomeViewUtil {
+class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore> with Loggable, HomeViewUtil {
   final _principalStore = GetIt.I.get<PrincipalStore>();
   final _usuarioStore = GetIt.I.get<UsuarioStore>();
 
@@ -86,10 +84,7 @@ class _ProvaAtualTabViewState
   }
 
   _buildItens(ObservableMap<int, ProvaStore> provasStore) {
-    var listProvas = provasStore
-        .filter((p) =>
-            verificaProvaVigente(p.value) && !p.value.prova.isFinalizada())
-        .toMap();
+    var listProvas = provasStore.filter((p) => verificaProvaVigente(p.value) && !p.value.prova.isFinalizada()).toMap();
 
     if (listProvas.isEmpty) {
       return Center(
@@ -178,8 +173,7 @@ class _ProvaAtualTabViewState
                       //
                       Observer(builder: (_) {
                         return AdaptativeWidget(
-                          mode: temaStore.fonteDoTexto ==
-                                      FonteTipoEnum.OPEN_DYSLEXIC &&
+                          mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC &&
                                   temaStore.incrementador > 22 &&
                                   kIsMobile
                               ? AdaptativeWidgetMode.COLUMN
@@ -236,7 +230,7 @@ class _ProvaAtualTabViewState
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   // Botao
                   AdaptativeCenter(
                     center: kIsMobile,
@@ -374,14 +368,12 @@ class _ProvaAtualTabViewState
 
   _buildBotao(ProvaStore provaStore) {
     // Download não iniciado e sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
-        !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
     }
 
     // Download prova pausado sem conexão
-    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO &&
-        !_principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.PAUSADO && !_principalStore.temConexao) {
       return _buildPausado(provaStore);
     }
 
@@ -391,14 +383,12 @@ class _ProvaAtualTabViewState
     }
 
     // Baixar prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO &&
-        _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && _principalStore.temConexao) {
       return _buildBaixarProva(provaStore);
     }
 
     // Baixando prova
-    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO &&
-        _principalStore.temConexao) {
+    if (provaStore.downloadStatus == EnumDownloadStatus.BAIXANDO && _principalStore.temConexao) {
       return _buildDownloadProgresso(provaStore);
     }
 
@@ -456,9 +446,7 @@ class _ProvaAtualTabViewState
                 children: <TextSpan>[
                   TextSpan(
                     text: " - Sem conexão com a internet",
-                    style: TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: TemaUtil.vermelhoErro),
+                    style: TextStyle(fontWeight: FontWeight.normal, color: TemaUtil.vermelhoErro),
                   ),
                 ],
               ),
@@ -523,24 +511,26 @@ class _ProvaAtualTabViewState
       tamanhoFonte = temaStore.tTexto14;
     }
 
+    double largura = 256;
+
+    if (temaStore.incrementador >= 22) {
+      largura = 300;
+    }
+
     return BotaoDefaultWidget(
-      largura: kIsTablet ? 256 : null,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Observer(
-          builder: (_) {
-            return Texto(
-              maxLines: 2,
-              " BAIXAR PROVA",
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-              texStyle: TemaUtil.temaTextoBotao.copyWith(
-                fontSize: tamanhoFonte,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-              ),
-            );
-          },
-        ),
+      largura: largura,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(Icons.download, color: Colors.white, size: 18),
+          Texto(
+            " BAIXAR PROVA",
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: tamanhoFonte,
+          ),
+        ],
       ),
       onPressed: () async {
         await provaStore.iniciarDownload();
@@ -568,18 +558,11 @@ class _ProvaAtualTabViewState
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                Observer(
-                  builder: (_) {
-                    return Texto(
-                      "Aguardando envio",
-                      color: TemaUtil.laranja01,
-                      bold: true,
-                      texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
-                        fontSize: temaStore.tTexto12,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    );
-                  },
+                Texto(
+                  "Aguardando envio",
+                  color: TemaUtil.laranja01,
+                  bold: true,
+                  fontSize: 12,
                 ),
               ],
             ),
@@ -655,15 +638,12 @@ class _ProvaAtualTabViewState
                       ),
                       child: TextField(
                         focusNode: _codigoProvaFocus,
-                        onChanged: (value) =>
-                            provaStore.codigoIniciarProva = value,
+                        onChanged: (value) => provaStore.codigoIniciarProva = value,
                         maxLength: 10,
                         decoration: InputDecoration(
                           labelText: 'Digite o código para liberar a prova',
                           labelStyle: TextStyle(
-                            color: _codigoProvaFocus.hasFocus
-                                ? TemaUtil.laranja01
-                                : TemaUtil.preto,
+                            color: _codigoProvaFocus.hasFocus ? TemaUtil.laranja01 : TemaUtil.preto,
                           ),
                         ),
                       ),
@@ -672,9 +652,7 @@ class _ProvaAtualTabViewState
                   botoes: [
                     BotaoDefaultWidget(
                       onPressed: () {
-                        String senhaCriptografada = md5
-                            .convert(utf8.encode(provaStore.codigoIniciarProva))
-                            .toString();
+                        String senhaCriptografada = md5.convert(utf8.encode(provaStore.codigoIniciarProva)).toString();
 
                         if (provaStore.prova.senha == senhaCriptografada) {
                           Navigator.pop(context);
@@ -706,9 +684,7 @@ class _ProvaAtualTabViewState
     }
 
     try {
-      var response = await ServiceLocator.get<ApiService>()
-          .configuracao
-          .getDataHoraServidor();
+      var response = await ServiceLocator.get<ApiService>().configuracao.getDataHoraServidor();
 
       if (response.isSuccessful) {
         DataHoraServidorDTO body = response.body!;
@@ -716,8 +692,7 @@ class _ProvaAtualTabViewState
         DateTime dataHoraServidor = body.dataHora;
         int tolerancia = body.tolerancia;
 
-        if ((dataHoraServidor.difference(DateTime.now()).inMinutes).abs() >=
-            tolerancia) {
+        if ((dataHoraServidor.difference(DateTime.now()).inMinutes).abs() >= tolerancia) {
           await horaDispositivoIncorreta(context, dataHoraServidor);
         }
       }
@@ -733,21 +708,15 @@ class _ProvaAtualTabViewState
       var fimTurno = ServiceLocator.get<UsuarioStore>().fimTurno;
 
       var tempoTotalDisponivel = provaStore.prova.tempoExecucao;
-      var tempoDisponivel = DateTime.now()
-          .copyWith(hour: fimTurno, minute: 0, second: 0)
-          .difference(DateTime.now());
+      var tempoDisponivel = DateTime.now().copyWith(hour: fimTurno, minute: 0, second: 0).difference(DateTime.now());
 
       if (tempoDisponivel.inSeconds < tempoTotalDisponivel) {
-        iniciarProva = await mostrarDialogNaoPossuiTempoTotalDisponivel(
-                context, tempoDisponivel) ??
-            false;
+        iniciarProva = await mostrarDialogNaoPossuiTempoTotalDisponivel(context, tempoDisponivel) ?? false;
       }
     }
 
     if (iniciarProva) {
-      if (await ServiceLocator.get<AppDatabase>()
-          .contextoProvaDao
-          .possuiContexto(provaStore.id)) {
+      if (await ServiceLocator.get<AppDatabase>().contextoProvaDao.possuiContexto(provaStore.id)) {
         context.go("/prova/${provaStore.id}/contexto");
       } else {
         context.go("/prova/${provaStore.id}");
@@ -759,13 +728,10 @@ class _ProvaAtualTabViewState
     String tempoPrevisto = "0";
 
     if (!prova.tempoPrevisto.isNaN) {
-      tempoPrevisto =
-          formatDuration(Duration(seconds: prova.tempoPrevisto.toInt()));
+      tempoPrevisto = formatDuration(Duration(seconds: prova.tempoPrevisto.toInt()));
     }
 
-    var tempoRestante = prova.tempoPrevisto > 0
-        ? " - Aproximadamente $tempoPrevisto restantes"
-        : "";
+    var tempoRestante = prova.tempoPrevisto > 0 ? " - Aproximadamente $tempoPrevisto restantes" : "";
 
     return SizedBox(
       child: Column(
@@ -788,8 +754,7 @@ class _ProvaAtualTabViewState
             child: Observer(builder: (_) {
               return Text.rich(
                 TextSpan(
-                  text:
-                      "Download em ${(prova.progressoDownload * 100).toStringAsFixed(2)}%",
+                  text: "Download em ${(prova.progressoDownload * 100).toStringAsFixed(2)}%",
                   style: TextStyle(
                     color: TemaUtil.preto2,
                     fontSize: temaStore.size(12),
@@ -825,21 +790,12 @@ class _ProvaAtualTabViewState
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: Observer(builder: (_) {
-                return Texto(
-                  textOverflow: TextOverflow.visible,
-                  maxLines: 4,
-                  "A execução da prova estará disponível no seu turno",
-                  color: TemaUtil.laranja01,
-                  bold: true,
-                  texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
-                    fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  ),
-                );
-              }),
+            child: Texto(
+              "A execução da prova estará disponível no seu turno",
+              maxLines: 2,
+              color: TemaUtil.laranja01,
+              bold: true,
+              fontSize: 12,
             ),
           ),
         ],
