@@ -355,6 +355,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   Widget _buildBotaoProximo(Questao questao) {
+    print(questao);
     if (widget.ordem < provaStore.prova.itensQuantidade - 1) {
       return BotaoDefaultWidget(
         textoBotao: 'Próxima questão',
@@ -384,6 +385,8 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
             context.push("/prova/${widget.idProva}/questao/${widget.ordem + 1}");
           } catch (e, stack) {
+            print("Erro ir para proxima questao  questao.view.dart $e");
+            print("Erro ir para proxima questao questao.view.dart $stack");
             await recordError(e, stack);
           } finally {
             store.botaoOcupado = false;
