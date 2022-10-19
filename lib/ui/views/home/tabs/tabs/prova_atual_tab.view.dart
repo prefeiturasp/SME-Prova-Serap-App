@@ -230,7 +230,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   // Botao
                   AdaptativeCenter(
                     center: kIsMobile,
@@ -511,24 +511,26 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
       tamanhoFonte = temaStore.tTexto14;
     }
 
+    double largura = 256;
+
+    if (temaStore.incrementador >= 22) {
+      largura = 300;
+    }
+
     return BotaoDefaultWidget(
-      largura: kIsTablet ? 256 : null,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Observer(
-          builder: (_) {
-            return Texto(
-              maxLines: 2,
-              " BAIXAR PROVA",
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-              texStyle: TemaUtil.temaTextoBotao.copyWith(
-                fontSize: tamanhoFonte,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-              ),
-            );
-          },
-        ),
+      largura: largura,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(Icons.download, color: Colors.white, size: 18),
+          Texto(
+            " BAIXAR PROVA",
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: tamanhoFonte,
+          ),
+        ],
       ),
       onPressed: () async {
         await provaStore.iniciarDownload();
@@ -556,18 +558,11 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                Observer(
-                  builder: (_) {
-                    return Texto(
-                      "Aguardando envio",
-                      color: TemaUtil.laranja01,
-                      bold: true,
-                      texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
-                        fontSize: temaStore.tTexto12,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    );
-                  },
+                Texto(
+                  "Aguardando envio",
+                  color: TemaUtil.laranja01,
+                  bold: true,
+                  fontSize: 12,
                 ),
               ],
             ),
@@ -795,21 +790,12 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: Observer(builder: (_) {
-                return Texto(
-                  textOverflow: TextOverflow.visible,
-                  maxLines: 4,
-                  "A execução da prova estará disponível no seu turno",
-                  color: TemaUtil.laranja01,
-                  bold: true,
-                  texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
-                    fontSize: temaStore.tTexto12,
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  ),
-                );
-              }),
+            child: Texto(
+              "A execução da prova estará disponível no seu turno",
+              maxLines: 2,
+              color: TemaUtil.laranja01,
+              bold: true,
+              fontSize: 12,
             ),
           ),
         ],
