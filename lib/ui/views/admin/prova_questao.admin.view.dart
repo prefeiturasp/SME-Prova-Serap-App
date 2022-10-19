@@ -85,7 +85,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
         children: [
           _buildAudioPlayer(),
           Expanded(
-            child: _builLayout(
+            child: _buildLayout(
               body: SingleChildScrollView(
                 child: Padding(
                   padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
@@ -119,7 +119,10 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
                                 ),
                                 SizedBox(height: 8),
                                 QuestaoAdminWidget(
-                                    questao: store.questao!, imagens: store.imagens, alternativas: store.alternativas),
+                                  questao: store.questao!,
+                                  imagens: store.imagens,
+                                  alternativas: store.alternativas,
+                                ),
                                 SizedBox(height: 8),
                               ],
                             ),
@@ -145,7 +148,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
     });
   }
 
-  _builLayout({required Widget body}) {
+  _buildLayout({required Widget body}) {
     if (exibirVideo()) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,

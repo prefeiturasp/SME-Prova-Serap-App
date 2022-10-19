@@ -20,8 +20,6 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
-  // BetterPlayerController _betterPlayerController;
-
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
   double _aspectRatio = 16 / 9;
@@ -29,7 +27,6 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
   @override
   initState() {
     super.initState();
-    info(widget.videoPath);
 
     if (widget.videoUrl != null) {
       _videoPlayerController = VideoPlayerController.network(widget.videoUrl!);
@@ -40,16 +37,11 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
     _chewieController = ChewieController(
       allowedScreenSleep: false,
       allowFullScreen: true,
-
       videoPlayerController: _videoPlayerController,
       aspectRatio: _aspectRatio,
       autoInitialize: true,
       autoPlay: true,
       showControls: true,
-      // materialProgressColors: ChewieProgressColors(
-      //   playedColor: TemaUtil.,
-      //   bufferedColor: kTextColorVariant,
-      // ),
     );
   }
 

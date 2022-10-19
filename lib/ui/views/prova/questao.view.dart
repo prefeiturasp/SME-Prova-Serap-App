@@ -190,11 +190,11 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
               child: _buildLayout(
                 body: SingleChildScrollView(
                   child: Padding(
-                    padding: getPadding(),
+                    padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
                     child: Column(
                       children: [
                         SizedBox(
-                          width: arquivoVideoDb != null ? MediaQuery.of(context).size.width * 0.5 : null,
+                          width: exibirVideo() ? MediaQuery.of(context).size.width / 2 : null,
                           child: Observer(builder: (_) {
                             return Container(
                               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -260,7 +260,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     });
   }
 
-  Widget _buildLayout({required Widget body}) {
+  _buildLayout({required Widget body}) {
     if (exibirVideo()) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,7 +299,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
   Widget _buildVideoPlayer() {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.5,
+      width: MediaQuery.of(context).size.width / 2,
       padding: EdgeInsets.only(right: 16),
       child: FutureBuilder<Widget>(
         future: showVideoPlayer(),
