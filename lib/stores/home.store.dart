@@ -145,11 +145,17 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     if (prova != null) {
       // atualizar prova com os valores remotos
 
-      prova.status = provaStoreAtualizada.prova.status;
       prova.downloadStatus = provaStoreAtualizada.prova.downloadStatus;
 
-      prova.dataInicioProvaAluno = provaStoreAtualizada.prova.dataInicioProvaAluno;
-      prova.dataFimProvaAluno = provaStoreAtualizada.prova.dataFimProvaAluno;
+      if (prova.status == EnumProvaStatus.PENDENTE) {
+        provaStoreAtualizada.prova.status = prova.status;
+        provaStoreAtualizada.prova.dataInicioProvaAluno = prova.dataInicioProvaAluno;
+        provaStoreAtualizada.prova.dataFimProvaAluno = prova.dataFimProvaAluno;
+      } else {
+        prova.status = provaStoreAtualizada.prova.status;
+        prova.dataInicioProvaAluno = provaStoreAtualizada.prova.dataInicioProvaAluno;
+        prova.dataFimProvaAluno = provaStoreAtualizada.prova.dataFimProvaAluno;
+      }
 
       prova.dataInicio = provaStoreAtualizada.prova.dataInicio;
       prova.dataFim = provaStoreAtualizada.prova.dataFim;
@@ -179,8 +185,8 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
   @override
   onDispose() {
-    limpar();
     cancelarTimers();
+    limpar();
   }
 
   @action

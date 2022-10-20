@@ -226,10 +226,7 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
                         color: TemaUtil.laranja01,
                         bold: true,
                         maxLines: 2,
-                        texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
-                          fontSize: temaStore.tTexto12,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
+                        fontSize: 12,
                       ),
                     )
                   ],

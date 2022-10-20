@@ -59,13 +59,6 @@ abstract class TemaUtil {
     fontWeight: FontWeight.w500,
   );
 
-  //TEMA TEXTO AGUARDANDO ENVIO
-  static const temaTextoAguardandoEnvio = TextStyle(
-    color: TemaUtil.laranja01,
-    fontSize: 12,
-    fontWeight: FontWeight.bold,
-  );
-
   //TEMA TEXTO BEM VINDO
   static const temaTextoBemVindo = TextStyle(
     color: Colors.black87,

@@ -125,7 +125,6 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
       duracaoTempoExtra: duracaoTempoExtra,
       duracaoTempoFinalizando: duracaoTempoFinalizando,
     );
-
   }
 
   onFinalizarlProva(finalizarProvaCallback) {
@@ -141,8 +140,8 @@ abstract class _ProvaTempoExecucaoStoreBase with Store, Loggable, Disposable {
   }
 
   @override
-  onDispose() {
-    gerenciadorTempo?.onDispose();
+  onDispose() async {
+    await gerenciadorTempo?.onDispose();
     finalizarProvaCallback = null;
     finalizandoProvaCallback = null;
     extenderProvaCallback = null;

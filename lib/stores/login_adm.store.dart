@@ -36,7 +36,7 @@ abstract class _LoginAdmStoreBase with Store, Loggable {
           isAdmin: true,
         );
 
-        var prefs = ServiceLocator.get<SharedPreferences>();
+        SharedPreferences prefs = await ServiceLocator.getAsync();
         await prefs.setString('token', body.token);
         fine('Login realizado com sucesso');
         fine('Token: ${body.token}');

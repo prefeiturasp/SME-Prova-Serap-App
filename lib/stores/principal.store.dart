@@ -68,7 +68,8 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   @action
   Future<void> obterVersaoDoApp() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    versaoApp = "Versão ${packageInfo.version}.${packageInfo.buildNumber}";
+    int buildNumber = int.parse(packageInfo.buildNumber.isEmpty ? '0' : packageInfo.buildNumber);
+    versaoApp = "Versão ${packageInfo.version}.$buildNumber";
   }
 
   @action
@@ -126,7 +127,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   }
 
   _limparDadosLocais() async {
-    SharedPreferences prefs = GetIt.I.get();
+    SharedPreferences prefs = await ServiceLocator.getAsync();
 
     for (var item in prefs.getKeys()) {
       if (!item.startsWith('_')) {

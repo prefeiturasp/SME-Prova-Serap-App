@@ -230,7 +230,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   // Botao
                   AdaptativeCenter(
                     center: kIsMobile,
@@ -511,25 +511,24 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
       tamanhoFonte = temaStore.tTexto14;
     }
 
+    double largura = 256;
+
+    if (temaStore.incrementador >= 22) {
+      largura = 300;
+    }
+
     return BotaoDefaultWidget(
-      largura: kIsTablet ? 256 : null,
+      largura: largura,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.download, color: Colors.white, size: 18),
-          Observer(
-            builder: (_) {
-              return Texto(
-                " BAIXAR PROVA",
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                texStyle: TemaUtil.temaTextoBotao.copyWith(
-                  fontSize: tamanhoFonte,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                ),
-              );
-            },
+          Texto(
+            " BAIXAR PROVA",
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: tamanhoFonte,
           ),
         ],
       ),
@@ -559,18 +558,11 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                Observer(
-                  builder: (_) {
-                    return Texto(
-                      "Aguardando envio",
-                      color: TemaUtil.laranja01,
-                      bold: true,
-                      texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
-                        fontSize: temaStore.tTexto12,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    );
-                  },
+                Texto(
+                  "Aguardando envio",
+                  color: TemaUtil.laranja01,
+                  bold: true,
+                  fontSize: 12,
                 ),
               ],
             ),
@@ -615,7 +607,6 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
         ],
       ),
       onPressed: () async {
-
         await verificarHoraServidor();
 
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
@@ -688,6 +679,10 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   }
 
   verificarHoraServidor() async {
+    if (!_principalStore.temConexao) {
+      return;
+    }
+
     try {
       var response = await ServiceLocator.get<ApiService>().configuracao.getDataHoraServidor();
 
@@ -697,7 +692,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
         DateTime dataHoraServidor = body.dataHora;
         int tolerancia = body.tolerancia;
 
-        if ((dataHoraServidor.difference(DateTime.now()).inMinutes).abs() >= tolerancia ) {
+        if ((dataHoraServidor.difference(DateTime.now()).inMinutes).abs() >= tolerancia) {
           await horaDispositivoIncorreta(context, dataHoraServidor);
         }
       }
@@ -795,22 +790,12 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Row(
-              children: [
-                Observer(
-                  builder: (_) {
-                    return Texto(
-                      "A execução da prova estará disponível no seu turno",
-                      color: TemaUtil.laranja01,
-                      bold: true,
-                      texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
-                        fontSize: temaStore.tTexto12,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    );
-                  },
-                ),
-              ],
+            child: Texto(
+              "A execução da prova estará disponível no seu turno",
+              maxLines: 2,
+              color: TemaUtil.laranja01,
+              bold: true,
+              fontSize: 12,
             ),
           ),
         ],

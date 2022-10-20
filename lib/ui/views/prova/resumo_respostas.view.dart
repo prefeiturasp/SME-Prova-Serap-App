@@ -33,8 +33,9 @@ class ResumoRespostasView extends BaseStatefulWidget {
   final int idProva;
 
   ResumoRespostasView({
+    Key? key,
     required this.idProva,
-  }) : super(title: "Resumo das respostas");
+  }) : super(key: key, title: "Resumo das respostas");
 
   @override
   _ResumoRespostasViewState createState() => _ResumoRespostasViewState();
@@ -301,7 +302,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     var questoes = await db.questaoDao.obterPorProvaECaderno(widget.idProva, provaStore.caderno);
 
     for (Questao questao in questoes) {
-      var questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEQuestao(
+      int questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEQuestao(
         widget.idProva,
         provaStore.caderno,
         questao.questaoLegadoId,
@@ -339,25 +340,25 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
 
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
         } else if (resposta.resposta != null && resposta.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
         } else if (podeAdicionarRespostaVazia) {
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
           store.quantidadeDeQuestoesSemRespostas++;
         } else if (removeQuestaoQueNaoPodeRevisar) {
           store.questoesParaRevisar.remove(questao);
           store.quantidadeDeQuestoesSemRespostas++;
         } else if (provaStore.tempoExecucaoStore == null) {
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
           store.quantidadeDeQuestoesSemRespostas++;
         } else {
           store.quantidadeDeQuestoesSemRespostas++;
         }
       } else {
         if (provaStore.tempoExecucaoStore == null) {
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
         }
         store.quantidadeDeQuestoesSemRespostas++;
       }
@@ -436,6 +437,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
       onTap: () {
         provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
         store.posicaoQuestaoSendoRevisada = questaoOrdem;
+
         if ((provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido) &&
             resposta == "") {
           store.quantidadeDeQuestoesSemRespostas = 0;

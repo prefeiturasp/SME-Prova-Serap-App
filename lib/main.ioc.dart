@@ -36,13 +36,19 @@ class DependenciasIoC with Loggable {
   setup() async {
     config('Configurando Injeção de Dependencias');
     ServiceLocator.allowReassignment = true;
+    registrarServicosAsync();
+    await ServiceLocator.allReady();
+
     registrarServicos();
     registrarStores();
     await ServiceLocator.allReady();
   }
 
+  registrarServicosAsync() {
+    registerSingletonAsync<SharedPreferences>(() async => SharedPreferences.getInstance(), signalsReady: true);
+  }
+
   registrarServicos() {
-    registerSingletonAsync<SharedPreferences>(() => SharedPreferences.getInstance());
     registerSingleton<AppDatabase>(AppDatabase());
     registerSingleton<RespostasDatabase>(RespostasDatabase());
     registerSingleton<ApiService>(ApiService.build(

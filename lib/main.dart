@@ -25,7 +25,6 @@ import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 
 import 'main.isolate.dart';
-import 'utils/firebase.util.dart';
 
 var logger = Logger('Main');
 
@@ -33,7 +32,7 @@ Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    await configure();
+    await configure(false);
 
     await Worker().setup();
 
@@ -64,7 +63,7 @@ registerPluginsForIsolate() {
   }).sendPort);
 }
 
-configure() async {
+configure(bool background) async {
   print('Configurando App');
   setupDateFormating();
   setupLogging();
@@ -73,7 +72,10 @@ configure() async {
   await setupAppConfig();
 
   await DependenciasIoC().setup();
-  await AppIsolates().setup();
+
+  if (!background) {
+    await AppIsolates().setup();
+  }
 
   TelaAdaptativaUtil().setup();
 }

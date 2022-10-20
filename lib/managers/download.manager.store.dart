@@ -98,7 +98,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         },
         maxAttempts: maxTentativas,
         onRetry: (e) {
-          fine('[Prova $provaId] - Tentativa de download da prova');
+          fine('[Prova $provaId - $caderno] - Tentativa de download da prova');
           severe(e);
         },
       );
@@ -130,7 +130,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     // carregar do banco
     var downloads = await db.downloadProvaDao.getByProva(provaId);
 
-    info(' [Prova $provaId] - Carregando informações da prova');
+    info(' [Prova $provaId - $caderno] - Carregando informações da prova');
     // carregar da url
     var response = await ServiceLocator.get<ApiService>().prova.getResumoProvaCaderno(
           idProva: provaId,
@@ -144,7 +144,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     ProvaDetalhesCadernoResponseDTO provaDetalhes = response.body!;
 
     // adcionar o que nao tem no banco
-    info(" [Prova $provaId] - Adicionando downloads da prova - Questão");
+    info(" [Prova $provaId - $caderno] - Adicionando downloads da prova - Questão");
     for (var questao in provaDetalhes.questoes) {
       if (!_containsId(downloads, questao.questaoLegadoId, EnumDownloadTipo.QUESTAO)) {
         await salvarBanco(
@@ -161,7 +161,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       }
     }
 
-    info(" [Prova $provaId] - Adicionando downloads da prova - Contexto da prova");
+    info(" [Prova $provaId - $caderno] - Adicionando downloads da prova - Contexto da prova");
     for (var idContexto in provaDetalhes.contextosProvaIds) {
       if (!_containsId(downloads, idContexto, EnumDownloadTipo.CONTEXTO_PROVA)) {
         await salvarBanco(
@@ -178,7 +178,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     downloads = await db.downloadProvaDao.getByProva(provaId);
 
-    info('''[Prova $provaId] - Carregando informações da prova - Finalizado
+    info('''[Prova $provaId - $caderno] - Carregando informações da prova - Finalizado
 
       ${(await getDownlodsByStatus(EnumDownloadStatus.CONCLUIDO, downloads)).length} concluídos
       ${(await getDownlodsByStatus(EnumDownloadStatus.PAUSADO, downloads)).length} pausados
@@ -202,7 +202,8 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     downloads.sort((a, b) => a.tipo.order.compareTo(b.tipo.order));
 
-    info(" [Prova $provaId] - Iniciando download da prova - ${downloadsNaoConcluidos.length} não concluidos");
+    info(
+        " [Prova $provaId - $caderno] - Iniciando download da prova - ${downloadsNaoConcluidos.length} não concluidos");
 
     startTimer();
 
@@ -213,7 +214,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     for (int i = 0; i < downloadsQuestao.length; i = i + quantidadeDownloads) {
       if (_isPauseAllDownloads) {
-        info("[Prova $provaId] - Pausando todos os downloads");
+        info("[Prova $provaId - $caderno] - Pausando todos os downloads");
         await _pause();
         return;
       }
@@ -223,7 +224,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
       info('Baixando do $i ate $end');
       var downloads = downloadsNaoConcluidos.getRange(i, end).toList();
-      info('Baixando as questões ${downloads.map((e) => e.id).toList()}');
+      info('Baixando as questões ${downloads.map((e) => e.questaoLegadoId).toList()}');
 
       await atualizarStatus(EnumDownloadStatus.BAIXANDO);
 
@@ -234,7 +235,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
     for (var download in downloadsContexto) {
       if (_isPauseAllDownloads) {
-        info("[Prova $provaId] - Pausando todos os contextos");
+        info("[Prova $provaId - $caderno] - Pausando todos os contextos");
         await _pause();
         return;
       }
@@ -245,19 +246,19 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   salvarContexto(DownloadProvaDb download) async {
-    finer('[Prova $provaId] - Iniciando download  ${download.id} - ${download.tipo}');
+    finer('[Prova $provaId - $caderno] - Iniciando download  ${download.id} - ${download.tipo}');
 
     try {
       await retry(
         () async => await baixarContextoProva(download),
         maxAttempts: 3,
         onRetry: (e) {
-          fine('[Prova $provaId] - Tentativa de download do Contexto ID: ${download.id}');
+          fine('[Prova $provaId - $caderno] - Tentativa de download do Contexto ID: ${download.id}');
           severe(e);
         },
       );
     } on Exception catch (e, stack) {
-      severe('[Prova $provaId] - ERRO: $e');
+      severe('[Prova $provaId - $caderno] - ERRO: $e');
       await recordError(e, stack);
 
       await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
@@ -266,7 +267,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
   salvarQuestao(List<DownloadProvaDb> downloads) async {
     for (var download in downloads) {
-      finer('[Prova $provaId] - Iniciando download  ${download.id} - ${download.tipo}');
+      finer('[Prova $provaId - $caderno] - Iniciando download  ${download.id} - ${download.tipo}');
     }
 
     try {
@@ -274,12 +275,13 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
         () async => await baixarQuestao(downloads),
         maxAttempts: 3,
         onRetry: (e) {
-          fine('[Prova $provaId] - Tentativa de download das Questões ID: ${downloads.map((e) => e.id).toList()}');
+          fine(
+              '[Prova $provaId - $caderno] - Tentativa de download das Questões ID: ${downloads.map((e) => e.id).toList()}');
           severe(e);
         },
       );
     } on Exception catch (e, stack) {
-      severe('[Prova $provaId] - ERRO: $e');
+      severe('[Prova $provaId - $caderno] - ERRO: $e');
       await recordError(e, stack);
 
       await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
@@ -354,7 +356,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       var porcentagem = await getPorcentagem(downloads);
 
       info(
-          "[Prova $provaId] - Download pausado ${(porcentagem * 100).toStringAsFixed(2)} - $downloadsPendentes pendentes");
+          "[Prova $provaId - $caderno] - Download pausado ${(porcentagem * 100).toStringAsFixed(2)} - $downloadsPendentes pendentes");
     } finally {
       _isPauseAllDownloads = false;
     }
@@ -457,7 +459,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
             var questaoDb = await db.questaoDao.getByQuestaoLegadoId(questaoDTO.questaoLegadoId);
 
             if (questaoDb == null) {
-              info("[Prova $provaId] - Salvando questao ${questaoDTO.id}");
+              info("[Prova $provaId - $caderno] - Salvando questao ${questaoDTO.questaoLegadoId}");
 
               await baixarAlternativa(questaoDTO.alternativas, questaoDTO.questaoLegadoId);
 
@@ -491,7 +493,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
               await db.questaoDao.inserirOuAtualizar(questao);
             } else {
-              severe("[Prova $provaId] - Questao ${questaoDTO.id} ja existe no banco");
+              severe("[Prova $provaId - $caderno] - Questao ${questaoDTO.questaoLegadoId} ja existe no banco");
             }
 
             var provaCaderno = ProvaCaderno(
@@ -516,13 +518,13 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       }
     } catch (e, stack) {
       await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
-      severe('[Prova $provaId] - ERRO: $e');
+      severe('[Prova $provaId - $caderno] - ERRO: $e');
       await recordError(e, stack);
     }
   }
 
   baixarAlternativa(List<AlternativaResponseDTO> alternativas, int questaoLegadoId) async {
-    finer("[Prova $provaId] - Salvando ${alternativas.length} alternativas");
+    finer("[Prova $provaId - $caderno] - Salvando ${alternativas.length} alternativas");
 
     for (var alternativaDTO in alternativas) {
       Alternativa alternativaDb = Alternativa(
@@ -538,7 +540,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   baixarArquivoImagem(List<ArquivoResponseDTO> arquivos, int questaoLegadoId) async {
-    finer("[Prova $provaId] - Salvando ${arquivos.length} arquivos de imagem");
+    finer("[Prova $provaId - $caderno] - Salvando ${arquivos.length} arquivos de imagem");
 
     for (var arquivoDTO in arquivos) {
       try {
@@ -568,7 +570,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
             await db.arquivoDao.inserirOuAtualizar(arquivo);
 
-            fine("[Prova $provaId] - Arquivo salvo: ${arquivo.caminho}");
+            fine("[Prova $provaId - $caderno] - Arquivo salvo: ${arquivo.caminho}");
           } else {
             throw ProvaDownloadException(
               provaId,
@@ -585,14 +587,14 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
         await db.questaoArquivoDao.inserirOuAtualizar(questaoArquivo);
       } catch (e) {
-        severe("[Prova $provaId] - Erro ao baixar arquivo de imagem ${arquivoDTO.id} - ${e.toString()}");
+        severe("[Prova $provaId - $caderno] - Erro ao baixar arquivo de imagem ${arquivoDTO.id} - ${e.toString()}");
         rethrow;
       }
     }
   }
 
   baixarArquivoVideo(List<ArquivoVideoResponseDTO> videos, int questaoLegadoId) async {
-    finer("[Prova $provaId] - Salvando ${videos.length} arquivos de video");
+    finer("[Prova $provaId - $caderno] - Salvando ${videos.length} arquivos de video");
 
     for (var arquivoVideoDTO in videos) {
       try {
@@ -616,10 +618,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
           await db.arquivosVideosDao.inserirOuAtualizar(arquivoVideo);
 
-          fine("[Prova $provaId] - Arquivo salvo: ${arquivoVideoDTO.caminho}");
+          fine("[Prova $provaId - $caderno] - Arquivo salvo: ${arquivoVideoDTO.caminho}");
         }
       } catch (e) {
-        severe("[Prova $provaId] - Erro ao baixar arquivo de vídeo ${arquivoVideoDTO.id} - ${e.toString()}");
+        severe("[Prova $provaId - $caderno] - Erro ao baixar arquivo de vídeo ${arquivoVideoDTO.id} - ${e.toString()}");
 
         rethrow;
       }
@@ -627,7 +629,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   baixarArquivoAudio(List<ArquivoResponseDTO> audios, int questaoLegadoId) async {
-    finer("[Prova $provaId] - Salvando ${audios.length} arquivos de audio");
+    finer("[Prova $provaId - $caderno] - Salvando ${audios.length} arquivos de audio");
 
     for (var arquivoAudioDTO in audios) {
       try {
@@ -651,10 +653,10 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
           await db.arquivosAudioDao.inserirOuAtualizar(arquivoAudio);
 
-          fine("[Prova $provaId] - Arquivo salvo: ${arquivoAudioDTO.caminho}");
+          fine("[Prova $provaId - $caderno] - Arquivo salvo: ${arquivoAudioDTO.caminho}");
         }
       } catch (e) {
-        severe("[Prova $provaId] - Erro ao baixar arquivo de áudio ${arquivoAudioDTO.id} - ${e.toString()}");
+        severe("[Prova $provaId - $caderno] - Erro ao baixar arquivo de áudio ${arquivoAudioDTO.id} - ${e.toString()}");
 
         rethrow;
       }
@@ -704,7 +706,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       await _validarQuestoes();
       await _validarArquivosImagem();
 
-      info('[Prova $provaId] - Download concluido');
+      info('[Prova $provaId - $caderno] - Download concluido');
 
       await _updateProvaDownloadStatus(provaId, EnumDownloadStatus.CONCLUIDO);
 
@@ -713,7 +715,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
         await _updateProvaDownloadId(provaId, idDownload);
       } catch (e, stack) {
-        severe('[Prova $provaId] - Erro ao informar download concluido');
+        severe('[Prova $provaId - $caderno] - Erro ao informar download concluido');
         await recordError(e, stack, reason: "Erro ao informar download concluido");
       }
 

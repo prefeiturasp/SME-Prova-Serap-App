@@ -1,6 +1,5 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
@@ -139,7 +138,8 @@ class AppBarWidget extends StatelessWidget {
         if (sair) {
           await _principalStore.sair();
 
-          await ServiceLocator.get<HomeStore>().onDispose();
+          HomeStore homeStore = ServiceLocator.get<HomeStore>();
+          await homeStore.onDispose();
 
           if (popView) {
             var prova = GetIt.I.get<ProvaViewStore>();

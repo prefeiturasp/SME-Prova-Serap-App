@@ -95,6 +95,9 @@ abstract class _LoginStoreBase with Store, Loggable {
       usuarioDados.tamanhoFonte = 16;
     }
     defineFonte(usuarioDados.familiaFonte, usuarioDados.tamanhoFonte);
+
+    await inscreverTurmaFirebase(usuarioDados.ano);
+    await setUserIdentifier(codigoEOL);
   }
 
   @action
@@ -127,7 +130,7 @@ abstract class _LoginStoreBase with Store, Loggable {
         _usuarioStore.ultimoLogin = body.ultimoLogin;
         _usuarioStore.isAdmin = false;
 
-        SharedPreferences prefs = GetIt.I.get();
+        SharedPreferences prefs = await ServiceLocator.getAsync();
         await prefs.setString('token', body.token);
 
         var responseMeusDados = await _autenticacaoService.meusDados();
