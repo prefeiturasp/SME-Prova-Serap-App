@@ -8,6 +8,7 @@ import 'package:appserap/ui/views/prova/questao.view.dart';
 import 'package:appserap/ui/views/prova/resumo_respostas.view.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/router.util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 import 'dtos/admin_prova_resumo.response.dto.dart';
@@ -71,7 +72,7 @@ class AppRouter {
         name: APP_PAGE.PROVA.toName,
         builder: (context, state) {
           var idProva = int.tryParse(state.params['idProva']!);
-          return ProvaView(idProva: idProva!);
+          return ProvaView(key: ValueKey("$idProva"), idProva: idProva!);
         },
       ),
       GoRoute(
@@ -79,7 +80,7 @@ class AppRouter {
         name: APP_PAGE.CONTEXTO_PROVA.toName,
         builder: (context, state) {
           var idProva = int.tryParse(state.params['idProva']!);
-          return ContextoProvaView(idProva: idProva!);
+          return ContextoProvaView(key: ValueKey("$idProva"), idProva: idProva!);
         },
       ),
       GoRoute(
@@ -88,7 +89,7 @@ class AppRouter {
         builder: (context, state) {
           var idProva = int.tryParse(state.params['idProva']!);
           var ordem = int.tryParse(state.params['ordem']!);
-          return QuestaoView(idProva: idProva!, ordem: ordem!);
+          return QuestaoView(key: ValueKey("$idProva-$ordem"), idProva: idProva!, ordem: ordem!);
         },
       ),
       GoRoute(
@@ -96,7 +97,7 @@ class AppRouter {
         name: APP_PAGE.RESUMO.toName,
         builder: (context, state) {
           var idProva = int.tryParse(state.params['idProva']!);
-          return ResumoRespostasView(idProva: idProva!);
+          return ResumoRespostasView(key: ValueKey("$idProva"), idProva: idProva!);
         },
       ),
       GoRoute(
@@ -105,7 +106,7 @@ class AppRouter {
         builder: (context, state) {
           var idProva = int.tryParse(state.params['idProva']!);
           var ordem = int.tryParse(state.params['ordem']!);
-          return QuestaoRevisaoView(idProva: idProva!, ordem: ordem!);
+          return QuestaoRevisaoView(key: ValueKey("$idProva-$ordem"), idProva: idProva!, ordem: ordem!);
         },
       ),
       GoRoute(
@@ -122,7 +123,7 @@ class AppRouter {
           int? idProva = int.tryParse(state.params['idProva']!);
           bool? possuiBIB = (state.extra as Map)['possuiBIB'];
 
-          return AdminProvaContextoView(idProva: idProva!, possuiBIB: possuiBIB!);
+          return AdminProvaContextoView(key: ValueKey("$idProva-$possuiBIB"), idProva: idProva!, possuiBIB: possuiBIB!);
         },
       ),
       GoRoute(
@@ -130,7 +131,7 @@ class AppRouter {
         name: APP_PAGE.ADMIN_PROVA_CADERNO.toName,
         builder: (context, state) {
           int? idProva = int.tryParse(state.params['idProva']!);
-          return AdminProvaCadernoView(idProva: idProva!);
+          return AdminProvaCadernoView(key: ValueKey("$idProva"), idProva: idProva!);
         },
       ),
       GoRoute(
@@ -138,7 +139,7 @@ class AppRouter {
         name: APP_PAGE.ADMIN_PROVA_RESUMO.toName,
         builder: (context, state) {
           int? idProva = int.tryParse(state.params['idProva']!);
-          return AdminProvaResumoView(idProva: idProva!, nomeCaderno: null);
+          return AdminProvaResumoView(key: ValueKey("$idProva"), idProva: idProva!, nomeCaderno: null);
         },
       ),
       GoRoute(
@@ -147,7 +148,7 @@ class AppRouter {
         builder: (context, state) {
           int? idProva = int.tryParse(state.params['idProva']!);
           String? nomeCaderno = state.params['nomeCaderno']!;
-          return AdminProvaResumoView(idProva: idProva!, nomeCaderno: nomeCaderno);
+          return AdminProvaResumoView(key: ValueKey("$idProva"), idProva: idProva!, nomeCaderno: nomeCaderno);
         },
       ),
       GoRoute(
@@ -157,7 +158,12 @@ class AppRouter {
           int? idProva = int.tryParse(state.params['idProva']!);
           int? ordem = int.tryParse(state.params['ordem']!);
           List<AdminProvaResumoResponseDTO> resumo = state.extra as List<AdminProvaResumoResponseDTO>;
-          return AdminProvaQuestaoView(idProva: idProva!, ordem: ordem!, resumo: resumo);
+          return AdminProvaQuestaoView(
+            key: ValueKey("$idProva-$ordem"),
+            idProva: idProva!,
+            ordem: ordem!,
+            resumo: resumo,
+          );
         },
       ),
       GoRoute(
@@ -169,7 +175,13 @@ class AppRouter {
           int? ordem = int.tryParse(state.params['ordem']!);
 
           List<AdminProvaResumoResponseDTO> resumo = state.extra as List<AdminProvaResumoResponseDTO>;
-          return AdminProvaQuestaoView(idProva: idProva!, nomeCaderno: nomeCaderno, ordem: ordem!, resumo: resumo);
+          return AdminProvaQuestaoView(
+            key: ValueKey("$idProva-$nomeCaderno-$ordem"),
+            idProva: idProva!,
+            nomeCaderno: nomeCaderno,
+            ordem: ordem!,
+            resumo: resumo,
+          );
         },
       ),
     ],

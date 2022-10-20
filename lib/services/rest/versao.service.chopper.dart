@@ -6,7 +6,7 @@ part of 'versao.service.dart';
 // ChopperGenerator
 // **************************************************************************
 
-// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations
+// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations, unnecessary_brace_in_string_interps
 class _$VersaoService extends VersaoService {
   _$VersaoService([ChopperClient? client]) {
     if (client == null) return;
@@ -43,8 +43,9 @@ class _$VersaoService extends VersaoService {
       {required String chaveAPI,
       required int versaoCodigo,
       required String versaoDescricao,
-      required String dispositivoImei,
-      required String atualizadoEm}) {
+      String? dispositivoImei,
+      required String atualizadoEm,
+      String? dispositivoId}) {
     final $url = '/v1/versoes/dispositivo';
     final $headers = {
       'chave-api': chaveAPI,
@@ -54,7 +55,8 @@ class _$VersaoService extends VersaoService {
       'versaoCodigo': versaoCodigo,
       'versaoDescricao': versaoDescricao,
       'dispositivoImei': dispositivoImei,
-      'atualizadoEm': atualizadoEm
+      'atualizadoEm': atualizadoEm,
+      'dispositivoId': dispositivoId
     };
     final $request =
         Request('POST', $url, client.baseUrl, body: $body, headers: $headers);

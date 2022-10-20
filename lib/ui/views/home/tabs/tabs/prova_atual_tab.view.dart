@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/dtos/data_hora_servidor.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/prova.model.dart';
+import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -23,6 +25,7 @@ import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/extensions/date.extension.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -227,7 +230,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   // Botao
                   AdaptativeCenter(
                     center: kIsMobile,
@@ -508,25 +511,24 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
       tamanhoFonte = temaStore.tTexto14;
     }
 
+    double largura = 256;
+
+    if (temaStore.incrementador >= 22) {
+      largura = 300;
+    }
+
     return BotaoDefaultWidget(
-      largura: kIsTablet ? 256 : null,
+      largura: largura,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.download, color: Colors.white, size: 18),
-          Observer(
-            builder: (_) {
-              return Texto(
-                " BAIXAR PROVA",
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                texStyle: TemaUtil.temaTextoBotao.copyWith(
-                  fontSize: tamanhoFonte,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                ),
-              );
-            },
+          Texto(
+            " BAIXAR PROVA",
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: tamanhoFonte,
           ),
         ],
       ),
@@ -556,18 +558,11 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
             child: Row(
               children: [
-                Observer(
-                  builder: (_) {
-                    return Texto(
-                      "Aguardando envio",
-                      color: TemaUtil.laranja01,
-                      bold: true,
-                      texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
-                        fontSize: temaStore.tTexto12,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    );
-                  },
+                Texto(
+                  "Aguardando envio",
+                  color: TemaUtil.laranja01,
+                  bold: true,
+                  fontSize: 12,
                 ),
               ],
             ),
@@ -612,6 +607,8 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
         ],
       ),
       onPressed: () async {
+        await verificarHoraServidor();
+
         if (provaStore.prova.status == EnumProvaStatus.NAO_INICIADA) {
           if (provaStore.prova.senha != null) {
             showDialog(
@@ -679,6 +676,29 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
         }
       },
     );
+  }
+
+  verificarHoraServidor() async {
+    if (!_principalStore.temConexao) {
+      return;
+    }
+
+    try {
+      var response = await ServiceLocator.get<ApiService>().configuracao.getDataHoraServidor();
+
+      if (response.isSuccessful) {
+        DataHoraServidorDTO body = response.body!;
+
+        DateTime dataHoraServidor = body.dataHora;
+        int tolerancia = body.tolerancia;
+
+        if ((dataHoraServidor.difference(DateTime.now()).inMinutes).abs() >= tolerancia) {
+          await horaDispositivoIncorreta(context, dataHoraServidor);
+        }
+      }
+    } catch (e, stack) {
+      recordError(e, stack, reason: 'Erro ao obter hora do servidor');
+    }
   }
 
   _navegarParaProvaPrimeiraVez(ProvaStore provaStore) async {
@@ -770,22 +790,12 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Row(
-              children: [
-                Observer(
-                  builder: (_) {
-                    return Texto(
-                      "A execução da prova estará disponível no seu turno",
-                      color: TemaUtil.laranja01,
-                      bold: true,
-                      texStyle: TemaUtil.temaTextoAguardandoEnvio.copyWith(
-                        fontSize: temaStore.tTexto12,
-                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                      ),
-                    );
-                  },
-                ),
-              ],
+            child: Texto(
+              "A execução da prova estará disponível no seu turno",
+              maxLines: 2,
+              color: TemaUtil.laranja01,
+              bold: true,
+              fontSize: 12,
             ),
           ),
         ],

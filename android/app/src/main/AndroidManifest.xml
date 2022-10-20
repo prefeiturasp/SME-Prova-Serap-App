@@ -13,6 +13,7 @@
         android:label="SERAp Estudantes"
         android:icon="@mipmap/ic_launcher"
         android:name="androidx.multidex.MultiDexApplication"
+        android:requestLegacyExternalStorage="true"
         tools:replace="android:label"
         >
         <activity

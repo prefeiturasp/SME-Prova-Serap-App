@@ -6,7 +6,7 @@ part of 'principal.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$PrincipalStore on _PrincipalStoreBase, Store {
   Computed<bool>? _$temConexaoComputed;
@@ -24,7 +24,8 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
               name: '_PrincipalStoreBase.versao'))
           .value;
 
-  final _$conexaoStreamAtom = Atom(name: '_PrincipalStoreBase.conexaoStream');
+  late final _$conexaoStreamAtom =
+      Atom(name: '_PrincipalStoreBase.conexaoStream', context: context);
 
   @override
   ObservableStream<ConnectivityResult> get conexaoStream {
@@ -39,7 +40,24 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
     });
   }
 
-  final _$statusAtom = Atom(name: '_PrincipalStoreBase.status');
+  late final _$dispositivoIdAtom =
+      Atom(name: '_PrincipalStoreBase.dispositivoId', context: context);
+
+  @override
+  String? get dispositivoId {
+    _$dispositivoIdAtom.reportRead();
+    return super.dispositivoId;
+  }
+
+  @override
+  set dispositivoId(String? value) {
+    _$dispositivoIdAtom.reportWrite(value, super.dispositivoId, () {
+      super.dispositivoId = value;
+    });
+  }
+
+  late final _$statusAtom =
+      Atom(name: '_PrincipalStoreBase.status', context: context);
 
   @override
   ConnectivityResult get status {
@@ -54,7 +72,8 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
     });
   }
 
-  final _$versaoAppAtom = Atom(name: '_PrincipalStoreBase.versaoApp');
+  late final _$versaoAppAtom =
+      Atom(name: '_PrincipalStoreBase.versaoApp', context: context);
 
   @override
   String get versaoApp {
@@ -69,8 +88,8 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
     });
   }
 
-  final _$onChangeConexaoAsyncAction =
-      AsyncAction('_PrincipalStoreBase.onChangeConexao');
+  late final _$onChangeConexaoAsyncAction =
+      AsyncAction('_PrincipalStoreBase.onChangeConexao', context: context);
 
   @override
   Future<dynamic> onChangeConexao(ConnectivityResult? resultado) {
@@ -78,15 +97,16 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
         .run(() => super.onChangeConexao(resultado));
   }
 
-  final _$obterVersaoDoAppAsyncAction =
-      AsyncAction('_PrincipalStoreBase.obterVersaoDoApp');
+  late final _$obterVersaoDoAppAsyncAction =
+      AsyncAction('_PrincipalStoreBase.obterVersaoDoApp', context: context);
 
   @override
   Future<void> obterVersaoDoApp() {
     return _$obterVersaoDoAppAsyncAction.run(() => super.obterVersaoDoApp());
   }
 
-  final _$sairAsyncAction = AsyncAction('_PrincipalStoreBase.sair');
+  late final _$sairAsyncAction =
+      AsyncAction('_PrincipalStoreBase.sair', context: context);
 
   @override
   Future<void> sair() {
@@ -97,6 +117,7 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
   String toString() {
     return '''
 conexaoStream: ${conexaoStream},
+dispositivoId: ${dispositivoId},
 status: ${status},
 versaoApp: ${versaoApp},
 temConexao: ${temConexao},

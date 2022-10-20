@@ -1,0 +1,94 @@
+[
+  {
+    "id": 88706,
+    "questaoLegadoId": 21137,
+    "titulo": "<p>O deslizamento é um fenômeno comum em áreas de relevo acidentado (morros), sobretudo em encostas. Esse processo pode ocorrer em locais onde não existem ocupação humana e/ou em espaços de vulnerabilidade socioambiental apropriado de forma irregular. Em períodos chuvosos é possível observar esse tipo de fenômeno.</p>",
+    "descricao": "<p>A intervenção humana que agrava o fenômeno descrito no texto é a de</p>",
+    "ordem": 2,
+    "tipo": 1,
+    "quantidadeAlternativas": 4,
+    "arquivos": [],
+    "audios": [],
+    "videos": [],
+    "alternativas": [
+      {
+        "questaoId": 88706,
+        "id": 352477,
+        "descricao": "<p>descarte de lixo.</p>\n",
+        "ordem": 0,
+        "numeracao": "A)"
+      },
+      {
+        "questaoId": 88706,
+        "id": 352478,
+        "descricao": "<p>poluição das águas.</p>\n",
+        "ordem": 1,
+        "numeracao": "B)"
+      },
+      {
+        "questaoId": 88706,
+        "id": 352479,
+        "descricao": "<p>prática de mineração.</p>\n",
+        "ordem": 2,
+        "numeracao": "C)"
+      },
+      {
+        "questaoId": 88706,
+        "id": 352480,
+        "descricao": "<p>retirada da vegetação.</p>\n",
+        "ordem": 3,
+        "numeracao": "D)"
+      }
+    ]
+  },
+  {
+    "id": 88710,
+    "questaoLegadoId": 21313,
+    "titulo": "<p>Considerando que o espaço geográfico é produzido pela população de acordo com as suas necessidades, observe a imagem a seguir:</p><p><img src=\"#4985338#\" id=\"4985338\"></p>",
+    "descricao": "<p>O processo observado por meio da imagem é o de:</p>",
+    "ordem": 3,
+    "tipo": 1,
+    "quantidadeAlternativas": 4,
+    "arquivos": [
+      {
+        "id": 15238,
+        "legadoId": 4985338,
+        "questaoId": 88710,
+        "caminho": "https://hom-serap.sme.prefeitura.sp.gov.br/Files/Texto_Base/2021/4/c86ebf4b-d8e3-4ac3-8a02-db348272ba3c.jpeg",
+        "tamanhoBytes": 113737
+      }
+    ],
+    "audios": [],
+    "videos": [],
+    "alternativas": [
+      {
+        "questaoId": 88710,
+        "id": 352493,
+        "descricao": "<p>Cidade formal e cidade informal.</p>\n",
+        "ordem": 0,
+        "numeracao": "A)"
+      },
+      {
+        "questaoId": 88710,
+        "id": 352494,
+        "descricao": "<p>Processo de rede urbana.</p>\n",
+        "ordem": 1,
+        "numeracao": "B)"
+      },
+      {
+        "questaoId": 88710,
+        "id": 352495,
+        "descricao": "<p>Processo de conurbação.</p>\n",
+        "ordem": 2,
+        "numeracao": "C)"
+      },
+      {
+        "questaoId": 88710,
+        "id": 352496,
+        "descricao": "<p>Região metropolitana.</p>\n",
+        "ordem": 3,
+        "numeracao": "D)"
+      }
+    ]
+  }
+]

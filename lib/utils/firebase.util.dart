@@ -1,22 +1,46 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:appserap/main.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart' as fb;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 setupFirebase() async {
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+    return;
+  }
+
   try {
     logger.config('[Firebase] Configurando Firebase');
     await fb.Firebase.initializeApp();
 
     await setupCrashlytics();
+
+    await registrarUsuarioLogado();
   } catch (e, stack) {
     logger.severe('[Firebase] Falha ao inicializar Firebase');
     await recordError(e, stack);
+  }
+}
+
+Future<void> registrarUsuarioLogado() async {
+  SharedPreferences prefs = await ServiceLocator.getAsync();
+  String? ano = prefs.getString("serapUsuarioAno");
+  String? codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
+
+  if (ano != null && ano.isNotEmpty) {
+    await inscreverTurmaFirebase(ano);
+  }
+
+  if (codigoEOL != null && codigoEOL.isNotEmpty) {
+    await setUserIdentifier(codigoEOL);
   }
 }
 
@@ -33,6 +57,9 @@ recordError(
 }) async {
   if (!kIsWeb && !Platform.isWindows) {
     await FirebaseCrashlytics.instance.recordError(exception, stack);
+  } else {
+    print(exception);
+    print(stack);
   }
 }
 
@@ -48,12 +75,20 @@ inscreverTurmaFirebase(String ano) async {
       return;
     }
 
-    if (kIsWeb) {
+    if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+      return;
+    }
+
+    if (fb.Firebase.apps.isEmpty) {
       return;
     }
 
     logger.config('[Firebase] Inscrevendo no topico do ano $ano');
     await FirebaseMessaging.instance.subscribeToTopic('ano-$ano');
+
+    String? token = await FirebaseMessaging.instance.getToken();
+    print('Firebase Token: $token');
+
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     FirebaseMessaging.onMessage.listen(_firebaseMessagingBackgroundHandler);
@@ -69,6 +104,14 @@ desinscreverTurmaFirebase(String ano) async {
       return;
     }
 
+    if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+      return;
+    }
+
+    if (fb.Firebase.apps.isEmpty) {
+      return;
+    }
+
     await FirebaseMessaging.instance.unsubscribeFromTopic('ano-$ano');
     logger.config('[Firebase] Desinscrevendo no topico do ano $ano');
   } catch (e, stack) {
@@ -80,6 +123,6 @@ desinscreverTurmaFirebase(String ano) async {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   logger.info('RECEBEU UMA MENSAGEM:');
   registerPluginsForIsolate();
-  await configure();
+  await configure(true);
   await BaixarProvaJob().run();
 }

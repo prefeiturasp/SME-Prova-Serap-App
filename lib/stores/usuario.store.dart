@@ -1,8 +1,8 @@
 import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -68,6 +68,10 @@ abstract class _UsuarioStoreBase with Store {
   @computed
   bool get isLogado => codigoEOL != null;
 
+  _UsuarioStoreBase() {
+    carregarUsuario();
+  }
+
   @action
   void dispose() {
     if (ano != null && ano!.isNotEmpty) {
@@ -90,7 +94,7 @@ abstract class _UsuarioStoreBase with Store {
 
   @action
   Future<void> carregarUsuario() async {
-    SharedPreferences prefs = GetIt.I.get();
+    SharedPreferences prefs = await ServiceLocator.getAsync();
     nome = prefs.getString("serapUsuarioNome");
     token = prefs.getString("serapUsuarioToken");
     codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
@@ -142,18 +146,10 @@ abstract class _UsuarioStoreBase with Store {
     if (prefs.containsKey('serapIsAdmin')) {
       isAdmin = prefs.getBool("serapIsAdmin")!;
     }
-
-    if (ano != null && ano!.isNotEmpty) {
-      await inscreverTurmaFirebase(ano!);
-    }
-
-    if (codigoEOL != null && codigoEOL!.isNotEmpty) {
-      await setUserIdentifier(codigoEOL!);
-    }
   }
 
   @action
-  atualizarDados({
+  Future<void> atualizarDados({
     required String nome,
     String? codigoEOL,
     String? token,
@@ -184,7 +180,7 @@ abstract class _UsuarioStoreBase with Store {
     this.escola = escola;
     this.turma = turma;
 
-    SharedPreferences prefs = GetIt.I.get();
+    SharedPreferences prefs = await ServiceLocator.getAsync();
     await prefs.setString('serapUsuarioNome', nome);
 
     if (token != null && token.isNotEmpty) {
@@ -195,7 +191,6 @@ abstract class _UsuarioStoreBase with Store {
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
       await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
-      await setUserIdentifier(codigoEOL);
     }
 
     await prefs.setString('serapUsuarioAno', ano);
@@ -218,8 +213,6 @@ abstract class _UsuarioStoreBase with Store {
 
     this.deficiencias = ObservableList.of(deficiencias);
     await prefs.setStringList('serapUsuarioDeficiencia', deficiencias.map((e) => e.index.toString()).toList());
-
-    await inscreverTurmaFirebase(ano);
   }
 
   @action
@@ -233,7 +226,7 @@ abstract class _UsuarioStoreBase with Store {
     this.codigoEOL = codigoEOL;
     this.token = token;
 
-    SharedPreferences prefs = GetIt.I.get();
+    SharedPreferences prefs = await ServiceLocator.getAsync();
     await prefs.setString('serapUsuarioNome', nome);
     await prefs.setBool('serapIsAdmin', isAdmin);
 

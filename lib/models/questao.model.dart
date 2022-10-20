@@ -7,27 +7,20 @@ part 'questao.model.g.dart';
 
 @JsonSerializable()
 class Questao implements Insertable<Questao> {
-  int id;
-  int provaId;
+  int questaoLegadoId;
 
   String? titulo;
   String descricao;
-  int ordem;
   EnumTipoQuestao tipo;
 
   int quantidadeAlternativas;
 
-  String caderno;
-
   Questao({
-    required this.id,
-    required this.provaId,
+    required this.questaoLegadoId,
     this.titulo,
     required this.descricao,
-    required this.ordem,
     required this.tipo,
     required this.quantidadeAlternativas,
-    required this.caderno,
   });
 
   factory Questao.fromJson(Map<String, dynamic> json) => _$QuestaoFromJson(json);
@@ -35,20 +28,17 @@ class Questao implements Insertable<Questao> {
 
   @override
   String toString() {
-    return 'Questao(id: $id, titulo: $titulo, descricao: $descricao, ordem: $ordem, caderno: $caderno)';
+    return 'Questao(questaoLegadoId: $questaoLegadoId, titulo: $titulo, descricao: $descricao)';
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     return QuestoesDbCompanion(
-      id: Value(id),
+      questaoLegadoId: Value(questaoLegadoId),
       titulo: Value(titulo),
       descricao: Value(descricao),
-      ordem: Value(ordem),
       tipo: Value(tipo),
       quantidadeAlternativas: Value(quantidadeAlternativas),
-      provaId: Value(provaId),
-      caderno: Value(caderno),
     ).toColumns(nullToAbsent);
   }
 }

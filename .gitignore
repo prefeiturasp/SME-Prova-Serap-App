@@ -1,6 +1,5 @@
 config/app_config.json
 web/config/app_config.json
-google-services.json
 .vscode/*.redis
 
 # Miscellaneous
@@ -37,6 +36,7 @@ google-services.json
 .pub/
 /build/
 /ios/build/
+/android/app/build
 
 # Windows related
 **/generated_plugin_registrant.*
@@ -50,6 +50,12 @@ app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+# Firebase related
+ios/Runner/GoogleService-Info.plist
+ios/firebase_app_id_file.json
+lib/firebase_options.dart
+google-services.json
 
 # Android Studio will place build artifacts here
 /android/app/debug

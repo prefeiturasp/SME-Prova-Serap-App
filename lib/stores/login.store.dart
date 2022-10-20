@@ -13,6 +13,7 @@ import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login.store.g.dart';
@@ -94,6 +95,9 @@ abstract class _LoginStoreBase with Store, Loggable {
       usuarioDados.tamanhoFonte = 16;
     }
     defineFonte(usuarioDados.familiaFonte, usuarioDados.tamanhoFonte);
+
+    await inscreverTurmaFirebase(usuarioDados.ano);
+    await setUserIdentifier(codigoEOL);
   }
 
   @action
@@ -115,6 +119,7 @@ abstract class _LoginStoreBase with Store, Loggable {
       var responseLogin = await _autenticacaoService.login(
         login: codigoEOL,
         senha: senha,
+        dispositivo: (await PlatformDeviceId.getDeviceId)!,
       );
 
       if (responseLogin.isSuccessful) {
@@ -125,7 +130,7 @@ abstract class _LoginStoreBase with Store, Loggable {
         _usuarioStore.ultimoLogin = body.ultimoLogin;
         _usuarioStore.isAdmin = false;
 
-        SharedPreferences prefs = GetIt.I.get();
+        SharedPreferences prefs = await ServiceLocator.getAsync();
         await prefs.setString('token', body.token);
 
         var responseMeusDados = await _autenticacaoService.meusDados();
@@ -179,6 +184,7 @@ abstract class _LoginStoreBase with Store, Loggable {
       NotificacaoUtil.showSnackbarError(e.toString());
     } catch (e, stack) {
       NotificacaoUtil.showSnackbarError("Não foi possível estabelecer uma conexão com o servidor.");
+      await setUserIdentifier(codigoEOL);
       await recordError(e, stack);
     } finally {
       carregando = false;

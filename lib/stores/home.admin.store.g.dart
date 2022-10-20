@@ -6,10 +6,11 @@ part of 'home.admin.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$HomeAdminStore on _HomeAdminStoreBase, Store {
-  final _$carregandoAtom = Atom(name: '_HomeAdminStoreBase.carregando');
+  late final _$carregandoAtom =
+      Atom(name: '_HomeAdminStoreBase.carregando', context: context);
 
   @override
   bool get carregando {
@@ -24,8 +25,8 @@ mixin _$HomeAdminStore on _HomeAdminStoreBase, Store {
     });
   }
 
-  final _$codigoIniciarProvaAtom =
-      Atom(name: '_HomeAdminStoreBase.codigoIniciarProva');
+  late final _$codigoIniciarProvaAtom =
+      Atom(name: '_HomeAdminStoreBase.codigoIniciarProva', context: context);
 
   @override
   String get codigoIniciarProva {
@@ -40,7 +41,8 @@ mixin _$HomeAdminStore on _HomeAdminStoreBase, Store {
     });
   }
 
-  final _$codigoSerapAtom = Atom(name: '_HomeAdminStoreBase.codigoSerap');
+  late final _$codigoSerapAtom =
+      Atom(name: '_HomeAdminStoreBase.codigoSerap', context: context);
 
   @override
   String? get codigoSerap {
@@ -55,7 +57,8 @@ mixin _$HomeAdminStore on _HomeAdminStoreBase, Store {
     });
   }
 
-  final _$desricaoAtom = Atom(name: '_HomeAdminStoreBase.desricao');
+  late final _$desricaoAtom =
+      Atom(name: '_HomeAdminStoreBase.desricao', context: context);
 
   @override
   String? get desricao {
@@ -70,7 +73,8 @@ mixin _$HomeAdminStore on _HomeAdminStoreBase, Store {
     });
   }
 
-  final _$modalidadeAtom = Atom(name: '_HomeAdminStoreBase.modalidade');
+  late final _$modalidadeAtom =
+      Atom(name: '_HomeAdminStoreBase.modalidade', context: context);
 
   @override
   ModalidadeEnum? get modalidade {
@@ -85,7 +89,8 @@ mixin _$HomeAdminStore on _HomeAdminStoreBase, Store {
     });
   }
 
-  final _$anoAtom = Atom(name: '_HomeAdminStoreBase.ano');
+  late final _$anoAtom =
+      Atom(name: '_HomeAdminStoreBase.ano', context: context);
 
   @override
   String? get ano {
@@ -100,7 +105,8 @@ mixin _$HomeAdminStore on _HomeAdminStoreBase, Store {
     });
   }
 
-  final _$provasAtom = Atom(name: '_HomeAdminStoreBase.provas');
+  late final _$provasAtom =
+      Atom(name: '_HomeAdminStoreBase.provas', context: context);
 
   @override
   ObservableList<AdminProvaResponseDTO> get provas {
@@ -115,8 +121,8 @@ mixin _$HomeAdminStore on _HomeAdminStoreBase, Store {
     });
   }
 
-  final _$carregarProvasAsyncAction =
-      AsyncAction('_HomeAdminStoreBase.carregarProvas');
+  late final _$carregarProvasAsyncAction =
+      AsyncAction('_HomeAdminStoreBase.carregarProvas', context: context);
 
   @override
   Future carregarProvas({bool? refresh}) {
@@ -124,15 +130,16 @@ mixin _$HomeAdminStore on _HomeAdminStoreBase, Store {
         .run(() => super.carregarProvas(refresh: refresh));
   }
 
-  final _$filtrarAsyncAction = AsyncAction('_HomeAdminStoreBase.filtrar');
+  late final _$filtrarAsyncAction =
+      AsyncAction('_HomeAdminStoreBase.filtrar', context: context);
 
   @override
   Future filtrar() {
     return _$filtrarAsyncAction.run(() => super.filtrar());
   }
 
-  final _$_HomeAdminStoreBaseActionController =
-      ActionController(name: '_HomeAdminStoreBase');
+  late final _$_HomeAdminStoreBaseActionController =
+      ActionController(name: '_HomeAdminStoreBase', context: context);
 
   @override
   dynamic limparFiltros() {

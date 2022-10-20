@@ -16,7 +16,10 @@ import '../../../main.route.dart';
 class ContextoProvaView extends StatefulWidget {
   late final ProvaStore provaStore;
 
-  ContextoProvaView({required int idProva}) {
+  ContextoProvaView({
+    super.key,
+    required int idProva,
+  }) {
     var provas = ServiceLocator.get<HomeStore>().provas;
 
     if (provas.isEmpty) {

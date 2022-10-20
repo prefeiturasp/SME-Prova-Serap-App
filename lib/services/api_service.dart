@@ -12,9 +12,6 @@ import 'package:chopper/chopper.dart';
 import 'package:http/io_client.dart' as httpio;
 import 'package:http/http.dart' as http;
 
-import 'rest/download.service.dart';
-import 'rest/log.service.dart';
-
 class ConnectionOptions {
   final String baseUrl;
 
@@ -56,6 +53,7 @@ class ApiService {
         AdminService.create(),
         AutenticacaoAdminService.create(),
         LogService.create(),
+        ConfiguracaoService.create(),
       ],
       interceptors: [
         CompressaoInterceptor(),
@@ -82,4 +80,5 @@ class ApiService {
   AdminService get admin => chopper.getService<AdminService>();
   AutenticacaoAdminService get adminAuth => chopper.getService<AutenticacaoAdminService>();
   LogService get log => chopper.getService<LogService>();
+  ConfiguracaoService get configuracao => chopper.getService<ConfiguracaoService>();
 }

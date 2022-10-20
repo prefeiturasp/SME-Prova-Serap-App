@@ -6,7 +6,7 @@ part of 'auth.service.dart';
 // ChopperGenerator
 // **************************************************************************
 
-// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations
+// ignore_for_file: always_put_control_body_on_new_line, always_specify_types, prefer_const_declarations, unnecessary_brace_in_string_interps
 class _$AutenticacaoService extends AutenticacaoService {
   _$AutenticacaoService([ChopperClient? client]) {
     if (client == null) return;
@@ -18,9 +18,15 @@ class _$AutenticacaoService extends AutenticacaoService {
 
   @override
   Future<Response<AutenticacaoResponseDTO>> login(
-      {required String login, required String senha}) {
+      {required String login,
+      required String senha,
+      required String dispositivo}) {
     final $url = '/v1/autenticacao';
-    final $body = <String, dynamic>{'login': login, 'senha': senha};
+    final $body = <String, dynamic>{
+      'login': login,
+      'senha': senha,
+      'dispositivo': dispositivo
+    };
     final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client
         .send<AutenticacaoResponseDTO, AutenticacaoResponseDTO>($request);

@@ -4,6 +4,7 @@ import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
@@ -16,6 +17,7 @@ import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
@@ -31,8 +33,9 @@ class ResumoRespostasView extends BaseStatefulWidget {
   final int idProva;
 
   ResumoRespostasView({
+    Key? key,
     required this.idProva,
-  }) : super(title: "Resumo das respostas");
+  }) : super(key: key, title: "Resumo das respostas");
 
   @override
   _ResumoRespostasViewState createState() => _ResumoRespostasViewState();
@@ -74,7 +77,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
   bool get willPop => false;
 
   @override
-  PreferredSizeWidget buildAppBar() {
+  AppBarWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
       subtitulo: provaStore.prova.descricao,
@@ -91,6 +94,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
       child: Column(
         children: [
           TempoExecucaoWidget(provaStore: provaStore),
+          StatusSincronizacao(),
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
@@ -295,19 +299,30 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
 
     var db = ServiceLocator.get<AppDatabase>();
 
-    var questoes = await db.questaoDao.obterPorProvaId(widget.idProva, provaStore.caderno);
+    var questoes = await db.questaoDao.obterPorProvaECaderno(widget.idProva, provaStore.caderno);
 
     for (Questao questao in questoes) {
-      RespostaProva? resposta = provaStore.respostas.obterResposta(questao.id);
+      int questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEQuestao(
+        widget.idProva,
+        provaStore.caderno,
+        questao.questaoLegadoId,
+      );
+
+      RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
+      ProvaCaderno provaCaderno = await db.provaCadernoDao.findByQuestaoId(
+        questaoId,
+        widget.idProva,
+        provaStore.caderno,
+      );
 
       String alternativaSelecionada = "";
       String respostaNaTela = "";
       String questaoProva = tratarTexto(questao.titulo) + tratarTexto(questao.descricao);
 
-      String ordemQuestaoTratada = questao.ordem < 10 ? '0${questao.ordem + 1}' : '${questao.ordem + 1}';
+      String ordemQuestaoTratada = provaCaderno.ordem < 10 ? '0${provaCaderno.ordem + 1}' : '${provaCaderno.ordem + 1}';
 
-      if (questao.id == resposta?.questaoId) {
-        var alternativas = await db.alternativaDao.obterPorQuestaoId(questao.id);
+      if (questaoId == resposta?.questaoId) {
+        var alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
 
         for (var alternativa in alternativas) {
           if (alternativa.id == resposta!.alternativaId) {
@@ -325,25 +340,25 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
 
         if (alternativaSelecionada.isNotEmpty) {
           respostaNaTela = alternativaSelecionada;
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
         } else if (resposta.resposta != null && resposta.resposta!.isNotEmpty) {
           respostaNaTela = "OK";
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
         } else if (podeAdicionarRespostaVazia) {
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
           store.quantidadeDeQuestoesSemRespostas++;
         } else if (removeQuestaoQueNaoPodeRevisar) {
           store.questoesParaRevisar.remove(questao);
           store.quantidadeDeQuestoesSemRespostas++;
         } else if (provaStore.tempoExecucaoStore == null) {
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
           store.quantidadeDeQuestoesSemRespostas++;
         } else {
           store.quantidadeDeQuestoesSemRespostas++;
         }
       } else {
         if (provaStore.tempoExecucaoStore == null) {
-          store.questoesParaRevisar.add(questao);
+          store.questoesParaRevisar.putIfAbsent(provaCaderno.ordem, () => questao);
         }
         store.quantidadeDeQuestoesSemRespostas++;
       }
@@ -352,7 +367,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         {
           'questao': '$ordemQuestaoTratada - $questaoProva',
           'resposta': respostaNaTela,
-          'questao_ordem': questao.ordem,
+          'questao_ordem': provaCaderno.ordem,
         },
       );
 
@@ -422,6 +437,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
       onTap: () {
         provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
         store.posicaoQuestaoSendoRevisada = questaoOrdem;
+
         if ((provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido) &&
             resposta == "") {
           store.quantidadeDeQuestoesSemRespostas = 0;

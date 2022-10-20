@@ -9,6 +9,7 @@ part of 'questao_resposta.dto.dart';
 QuestaoRespostaDTO _$QuestaoRespostaDTOFromJson(Map<String, dynamic> json) =>
     QuestaoRespostaDTO(
       alunoRa: json['alunoRa'] as String,
+      dispositivoId: json['dispositivoId'] as String,
       questaoId: json['questaoId'] as int,
       alternativaId: json['alternativaId'] as int?,
       resposta: json['resposta'] as String?,
@@ -19,6 +20,7 @@ QuestaoRespostaDTO _$QuestaoRespostaDTOFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$QuestaoRespostaDTOToJson(QuestaoRespostaDTO instance) =>
     <String, dynamic>{
       'alunoRa': instance.alunoRa,
+      'dispositivoId': instance.dispositivoId,
       'questaoId': instance.questaoId,
       'alternativaId': instance.alternativaId,
       'resposta': instance.resposta,

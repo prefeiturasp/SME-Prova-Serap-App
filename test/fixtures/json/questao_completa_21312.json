@@ -1,0 +1,44 @@
+[
+  {
+    "id": 88709,
+    "questaoLegadoId": 21312,
+    "titulo": "<p>Elaborar uma regionalização mundial significa realizar uma divisão do mundo em conjuntos de países de acordo com suas características e com o seu desenvolvimento econômico.</p>",
+    "descricao": "<p>Tal regionalização transforma a geopolítica internacional em um sistema</p>",
+    "ordem": 4,
+    "tipo": 1,
+    "quantidadeAlternativas": 4,
+    "arquivos": [],
+    "audios": [],
+    "videos": [],
+    "alternativas": [
+      {
+        "questaoId": 88709,
+        "id": 352489,
+        "descricao": "<p>imperialista.</p>\n",
+        "ordem": 0,
+        "numeracao": "A)"
+      },
+      {
+        "questaoId": 88709,
+        "id": 352490,
+        "descricao": "<p>multipolar.</p>\n",
+        "ordem": 1,
+        "numeracao": "B)"
+      },
+      {
+        "questaoId": 88709,
+        "id": 352491,
+        "descricao": "<p>anárquico.</p>\n",
+        "ordem": 2,
+        "numeracao": "C)"
+      },
+      {
+        "questaoId": 88709,
+        "id": 352492,
+        "descricao": "<p>bipolar.</p>\n",
+        "ordem": 3,
+        "numeracao": "D)"
+      }
+    ]
+  }
+]

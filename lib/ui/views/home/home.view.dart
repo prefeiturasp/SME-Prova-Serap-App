@@ -4,6 +4,7 @@ import 'package:appserap/ui/views/home/tabs/tabs/provas_anteriores_tab.view.dart
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
+import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
   }
 
   @override
-  PreferredSizeWidget buildAppBar() {
+  AppBarWidget buildAppBar() {
     return AppBarWidget(
       popView: true,
       mostrarBotaoVoltar: false,
@@ -65,6 +66,7 @@ class _HomeViewState extends BaseStateWidget<HomeView, HomeStore> with TickerPro
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          StatusSincronizacao(),
           Padding(
             padding: getPadding(),
             child: Align(

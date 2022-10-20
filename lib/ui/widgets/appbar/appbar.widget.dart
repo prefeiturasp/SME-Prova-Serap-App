@@ -1,6 +1,5 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
-import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
@@ -23,7 +22,7 @@ import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite_viewer/sqlite_viewer.dart';
 
-class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
+class AppBarWidget extends StatelessWidget {
   final bool popView;
   final bool exibirSair;
   final String? subtitulo;
@@ -43,15 +42,13 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final _principalStore = GetIt.I.get<PrincipalStore>();
 
   @override
-  Size get preferredSize => Size.fromHeight(78);
-
-  @override
   Widget build(BuildContext context) {
     return _buildAppbarCompleta(context);
   }
 
   Widget _buildAppbarCompleta(BuildContext context) {
     return AppBar(
+      toolbarHeight: 120,
       title: Observer(
         builder: (_) {
           return Column(
@@ -141,7 +138,8 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
         if (sair) {
           await _principalStore.sair();
 
-          await ServiceLocator.get<HomeStore>().onDispose();
+          HomeStore homeStore = ServiceLocator.get<HomeStore>();
+          await homeStore.onDispose();
 
           if (popView) {
             var prova = GetIt.I.get<ProvaViewStore>();

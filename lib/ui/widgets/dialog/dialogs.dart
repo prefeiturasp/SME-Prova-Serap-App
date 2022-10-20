@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 
 import 'dialog_default.widget.dart';
 
@@ -671,6 +672,63 @@ Future<bool?> mostrarDialogNaoPossuiTempoTotalDisponivel(BuildContext context, D
             onPressed: () {
               Navigator.pop(context, true);
             },
+          )
+        ],
+      );
+    },
+  );
+}
+
+horaDispositivoIncorreta(BuildContext context, DateTime dataHoraServidor) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
+  String dataHora = DateFormat("dd/MM/yyyy - H:mm'h'").format(dataHoraServidor);
+
+  String mensagem1 = "O seu dispositivo está com data/hora diferente do servidor que é $dataHora.";
+  String mensagem2 = "Sugerimos que você ajuste a data/hora antes de iniciar a prova.";
+  String mensagemBotao = "ENTENDI";
+
+  return showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: Container(),
+        corpo: Observer(
+          builder: (_) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  mensagem1,
+                  maxLines: 5,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
+                ),
+                Text(
+                  mensagem2,
+                  maxLines: 5,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () async {
+              Navigator.of(context).pop(true);
+            },
+            textoBotao: mensagemBotao,
           )
         ],
       );

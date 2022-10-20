@@ -16,6 +16,7 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'database/respostas.database.dart';
 import 'main.route.dart';
 import 'stores/admin_prova_caderno.store.dart';
 import 'stores/admin_prova_contexto.store.dart';
@@ -24,6 +25,7 @@ import 'stores/admin_prova_resumo.store.dart';
 import 'stores/contexto_prova_view.store.dart';
 import 'stores/home.admin.store.dart';
 import 'stores/home_provas_anteriores.store.dart';
+import 'stores/job.store.dart';
 import 'stores/login_adm.store.dart';
 import 'stores/questao.store.dart';
 
@@ -34,14 +36,21 @@ class DependenciasIoC with Loggable {
   setup() async {
     config('Configurando Injeção de Dependencias');
     ServiceLocator.allowReassignment = true;
+    registrarServicosAsync();
+    await ServiceLocator.allReady();
+
     registrarServicos();
     registrarStores();
     await ServiceLocator.allReady();
   }
 
+  registrarServicosAsync() {
+    registerSingletonAsync<SharedPreferences>(() async => SharedPreferences.getInstance(), signalsReady: true);
+  }
+
   registrarServicos() {
-    registerSingletonAsync<SharedPreferences>(() => SharedPreferences.getInstance());
-    registerSingleton<AppDatabase>(constructDb());
+    registerSingleton<AppDatabase>(AppDatabase());
+    registerSingleton<RespostasDatabase>(RespostasDatabase());
     registerSingleton<ApiService>(ApiService.build(
       ConnectionOptions(
         baseUrl: AppConfigReader.getApiHost(),
@@ -69,6 +78,7 @@ class DependenciasIoC with Loggable {
     registerSingleton<AdminProvaQuestaoViewStore>(AdminProvaQuestaoViewStore());
     registerSingleton<AdminProvaContextoViewStore>(AdminProvaContextoViewStore());
     registerSingleton<ContextoProvaViewStore>(ContextoProvaViewStore());
+    registerSingleton<JobStore>(JobStore());
   }
 
   void registerSingletonAsync<T extends Object>(

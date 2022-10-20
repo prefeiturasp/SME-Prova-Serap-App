@@ -10,7 +10,6 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:appserap/utils/provas.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
@@ -23,9 +22,11 @@ class BaixarProvaJob with Job, Loggable, Database {
       if (_usuarioStore.isRespondendoProva) {
         return;
       }
+      SharedPreferences prefs = await ServiceLocator.getAsync();
 
-      String? token = ServiceLocator.get<SharedPreferences>().getString("token");
-      if (token == null) {
+      String? token = prefs.getString("token");
+      String? codigoEol = prefs.getString("serapUsuarioCodigoEOL");
+      if (token == null || codigoEol == null) {
         return;
       }
 
@@ -40,7 +41,9 @@ class BaixarProvaJob with Job, Loggable, Database {
       List<ProvaResponseDTO> provasRemoto = provasResponse.body!;
       List<int> idsProvasRemoto = provasRemoto.filter((e) => !e.isFinalizada()).map((e) => e.id).toList();
 
-      List<int> idsProvasLocal = await getProvasCacheIds();
+      List<Prova> provasLocais = await db.provaDao.listarTodosPorAluno(codigoEol);
+      List<int> idsProvasLocal = provasLocais.filter((e) => !e.isFinalizada()).map((e) => e.id).toList();
+
       List<int> idsToDownload = idsProvasRemoto.toSet().difference(idsProvasLocal.toSet()).toList();
 
       List<int> idsParaVerificar = idsProvasLocal.toSet().difference(idsToDownload.toSet()).toList();
@@ -51,25 +54,29 @@ class BaixarProvaJob with Job, Loggable, Database {
         if (provaLocal == null) {
           continue;
         }
+
         var provaRemoto = provasRemoto.firstWhere((element) => element.id == provaLocal.id);
 
         // Caderno de questões alterado
         if (provaLocal.caderno != provaRemoto.caderno) {
           info("[Prova ${provaLocal.id}] - Caderno alterado ${provaLocal.caderno} -> ${provaRemoto.caderno}");
-          await DownloadManagerStore(provaId: provaLocal.id).removerDownloadCompleto();
+          await DownloadManagerStore(provaId: provaLocal.id, caderno: provaLocal.caderno).removerDownloadCompleto();
           idsToDownload.add(idProva);
+          continue;
+        }
+
+        // Prova alterada
+        if (!isSameDates(provaLocal.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
+          info('[Prova ${provaLocal.id}] - Prova alterada - Baixando Novamente...');
+          await DownloadManagerStore(provaId: provaLocal.id, caderno: provaLocal.caderno).removerDownloadCompleto();
+          idsToDownload.add(idProva);
+          continue;
         }
 
         // Prova não baixada
         if (provaLocal.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
           idsToDownload.add(idProva);
-        }
-
-        // Prova alterada
-        if (!isSameDates(provaLocal.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
-          info('[Prova ${provaLocal.id}] Prova alterada - Baixando Novamente...');
-          await DownloadManagerStore(provaId: provaLocal.id).removerDownloadCompleto();
-          idsToDownload.add(idProva);
+          continue;
         }
       }
 
@@ -84,7 +91,7 @@ class BaixarProvaJob with Job, Loggable, Database {
         info('Iniciando download prova $idProva - ${provaResumo.descricao}');
         await _saveProva(provaResumo);
 
-        DownloadManagerStore gerenciadorDownload = DownloadManagerStore(provaId: idProva);
+        DownloadManagerStore gerenciadorDownload = DownloadManagerStore(provaId: idProva, caderno: provaResumo.caderno);
 
         await gerenciadorDownload.iniciarDownload();
 
@@ -107,6 +114,7 @@ class BaixarProvaJob with Job, Loggable, Database {
       tempoExtra: provaResponse.tempoExtra,
       tempoAlerta: provaResponse.tempoAlerta,
       dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
+      dataFimProvaAluno: provaResponse.dataFimProvaAluno,
       senha: provaResponse.senha,
       quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
       ultimaAlteracao: provaResponse.ultimaAlteracao,

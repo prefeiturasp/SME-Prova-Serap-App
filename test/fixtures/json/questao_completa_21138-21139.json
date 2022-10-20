@@ -1,0 +1,94 @@
+[
+  {
+    "id": 88707,
+    "questaoLegadoId": 21138,
+    "titulo": "<p>As placas tectônicas estão em constante movimento sobre o manto terrestre, juntando-se, afastando-se ou em deslocamentos horizontais e verticais. Há cerca de 240 milhões de anos existia apenas um supercontinente na Terra, mas aos poucos essa grande massa continental foi se fragmentando em várias partes, até que a superfície do planeta ficasse como conhecemos hoje, com sete continentes.</p>",
+    "descricao": "<p>O supercontinente mencionado no texto é cientificamente chamado de</p>",
+    "ordem": 0,
+    "tipo": 1,
+    "quantidadeAlternativas": 4,
+    "arquivos": [],
+    "audios": [],
+    "videos": [],
+    "alternativas": [
+      {
+        "questaoId": 88707,
+        "id": 352481,
+        "descricao": "<p>Gondwana.</p>\n",
+        "ordem": 0,
+        "numeracao": "A)"
+      },
+      {
+        "questaoId": 88707,
+        "id": 352482,
+        "descricao": "<p>Laurásia.</p>\n",
+        "ordem": 1,
+        "numeracao": "B)"
+      },
+      {
+        "questaoId": 88707,
+        "id": 352483,
+        "descricao": "<p>Eurásia.</p>\n",
+        "ordem": 2,
+        "numeracao": "C)"
+      },
+      {
+        "questaoId": 88707,
+        "id": 352484,
+        "descricao": "<p>Pangeia.</p>\n",
+        "ordem": 3,
+        "numeracao": "D)"
+      }
+    ]
+  },
+  {
+    "id": 88708,
+    "questaoLegadoId": 21139,
+    "titulo": "<p>O Rio Tietê, ao contrário de outros rios, subverte a natureza: como não consegue vencer os picos rochosos rumo ao litoral, em vez de buscar o mar, como a maior parte dos rios que corre para o oceano, o Tietê atravessa a Região Metropolitana de São Paulo e segue para o interior do estado, desaguando posteriormente no Rio Paraná, num percurso de quase 1 100 km, como se pode observar no mapa a seguir.</p><p><img src=\"#4985321#\" id=\"4985321\"></p>",
+    "descricao": "<p>O texto e a imagem indicam que a drenagem do Rio Tietê é do tipo</p>",
+    "ordem": 1,
+    "tipo": 1,
+    "quantidadeAlternativas": 4,
+    "arquivos": [
+      {
+        "id": 15237,
+        "legadoId": 4985321,
+        "questaoId": 88708,
+        "caminho": "https://hom-serap.sme.prefeitura.sp.gov.br/Files/Texto_Base/2021/4/74e7c9c5-86ce-4592-9c67-7402a23a0805.jpeg",
+        "tamanhoBytes": 99224
+      }
+    ],
+    "audios": [],
+    "videos": [],
+    "alternativas": [
+      {
+        "questaoId": 88708,
+        "id": 352485,
+        "descricao": "<p>arreica.</p>\n",
+        "ordem": 0,
+        "numeracao": "A)"
+      },
+      {
+        "questaoId": 88708,
+        "id": 352486,
+        "descricao": "<p>exorreica.</p>\n",
+        "ordem": 1,
+        "numeracao": "B)"
+      },
+      {
+        "questaoId": 88708,
+        "id": 352487,
+        "descricao": "<p>endorreica.</p>\n",
+        "ordem": 2,
+        "numeracao": "C)"
+      },
+      {
+        "questaoId": 88708,
+        "id": 352488,
+        "descricao": "<p>criptorreica.</p>\n",
+        "ordem": 3,
+        "numeracao": "D)"
+      }
+    ]
+  }
+]

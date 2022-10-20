@@ -1,13 +1,14 @@
-import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/resposta_prova.table.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:drift/drift.dart';
 
+import '../respostas.database.dart';
+
 part 'resposta_prova.dao.g.dart';
 
 @DriftAccessor(tables: [RespostaProvaTable])
-class RespostaProvaDao extends DatabaseAccessor<AppDatabase> with _$RespostaProvaDaoMixin {
-  RespostaProvaDao(AppDatabase db) : super(db);
+class RespostaProvaDao extends DatabaseAccessor<RespostasDatabase> with _$RespostaProvaDaoMixin {
+  RespostaProvaDao(RespostasDatabase db) : super(db);
 
   Future inserir(RespostaProva entity) {
     return into(respostaProvaTable).insert(entity);
@@ -76,5 +77,29 @@ class RespostaProvaDao extends DatabaseAccessor<AppDatabase> with _$RespostaProv
 
   Future<int> removerSincronizadas() {
     return (delete(respostaProvaTable)..where((t) => t.sincronizado)).go();
+  }
+
+  Future<int?>? getTotalSincronizadas() async {
+    final count = respostaProvaTable.sincronizado.count();
+
+    final query = selectOnly(respostaProvaTable)
+      ..addColumns([count])
+      ..where(respostaProvaTable.sincronizado.not());
+
+    final result = await query.get();
+
+    return result.first.read(count);
+  }
+
+  Future<int?>? getTotalPendentes() async {
+    final count = respostaProvaTable.sincronizado.count();
+
+    final query = selectOnly(respostaProvaTable)
+      ..addColumns([count])
+      ..where(respostaProvaTable.sincronizado);
+
+    final result = await query.get();
+
+    return result.first.read(count);
   }
 }

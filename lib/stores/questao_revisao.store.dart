@@ -1,3 +1,5 @@
+import 'package:appserap/interfaces/database.interface.dart';
+import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:mobx/mobx.dart';
 
@@ -5,9 +7,9 @@ part 'questao_revisao.store.g.dart';
 
 class QuestaoRevisaoStore = _QuestaoRevisaoStoreBase with _$QuestaoRevisaoStore;
 
-abstract class _QuestaoRevisaoStoreBase with Store {
+abstract class _QuestaoRevisaoStoreBase with Store, Database, Loggable {
   @observable
-  ObservableList<Questao> questoesParaRevisar = <Questao>[].asObservable();
+  ObservableMap<int, Questao> questoesParaRevisar = <int, Questao>{}.asObservable();
 
   @observable
   ObservableList<Map<String, dynamic>> mapaDeQuestoes = ObservableList.of([]);

@@ -6,10 +6,11 @@ part of 'audio_player.controller.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$AudioPlayerController on _AudioPlayerControllerBase, Store {
-  final _$positionAtom = Atom(name: '_AudioPlayerControllerBase.position');
+  late final _$positionAtom =
+      Atom(name: '_AudioPlayerControllerBase.position', context: context);
 
   @override
   int get position {
@@ -24,7 +25,8 @@ mixin _$AudioPlayerController on _AudioPlayerControllerBase, Store {
     });
   }
 
-  final _$durationAtom = Atom(name: '_AudioPlayerControllerBase.duration');
+  late final _$durationAtom =
+      Atom(name: '_AudioPlayerControllerBase.duration', context: context);
 
   @override
   Duration? get duration {
@@ -39,8 +41,8 @@ mixin _$AudioPlayerController on _AudioPlayerControllerBase, Store {
     });
   }
 
-  final _$_mPlayerIsInitedAtom =
-      Atom(name: '_AudioPlayerControllerBase._mPlayerIsInited');
+  late final _$_mPlayerIsInitedAtom = Atom(
+      name: '_AudioPlayerControllerBase._mPlayerIsInited', context: context);
 
   @override
   bool get _mPlayerIsInited {
@@ -55,7 +57,8 @@ mixin _$AudioPlayerController on _AudioPlayerControllerBase, Store {
     });
   }
 
-  final _$isPlayingAtom = Atom(name: '_AudioPlayerControllerBase.isPlaying');
+  late final _$isPlayingAtom =
+      Atom(name: '_AudioPlayerControllerBase.isPlaying', context: context);
 
   @override
   bool get isPlaying {
@@ -70,7 +73,8 @@ mixin _$AudioPlayerController on _AudioPlayerControllerBase, Store {
     });
   }
 
-  final _$isPausedAtom = Atom(name: '_AudioPlayerControllerBase.isPaused');
+  late final _$isPausedAtom =
+      Atom(name: '_AudioPlayerControllerBase.isPaused', context: context);
 
   @override
   bool get isPaused {
@@ -85,56 +89,56 @@ mixin _$AudioPlayerController on _AudioPlayerControllerBase, Store {
     });
   }
 
-  final _$setFilePlayerAsyncAction =
-      AsyncAction('_AudioPlayerControllerBase.setFilePlayer');
+  late final _$setFilePlayerAsyncAction =
+      AsyncAction('_AudioPlayerControllerBase.setFilePlayer', context: context);
 
   @override
   Future setFilePlayer(String? filePath) {
     return _$setFilePlayerAsyncAction.run(() => super.setFilePlayer(filePath));
   }
 
-  final _$setBytePlayerAsyncAction =
-      AsyncAction('_AudioPlayerControllerBase.setBytePlayer');
+  late final _$setBytePlayerAsyncAction =
+      AsyncAction('_AudioPlayerControllerBase.setBytePlayer', context: context);
 
   @override
   Future setBytePlayer(Uint8List? fileByte) {
     return _$setBytePlayerAsyncAction.run(() => super.setBytePlayer(fileByte));
   }
 
-  final _$stopPlayerAsyncAction =
-      AsyncAction('_AudioPlayerControllerBase.stopPlayer');
+  late final _$stopPlayerAsyncAction =
+      AsyncAction('_AudioPlayerControllerBase.stopPlayer', context: context);
 
   @override
   Future<void> stopPlayer() {
     return _$stopPlayerAsyncAction.run(() => super.stopPlayer());
   }
 
-  final _$pausePlayerAsyncAction =
-      AsyncAction('_AudioPlayerControllerBase.pausePlayer');
+  late final _$pausePlayerAsyncAction =
+      AsyncAction('_AudioPlayerControllerBase.pausePlayer', context: context);
 
   @override
   Future<void> pausePlayer() {
     return _$pausePlayerAsyncAction.run(() => super.pausePlayer());
   }
 
-  final _$resumePlayerAsyncAction =
-      AsyncAction('_AudioPlayerControllerBase.resumePlayer');
+  late final _$resumePlayerAsyncAction =
+      AsyncAction('_AudioPlayerControllerBase.resumePlayer', context: context);
 
   @override
   Future<void> resumePlayer() {
     return _$resumePlayerAsyncAction.run(() => super.resumePlayer());
   }
 
-  final _$playFileAsyncAction =
-      AsyncAction('_AudioPlayerControllerBase.playFile');
+  late final _$playFileAsyncAction =
+      AsyncAction('_AudioPlayerControllerBase.playFile', context: context);
 
   @override
   Future playFile() {
     return _$playFileAsyncAction.run(() => super.playFile());
   }
 
-  final _$_AudioPlayerControllerBaseActionController =
-      ActionController(name: '_AudioPlayerControllerBase');
+  late final _$_AudioPlayerControllerBaseActionController =
+      ActionController(name: '_AudioPlayerControllerBase', context: context);
 
   @override
   dynamic setPos(int d) {

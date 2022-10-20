@@ -6,10 +6,11 @@ part of 'home.store.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$HomeStore on _HomeStoreBase, Store {
-  final _$provasAtom = Atom(name: '_HomeStoreBase.provas');
+  late final _$provasAtom =
+      Atom(name: '_HomeStoreBase.provas', context: context);
 
   @override
   ObservableMap<int, ProvaStore> get provas {
@@ -24,7 +25,8 @@ mixin _$HomeStore on _HomeStoreBase, Store {
     });
   }
 
-  final _$carregandoAtom = Atom(name: '_HomeStoreBase.carregando');
+  late final _$carregandoAtom =
+      Atom(name: '_HomeStoreBase.carregando', context: context);
 
   @override
   bool get carregando {
@@ -39,15 +41,16 @@ mixin _$HomeStore on _HomeStoreBase, Store {
     });
   }
 
-  final _$carregarProvasAsyncAction =
-      AsyncAction('_HomeStoreBase.carregarProvas');
+  late final _$carregarProvasAsyncAction =
+      AsyncAction('_HomeStoreBase.carregarProvas', context: context);
 
   @override
   Future carregarProvas() {
     return _$carregarProvasAsyncAction.run(() => super.carregarProvas());
   }
 
-  final _$removerProvaAsyncAction = AsyncAction('_HomeStoreBase.removerProva');
+  late final _$removerProvaAsyncAction =
+      AsyncAction('_HomeStoreBase.removerProva', context: context);
 
   @override
   Future removerProva(ProvaStore provaStore,
@@ -56,8 +59,8 @@ mixin _$HomeStore on _HomeStoreBase, Store {
         .run(() => super.removerProva(provaStore, manterRegistroProva));
   }
 
-  final _$_HomeStoreBaseActionController =
-      ActionController(name: '_HomeStoreBase');
+  late final _$_HomeStoreBaseActionController =
+      ActionController(name: '_HomeStoreBase', context: context);
 
   @override
   dynamic cancelarTimers() {

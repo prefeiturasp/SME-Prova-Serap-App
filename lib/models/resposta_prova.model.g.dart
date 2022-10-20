@@ -9,6 +9,7 @@ part of 'resposta_prova.model.dart';
 RespostaProva _$RespostaProvaFromJson(Map<String, dynamic> json) =>
     RespostaProva(
       codigoEOL: json['codigoEOL'] as String,
+      dispositivoId: json['dispositivoId'] as String,
       provaId: json['provaId'] as int,
       questaoId: json['questaoId'] as int,
       alternativaId: json['alternativaId'] as int?,
@@ -23,6 +24,7 @@ RespostaProva _$RespostaProvaFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$RespostaProvaToJson(RespostaProva instance) =>
     <String, dynamic>{
       'codigoEOL': instance.codigoEOL,
+      'dispositivoId': instance.dispositivoId,
       'provaId': instance.provaId,
       'questaoId': instance.questaoId,
       'alternativaId': instance.alternativaId,

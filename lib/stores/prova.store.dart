@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/tratamento_imagem.enum.dart';
+import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -39,7 +41,7 @@ class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
   }
 }
 
-abstract class _ProvaStoreBase with Store, Loggable, Disposable {
+abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   var _usuarioStore = ServiceLocator.get<UsuarioStore>();
   List<ReactionDisposer> _reactions = [];
 
@@ -113,7 +115,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   iniciarDownload() async {
     downloadStatus = EnumDownloadStatus.BAIXANDO;
 
-    fine("[Prova $id] - Configurando Download");
+    fine("[Prova $id - $caderno] - Configurando Download");
 
     downloadManagerStore.listen((downloadStatus, progressoDownload, tempoPrevisto) {
       this.downloadStatus = downloadStatus;
@@ -125,11 +127,15 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       this.tempoPrevisto = tempoPrevisto;
     });
 
+    downloadManagerStore.onError((mensagem) {
+      NotificacaoUtil.showSnackbarError(mensagem);
+    });
+
     await downloadManagerStore.iniciarDownload();
 
     await respostas.carregarRespostasServidor();
 
-    fine("[Prova $id] - Download Concluído");
+    fine("[Prova $id - $caderno] - Download Concluído");
   }
 
   @action
@@ -139,7 +145,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   }
 
   _setupReactions() {
-    fine('[Prova $id] - Configurando reactions');
+    fine('[Prova $id - $caderno] - Configurando reactions');
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction(
@@ -177,12 +183,12 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
     }
 
     if (isRepondendoProva && downloadStatus == EnumDownloadStatus.BAIXANDO) {
-      info("[Prova $id] - Download Pausado");
+      info("[Prova $id - $caderno] - Download Pausado");
       downloadStatus = EnumDownloadStatus.PAUSADO;
       downloadManagerStore.pauseAllDownloads();
     }
     if (!isRepondendoProva && downloadStatus == EnumDownloadStatus.PAUSADO) {
-      info("[Prova $id] - Download Resumido");
+      info("[Prova $id - $caderno] - Download Resumido");
 
       await iniciarDownload();
     }
@@ -257,7 +263,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   configurarProva() async {
-    info("[Prova $id] - Configurando prova");
+    info("[Prova $id - $caderno] - Configurando prova");
 
     setRespondendoProva(true);
 
@@ -270,11 +276,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
       await continuarProva();
     }
 
-    info("[Prova $id] - Configuração concluida");
+    info("[Prova $id - $caderno] - Configuração concluida");
   }
 
   _configureControlesTempoProva() async {
-    info("[Prova $id] - Configurando controles de tempo");
+    info("[Prova $id - $caderno] - Configurando controles de tempo");
     if (tempoExecucaoStore != null) {
       switch (tempoExecucaoStore!.status) {
         case EnumProvaTempoEventType.EXTENDIDO:
@@ -315,7 +321,6 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   Future<void> _finalizarProva() async {
     var confirm = await finalizarProva(true);
     if (confirm) {
-      onDispose();
       ServiceLocator.get<AppRouter>().router.go("/");
     }
   }
@@ -324,7 +329,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
   @action
   _configurarTempoExecucao() {
     if (prova.tempoExecucao > 0) {
-      fine('[Prova $id] - Configurando controlador de tempo');
+      fine('[Prova $id - $caderno] - Configurando controlador de tempo');
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
         horaFinalTurno: ServiceLocator.get<UsuarioStore>().fimTurno,
@@ -356,6 +361,8 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
 
   @action
   Future<bool> finalizarProva([bool automaticamente = false]) async {
+    bool confirmacao = false;
+
     try {
       BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
 
@@ -396,15 +403,15 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
             retorno = await mostrarDialogProvaEnviada(context);
           }
 
-          return retorno ?? false;
+          await dbRespostas.respostaProvaDao.removerSincronizadas();
+
+          confirmacao = retorno ?? false;
         } else {
           switch (response.statusCode) {
             // Prova ja finalizada
             case 411:
-              AppDatabase db = GetIt.I.get();
-
               // Remove respostas do banco local
-              await db.respostaProvaDao.removerSincronizadasPorProva(id);
+              await dbRespostas.respostaProvaDao.removerSincronizadasPorProva(id);
 
               mostrarDialogProvaJaEnviada(context);
               break;
@@ -412,11 +419,15 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable {
         }
       }
 
-      return true;
+      confirmacao = true;
     } catch (e, stack) {
       await recordError(e, stack);
-      return false;
+      confirmacao = false;
     }
+
+    await onDispose();
+
+    return confirmacao;
   }
 
   @action

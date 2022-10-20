@@ -3,7 +3,7 @@
 part of 'app.database.dart';
 
 // **************************************************************************
-// MoorGenerator
+// DriftDatabaseGenerator
 // **************************************************************************
 
 // ignore_for_file: type=lint
@@ -77,19 +77,19 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
   static Insertable<Prova> custom({
     Expression<int>? id,
     Expression<String>? descricao,
-    Expression<DateTime?>? ultimaAtualizacao,
-    Expression<EnumDownloadStatus>? downloadStatus,
+    Expression<DateTime>? ultimaAtualizacao,
+    Expression<int>? downloadStatus,
     Expression<int>? itensQuantidade,
-    Expression<int?>? tempoAlerta,
+    Expression<int>? tempoAlerta,
     Expression<int>? tempoExecucao,
     Expression<int>? tempoExtra,
-    Expression<EnumProvaStatus>? status,
+    Expression<int>? status,
     Expression<DateTime>? dataInicio,
-    Expression<DateTime?>? dataFim,
-    Expression<DateTime?>? dataInicioProvaAluno,
-    Expression<DateTime?>? dataFimProvaAluno,
-    Expression<String?>? senha,
-    Expression<String?>? idDownload,
+    Expression<DateTime>? dataFim,
+    Expression<DateTime>? dataInicioProvaAluno,
+    Expression<DateTime>? dataFimProvaAluno,
+    Expression<String>? senha,
+    Expression<String>? idDownload,
     Expression<int>? quantidadeRespostaSincronizacao,
     Expression<DateTime>? ultimaAlteracao,
     Expression<String>? caderno,
@@ -170,18 +170,18 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       map['descricao'] = Variable<String>(descricao.value);
     }
     if (ultimaAtualizacao.present) {
-      map['ultima_atualizacao'] = Variable<DateTime?>(ultimaAtualizacao.value);
+      map['ultima_atualizacao'] = Variable<DateTime>(ultimaAtualizacao.value);
     }
     if (downloadStatus.present) {
       final converter = $ProvasDbTable.$converter0;
       map['download_status'] =
-          Variable<int>(converter.mapToSql(downloadStatus.value)!);
+          Variable<int>(converter.toSql(downloadStatus.value));
     }
     if (itensQuantidade.present) {
       map['itens_quantidade'] = Variable<int>(itensQuantidade.value);
     }
     if (tempoAlerta.present) {
-      map['tempo_alerta'] = Variable<int?>(tempoAlerta.value);
+      map['tempo_alerta'] = Variable<int>(tempoAlerta.value);
     }
     if (tempoExecucao.present) {
       map['tempo_execucao'] = Variable<int>(tempoExecucao.value);
@@ -191,27 +191,26 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     }
     if (status.present) {
       final converter = $ProvasDbTable.$converter1;
-      map['status'] = Variable<int>(converter.mapToSql(status.value)!);
+      map['status'] = Variable<int>(converter.toSql(status.value));
     }
     if (dataInicio.present) {
       map['data_inicio'] = Variable<DateTime>(dataInicio.value);
     }
     if (dataFim.present) {
-      map['data_fim'] = Variable<DateTime?>(dataFim.value);
+      map['data_fim'] = Variable<DateTime>(dataFim.value);
     }
     if (dataInicioProvaAluno.present) {
       map['data_inicio_prova_aluno'] =
-          Variable<DateTime?>(dataInicioProvaAluno.value);
+          Variable<DateTime>(dataInicioProvaAluno.value);
     }
     if (dataFimProvaAluno.present) {
-      map['data_fim_prova_aluno'] =
-          Variable<DateTime?>(dataFimProvaAluno.value);
+      map['data_fim_prova_aluno'] = Variable<DateTime>(dataFimProvaAluno.value);
     }
     if (senha.present) {
-      map['senha'] = Variable<String?>(senha.value);
+      map['senha'] = Variable<String>(senha.value);
     }
     if (idDownload.present) {
-      map['id_download'] = Variable<String?>(idDownload.value);
+      map['id_download'] = Variable<String>(idDownload.value);
     }
     if (quantidadeRespostaSincronizacao.present) {
       map['quantidade_resposta_sincronizacao'] =
@@ -260,112 +259,112 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
   $ProvasDbTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: false);
   final VerificationMeta _descricaoMeta = const VerificationMeta('descricao');
   @override
-  late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> descricao = GeneratedColumn<String>(
       'descricao', aliasedName, false,
       additionalChecks:
           GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 150),
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true);
   final VerificationMeta _ultimaAtualizacaoMeta =
       const VerificationMeta('ultimaAtualizacao');
   @override
-  late final GeneratedColumn<DateTime?> ultimaAtualizacao =
-      GeneratedColumn<DateTime?>('ultima_atualizacao', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> ultimaAtualizacao =
+      GeneratedColumn<DateTime>('ultima_atualizacao', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
   final VerificationMeta _downloadStatusMeta =
       const VerificationMeta('downloadStatus');
   @override
-  late final GeneratedColumnWithTypeConverter<EnumDownloadStatus, int?>
-      downloadStatus = GeneratedColumn<int?>(
+  late final GeneratedColumnWithTypeConverter<EnumDownloadStatus, int>
+      downloadStatus = GeneratedColumn<int>(
               'download_status', aliasedName, false,
-              type: const IntType(), requiredDuringInsert: true)
+              type: DriftSqlType.int, requiredDuringInsert: true)
           .withConverter<EnumDownloadStatus>($ProvasDbTable.$converter0);
   final VerificationMeta _itensQuantidadeMeta =
       const VerificationMeta('itensQuantidade');
   @override
-  late final GeneratedColumn<int?> itensQuantidade = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> itensQuantidade = GeneratedColumn<int>(
       'itens_quantidade', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _tempoAlertaMeta =
       const VerificationMeta('tempoAlerta');
   @override
-  late final GeneratedColumn<int?> tempoAlerta = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> tempoAlerta = GeneratedColumn<int>(
       'tempo_alerta', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: false);
   final VerificationMeta _tempoExecucaoMeta =
       const VerificationMeta('tempoExecucao');
   @override
-  late final GeneratedColumn<int?> tempoExecucao = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> tempoExecucao = GeneratedColumn<int>(
       'tempo_execucao', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _tempoExtraMeta = const VerificationMeta('tempoExtra');
   @override
-  late final GeneratedColumn<int?> tempoExtra = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> tempoExtra = GeneratedColumn<int>(
       'tempo_extra', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumnWithTypeConverter<EnumProvaStatus, int?> status =
-      GeneratedColumn<int?>('status', aliasedName, false,
-              type: const IntType(), requiredDuringInsert: true)
+  late final GeneratedColumnWithTypeConverter<EnumProvaStatus, int> status =
+      GeneratedColumn<int>('status', aliasedName, false,
+              type: DriftSqlType.int, requiredDuringInsert: true)
           .withConverter<EnumProvaStatus>($ProvasDbTable.$converter1);
   final VerificationMeta _dataInicioMeta = const VerificationMeta('dataInicio');
   @override
-  late final GeneratedColumn<DateTime?> dataInicio = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> dataInicio = GeneratedColumn<DateTime>(
       'data_inicio', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
   final VerificationMeta _dataFimMeta = const VerificationMeta('dataFim');
   @override
-  late final GeneratedColumn<DateTime?> dataFim = GeneratedColumn<DateTime?>(
+  late final GeneratedColumn<DateTime> dataFim = GeneratedColumn<DateTime>(
       'data_fim', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   final VerificationMeta _dataInicioProvaAlunoMeta =
       const VerificationMeta('dataInicioProvaAluno');
   @override
-  late final GeneratedColumn<DateTime?> dataInicioProvaAluno =
-      GeneratedColumn<DateTime?>('data_inicio_prova_aluno', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> dataInicioProvaAluno =
+      GeneratedColumn<DateTime>('data_inicio_prova_aluno', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
   final VerificationMeta _dataFimProvaAlunoMeta =
       const VerificationMeta('dataFimProvaAluno');
   @override
-  late final GeneratedColumn<DateTime?> dataFimProvaAluno =
-      GeneratedColumn<DateTime?>('data_fim_prova_aluno', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> dataFimProvaAluno =
+      GeneratedColumn<DateTime>('data_fim_prova_aluno', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
   final VerificationMeta _senhaMeta = const VerificationMeta('senha');
   @override
-  late final GeneratedColumn<String?> senha = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> senha = GeneratedColumn<String>(
       'senha', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
+      type: DriftSqlType.string, requiredDuringInsert: false);
   final VerificationMeta _idDownloadMeta = const VerificationMeta('idDownload');
   @override
-  late final GeneratedColumn<String?> idDownload = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> idDownload = GeneratedColumn<String>(
       'id_download', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
+      type: DriftSqlType.string, requiredDuringInsert: false);
   final VerificationMeta _quantidadeRespostaSincronizacaoMeta =
       const VerificationMeta('quantidadeRespostaSincronizacao');
   @override
-  late final GeneratedColumn<int?> quantidadeRespostaSincronizacao =
-      GeneratedColumn<int?>(
+  late final GeneratedColumn<int> quantidadeRespostaSincronizacao =
+      GeneratedColumn<int>(
           'quantidade_resposta_sincronizacao', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+          type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _ultimaAlteracaoMeta =
       const VerificationMeta('ultimaAlteracao');
   @override
-  late final GeneratedColumn<DateTime?> ultimaAlteracao =
-      GeneratedColumn<DateTime?>('ultima_alteracao', aliasedName, false,
-          type: const IntType(),
+  late final GeneratedColumn<DateTime> ultimaAlteracao =
+      GeneratedColumn<DateTime>('ultima_alteracao', aliasedName, false,
+          type: DriftSqlType.dateTime,
           requiredDuringInsert: false,
           defaultValue: currentDateAndTime);
   final VerificationMeta _cadernoMeta = const VerificationMeta('caderno');
   @override
-  late final GeneratedColumn<String?> caderno = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> caderno = GeneratedColumn<String>(
       'caderno', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: Constant("A"));
   @override
@@ -507,40 +506,44 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
   Prova map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Prova(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      descricao: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}descricao'])!,
-      itensQuantidade: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}itens_quantidade'])!,
-      dataInicio: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}data_inicio'])!,
-      dataFim: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}data_fim']),
-      tempoExecucao: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}tempo_execucao'])!,
-      tempoExtra: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}tempo_extra'])!,
-      tempoAlerta: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}tempo_alerta']),
-      downloadStatus: $ProvasDbTable.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}download_status']))!,
-      idDownload: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id_download']),
-      status: $ProvasDbTable.$converter1.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}status']))!,
-      senha: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}senha']),
-      dataInicioProvaAluno: const DateTimeType().mapFromDatabaseResponse(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      descricao: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}descricao'])!,
+      itensQuantidade: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}itens_quantidade'])!,
+      dataInicio: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}data_inicio'])!,
+      dataFim: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}data_fim']),
+      tempoExecucao: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}tempo_execucao'])!,
+      tempoExtra: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}tempo_extra'])!,
+      tempoAlerta: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}tempo_alerta']),
+      downloadStatus: $ProvasDbTable.$converter0.fromSql(attachedDatabase
+          .options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}download_status'])!),
+      idDownload: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}id_download']),
+      status: $ProvasDbTable.$converter1.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}status'])!),
+      senha: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}senha']),
+      dataInicioProvaAluno: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime,
           data['${effectivePrefix}data_inicio_prova_aluno']),
-      dataFimProvaAluno: const DateTimeType().mapFromDatabaseResponse(
+      dataFimProvaAluno: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime,
           data['${effectivePrefix}data_fim_prova_aluno']),
-      quantidadeRespostaSincronizacao: const IntType().mapFromDatabaseResponse(
+      quantidadeRespostaSincronizacao: attachedDatabase.options.types.read(
+          DriftSqlType.int,
           data['${effectivePrefix}quantidade_resposta_sincronizacao'])!,
-      ultimaAlteracao: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ultima_alteracao'])!,
-      caderno: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}caderno'])!,
+      ultimaAlteracao: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}ultima_alteracao'])!,
+      caderno: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}caderno'])!,
     );
   }
 
@@ -556,122 +559,89 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
 }
 
 class QuestoesDbCompanion extends UpdateCompanion<Questao> {
-  final Value<int> id;
+  final Value<int> questaoLegadoId;
   final Value<String?> titulo;
   final Value<String> descricao;
-  final Value<int> ordem;
   final Value<EnumTipoQuestao> tipo;
   final Value<DateTime?> ultimaAtualizacao;
-  final Value<int> provaId;
   final Value<int> quantidadeAlternativas;
-  final Value<String> caderno;
   const QuestoesDbCompanion({
-    this.id = const Value.absent(),
+    this.questaoLegadoId = const Value.absent(),
     this.titulo = const Value.absent(),
     this.descricao = const Value.absent(),
-    this.ordem = const Value.absent(),
     this.tipo = const Value.absent(),
     this.ultimaAtualizacao = const Value.absent(),
-    this.provaId = const Value.absent(),
     this.quantidadeAlternativas = const Value.absent(),
-    this.caderno = const Value.absent(),
   });
   QuestoesDbCompanion.insert({
-    required int id,
+    this.questaoLegadoId = const Value.absent(),
     this.titulo = const Value.absent(),
     required String descricao,
-    required int ordem,
     required EnumTipoQuestao tipo,
     this.ultimaAtualizacao = const Value.absent(),
-    required int provaId,
     required int quantidadeAlternativas,
-    this.caderno = const Value.absent(),
-  })  : id = Value(id),
-        descricao = Value(descricao),
-        ordem = Value(ordem),
+  })  : descricao = Value(descricao),
         tipo = Value(tipo),
-        provaId = Value(provaId),
         quantidadeAlternativas = Value(quantidadeAlternativas);
   static Insertable<Questao> custom({
-    Expression<int>? id,
-    Expression<String?>? titulo,
+    Expression<int>? questaoLegadoId,
+    Expression<String>? titulo,
     Expression<String>? descricao,
-    Expression<int>? ordem,
-    Expression<EnumTipoQuestao>? tipo,
-    Expression<DateTime?>? ultimaAtualizacao,
-    Expression<int>? provaId,
+    Expression<int>? tipo,
+    Expression<DateTime>? ultimaAtualizacao,
     Expression<int>? quantidadeAlternativas,
-    Expression<String>? caderno,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
+      if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
       if (titulo != null) 'titulo': titulo,
       if (descricao != null) 'descricao': descricao,
-      if (ordem != null) 'ordem': ordem,
       if (tipo != null) 'tipo': tipo,
       if (ultimaAtualizacao != null) 'ultima_atualizacao': ultimaAtualizacao,
-      if (provaId != null) 'prova_id': provaId,
       if (quantidadeAlternativas != null)
         'quantidade_alternativas': quantidadeAlternativas,
-      if (caderno != null) 'caderno': caderno,
     });
   }
 
   QuestoesDbCompanion copyWith(
-      {Value<int>? id,
+      {Value<int>? questaoLegadoId,
       Value<String?>? titulo,
       Value<String>? descricao,
-      Value<int>? ordem,
       Value<EnumTipoQuestao>? tipo,
       Value<DateTime?>? ultimaAtualizacao,
-      Value<int>? provaId,
-      Value<int>? quantidadeAlternativas,
-      Value<String>? caderno}) {
+      Value<int>? quantidadeAlternativas}) {
     return QuestoesDbCompanion(
-      id: id ?? this.id,
+      questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
       titulo: titulo ?? this.titulo,
       descricao: descricao ?? this.descricao,
-      ordem: ordem ?? this.ordem,
       tipo: tipo ?? this.tipo,
       ultimaAtualizacao: ultimaAtualizacao ?? this.ultimaAtualizacao,
-      provaId: provaId ?? this.provaId,
       quantidadeAlternativas:
           quantidadeAlternativas ?? this.quantidadeAlternativas,
-      caderno: caderno ?? this.caderno,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
+    if (questaoLegadoId.present) {
+      map['questao_legado_id'] = Variable<int>(questaoLegadoId.value);
     }
     if (titulo.present) {
-      map['titulo'] = Variable<String?>(titulo.value);
+      map['titulo'] = Variable<String>(titulo.value);
     }
     if (descricao.present) {
       map['descricao'] = Variable<String>(descricao.value);
     }
-    if (ordem.present) {
-      map['ordem'] = Variable<int>(ordem.value);
-    }
     if (tipo.present) {
       final converter = $QuestoesDbTable.$converter0;
-      map['tipo'] = Variable<int>(converter.mapToSql(tipo.value)!);
+      map['tipo'] = Variable<int>(converter.toSql(tipo.value));
     }
     if (ultimaAtualizacao.present) {
-      map['ultima_atualizacao'] = Variable<DateTime?>(ultimaAtualizacao.value);
-    }
-    if (provaId.present) {
-      map['prova_id'] = Variable<int>(provaId.value);
+      map['ultima_atualizacao'] = Variable<DateTime>(ultimaAtualizacao.value);
     }
     if (quantidadeAlternativas.present) {
       map['quantidade_alternativas'] =
           Variable<int>(quantidadeAlternativas.value);
-    }
-    if (caderno.present) {
-      map['caderno'] = Variable<String>(caderno.value);
     }
     return map;
   }
@@ -679,15 +649,12 @@ class QuestoesDbCompanion extends UpdateCompanion<Questao> {
   @override
   String toString() {
     return (StringBuffer('QuestoesDbCompanion(')
-          ..write('id: $id, ')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
           ..write('titulo: $titulo, ')
           ..write('descricao: $descricao, ')
-          ..write('ordem: $ordem, ')
           ..write('tipo: $tipo, ')
           ..write('ultimaAtualizacao: $ultimaAtualizacao, ')
-          ..write('provaId: $provaId, ')
-          ..write('quantidadeAlternativas: $quantidadeAlternativas, ')
-          ..write('caderno: $caderno')
+          ..write('quantidadeAlternativas: $quantidadeAlternativas')
           ..write(')'))
         .toString();
   }
@@ -699,67 +666,48 @@ class $QuestoesDbTable extends QuestoesDb
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $QuestoesDbTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  final VerificationMeta _questaoLegadoIdMeta =
+      const VerificationMeta('questaoLegadoId');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
-      'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
+      'questao_legado_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   final VerificationMeta _tituloMeta = const VerificationMeta('titulo');
   @override
-  late final GeneratedColumn<String?> titulo = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> titulo = GeneratedColumn<String>(
       'titulo', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
+      type: DriftSqlType.string, requiredDuringInsert: false);
   final VerificationMeta _descricaoMeta = const VerificationMeta('descricao');
   @override
-  late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> descricao = GeneratedColumn<String>(
       'descricao', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _ordemMeta = const VerificationMeta('ordem');
-  @override
-  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
-      'ordem', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _tipoMeta = const VerificationMeta('tipo');
   @override
-  late final GeneratedColumnWithTypeConverter<EnumTipoQuestao, int?> tipo =
-      GeneratedColumn<int?>('tipo', aliasedName, false,
-              type: const IntType(), requiredDuringInsert: true)
+  late final GeneratedColumnWithTypeConverter<EnumTipoQuestao, int> tipo =
+      GeneratedColumn<int>('tipo', aliasedName, false,
+              type: DriftSqlType.int, requiredDuringInsert: true)
           .withConverter<EnumTipoQuestao>($QuestoesDbTable.$converter0);
   final VerificationMeta _ultimaAtualizacaoMeta =
       const VerificationMeta('ultimaAtualizacao');
   @override
-  late final GeneratedColumn<DateTime?> ultimaAtualizacao =
-      GeneratedColumn<DateTime?>('ultima_atualizacao', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
-  @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> ultimaAtualizacao =
+      GeneratedColumn<DateTime>('ultima_atualizacao', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
   final VerificationMeta _quantidadeAlternativasMeta =
       const VerificationMeta('quantidadeAlternativas');
   @override
-  late final GeneratedColumn<int?> quantidadeAlternativas =
-      GeneratedColumn<int?>('quantidade_alternativas', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _cadernoMeta = const VerificationMeta('caderno');
-  @override
-  late final GeneratedColumn<String?> caderno = GeneratedColumn<String?>(
-      'caderno', aliasedName, false,
-      type: const StringType(),
-      requiredDuringInsert: false,
-      defaultValue: Constant("A"));
+  late final GeneratedColumn<int> quantidadeAlternativas = GeneratedColumn<int>(
+      'quantidade_alternativas', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
-        id,
+        questaoLegadoId,
         titulo,
         descricao,
-        ordem,
         tipo,
         ultimaAtualizacao,
-        provaId,
-        quantidadeAlternativas,
-        caderno
+        quantidadeAlternativas
       ];
   @override
   String get aliasedName => _alias ?? 'questoes_db';
@@ -770,10 +718,11 @@ class $QuestoesDbTable extends QuestoesDb
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
+    if (data.containsKey('questao_legado_id')) {
+      context.handle(
+          _questaoLegadoIdMeta,
+          questaoLegadoId.isAcceptableOrUnknown(
+              data['questao_legado_id']!, _questaoLegadoIdMeta));
     }
     if (data.containsKey('titulo')) {
       context.handle(_tituloMeta,
@@ -785,24 +734,12 @@ class $QuestoesDbTable extends QuestoesDb
     } else if (isInserting) {
       context.missing(_descricaoMeta);
     }
-    if (data.containsKey('ordem')) {
-      context.handle(
-          _ordemMeta, ordem.isAcceptableOrUnknown(data['ordem']!, _ordemMeta));
-    } else if (isInserting) {
-      context.missing(_ordemMeta);
-    }
     context.handle(_tipoMeta, const VerificationResult.success());
     if (data.containsKey('ultima_atualizacao')) {
       context.handle(
           _ultimaAtualizacaoMeta,
           ultimaAtualizacao.isAcceptableOrUnknown(
               data['ultima_atualizacao']!, _ultimaAtualizacaoMeta));
-    }
-    if (data.containsKey('prova_id')) {
-      context.handle(_provaIdMeta,
-          provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
-    } else if (isInserting) {
-      context.missing(_provaIdMeta);
     }
     if (data.containsKey('quantidade_alternativas')) {
       context.handle(
@@ -812,35 +749,25 @@ class $QuestoesDbTable extends QuestoesDb
     } else if (isInserting) {
       context.missing(_quantidadeAlternativasMeta);
     }
-    if (data.containsKey('caderno')) {
-      context.handle(_cadernoMeta,
-          caderno.isAcceptableOrUnknown(data['caderno']!, _cadernoMeta));
-    }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id, caderno};
+  Set<GeneratedColumn> get $primaryKey => {questaoLegadoId};
   @override
   Questao map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Questao(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
-      titulo: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}titulo']),
-      descricao: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}descricao'])!,
-      ordem: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ordem'])!,
-      tipo: $QuestoesDbTable.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}tipo']))!,
-      quantidadeAlternativas: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}quantidade_alternativas'])!,
-      caderno: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}caderno'])!,
+      questaoLegadoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id'])!,
+      titulo: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}titulo']),
+      descricao: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}descricao'])!,
+      tipo: $QuestoesDbTable.$converter0.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}tipo'])!),
+      quantidadeAlternativas: attachedDatabase.options.types.read(
+          DriftSqlType.int, data['${effectivePrefix}quantidade_alternativas'])!,
     );
   }
 
@@ -855,70 +782,55 @@ class $QuestoesDbTable extends QuestoesDb
 
 class AlternativasDbCompanion extends UpdateCompanion<Alternativa> {
   final Value<int> id;
+  final Value<int> questaoLegadoId;
   final Value<String> descricao;
   final Value<int> ordem;
   final Value<String> numeracao;
-  final Value<DateTime?> ultimaAtualizacao;
-  final Value<int> provaId;
-  final Value<int> questaoId;
   const AlternativasDbCompanion({
     this.id = const Value.absent(),
+    this.questaoLegadoId = const Value.absent(),
     this.descricao = const Value.absent(),
     this.ordem = const Value.absent(),
     this.numeracao = const Value.absent(),
-    this.ultimaAtualizacao = const Value.absent(),
-    this.provaId = const Value.absent(),
-    this.questaoId = const Value.absent(),
   });
   AlternativasDbCompanion.insert({
     this.id = const Value.absent(),
+    required int questaoLegadoId,
     required String descricao,
     required int ordem,
     required String numeracao,
-    this.ultimaAtualizacao = const Value.absent(),
-    required int provaId,
-    required int questaoId,
-  })  : descricao = Value(descricao),
+  })  : questaoLegadoId = Value(questaoLegadoId),
+        descricao = Value(descricao),
         ordem = Value(ordem),
-        numeracao = Value(numeracao),
-        provaId = Value(provaId),
-        questaoId = Value(questaoId);
+        numeracao = Value(numeracao);
   static Insertable<Alternativa> custom({
     Expression<int>? id,
+    Expression<int>? questaoLegadoId,
     Expression<String>? descricao,
     Expression<int>? ordem,
     Expression<String>? numeracao,
-    Expression<DateTime?>? ultimaAtualizacao,
-    Expression<int>? provaId,
-    Expression<int>? questaoId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
       if (descricao != null) 'descricao': descricao,
       if (ordem != null) 'ordem': ordem,
       if (numeracao != null) 'numeracao': numeracao,
-      if (ultimaAtualizacao != null) 'ultima_atualizacao': ultimaAtualizacao,
-      if (provaId != null) 'prova_id': provaId,
-      if (questaoId != null) 'questao_id': questaoId,
     });
   }
 
   AlternativasDbCompanion copyWith(
       {Value<int>? id,
+      Value<int>? questaoLegadoId,
       Value<String>? descricao,
       Value<int>? ordem,
-      Value<String>? numeracao,
-      Value<DateTime?>? ultimaAtualizacao,
-      Value<int>? provaId,
-      Value<int>? questaoId}) {
+      Value<String>? numeracao}) {
     return AlternativasDbCompanion(
       id: id ?? this.id,
+      questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
       descricao: descricao ?? this.descricao,
       ordem: ordem ?? this.ordem,
       numeracao: numeracao ?? this.numeracao,
-      ultimaAtualizacao: ultimaAtualizacao ?? this.ultimaAtualizacao,
-      provaId: provaId ?? this.provaId,
-      questaoId: questaoId ?? this.questaoId,
     );
   }
 
@@ -927,6 +839,9 @@ class AlternativasDbCompanion extends UpdateCompanion<Alternativa> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (questaoLegadoId.present) {
+      map['questao_legado_id'] = Variable<int>(questaoLegadoId.value);
     }
     if (descricao.present) {
       map['descricao'] = Variable<String>(descricao.value);
@@ -937,15 +852,6 @@ class AlternativasDbCompanion extends UpdateCompanion<Alternativa> {
     if (numeracao.present) {
       map['numeracao'] = Variable<String>(numeracao.value);
     }
-    if (ultimaAtualizacao.present) {
-      map['ultima_atualizacao'] = Variable<DateTime?>(ultimaAtualizacao.value);
-    }
-    if (provaId.present) {
-      map['prova_id'] = Variable<int>(provaId.value);
-    }
-    if (questaoId.present) {
-      map['questao_id'] = Variable<int>(questaoId.value);
-    }
     return map;
   }
 
@@ -953,12 +859,10 @@ class AlternativasDbCompanion extends UpdateCompanion<Alternativa> {
   String toString() {
     return (StringBuffer('AlternativasDbCompanion(')
           ..write('id: $id, ')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
           ..write('descricao: $descricao, ')
           ..write('ordem: $ordem, ')
-          ..write('numeracao: $numeracao, ')
-          ..write('ultimaAtualizacao: $ultimaAtualizacao, ')
-          ..write('provaId: $provaId, ')
-          ..write('questaoId: $questaoId')
+          ..write('numeracao: $numeracao')
           ..write(')'))
         .toString();
   }
@@ -972,43 +876,33 @@ class $AlternativasDbTable extends AlternativasDb
   $AlternativasDbTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  final VerificationMeta _questaoLegadoIdMeta =
+      const VerificationMeta('questaoLegadoId');
+  @override
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
+      'questao_legado_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _descricaoMeta = const VerificationMeta('descricao');
   @override
-  late final GeneratedColumn<String?> descricao = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> descricao = GeneratedColumn<String>(
       'descricao', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _ordemMeta = const VerificationMeta('ordem');
   @override
-  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> ordem = GeneratedColumn<int>(
       'ordem', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _numeracaoMeta = const VerificationMeta('numeracao');
   @override
-  late final GeneratedColumn<String?> numeracao = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> numeracao = GeneratedColumn<String>(
       'numeracao', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _ultimaAtualizacaoMeta =
-      const VerificationMeta('ultimaAtualizacao');
-  @override
-  late final GeneratedColumn<DateTime?> ultimaAtualizacao =
-      GeneratedColumn<DateTime?>('ultima_atualizacao', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
-  @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _questaoIdMeta = const VerificationMeta('questaoId');
-  @override
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, descricao, ordem, numeracao, ultimaAtualizacao, provaId, questaoId];
+      [id, questaoLegadoId, descricao, ordem, numeracao];
   @override
   String get aliasedName => _alias ?? 'alternativas_db';
   @override
@@ -1020,6 +914,14 @@ class $AlternativasDbTable extends AlternativasDb
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('questao_legado_id')) {
+      context.handle(
+          _questaoLegadoIdMeta,
+          questaoLegadoId.isAcceptableOrUnknown(
+              data['questao_legado_id']!, _questaoLegadoIdMeta));
+    } else if (isInserting) {
+      context.missing(_questaoLegadoIdMeta);
     }
     if (data.containsKey('descricao')) {
       context.handle(_descricaoMeta,
@@ -1039,24 +941,6 @@ class $AlternativasDbTable extends AlternativasDb
     } else if (isInserting) {
       context.missing(_numeracaoMeta);
     }
-    if (data.containsKey('ultima_atualizacao')) {
-      context.handle(
-          _ultimaAtualizacaoMeta,
-          ultimaAtualizacao.isAcceptableOrUnknown(
-              data['ultima_atualizacao']!, _ultimaAtualizacaoMeta));
-    }
-    if (data.containsKey('prova_id')) {
-      context.handle(_provaIdMeta,
-          provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
-    } else if (isInserting) {
-      context.missing(_provaIdMeta);
-    }
-    if (data.containsKey('questao_id')) {
-      context.handle(_questaoIdMeta,
-          questaoId.isAcceptableOrUnknown(data['questao_id']!, _questaoIdMeta));
-    } else if (isInserting) {
-      context.missing(_questaoIdMeta);
-    }
     return context;
   }
 
@@ -1066,18 +950,16 @@ class $AlternativasDbTable extends AlternativasDb
   Alternativa map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Alternativa(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
-      questaoId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}questao_id'])!,
-      descricao: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}descricao'])!,
-      ordem: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ordem'])!,
-      numeracao: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}numeracao'])!,
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      questaoLegadoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id'])!,
+      descricao: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}descricao'])!,
+      ordem: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}ordem'])!,
+      numeracao: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}numeracao'])!,
     );
   }
 
@@ -1092,48 +974,31 @@ class ArquivosDbCompanion extends UpdateCompanion<Arquivo> {
   final Value<int> legadoId;
   final Value<String> caminho;
   final Value<String> base64;
-  final Value<DateTime?> ultimaAtualizacao;
-  final Value<int> provaId;
-  final Value<int> questaoId;
   const ArquivosDbCompanion({
     this.id = const Value.absent(),
     this.legadoId = const Value.absent(),
     this.caminho = const Value.absent(),
     this.base64 = const Value.absent(),
-    this.ultimaAtualizacao = const Value.absent(),
-    this.provaId = const Value.absent(),
-    this.questaoId = const Value.absent(),
   });
   ArquivosDbCompanion.insert({
     this.id = const Value.absent(),
     required int legadoId,
     required String caminho,
     required String base64,
-    this.ultimaAtualizacao = const Value.absent(),
-    required int provaId,
-    required int questaoId,
   })  : legadoId = Value(legadoId),
         caminho = Value(caminho),
-        base64 = Value(base64),
-        provaId = Value(provaId),
-        questaoId = Value(questaoId);
+        base64 = Value(base64);
   static Insertable<Arquivo> custom({
     Expression<int>? id,
     Expression<int>? legadoId,
     Expression<String>? caminho,
     Expression<String>? base64,
-    Expression<DateTime?>? ultimaAtualizacao,
-    Expression<int>? provaId,
-    Expression<int>? questaoId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (legadoId != null) 'legado_id': legadoId,
       if (caminho != null) 'caminho': caminho,
       if (base64 != null) 'base64': base64,
-      if (ultimaAtualizacao != null) 'ultima_atualizacao': ultimaAtualizacao,
-      if (provaId != null) 'prova_id': provaId,
-      if (questaoId != null) 'questao_id': questaoId,
     });
   }
 
@@ -1141,18 +1006,12 @@ class ArquivosDbCompanion extends UpdateCompanion<Arquivo> {
       {Value<int>? id,
       Value<int>? legadoId,
       Value<String>? caminho,
-      Value<String>? base64,
-      Value<DateTime?>? ultimaAtualizacao,
-      Value<int>? provaId,
-      Value<int>? questaoId}) {
+      Value<String>? base64}) {
     return ArquivosDbCompanion(
       id: id ?? this.id,
       legadoId: legadoId ?? this.legadoId,
       caminho: caminho ?? this.caminho,
       base64: base64 ?? this.base64,
-      ultimaAtualizacao: ultimaAtualizacao ?? this.ultimaAtualizacao,
-      provaId: provaId ?? this.provaId,
-      questaoId: questaoId ?? this.questaoId,
     );
   }
 
@@ -1171,15 +1030,6 @@ class ArquivosDbCompanion extends UpdateCompanion<Arquivo> {
     if (base64.present) {
       map['base64'] = Variable<String>(base64.value);
     }
-    if (ultimaAtualizacao.present) {
-      map['ultima_atualizacao'] = Variable<DateTime?>(ultimaAtualizacao.value);
-    }
-    if (provaId.present) {
-      map['prova_id'] = Variable<int>(provaId.value);
-    }
-    if (questaoId.present) {
-      map['questao_id'] = Variable<int>(questaoId.value);
-    }
     return map;
   }
 
@@ -1189,10 +1039,7 @@ class ArquivosDbCompanion extends UpdateCompanion<Arquivo> {
           ..write('id: $id, ')
           ..write('legadoId: $legadoId, ')
           ..write('caminho: $caminho, ')
-          ..write('base64: $base64, ')
-          ..write('ultimaAtualizacao: $ultimaAtualizacao, ')
-          ..write('provaId: $provaId, ')
-          ..write('questaoId: $questaoId')
+          ..write('base64: $base64')
           ..write(')'))
         .toString();
   }
@@ -1206,43 +1053,26 @@ class $ArquivosDbTable extends ArquivosDb
   $ArquivosDbTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: false);
   final VerificationMeta _legadoIdMeta = const VerificationMeta('legadoId');
   @override
-  late final GeneratedColumn<int?> legadoId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> legadoId = GeneratedColumn<int>(
       'legado_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _caminhoMeta = const VerificationMeta('caminho');
   @override
-  late final GeneratedColumn<String?> caminho = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> caminho = GeneratedColumn<String>(
       'caminho', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _base64Meta = const VerificationMeta('base64');
   @override
-  late final GeneratedColumn<String?> base64 = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> base64 = GeneratedColumn<String>(
       'base64', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _ultimaAtualizacaoMeta =
-      const VerificationMeta('ultimaAtualizacao');
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  late final GeneratedColumn<DateTime?> ultimaAtualizacao =
-      GeneratedColumn<DateTime?>('ultima_atualizacao', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
-  final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
-  @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _questaoIdMeta = const VerificationMeta('questaoId');
-  @override
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, legadoId, caminho, base64, ultimaAtualizacao, provaId, questaoId];
+  List<GeneratedColumn> get $columns => [id, legadoId, caminho, base64];
   @override
   String get aliasedName => _alias ?? 'arquivos_db';
   @override
@@ -1273,24 +1103,6 @@ class $ArquivosDbTable extends ArquivosDb
     } else if (isInserting) {
       context.missing(_base64Meta);
     }
-    if (data.containsKey('ultima_atualizacao')) {
-      context.handle(
-          _ultimaAtualizacaoMeta,
-          ultimaAtualizacao.isAcceptableOrUnknown(
-              data['ultima_atualizacao']!, _ultimaAtualizacaoMeta));
-    }
-    if (data.containsKey('prova_id')) {
-      context.handle(_provaIdMeta,
-          provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
-    } else if (isInserting) {
-      context.missing(_provaIdMeta);
-    }
-    if (data.containsKey('questao_id')) {
-      context.handle(_questaoIdMeta,
-          questaoId.isAcceptableOrUnknown(data['questao_id']!, _questaoIdMeta));
-    } else if (isInserting) {
-      context.missing(_questaoIdMeta);
-    }
     return context;
   }
 
@@ -1300,18 +1112,14 @@ class $ArquivosDbTable extends ArquivosDb
   Arquivo map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Arquivo(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      legadoId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}legado_id'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
-      questaoId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}questao_id'])!,
-      caminho: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}caminho'])!,
-      base64: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}base64'])!,
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      legadoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}legado_id'])!,
+      caminho: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}caminho'])!,
+      base64: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}base64'])!,
     );
   }
 
@@ -1361,7 +1169,7 @@ class ContextosProvaDbCompanion extends UpdateCompanion<ContextoProva> {
     Expression<int>? provaId,
     Expression<String>? imagem,
     Expression<String>? imagemBase64,
-    Expression<PosicionamentoImagemEnum>? posicionamento,
+    Expression<int>? posicionamento,
     Expression<int>? ordem,
     Expression<String>? titulo,
     Expression<String>? texto,
@@ -1417,7 +1225,7 @@ class ContextosProvaDbCompanion extends UpdateCompanion<ContextoProva> {
     if (posicionamento.present) {
       final converter = $ContextosProvaDbTable.$converter0;
       map['posicionamento'] =
-          Variable<int>(converter.mapToSql(posicionamento.value)!);
+          Variable<int>(converter.toSql(posicionamento.value));
     }
     if (ordem.present) {
       map['ordem'] = Variable<int>(ordem.value);
@@ -1455,49 +1263,49 @@ class $ContextosProvaDbTable extends ContextosProvaDb
   $ContextosProvaDbTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: false);
   final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
   @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
       'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _imagemMeta = const VerificationMeta('imagem');
   @override
-  late final GeneratedColumn<String?> imagem = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> imagem = GeneratedColumn<String>(
       'imagem', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _imagemBase64Meta =
       const VerificationMeta('imagemBase64');
   @override
-  late final GeneratedColumn<String?> imagemBase64 = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> imagemBase64 = GeneratedColumn<String>(
       'imagem_base64', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _posicionamentoMeta =
       const VerificationMeta('posicionamento');
   @override
-  late final GeneratedColumnWithTypeConverter<PosicionamentoImagemEnum, int?>
-      posicionamento = GeneratedColumn<int?>(
+  late final GeneratedColumnWithTypeConverter<PosicionamentoImagemEnum, int>
+      posicionamento = GeneratedColumn<int>(
               'posicionamento', aliasedName, false,
-              type: const IntType(), requiredDuringInsert: true)
+              type: DriftSqlType.int, requiredDuringInsert: true)
           .withConverter<PosicionamentoImagemEnum>(
               $ContextosProvaDbTable.$converter0);
   final VerificationMeta _ordemMeta = const VerificationMeta('ordem');
   @override
-  late final GeneratedColumn<int?> ordem = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> ordem = GeneratedColumn<int>(
       'ordem', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _tituloMeta = const VerificationMeta('titulo');
   @override
-  late final GeneratedColumn<String?> titulo = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> titulo = GeneratedColumn<String>(
       'titulo', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _textoMeta = const VerificationMeta('texto');
   @override
-  late final GeneratedColumn<String?> texto = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> texto = GeneratedColumn<String>(
       'texto', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
       [id, provaId, imagem, imagemBase64, posicionamento, ordem, titulo, texto];
@@ -1561,23 +1369,23 @@ class $ContextosProvaDbTable extends ContextosProvaDb
   ContextoProva map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ContextoProva(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
-      imagem: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}imagem'])!,
-      imagemBase64: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}imagem_base64'])!,
-      posicionamento: $ContextosProvaDbTable.$converter0.mapToDart(
-          const IntType().mapFromDatabaseResponse(
-              data['${effectivePrefix}posicionamento']))!,
-      ordem: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ordem'])!,
-      titulo: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}titulo'])!,
-      texto: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}texto'])!,
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      provaId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}prova_id'])!,
+      imagem: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}imagem'])!,
+      imagemBase64: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}imagem_base64'])!,
+      posicionamento: $ContextosProvaDbTable.$converter0.fromSql(
+          attachedDatabase.options.types.read(
+              DriftSqlType.int, data['${effectivePrefix}posicionamento'])!),
+      ordem: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}ordem'])!,
+      titulo: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}titulo'])!,
+      texto: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}texto'])!,
     );
   }
 
@@ -1593,43 +1401,24 @@ class $ContextosProvaDbTable extends ContextosProvaDb
 
 class ArquivoVideoDb extends DataClass implements Insertable<ArquivoVideoDb> {
   final int id;
+  final int questaoLegadoId;
   final String path;
-  final int questaoId;
-  final int provaId;
-  ArquivoVideoDb(
-      {required this.id,
-      required this.path,
-      required this.questaoId,
-      required this.provaId});
-  factory ArquivoVideoDb.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return ArquivoVideoDb(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      path: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}path'])!,
-      questaoId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}questao_id'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
-    );
-  }
+  const ArquivoVideoDb(
+      {required this.id, required this.questaoLegadoId, required this.path});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['questao_legado_id'] = Variable<int>(questaoLegadoId);
     map['path'] = Variable<String>(path);
-    map['questao_id'] = Variable<int>(questaoId);
-    map['prova_id'] = Variable<int>(provaId);
     return map;
   }
 
   ArquivosVideoDbCompanion toCompanion(bool nullToAbsent) {
     return ArquivosVideoDbCompanion(
       id: Value(id),
+      questaoLegadoId: Value(questaoLegadoId),
       path: Value(path),
-      questaoId: Value(questaoId),
-      provaId: Value(provaId),
     );
   }
 
@@ -1638,9 +1427,8 @@ class ArquivoVideoDb extends DataClass implements Insertable<ArquivoVideoDb> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ArquivoVideoDb(
       id: serializer.fromJson<int>(json['id']),
+      questaoLegadoId: serializer.fromJson<int>(json['questaoLegadoId']),
       path: serializer.fromJson<String>(json['path']),
-      questaoId: serializer.fromJson<int>(json['questaoId']),
-      provaId: serializer.fromJson<int>(json['provaId']),
     );
   }
   @override
@@ -1648,86 +1436,71 @@ class ArquivoVideoDb extends DataClass implements Insertable<ArquivoVideoDb> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'questaoLegadoId': serializer.toJson<int>(questaoLegadoId),
       'path': serializer.toJson<String>(path),
-      'questaoId': serializer.toJson<int>(questaoId),
-      'provaId': serializer.toJson<int>(provaId),
     };
   }
 
-  ArquivoVideoDb copyWith(
-          {int? id, String? path, int? questaoId, int? provaId}) =>
+  ArquivoVideoDb copyWith({int? id, int? questaoLegadoId, String? path}) =>
       ArquivoVideoDb(
         id: id ?? this.id,
+        questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
         path: path ?? this.path,
-        questaoId: questaoId ?? this.questaoId,
-        provaId: provaId ?? this.provaId,
       );
   @override
   String toString() {
     return (StringBuffer('ArquivoVideoDb(')
           ..write('id: $id, ')
-          ..write('path: $path, ')
-          ..write('questaoId: $questaoId, ')
-          ..write('provaId: $provaId')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
+          ..write('path: $path')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, path, questaoId, provaId);
+  int get hashCode => Object.hash(id, questaoLegadoId, path);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ArquivoVideoDb &&
           other.id == this.id &&
-          other.path == this.path &&
-          other.questaoId == this.questaoId &&
-          other.provaId == this.provaId);
+          other.questaoLegadoId == this.questaoLegadoId &&
+          other.path == this.path);
 }
 
 class ArquivosVideoDbCompanion extends UpdateCompanion<ArquivoVideoDb> {
   final Value<int> id;
+  final Value<int> questaoLegadoId;
   final Value<String> path;
-  final Value<int> questaoId;
-  final Value<int> provaId;
   const ArquivosVideoDbCompanion({
     this.id = const Value.absent(),
+    this.questaoLegadoId = const Value.absent(),
     this.path = const Value.absent(),
-    this.questaoId = const Value.absent(),
-    this.provaId = const Value.absent(),
   });
   ArquivosVideoDbCompanion.insert({
     this.id = const Value.absent(),
+    required int questaoLegadoId,
     required String path,
-    required int questaoId,
-    required int provaId,
-  })  : path = Value(path),
-        questaoId = Value(questaoId),
-        provaId = Value(provaId);
+  })  : questaoLegadoId = Value(questaoLegadoId),
+        path = Value(path);
   static Insertable<ArquivoVideoDb> custom({
     Expression<int>? id,
+    Expression<int>? questaoLegadoId,
     Expression<String>? path,
-    Expression<int>? questaoId,
-    Expression<int>? provaId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
       if (path != null) 'path': path,
-      if (questaoId != null) 'questao_id': questaoId,
-      if (provaId != null) 'prova_id': provaId,
     });
   }
 
   ArquivosVideoDbCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? path,
-      Value<int>? questaoId,
-      Value<int>? provaId}) {
+      {Value<int>? id, Value<int>? questaoLegadoId, Value<String>? path}) {
     return ArquivosVideoDbCompanion(
       id: id ?? this.id,
+      questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
       path: path ?? this.path,
-      questaoId: questaoId ?? this.questaoId,
-      provaId: provaId ?? this.provaId,
     );
   }
 
@@ -1737,14 +1510,11 @@ class ArquivosVideoDbCompanion extends UpdateCompanion<ArquivoVideoDb> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
+    if (questaoLegadoId.present) {
+      map['questao_legado_id'] = Variable<int>(questaoLegadoId.value);
+    }
     if (path.present) {
       map['path'] = Variable<String>(path.value);
-    }
-    if (questaoId.present) {
-      map['questao_id'] = Variable<int>(questaoId.value);
-    }
-    if (provaId.present) {
-      map['prova_id'] = Variable<int>(provaId.value);
     }
     return map;
   }
@@ -1753,9 +1523,8 @@ class ArquivosVideoDbCompanion extends UpdateCompanion<ArquivoVideoDb> {
   String toString() {
     return (StringBuffer('ArquivosVideoDbCompanion(')
           ..write('id: $id, ')
-          ..write('path: $path, ')
-          ..write('questaoId: $questaoId, ')
-          ..write('provaId: $provaId')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
+          ..write('path: $path')
           ..write(')'))
         .toString();
   }
@@ -1769,26 +1538,22 @@ class $ArquivosVideoDbTable extends ArquivosVideoDb
   $ArquivosVideoDbTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  final VerificationMeta _questaoLegadoIdMeta =
+      const VerificationMeta('questaoLegadoId');
+  @override
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
+      'questao_legado_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _pathMeta = const VerificationMeta('path');
   @override
-  late final GeneratedColumn<String?> path = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
       'path', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _questaoIdMeta = const VerificationMeta('questaoId');
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
-  @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, path, questaoId, provaId];
+  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
   @override
   String get aliasedName => _alias ?? 'arquivos_video_db';
   @override
@@ -1801,23 +1566,19 @@ class $ArquivosVideoDbTable extends ArquivosVideoDb
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('questao_legado_id')) {
+      context.handle(
+          _questaoLegadoIdMeta,
+          questaoLegadoId.isAcceptableOrUnknown(
+              data['questao_legado_id']!, _questaoLegadoIdMeta));
+    } else if (isInserting) {
+      context.missing(_questaoLegadoIdMeta);
+    }
     if (data.containsKey('path')) {
       context.handle(
           _pathMeta, path.isAcceptableOrUnknown(data['path']!, _pathMeta));
     } else if (isInserting) {
       context.missing(_pathMeta);
-    }
-    if (data.containsKey('questao_id')) {
-      context.handle(_questaoIdMeta,
-          questaoId.isAcceptableOrUnknown(data['questao_id']!, _questaoIdMeta));
-    } else if (isInserting) {
-      context.missing(_questaoIdMeta);
-    }
-    if (data.containsKey('prova_id')) {
-      context.handle(_provaIdMeta,
-          provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
-    } else if (isInserting) {
-      context.missing(_provaIdMeta);
     }
     return context;
   }
@@ -1826,8 +1587,15 @@ class $ArquivosVideoDbTable extends ArquivosVideoDb
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   ArquivoVideoDb map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return ArquivoVideoDb.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ArquivoVideoDb(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      questaoLegadoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id'])!,
+      path: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}path'])!,
+    );
   }
 
   @override
@@ -1838,43 +1606,24 @@ class $ArquivosVideoDbTable extends ArquivosVideoDb
 
 class ArquivoAudioDb extends DataClass implements Insertable<ArquivoAudioDb> {
   final int id;
+  final int questaoLegadoId;
   final String path;
-  final int questaoId;
-  final int provaId;
-  ArquivoAudioDb(
-      {required this.id,
-      required this.path,
-      required this.questaoId,
-      required this.provaId});
-  factory ArquivoAudioDb.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return ArquivoAudioDb(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      path: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}path'])!,
-      questaoId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}questao_id'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
-    );
-  }
+  const ArquivoAudioDb(
+      {required this.id, required this.questaoLegadoId, required this.path});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['questao_legado_id'] = Variable<int>(questaoLegadoId);
     map['path'] = Variable<String>(path);
-    map['questao_id'] = Variable<int>(questaoId);
-    map['prova_id'] = Variable<int>(provaId);
     return map;
   }
 
   ArquivosAudioDbCompanion toCompanion(bool nullToAbsent) {
     return ArquivosAudioDbCompanion(
       id: Value(id),
+      questaoLegadoId: Value(questaoLegadoId),
       path: Value(path),
-      questaoId: Value(questaoId),
-      provaId: Value(provaId),
     );
   }
 
@@ -1883,9 +1632,8 @@ class ArquivoAudioDb extends DataClass implements Insertable<ArquivoAudioDb> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ArquivoAudioDb(
       id: serializer.fromJson<int>(json['id']),
+      questaoLegadoId: serializer.fromJson<int>(json['questaoLegadoId']),
       path: serializer.fromJson<String>(json['path']),
-      questaoId: serializer.fromJson<int>(json['questaoId']),
-      provaId: serializer.fromJson<int>(json['provaId']),
     );
   }
   @override
@@ -1893,86 +1641,71 @@ class ArquivoAudioDb extends DataClass implements Insertable<ArquivoAudioDb> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'questaoLegadoId': serializer.toJson<int>(questaoLegadoId),
       'path': serializer.toJson<String>(path),
-      'questaoId': serializer.toJson<int>(questaoId),
-      'provaId': serializer.toJson<int>(provaId),
     };
   }
 
-  ArquivoAudioDb copyWith(
-          {int? id, String? path, int? questaoId, int? provaId}) =>
+  ArquivoAudioDb copyWith({int? id, int? questaoLegadoId, String? path}) =>
       ArquivoAudioDb(
         id: id ?? this.id,
+        questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
         path: path ?? this.path,
-        questaoId: questaoId ?? this.questaoId,
-        provaId: provaId ?? this.provaId,
       );
   @override
   String toString() {
     return (StringBuffer('ArquivoAudioDb(')
           ..write('id: $id, ')
-          ..write('path: $path, ')
-          ..write('questaoId: $questaoId, ')
-          ..write('provaId: $provaId')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
+          ..write('path: $path')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, path, questaoId, provaId);
+  int get hashCode => Object.hash(id, questaoLegadoId, path);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ArquivoAudioDb &&
           other.id == this.id &&
-          other.path == this.path &&
-          other.questaoId == this.questaoId &&
-          other.provaId == this.provaId);
+          other.questaoLegadoId == this.questaoLegadoId &&
+          other.path == this.path);
 }
 
 class ArquivosAudioDbCompanion extends UpdateCompanion<ArquivoAudioDb> {
   final Value<int> id;
+  final Value<int> questaoLegadoId;
   final Value<String> path;
-  final Value<int> questaoId;
-  final Value<int> provaId;
   const ArquivosAudioDbCompanion({
     this.id = const Value.absent(),
+    this.questaoLegadoId = const Value.absent(),
     this.path = const Value.absent(),
-    this.questaoId = const Value.absent(),
-    this.provaId = const Value.absent(),
   });
   ArquivosAudioDbCompanion.insert({
     this.id = const Value.absent(),
+    required int questaoLegadoId,
     required String path,
-    required int questaoId,
-    required int provaId,
-  })  : path = Value(path),
-        questaoId = Value(questaoId),
-        provaId = Value(provaId);
+  })  : questaoLegadoId = Value(questaoLegadoId),
+        path = Value(path);
   static Insertable<ArquivoAudioDb> custom({
     Expression<int>? id,
+    Expression<int>? questaoLegadoId,
     Expression<String>? path,
-    Expression<int>? questaoId,
-    Expression<int>? provaId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
       if (path != null) 'path': path,
-      if (questaoId != null) 'questao_id': questaoId,
-      if (provaId != null) 'prova_id': provaId,
     });
   }
 
   ArquivosAudioDbCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? path,
-      Value<int>? questaoId,
-      Value<int>? provaId}) {
+      {Value<int>? id, Value<int>? questaoLegadoId, Value<String>? path}) {
     return ArquivosAudioDbCompanion(
       id: id ?? this.id,
+      questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
       path: path ?? this.path,
-      questaoId: questaoId ?? this.questaoId,
-      provaId: provaId ?? this.provaId,
     );
   }
 
@@ -1982,14 +1715,11 @@ class ArquivosAudioDbCompanion extends UpdateCompanion<ArquivoAudioDb> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
+    if (questaoLegadoId.present) {
+      map['questao_legado_id'] = Variable<int>(questaoLegadoId.value);
+    }
     if (path.present) {
       map['path'] = Variable<String>(path.value);
-    }
-    if (questaoId.present) {
-      map['questao_id'] = Variable<int>(questaoId.value);
-    }
-    if (provaId.present) {
-      map['prova_id'] = Variable<int>(provaId.value);
     }
     return map;
   }
@@ -1998,9 +1728,8 @@ class ArquivosAudioDbCompanion extends UpdateCompanion<ArquivoAudioDb> {
   String toString() {
     return (StringBuffer('ArquivosAudioDbCompanion(')
           ..write('id: $id, ')
-          ..write('path: $path, ')
-          ..write('questaoId: $questaoId, ')
-          ..write('provaId: $provaId')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
+          ..write('path: $path')
           ..write(')'))
         .toString();
   }
@@ -2014,26 +1743,22 @@ class $ArquivosAudioDbTable extends ArquivosAudioDb
   $ArquivosAudioDbTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  final VerificationMeta _questaoLegadoIdMeta =
+      const VerificationMeta('questaoLegadoId');
+  @override
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
+      'questao_legado_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _pathMeta = const VerificationMeta('path');
   @override
-  late final GeneratedColumn<String?> path = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
       'path', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _questaoIdMeta = const VerificationMeta('questaoId');
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
-  @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, path, questaoId, provaId];
+  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
   @override
   String get aliasedName => _alias ?? 'arquivos_audio_db';
   @override
@@ -2046,23 +1771,19 @@ class $ArquivosAudioDbTable extends ArquivosAudioDb
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('questao_legado_id')) {
+      context.handle(
+          _questaoLegadoIdMeta,
+          questaoLegadoId.isAcceptableOrUnknown(
+              data['questao_legado_id']!, _questaoLegadoIdMeta));
+    } else if (isInserting) {
+      context.missing(_questaoLegadoIdMeta);
+    }
     if (data.containsKey('path')) {
       context.handle(
           _pathMeta, path.isAcceptableOrUnknown(data['path']!, _pathMeta));
     } else if (isInserting) {
       context.missing(_pathMeta);
-    }
-    if (data.containsKey('questao_id')) {
-      context.handle(_questaoIdMeta,
-          questaoId.isAcceptableOrUnknown(data['questao_id']!, _questaoIdMeta));
-    } else if (isInserting) {
-      context.missing(_questaoIdMeta);
-    }
-    if (data.containsKey('prova_id')) {
-      context.handle(_provaIdMeta,
-          provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
-    } else if (isInserting) {
-      context.missing(_provaIdMeta);
     }
     return context;
   }
@@ -2071,8 +1792,15 @@ class $ArquivosAudioDbTable extends ArquivosAudioDb
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   ArquivoAudioDb map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return ArquivoAudioDb.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ArquivoAudioDb(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      questaoLegadoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id'])!,
+      path: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}path'])!,
+    );
   }
 
   @override
@@ -2084,53 +1812,43 @@ class $ArquivosAudioDbTable extends ArquivosAudioDb
 class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
   final int id;
   final int provaId;
+  final int? questaoLegadoId;
+  final int? ordem;
   final EnumDownloadTipo tipo;
   final EnumDownloadStatus downloadStatus;
   final DateTime dataHoraInicio;
   final DateTime? dataHoraFim;
-  DownloadProvaDb(
+  const DownloadProvaDb(
       {required this.id,
       required this.provaId,
+      this.questaoLegadoId,
+      this.ordem,
       required this.tipo,
       required this.downloadStatus,
       required this.dataHoraInicio,
       this.dataHoraFim});
-  factory DownloadProvaDb.fromData(Map<String, dynamic> data,
-      {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return DownloadProvaDb(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
-      tipo: $DownloadProvasDbTable.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}tipo']))!,
-      downloadStatus: $DownloadProvasDbTable.$converter1.mapToDart(
-          const IntType().mapFromDatabaseResponse(
-              data['${effectivePrefix}download_status']))!,
-      dataHoraInicio: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}data_hora_inicio'])!,
-      dataHoraFim: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}data_hora_fim']),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['prova_id'] = Variable<int>(provaId);
+    if (!nullToAbsent || questaoLegadoId != null) {
+      map['questao_legado_id'] = Variable<int>(questaoLegadoId);
+    }
+    if (!nullToAbsent || ordem != null) {
+      map['ordem'] = Variable<int>(ordem);
+    }
     {
       final converter = $DownloadProvasDbTable.$converter0;
-      map['tipo'] = Variable<int>(converter.mapToSql(tipo)!);
+      map['tipo'] = Variable<int>(converter.toSql(tipo));
     }
     {
       final converter = $DownloadProvasDbTable.$converter1;
-      map['download_status'] =
-          Variable<int>(converter.mapToSql(downloadStatus)!);
+      map['download_status'] = Variable<int>(converter.toSql(downloadStatus));
     }
     map['data_hora_inicio'] = Variable<DateTime>(dataHoraInicio);
     if (!nullToAbsent || dataHoraFim != null) {
-      map['data_hora_fim'] = Variable<DateTime?>(dataHoraFim);
+      map['data_hora_fim'] = Variable<DateTime>(dataHoraFim);
     }
     return map;
   }
@@ -2139,6 +1857,11 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
     return DownloadProvasDbCompanion(
       id: Value(id),
       provaId: Value(provaId),
+      questaoLegadoId: questaoLegadoId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(questaoLegadoId),
+      ordem:
+          ordem == null && nullToAbsent ? const Value.absent() : Value(ordem),
       tipo: Value(tipo),
       downloadStatus: Value(downloadStatus),
       dataHoraInicio: Value(dataHoraInicio),
@@ -2154,6 +1877,8 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
     return DownloadProvaDb(
       id: serializer.fromJson<int>(json['id']),
       provaId: serializer.fromJson<int>(json['provaId']),
+      questaoLegadoId: serializer.fromJson<int?>(json['questaoLegadoId']),
+      ordem: serializer.fromJson<int?>(json['ordem']),
       tipo: serializer.fromJson<EnumDownloadTipo>(json['tipo']),
       downloadStatus:
           serializer.fromJson<EnumDownloadStatus>(json['downloadStatus']),
@@ -2167,6 +1892,8 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'provaId': serializer.toJson<int>(provaId),
+      'questaoLegadoId': serializer.toJson<int?>(questaoLegadoId),
+      'ordem': serializer.toJson<int?>(ordem),
       'tipo': serializer.toJson<EnumDownloadTipo>(tipo),
       'downloadStatus': serializer.toJson<EnumDownloadStatus>(downloadStatus),
       'dataHoraInicio': serializer.toJson<DateTime>(dataHoraInicio),
@@ -2177,23 +1904,31 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
   DownloadProvaDb copyWith(
           {int? id,
           int? provaId,
+          Value<int?> questaoLegadoId = const Value.absent(),
+          Value<int?> ordem = const Value.absent(),
           EnumDownloadTipo? tipo,
           EnumDownloadStatus? downloadStatus,
           DateTime? dataHoraInicio,
-          DateTime? dataHoraFim}) =>
+          Value<DateTime?> dataHoraFim = const Value.absent()}) =>
       DownloadProvaDb(
         id: id ?? this.id,
         provaId: provaId ?? this.provaId,
+        questaoLegadoId: questaoLegadoId.present
+            ? questaoLegadoId.value
+            : this.questaoLegadoId,
+        ordem: ordem.present ? ordem.value : this.ordem,
         tipo: tipo ?? this.tipo,
         downloadStatus: downloadStatus ?? this.downloadStatus,
         dataHoraInicio: dataHoraInicio ?? this.dataHoraInicio,
-        dataHoraFim: dataHoraFim ?? this.dataHoraFim,
+        dataHoraFim: dataHoraFim.present ? dataHoraFim.value : this.dataHoraFim,
       );
   @override
   String toString() {
     return (StringBuffer('DownloadProvaDb(')
           ..write('id: $id, ')
           ..write('provaId: $provaId, ')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
+          ..write('ordem: $ordem, ')
           ..write('tipo: $tipo, ')
           ..write('downloadStatus: $downloadStatus, ')
           ..write('dataHoraInicio: $dataHoraInicio, ')
@@ -2203,14 +1938,16 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, provaId, tipo, downloadStatus, dataHoraInicio, dataHoraFim);
+  int get hashCode => Object.hash(id, provaId, questaoLegadoId, ordem, tipo,
+      downloadStatus, dataHoraInicio, dataHoraFim);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DownloadProvaDb &&
           other.id == this.id &&
           other.provaId == this.provaId &&
+          other.questaoLegadoId == this.questaoLegadoId &&
+          other.ordem == this.ordem &&
           other.tipo == this.tipo &&
           other.downloadStatus == this.downloadStatus &&
           other.dataHoraInicio == this.dataHoraInicio &&
@@ -2220,6 +1957,8 @@ class DownloadProvaDb extends DataClass implements Insertable<DownloadProvaDb> {
 class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   final Value<int> id;
   final Value<int> provaId;
+  final Value<int?> questaoLegadoId;
+  final Value<int?> ordem;
   final Value<EnumDownloadTipo> tipo;
   final Value<EnumDownloadStatus> downloadStatus;
   final Value<DateTime> dataHoraInicio;
@@ -2227,6 +1966,8 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   const DownloadProvasDbCompanion({
     this.id = const Value.absent(),
     this.provaId = const Value.absent(),
+    this.questaoLegadoId = const Value.absent(),
+    this.ordem = const Value.absent(),
     this.tipo = const Value.absent(),
     this.downloadStatus = const Value.absent(),
     this.dataHoraInicio = const Value.absent(),
@@ -2235,6 +1976,8 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   DownloadProvasDbCompanion.insert({
     required int id,
     required int provaId,
+    this.questaoLegadoId = const Value.absent(),
+    this.ordem = const Value.absent(),
     required EnumDownloadTipo tipo,
     required EnumDownloadStatus downloadStatus,
     required DateTime dataHoraInicio,
@@ -2247,14 +1990,18 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   static Insertable<DownloadProvaDb> custom({
     Expression<int>? id,
     Expression<int>? provaId,
-    Expression<EnumDownloadTipo>? tipo,
-    Expression<EnumDownloadStatus>? downloadStatus,
+    Expression<int>? questaoLegadoId,
+    Expression<int>? ordem,
+    Expression<int>? tipo,
+    Expression<int>? downloadStatus,
     Expression<DateTime>? dataHoraInicio,
-    Expression<DateTime?>? dataHoraFim,
+    Expression<DateTime>? dataHoraFim,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (provaId != null) 'prova_id': provaId,
+      if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
+      if (ordem != null) 'ordem': ordem,
       if (tipo != null) 'tipo': tipo,
       if (downloadStatus != null) 'download_status': downloadStatus,
       if (dataHoraInicio != null) 'data_hora_inicio': dataHoraInicio,
@@ -2265,6 +2012,8 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   DownloadProvasDbCompanion copyWith(
       {Value<int>? id,
       Value<int>? provaId,
+      Value<int?>? questaoLegadoId,
+      Value<int?>? ordem,
       Value<EnumDownloadTipo>? tipo,
       Value<EnumDownloadStatus>? downloadStatus,
       Value<DateTime>? dataHoraInicio,
@@ -2272,6 +2021,8 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     return DownloadProvasDbCompanion(
       id: id ?? this.id,
       provaId: provaId ?? this.provaId,
+      questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
+      ordem: ordem ?? this.ordem,
       tipo: tipo ?? this.tipo,
       downloadStatus: downloadStatus ?? this.downloadStatus,
       dataHoraInicio: dataHoraInicio ?? this.dataHoraInicio,
@@ -2288,20 +2039,26 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     if (provaId.present) {
       map['prova_id'] = Variable<int>(provaId.value);
     }
+    if (questaoLegadoId.present) {
+      map['questao_legado_id'] = Variable<int>(questaoLegadoId.value);
+    }
+    if (ordem.present) {
+      map['ordem'] = Variable<int>(ordem.value);
+    }
     if (tipo.present) {
       final converter = $DownloadProvasDbTable.$converter0;
-      map['tipo'] = Variable<int>(converter.mapToSql(tipo.value)!);
+      map['tipo'] = Variable<int>(converter.toSql(tipo.value));
     }
     if (downloadStatus.present) {
       final converter = $DownloadProvasDbTable.$converter1;
       map['download_status'] =
-          Variable<int>(converter.mapToSql(downloadStatus.value)!);
+          Variable<int>(converter.toSql(downloadStatus.value));
     }
     if (dataHoraInicio.present) {
       map['data_hora_inicio'] = Variable<DateTime>(dataHoraInicio.value);
     }
     if (dataHoraFim.present) {
-      map['data_hora_fim'] = Variable<DateTime?>(dataHoraFim.value);
+      map['data_hora_fim'] = Variable<DateTime>(dataHoraFim.value);
     }
     return map;
   }
@@ -2311,6 +2068,8 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     return (StringBuffer('DownloadProvasDbCompanion(')
           ..write('id: $id, ')
           ..write('provaId: $provaId, ')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
+          ..write('ordem: $ordem, ')
           ..write('tipo: $tipo, ')
           ..write('downloadStatus: $downloadStatus, ')
           ..write('dataHoraInicio: $dataHoraInicio, ')
@@ -2328,44 +2087,63 @@ class $DownloadProvasDbTable extends DownloadProvasDb
   $DownloadProvasDbTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
   @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
       'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  final VerificationMeta _questaoLegadoIdMeta =
+      const VerificationMeta('questaoLegadoId');
+  @override
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
+      'questao_legado_id', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  final VerificationMeta _ordemMeta = const VerificationMeta('ordem');
+  @override
+  late final GeneratedColumn<int> ordem = GeneratedColumn<int>(
+      'ordem', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   final VerificationMeta _tipoMeta = const VerificationMeta('tipo');
   @override
-  late final GeneratedColumnWithTypeConverter<EnumDownloadTipo, int?> tipo =
-      GeneratedColumn<int?>('tipo', aliasedName, false,
-              type: const IntType(), requiredDuringInsert: true)
+  late final GeneratedColumnWithTypeConverter<EnumDownloadTipo, int> tipo =
+      GeneratedColumn<int>('tipo', aliasedName, false,
+              type: DriftSqlType.int, requiredDuringInsert: true)
           .withConverter<EnumDownloadTipo>($DownloadProvasDbTable.$converter0);
   final VerificationMeta _downloadStatusMeta =
       const VerificationMeta('downloadStatus');
   @override
-  late final GeneratedColumnWithTypeConverter<EnumDownloadStatus, int?>
-      downloadStatus = GeneratedColumn<int?>(
+  late final GeneratedColumnWithTypeConverter<EnumDownloadStatus, int>
+      downloadStatus = GeneratedColumn<int>(
               'download_status', aliasedName, false,
-              type: const IntType(), requiredDuringInsert: true)
+              type: DriftSqlType.int, requiredDuringInsert: true)
           .withConverter<EnumDownloadStatus>(
               $DownloadProvasDbTable.$converter1);
   final VerificationMeta _dataHoraInicioMeta =
       const VerificationMeta('dataHoraInicio');
   @override
-  late final GeneratedColumn<DateTime?> dataHoraInicio =
-      GeneratedColumn<DateTime?>('data_hora_inicio', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> dataHoraInicio =
+      GeneratedColumn<DateTime>('data_hora_inicio', aliasedName, false,
+          type: DriftSqlType.dateTime, requiredDuringInsert: true);
   final VerificationMeta _dataHoraFimMeta =
       const VerificationMeta('dataHoraFim');
   @override
-  late final GeneratedColumn<DateTime?> dataHoraFim =
-      GeneratedColumn<DateTime?>('data_hora_fim', aliasedName, true,
-          type: const IntType(), requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> dataHoraFim = GeneratedColumn<DateTime>(
+      'data_hora_fim', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, provaId, tipo, downloadStatus, dataHoraInicio, dataHoraFim];
+  List<GeneratedColumn> get $columns => [
+        id,
+        provaId,
+        questaoLegadoId,
+        ordem,
+        tipo,
+        downloadStatus,
+        dataHoraInicio,
+        dataHoraFim
+      ];
   @override
   String get aliasedName => _alias ?? 'download_provas_db';
   @override
@@ -2385,6 +2163,16 @@ class $DownloadProvasDbTable extends DownloadProvasDb
           provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
     } else if (isInserting) {
       context.missing(_provaIdMeta);
+    }
+    if (data.containsKey('questao_legado_id')) {
+      context.handle(
+          _questaoLegadoIdMeta,
+          questaoLegadoId.isAcceptableOrUnknown(
+              data['questao_legado_id']!, _questaoLegadoIdMeta));
+    }
+    if (data.containsKey('ordem')) {
+      context.handle(
+          _ordemMeta, ordem.isAcceptableOrUnknown(data['ordem']!, _ordemMeta));
     }
     context.handle(_tipoMeta, const VerificationResult.success());
     context.handle(_downloadStatusMeta, const VerificationResult.success());
@@ -2409,8 +2197,27 @@ class $DownloadProvasDbTable extends DownloadProvasDb
   Set<GeneratedColumn> get $primaryKey => {id, provaId};
   @override
   DownloadProvaDb map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return DownloadProvaDb.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DownloadProvaDb(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      provaId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}prova_id'])!,
+      questaoLegadoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id']),
+      ordem: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}ordem']),
+      tipo: $DownloadProvasDbTable.$converter0.fromSql(attachedDatabase
+          .options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}tipo'])!),
+      downloadStatus: $DownloadProvasDbTable.$converter1.fromSql(
+          attachedDatabase.options.types.read(
+              DriftSqlType.int, data['${effectivePrefix}download_status'])!),
+      dataHoraInicio: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}data_hora_inicio'])!,
+      dataHoraFim: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}data_hora_fim']),
+    );
   }
 
   @override
@@ -2422,289 +2229,6 @@ class $DownloadProvasDbTable extends DownloadProvasDb
       const EnumIndexConverter<EnumDownloadTipo>(EnumDownloadTipo.values);
   static TypeConverter<EnumDownloadStatus, int> $converter1 =
       const EnumIndexConverter<EnumDownloadStatus>(EnumDownloadStatus.values);
-}
-
-class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
-  final Value<String> codigoEOL;
-  final Value<int> questaoId;
-  final Value<int> provaId;
-  final Value<int?> alternativaId;
-  final Value<String?> resposta;
-  final Value<int> tempoRespostaAluno;
-  final Value<DateTime?> dataHoraResposta;
-  final Value<bool> sincronizado;
-  const RespostaProvaTableCompanion({
-    this.codigoEOL = const Value.absent(),
-    this.questaoId = const Value.absent(),
-    this.provaId = const Value.absent(),
-    this.alternativaId = const Value.absent(),
-    this.resposta = const Value.absent(),
-    this.tempoRespostaAluno = const Value.absent(),
-    this.dataHoraResposta = const Value.absent(),
-    this.sincronizado = const Value.absent(),
-  });
-  RespostaProvaTableCompanion.insert({
-    required String codigoEOL,
-    required int questaoId,
-    required int provaId,
-    this.alternativaId = const Value.absent(),
-    this.resposta = const Value.absent(),
-    required int tempoRespostaAluno,
-    this.dataHoraResposta = const Value.absent(),
-    required bool sincronizado,
-  })  : codigoEOL = Value(codigoEOL),
-        questaoId = Value(questaoId),
-        provaId = Value(provaId),
-        tempoRespostaAluno = Value(tempoRespostaAluno),
-        sincronizado = Value(sincronizado);
-  static Insertable<RespostaProva> custom({
-    Expression<String>? codigoEOL,
-    Expression<int>? questaoId,
-    Expression<int>? provaId,
-    Expression<int?>? alternativaId,
-    Expression<String?>? resposta,
-    Expression<int>? tempoRespostaAluno,
-    Expression<DateTime?>? dataHoraResposta,
-    Expression<bool>? sincronizado,
-  }) {
-    return RawValuesInsertable({
-      if (codigoEOL != null) 'codigo_e_o_l': codigoEOL,
-      if (questaoId != null) 'questao_id': questaoId,
-      if (provaId != null) 'prova_id': provaId,
-      if (alternativaId != null) 'alternativa_id': alternativaId,
-      if (resposta != null) 'resposta': resposta,
-      if (tempoRespostaAluno != null)
-        'tempo_resposta_aluno': tempoRespostaAluno,
-      if (dataHoraResposta != null) 'data_hora_resposta': dataHoraResposta,
-      if (sincronizado != null) 'sincronizado': sincronizado,
-    });
-  }
-
-  RespostaProvaTableCompanion copyWith(
-      {Value<String>? codigoEOL,
-      Value<int>? questaoId,
-      Value<int>? provaId,
-      Value<int?>? alternativaId,
-      Value<String?>? resposta,
-      Value<int>? tempoRespostaAluno,
-      Value<DateTime?>? dataHoraResposta,
-      Value<bool>? sincronizado}) {
-    return RespostaProvaTableCompanion(
-      codigoEOL: codigoEOL ?? this.codigoEOL,
-      questaoId: questaoId ?? this.questaoId,
-      provaId: provaId ?? this.provaId,
-      alternativaId: alternativaId ?? this.alternativaId,
-      resposta: resposta ?? this.resposta,
-      tempoRespostaAluno: tempoRespostaAluno ?? this.tempoRespostaAluno,
-      dataHoraResposta: dataHoraResposta ?? this.dataHoraResposta,
-      sincronizado: sincronizado ?? this.sincronizado,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (codigoEOL.present) {
-      map['codigo_e_o_l'] = Variable<String>(codigoEOL.value);
-    }
-    if (questaoId.present) {
-      map['questao_id'] = Variable<int>(questaoId.value);
-    }
-    if (provaId.present) {
-      map['prova_id'] = Variable<int>(provaId.value);
-    }
-    if (alternativaId.present) {
-      map['alternativa_id'] = Variable<int?>(alternativaId.value);
-    }
-    if (resposta.present) {
-      map['resposta'] = Variable<String?>(resposta.value);
-    }
-    if (tempoRespostaAluno.present) {
-      map['tempo_resposta_aluno'] = Variable<int>(tempoRespostaAluno.value);
-    }
-    if (dataHoraResposta.present) {
-      map['data_hora_resposta'] = Variable<DateTime?>(dataHoraResposta.value);
-    }
-    if (sincronizado.present) {
-      map['sincronizado'] = Variable<bool>(sincronizado.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RespostaProvaTableCompanion(')
-          ..write('codigoEOL: $codigoEOL, ')
-          ..write('questaoId: $questaoId, ')
-          ..write('provaId: $provaId, ')
-          ..write('alternativaId: $alternativaId, ')
-          ..write('resposta: $resposta, ')
-          ..write('tempoRespostaAluno: $tempoRespostaAluno, ')
-          ..write('dataHoraResposta: $dataHoraResposta, ')
-          ..write('sincronizado: $sincronizado')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $RespostaProvaTableTable extends RespostaProvaTable
-    with TableInfo<$RespostaProvaTableTable, RespostaProva> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $RespostaProvaTableTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _codigoEOLMeta = const VerificationMeta('codigoEOL');
-  @override
-  late final GeneratedColumn<String?> codigoEOL = GeneratedColumn<String?>(
-      'codigo_e_o_l', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _questaoIdMeta = const VerificationMeta('questaoId');
-  @override
-  late final GeneratedColumn<int?> questaoId = GeneratedColumn<int?>(
-      'questao_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
-  @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
-      'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _alternativaIdMeta =
-      const VerificationMeta('alternativaId');
-  @override
-  late final GeneratedColumn<int?> alternativaId = GeneratedColumn<int?>(
-      'alternativa_id', aliasedName, true,
-      type: const IntType(), requiredDuringInsert: false);
-  final VerificationMeta _respostaMeta = const VerificationMeta('resposta');
-  @override
-  late final GeneratedColumn<String?> resposta = GeneratedColumn<String?>(
-      'resposta', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
-  final VerificationMeta _tempoRespostaAlunoMeta =
-      const VerificationMeta('tempoRespostaAluno');
-  @override
-  late final GeneratedColumn<int?> tempoRespostaAluno = GeneratedColumn<int?>(
-      'tempo_resposta_aluno', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _dataHoraRespostaMeta =
-      const VerificationMeta('dataHoraResposta');
-  @override
-  late final GeneratedColumn<DateTime?> dataHoraResposta =
-      GeneratedColumn<DateTime?>('data_hora_resposta', aliasedName, true,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
-  final VerificationMeta _sincronizadoMeta =
-      const VerificationMeta('sincronizado');
-  @override
-  late final GeneratedColumn<bool?> sincronizado = GeneratedColumn<bool?>(
-      'sincronizado', aliasedName, false,
-      type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (sincronizado IN (0, 1))');
-  @override
-  List<GeneratedColumn> get $columns => [
-        codigoEOL,
-        questaoId,
-        provaId,
-        alternativaId,
-        resposta,
-        tempoRespostaAluno,
-        dataHoraResposta,
-        sincronizado
-      ];
-  @override
-  String get aliasedName => _alias ?? 'resposta_prova_table';
-  @override
-  String get actualTableName => 'resposta_prova_table';
-  @override
-  VerificationContext validateIntegrity(Insertable<RespostaProva> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('codigo_e_o_l')) {
-      context.handle(
-          _codigoEOLMeta,
-          codigoEOL.isAcceptableOrUnknown(
-              data['codigo_e_o_l']!, _codigoEOLMeta));
-    } else if (isInserting) {
-      context.missing(_codigoEOLMeta);
-    }
-    if (data.containsKey('questao_id')) {
-      context.handle(_questaoIdMeta,
-          questaoId.isAcceptableOrUnknown(data['questao_id']!, _questaoIdMeta));
-    } else if (isInserting) {
-      context.missing(_questaoIdMeta);
-    }
-    if (data.containsKey('prova_id')) {
-      context.handle(_provaIdMeta,
-          provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
-    } else if (isInserting) {
-      context.missing(_provaIdMeta);
-    }
-    if (data.containsKey('alternativa_id')) {
-      context.handle(
-          _alternativaIdMeta,
-          alternativaId.isAcceptableOrUnknown(
-              data['alternativa_id']!, _alternativaIdMeta));
-    }
-    if (data.containsKey('resposta')) {
-      context.handle(_respostaMeta,
-          resposta.isAcceptableOrUnknown(data['resposta']!, _respostaMeta));
-    }
-    if (data.containsKey('tempo_resposta_aluno')) {
-      context.handle(
-          _tempoRespostaAlunoMeta,
-          tempoRespostaAluno.isAcceptableOrUnknown(
-              data['tempo_resposta_aluno']!, _tempoRespostaAlunoMeta));
-    } else if (isInserting) {
-      context.missing(_tempoRespostaAlunoMeta);
-    }
-    if (data.containsKey('data_hora_resposta')) {
-      context.handle(
-          _dataHoraRespostaMeta,
-          dataHoraResposta.isAcceptableOrUnknown(
-              data['data_hora_resposta']!, _dataHoraRespostaMeta));
-    }
-    if (data.containsKey('sincronizado')) {
-      context.handle(
-          _sincronizadoMeta,
-          sincronizado.isAcceptableOrUnknown(
-              data['sincronizado']!, _sincronizadoMeta));
-    } else if (isInserting) {
-      context.missing(_sincronizadoMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {codigoEOL, provaId, questaoId};
-  @override
-  RespostaProva map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RespostaProva(
-      codigoEOL: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}codigo_e_o_l'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
-      questaoId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}questao_id'])!,
-      alternativaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}alternativa_id']),
-      resposta: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}resposta']),
-      sincronizado: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}sincronizado'])!,
-      dataHoraResposta: const DateTimeType().mapFromDatabaseResponse(
-          data['${effectivePrefix}data_hora_resposta']),
-      tempoRespostaAluno: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}tempo_resposta_aluno'])!,
-    );
-  }
-
-  @override
-  $RespostaProvaTableTable createAlias(String alias) {
-    return $RespostaProvaTableTable(attachedDatabase, alias);
-  }
 }
 
 class ProvaAlunoTableCompanion extends UpdateCompanion<ProvaAluno> {
@@ -2767,14 +2291,14 @@ class $ProvaAlunoTableTable extends ProvaAlunoTable
   $ProvaAlunoTableTable(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codigoEOLMeta = const VerificationMeta('codigoEOL');
   @override
-  late final GeneratedColumn<String?> codigoEOL = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> codigoEOL = GeneratedColumn<String>(
       'codigo_e_o_l', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      type: DriftSqlType.string, requiredDuringInsert: true);
   final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
   @override
-  late final GeneratedColumn<int?> provaId = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
       'prova_id', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [codigoEOL, provaId];
   @override
@@ -2809,10 +2333,10 @@ class $ProvaAlunoTableTable extends ProvaAlunoTable
   ProvaAluno map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ProvaAluno(
-      codigoEOL: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}codigo_e_o_l'])!,
-      provaId: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}prova_id'])!,
+      codigoEOL: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}codigo_e_o_l'])!,
+      provaId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}prova_id'])!,
     );
   }
 
@@ -2822,8 +2346,516 @@ class $ProvaAlunoTableTable extends ProvaAlunoTable
   }
 }
 
+class ProvaCadernoTableCompanion extends UpdateCompanion<ProvaCaderno> {
+  final Value<int> questaoId;
+  final Value<int> questaoLegadoId;
+  final Value<int> provaId;
+  final Value<String> caderno;
+  final Value<int> ordem;
+  const ProvaCadernoTableCompanion({
+    this.questaoId = const Value.absent(),
+    this.questaoLegadoId = const Value.absent(),
+    this.provaId = const Value.absent(),
+    this.caderno = const Value.absent(),
+    this.ordem = const Value.absent(),
+  });
+  ProvaCadernoTableCompanion.insert({
+    required int questaoId,
+    required int questaoLegadoId,
+    required int provaId,
+    required String caderno,
+    required int ordem,
+  })  : questaoId = Value(questaoId),
+        questaoLegadoId = Value(questaoLegadoId),
+        provaId = Value(provaId),
+        caderno = Value(caderno),
+        ordem = Value(ordem);
+  static Insertable<ProvaCaderno> custom({
+    Expression<int>? questaoId,
+    Expression<int>? questaoLegadoId,
+    Expression<int>? provaId,
+    Expression<String>? caderno,
+    Expression<int>? ordem,
+  }) {
+    return RawValuesInsertable({
+      if (questaoId != null) 'questao_id': questaoId,
+      if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
+      if (provaId != null) 'prova_id': provaId,
+      if (caderno != null) 'caderno': caderno,
+      if (ordem != null) 'ordem': ordem,
+    });
+  }
+
+  ProvaCadernoTableCompanion copyWith(
+      {Value<int>? questaoId,
+      Value<int>? questaoLegadoId,
+      Value<int>? provaId,
+      Value<String>? caderno,
+      Value<int>? ordem}) {
+    return ProvaCadernoTableCompanion(
+      questaoId: questaoId ?? this.questaoId,
+      questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
+      provaId: provaId ?? this.provaId,
+      caderno: caderno ?? this.caderno,
+      ordem: ordem ?? this.ordem,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (questaoId.present) {
+      map['questao_id'] = Variable<int>(questaoId.value);
+    }
+    if (questaoLegadoId.present) {
+      map['questao_legado_id'] = Variable<int>(questaoLegadoId.value);
+    }
+    if (provaId.present) {
+      map['prova_id'] = Variable<int>(provaId.value);
+    }
+    if (caderno.present) {
+      map['caderno'] = Variable<String>(caderno.value);
+    }
+    if (ordem.present) {
+      map['ordem'] = Variable<int>(ordem.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProvaCadernoTableCompanion(')
+          ..write('questaoId: $questaoId, ')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
+          ..write('provaId: $provaId, ')
+          ..write('caderno: $caderno, ')
+          ..write('ordem: $ordem')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ProvaCadernoTableTable extends ProvaCadernoTable
+    with TableInfo<$ProvaCadernoTableTable, ProvaCaderno> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProvaCadernoTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _questaoIdMeta = const VerificationMeta('questaoId');
+  @override
+  late final GeneratedColumn<int> questaoId = GeneratedColumn<int>(
+      'questao_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  final VerificationMeta _questaoLegadoIdMeta =
+      const VerificationMeta('questaoLegadoId');
+  @override
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
+      'questao_legado_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  final VerificationMeta _provaIdMeta = const VerificationMeta('provaId');
+  @override
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
+      'prova_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  final VerificationMeta _cadernoMeta = const VerificationMeta('caderno');
+  @override
+  late final GeneratedColumn<String> caderno = GeneratedColumn<String>(
+      'caderno', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _ordemMeta = const VerificationMeta('ordem');
+  @override
+  late final GeneratedColumn<int> ordem = GeneratedColumn<int>(
+      'ordem', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [questaoId, questaoLegadoId, provaId, caderno, ordem];
+  @override
+  String get aliasedName => _alias ?? 'prova_caderno_table';
+  @override
+  String get actualTableName => 'prova_caderno_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<ProvaCaderno> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('questao_id')) {
+      context.handle(_questaoIdMeta,
+          questaoId.isAcceptableOrUnknown(data['questao_id']!, _questaoIdMeta));
+    } else if (isInserting) {
+      context.missing(_questaoIdMeta);
+    }
+    if (data.containsKey('questao_legado_id')) {
+      context.handle(
+          _questaoLegadoIdMeta,
+          questaoLegadoId.isAcceptableOrUnknown(
+              data['questao_legado_id']!, _questaoLegadoIdMeta));
+    } else if (isInserting) {
+      context.missing(_questaoLegadoIdMeta);
+    }
+    if (data.containsKey('prova_id')) {
+      context.handle(_provaIdMeta,
+          provaId.isAcceptableOrUnknown(data['prova_id']!, _provaIdMeta));
+    } else if (isInserting) {
+      context.missing(_provaIdMeta);
+    }
+    if (data.containsKey('caderno')) {
+      context.handle(_cadernoMeta,
+          caderno.isAcceptableOrUnknown(data['caderno']!, _cadernoMeta));
+    } else if (isInserting) {
+      context.missing(_cadernoMeta);
+    }
+    if (data.containsKey('ordem')) {
+      context.handle(
+          _ordemMeta, ordem.isAcceptableOrUnknown(data['ordem']!, _ordemMeta));
+    } else if (isInserting) {
+      context.missing(_ordemMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {questaoLegadoId, provaId, caderno};
+  @override
+  ProvaCaderno map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProvaCaderno(
+      provaId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}prova_id'])!,
+      caderno: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}caderno'])!,
+      ordem: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}ordem'])!,
+      questaoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}questao_id'])!,
+      questaoLegadoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id'])!,
+    );
+  }
+
+  @override
+  $ProvaCadernoTableTable createAlias(String alias) {
+    return $ProvaCadernoTableTable(attachedDatabase, alias);
+  }
+}
+
+class QuestaoArquivoTableCompanion extends UpdateCompanion<QuestaoArquivo> {
+  final Value<int> questaoLegadoId;
+  final Value<int> arquivoLegadoId;
+  const QuestaoArquivoTableCompanion({
+    this.questaoLegadoId = const Value.absent(),
+    this.arquivoLegadoId = const Value.absent(),
+  });
+  QuestaoArquivoTableCompanion.insert({
+    required int questaoLegadoId,
+    required int arquivoLegadoId,
+  })  : questaoLegadoId = Value(questaoLegadoId),
+        arquivoLegadoId = Value(arquivoLegadoId);
+  static Insertable<QuestaoArquivo> custom({
+    Expression<int>? questaoLegadoId,
+    Expression<int>? arquivoLegadoId,
+  }) {
+    return RawValuesInsertable({
+      if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
+      if (arquivoLegadoId != null) 'arquivo_legado_id': arquivoLegadoId,
+    });
+  }
+
+  QuestaoArquivoTableCompanion copyWith(
+      {Value<int>? questaoLegadoId, Value<int>? arquivoLegadoId}) {
+    return QuestaoArquivoTableCompanion(
+      questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
+      arquivoLegadoId: arquivoLegadoId ?? this.arquivoLegadoId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (questaoLegadoId.present) {
+      map['questao_legado_id'] = Variable<int>(questaoLegadoId.value);
+    }
+    if (arquivoLegadoId.present) {
+      map['arquivo_legado_id'] = Variable<int>(arquivoLegadoId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuestaoArquivoTableCompanion(')
+          ..write('questaoLegadoId: $questaoLegadoId, ')
+          ..write('arquivoLegadoId: $arquivoLegadoId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $QuestaoArquivoTableTable extends QuestaoArquivoTable
+    with TableInfo<$QuestaoArquivoTableTable, QuestaoArquivo> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $QuestaoArquivoTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _questaoLegadoIdMeta =
+      const VerificationMeta('questaoLegadoId');
+  @override
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
+      'questao_legado_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  final VerificationMeta _arquivoLegadoIdMeta =
+      const VerificationMeta('arquivoLegadoId');
+  @override
+  late final GeneratedColumn<int> arquivoLegadoId = GeneratedColumn<int>(
+      'arquivo_legado_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [questaoLegadoId, arquivoLegadoId];
+  @override
+  String get aliasedName => _alias ?? 'questao_arquivo_table';
+  @override
+  String get actualTableName => 'questao_arquivo_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<QuestaoArquivo> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('questao_legado_id')) {
+      context.handle(
+          _questaoLegadoIdMeta,
+          questaoLegadoId.isAcceptableOrUnknown(
+              data['questao_legado_id']!, _questaoLegadoIdMeta));
+    } else if (isInserting) {
+      context.missing(_questaoLegadoIdMeta);
+    }
+    if (data.containsKey('arquivo_legado_id')) {
+      context.handle(
+          _arquivoLegadoIdMeta,
+          arquivoLegadoId.isAcceptableOrUnknown(
+              data['arquivo_legado_id']!, _arquivoLegadoIdMeta));
+    } else if (isInserting) {
+      context.missing(_arquivoLegadoIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {questaoLegadoId, arquivoLegadoId};
+  @override
+  QuestaoArquivo map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return QuestaoArquivo(
+      questaoLegadoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id'])!,
+      arquivoLegadoId: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}arquivo_legado_id'])!,
+    );
+  }
+
+  @override
+  $QuestaoArquivoTableTable createAlias(String alias) {
+    return $QuestaoArquivoTableTable(attachedDatabase, alias);
+  }
+}
+
+class JobsTableCompanion extends UpdateCompanion<Job> {
+  final Value<String> id;
+  final Value<String> nome;
+  final Value<EnumJobStatus?> statusUltimaExecucao;
+  final Value<DateTime?> ultimaExecucao;
+  final Value<int> intervalo;
+  const JobsTableCompanion({
+    this.id = const Value.absent(),
+    this.nome = const Value.absent(),
+    this.statusUltimaExecucao = const Value.absent(),
+    this.ultimaExecucao = const Value.absent(),
+    this.intervalo = const Value.absent(),
+  });
+  JobsTableCompanion.insert({
+    required String id,
+    required String nome,
+    this.statusUltimaExecucao = const Value.absent(),
+    this.ultimaExecucao = const Value.absent(),
+    required int intervalo,
+  })  : id = Value(id),
+        nome = Value(nome),
+        intervalo = Value(intervalo);
+  static Insertable<Job> custom({
+    Expression<String>? id,
+    Expression<String>? nome,
+    Expression<int>? statusUltimaExecucao,
+    Expression<DateTime>? ultimaExecucao,
+    Expression<int>? intervalo,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (nome != null) 'nome': nome,
+      if (statusUltimaExecucao != null)
+        'status_ultima_execucao': statusUltimaExecucao,
+      if (ultimaExecucao != null) 'ultima_execucao': ultimaExecucao,
+      if (intervalo != null) 'intervalo': intervalo,
+    });
+  }
+
+  JobsTableCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? nome,
+      Value<EnumJobStatus?>? statusUltimaExecucao,
+      Value<DateTime?>? ultimaExecucao,
+      Value<int>? intervalo}) {
+    return JobsTableCompanion(
+      id: id ?? this.id,
+      nome: nome ?? this.nome,
+      statusUltimaExecucao: statusUltimaExecucao ?? this.statusUltimaExecucao,
+      ultimaExecucao: ultimaExecucao ?? this.ultimaExecucao,
+      intervalo: intervalo ?? this.intervalo,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (nome.present) {
+      map['nome'] = Variable<String>(nome.value);
+    }
+    if (statusUltimaExecucao.present) {
+      final converter = $JobsTableTable.$converter0n;
+      map['status_ultima_execucao'] =
+          Variable<int>(converter.toSql(statusUltimaExecucao.value));
+    }
+    if (ultimaExecucao.present) {
+      map['ultima_execucao'] = Variable<DateTime>(ultimaExecucao.value);
+    }
+    if (intervalo.present) {
+      map['intervalo'] = Variable<int>(intervalo.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('nome: $nome, ')
+          ..write('statusUltimaExecucao: $statusUltimaExecucao, ')
+          ..write('ultimaExecucao: $ultimaExecucao, ')
+          ..write('intervalo: $intervalo')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $JobsTableTable extends JobsTable with TableInfo<$JobsTableTable, Job> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobsTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _nomeMeta = const VerificationMeta('nome');
+  @override
+  late final GeneratedColumn<String> nome = GeneratedColumn<String>(
+      'nome', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  final VerificationMeta _statusUltimaExecucaoMeta =
+      const VerificationMeta('statusUltimaExecucao');
+  @override
+  late final GeneratedColumnWithTypeConverter<EnumJobStatus?, int>
+      statusUltimaExecucao = GeneratedColumn<int>(
+              'status_ultima_execucao', aliasedName, true,
+              type: DriftSqlType.int, requiredDuringInsert: false)
+          .withConverter<EnumJobStatus?>($JobsTableTable.$converter0n);
+  final VerificationMeta _ultimaExecucaoMeta =
+      const VerificationMeta('ultimaExecucao');
+  @override
+  late final GeneratedColumn<DateTime> ultimaExecucao =
+      GeneratedColumn<DateTime>('ultima_execucao', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  final VerificationMeta _intervaloMeta = const VerificationMeta('intervalo');
+  @override
+  late final GeneratedColumn<int> intervalo = GeneratedColumn<int>(
+      'intervalo', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, nome, statusUltimaExecucao, ultimaExecucao, intervalo];
+  @override
+  String get aliasedName => _alias ?? 'jobs_table';
+  @override
+  String get actualTableName => 'jobs_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<Job> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('nome')) {
+      context.handle(
+          _nomeMeta, nome.isAcceptableOrUnknown(data['nome']!, _nomeMeta));
+    } else if (isInserting) {
+      context.missing(_nomeMeta);
+    }
+    context.handle(
+        _statusUltimaExecucaoMeta, const VerificationResult.success());
+    if (data.containsKey('ultima_execucao')) {
+      context.handle(
+          _ultimaExecucaoMeta,
+          ultimaExecucao.isAcceptableOrUnknown(
+              data['ultima_execucao']!, _ultimaExecucaoMeta));
+    }
+    if (data.containsKey('intervalo')) {
+      context.handle(_intervaloMeta,
+          intervalo.isAcceptableOrUnknown(data['intervalo']!, _intervaloMeta));
+    } else if (isInserting) {
+      context.missing(_intervaloMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Job map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Job(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      nome: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}nome'])!,
+      statusUltimaExecucao: $JobsTableTable.$converter0n.fromSql(
+          attachedDatabase.options.types.read(DriftSqlType.int,
+              data['${effectivePrefix}status_ultima_execucao'])),
+      ultimaExecucao: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}ultima_execucao']),
+      intervalo: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}intervalo'])!,
+    );
+  }
+
+  @override
+  $JobsTableTable createAlias(String alias) {
+    return $JobsTableTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<EnumJobStatus, int> $converter0 =
+      const EnumIndexConverter<EnumJobStatus>(EnumJobStatus.values);
+  static TypeConverter<EnumJobStatus?, int?> $converter0n =
+      NullAwareTypeConverter.wrap($converter0);
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
-  _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$AppDatabase(QueryExecutor e) : super(e);
+  _$AppDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $ProvasDbTable provasDb = $ProvasDbTable(this);
   late final $QuestoesDbTable questoesDb = $QuestoesDbTable(this);
   late final $AlternativasDbTable alternativasDb = $AlternativasDbTable(this);
@@ -2836,10 +2868,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $ArquivosAudioDbTable(this);
   late final $DownloadProvasDbTable downloadProvasDb =
       $DownloadProvasDbTable(this);
-  late final $RespostaProvaTableTable respostaProvaTable =
-      $RespostaProvaTableTable(this);
   late final $ProvaAlunoTableTable provaAlunoTable =
       $ProvaAlunoTableTable(this);
+  late final $ProvaCadernoTableTable provaCadernoTable =
+      $ProvaCadernoTableTable(this);
+  late final $QuestaoArquivoTableTable questaoArquivoTable =
+      $QuestaoArquivoTableTable(this);
+  late final $JobsTableTable jobsTable = $JobsTableTable(this);
   late final ArquivosVideosDao arquivosVideosDao =
       ArquivosVideosDao(this as AppDatabase);
   late final ArquivosAudioDao arquivosAudioDao =
@@ -2853,11 +2888,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final ContextoProvaDao contextoProvaDao =
       ContextoProvaDao(this as AppDatabase);
   late final ProvaDao provaDao = ProvaDao(this as AppDatabase);
-  late final RespostaProvaDao respostaProvaDao =
-      RespostaProvaDao(this as AppDatabase);
   late final ProvaAlunoDao provaAlunoDao = ProvaAlunoDao(this as AppDatabase);
+  late final ProvaCadernoDao provaCadernoDao =
+      ProvaCadernoDao(this as AppDatabase);
+  late final QuestaoArquivoDao questaoArquivoDao =
+      QuestaoArquivoDao(this as AppDatabase);
+  late final JobDao jobDao = JobDao(this as AppDatabase);
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, dynamic>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         provasDb,
@@ -2868,7 +2907,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         arquivosVideoDb,
         arquivosAudioDb,
         downloadProvasDb,
-        respostaProvaTable,
-        provaAlunoTable
+        provaAlunoTable,
+        provaCadernoTable,
+        questaoArquivoTable,
+        jobsTable
       ];
 }
