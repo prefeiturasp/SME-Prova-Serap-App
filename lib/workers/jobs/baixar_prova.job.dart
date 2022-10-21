@@ -12,7 +12,6 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supercharged_dart/supercharged_dart.dart';
 
 class BaixarProvaJob with Job, Loggable, Database {
   @override
@@ -39,59 +38,54 @@ class BaixarProvaJob with Job, Loggable, Database {
       }
 
       List<ProvaResponseDTO> provasRemoto = provasResponse.body!;
-      List<int> idsProvasRemoto = provasRemoto.filter((e) => !e.isFinalizada()).map((e) => e.id).toList();
+      List<Prova> provasBaixar = [];
 
-      List<Prova> provasLocais = await db.provaDao.listarTodosPorAluno(codigoEol);
-      List<int> idsProvasLocal = provasLocais.filter((e) => !e.isFinalizada()).map((e) => e.id).toList();
+      for (var provaRemoto in provasRemoto) {
+        if (provaRemoto.isFinalizada()) {
+          continue;
+        }
 
-      List<int> idsToDownload = idsProvasRemoto.toSet().difference(idsProvasLocal.toSet()).toList();
+        Prova? provaLocal = await ServiceLocator.get<AppDatabase>().provaDao.obterPorIdNull(
+              provaRemoto.id,
+              provaRemoto.caderno,
+            );
 
-      List<int> idsParaVerificar = idsProvasLocal.toSet().difference(idsToDownload.toSet()).toList();
-
-      for (var idProva in idsParaVerificar) {
-        Prova? provaLocal = await ServiceLocator.get<AppDatabase>().provaDao.obterPorIdNull(idProva);
-
+        // Prova nao esta localmente
         if (provaLocal == null) {
-          continue;
+          provasBaixar.add(provaRemoto.toProvaModel());
         }
 
-        var provaRemoto = provasRemoto.firstWhere((element) => element.id == provaLocal.id);
+        // Verificando provas locais
+        if (provaLocal != null && !provaLocal.isFinalizada()) {
+          // Prova alterada
+          if (!isSameDates(provaLocal.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
+            info('[Prova ${provaLocal.id}] - Prova alterada - Baixando Novamente...');
+            await DownloadManagerStore(provaId: provaLocal.id, caderno: provaLocal.caderno).removerDownloadCompleto();
+            provasBaixar.add(provaRemoto.toProvaModel());
+            continue;
+          }
 
-        // Caderno de questões alterado
-        if (provaLocal.caderno != provaRemoto.caderno) {
-          info("[Prova ${provaLocal.id}] - Caderno alterado ${provaLocal.caderno} -> ${provaRemoto.caderno}");
-          await DownloadManagerStore(provaId: provaLocal.id, caderno: provaLocal.caderno).removerDownloadCompleto();
-          idsToDownload.add(idProva);
-          continue;
-        }
-
-        // Prova alterada
-        if (!isSameDates(provaLocal.ultimaAlteracao, provaRemoto.ultimaAlteracao)) {
-          info('[Prova ${provaLocal.id}] - Prova alterada - Baixando Novamente...');
-          await DownloadManagerStore(provaId: provaLocal.id, caderno: provaLocal.caderno).removerDownloadCompleto();
-          idsToDownload.add(idProva);
-          continue;
-        }
-
-        // Prova não baixada
-        if (provaLocal.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
-          idsToDownload.add(idProva);
-          continue;
+          // Prova não baixada
+          if (provaLocal.downloadStatus != EnumDownloadStatus.CONCLUIDO) {
+            provasBaixar.add(provaRemoto.toProvaModel());
+            continue;
+          }
         }
       }
 
-      info('Encontrado ${idsToDownload.length} provas para baixar em segundo plano');
-      for (var idProva in idsToDownload) {
-        ProvaResponseDTO provaResumo = provasRemoto.firstWhere((element) => element.id == idProva);
-        info('Prova ID: ${provaResumo.id} - ${provaResumo.descricao}');
+      info('Encontrado ${provasBaixar.length} provas para baixar em segundo plano');
+      for (var provaBaixar in provasBaixar) {
+        info('Prova ID: ${provaBaixar.id} - ${provaBaixar.caderno} - ${provaBaixar.descricao}');
       }
 
-      for (var idProva in idsToDownload) {
-        ProvaResponseDTO provaResumo = provasRemoto.firstWhere((element) => element.id == idProva);
-        info('Iniciando download prova $idProva - ${provaResumo.descricao}');
-        await _saveProva(provaResumo);
+      for (var provaBaixar in provasBaixar) {
+        info('Iniciando download prova ${provaBaixar.id} - ${provaBaixar.descricao}');
+        await _saveProva(provaBaixar);
 
-        DownloadManagerStore gerenciadorDownload = DownloadManagerStore(provaId: idProva, caderno: provaResumo.caderno);
+        DownloadManagerStore gerenciadorDownload = DownloadManagerStore(
+          provaId: provaBaixar.id,
+          caderno: provaBaixar.caderno,
+        );
 
         await gerenciadorDownload.iniciarDownload();
 
@@ -102,25 +96,7 @@ class BaixarProvaJob with Job, Loggable, Database {
     }
   }
 
-  _saveProva(ProvaResponseDTO provaResponse) async {
-    var prova = Prova(
-      id: provaResponse.id,
-      descricao: provaResponse.descricao,
-      itensQuantidade: provaResponse.itensQuantidade,
-      dataInicio: provaResponse.dataInicio,
-      dataFim: provaResponse.dataFim,
-      status: provaResponse.status,
-      tempoExecucao: provaResponse.tempoExecucao,
-      tempoExtra: provaResponse.tempoExtra,
-      tempoAlerta: provaResponse.tempoAlerta,
-      dataInicioProvaAluno: provaResponse.dataInicioProvaAluno,
-      dataFimProvaAluno: provaResponse.dataFimProvaAluno,
-      senha: provaResponse.senha,
-      quantidadeRespostaSincronizacao: provaResponse.quantidadeRespostaSincronizacao,
-      ultimaAlteracao: provaResponse.ultimaAlteracao,
-      caderno: provaResponse.caderno,
-    );
-
+  _saveProva(Prova prova) async {
     await ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(prova);
   }
 }

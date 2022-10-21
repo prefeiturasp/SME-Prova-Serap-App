@@ -103,4 +103,8 @@ class QuestaoDao extends DatabaseAccessor<AppDatabase> with _$QuestaoDaoMixin {
   Future<Questao?> getByQuestaoLegadoId(int questaoLegadoId) {
     return (select(questoesDb)..where((t) => t.questaoLegadoId.equals(questaoLegadoId))).getSingleOrNull();
   }
+
+  Future<List<Questao>> getByQuestaoLegadoIds(List<int> legadoIds) async {
+    return (select(questoesDb)..where((t) => t.questaoLegadoId.isIn(legadoIds))).get();
+  }
 }

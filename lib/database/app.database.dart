@@ -89,7 +89,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 21;
+  int get schemaVersion => 22;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -187,6 +187,10 @@ class AppDatabase extends _$AppDatabase {
 
           if (from < 21) {
             await m.createTable(jobsTable);
+          }
+
+          if (from < 22) {
+            await m.alterTable(TableMigration(provasDb));
           }
         });
 
