@@ -37,7 +37,7 @@ class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
     required Prova prova,
   }) : super(id: prova.id, caderno: prova.caderno, prova: prova) {
     downloadManagerStore = DownloadManagerStore(provaStore: this);
-    respostas = ProvaRespostaStore(idProva: id);
+    respostas = ProvaRespostaStore(idProva: id, caderno: prova.caderno);
   }
 }
 
@@ -344,19 +344,21 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   setStatusProva(EnumProvaStatus provaStatus) async {
     prova.status = provaStatus;
     status = provaStatus;
-    await ServiceLocator.get<AppDatabase>().provaDao.atualizarStatus(id, provaStatus);
+    await ServiceLocator.get<AppDatabase>().provaDao.atualizarStatus(id, caderno, provaStatus);
   }
 
   @action
   Future<int> setHoraFimProva(DateTime dataFimProvaAluno) async {
     prova.dataFimProvaAluno = dataFimProvaAluno;
-    return await ServiceLocator.get<AppDatabase>().provaDao.atualizaDataFimProvaAluno(id, dataFimProvaAluno);
+    return await ServiceLocator.get<AppDatabase>().provaDao.atualizaDataFimProvaAluno(id, caderno, dataFimProvaAluno);
   }
 
   @action
   Future<int> setHoraInicioProva(DateTime dataInicioProvaAluno) async {
     prova.dataInicioProvaAluno = dataInicioProvaAluno;
-    return await ServiceLocator.get<AppDatabase>().provaDao.atualizaDataInicioProvaAluno(id, dataInicioProvaAluno);
+    return await ServiceLocator.get<AppDatabase>()
+        .provaDao
+        .atualizaDataInicioProvaAluno(id, caderno, dataInicioProvaAluno);
   }
 
   @action

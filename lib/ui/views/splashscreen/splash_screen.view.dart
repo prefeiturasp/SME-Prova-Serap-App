@@ -94,7 +94,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
     await informarVersao();
 
     try {
-      if (kDebugMode || !(await checkUpdate())) {
+      if (kDebugMode || kProfileMode || !(await checkUpdate())) {
         _navegar();
       }
     } catch (e, stack) {

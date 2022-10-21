@@ -436,29 +436,46 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     await _updateDownloadsStatus(downloads, EnumDownloadStatus.BAIXANDO);
 
     try {
-      Response<List<QuestaoDetalhesLegadoResponseDTO>> response = await apiService.questao
-          .getQuestaoCompletaLegado(idsLegado: downloads.map((e) => e.questaoLegadoId!).toList());
+      var idsParaBaixar = downloads.map((e) => e.questaoLegadoId!).toList();
 
-      if (response.isSuccessful) {
-        List<QuestaoDetalhesLegadoResponseDTO> questoesDTO = response.body!;
+      // verificar se a questao ja esta no banco
+      var questoesDb = await db.questaoDao.getByQuestaoLegadoIds(idsParaBaixar);
 
-        if (questoesDTO.isEmpty) {
-          await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
-          return;
-        }
+      // Grava vincululo das questos que ja estao em banco
+      for (var questaoLocal in questoesDb) {
+        severe("[Prova $provaId - $caderno] - Questao ${questaoLocal.questaoLegadoId} ja existe no banco");
 
-        for (QuestaoDetalhesLegadoResponseDTO questaoDTO in questoesDTO) {
-          DownloadProvaDb download = downloads
-              .where(
-                (element) => element.questaoLegadoId == questaoDTO.questaoLegadoId,
-              )
-              .first;
+        DownloadProvaDb download = downloads
+            .where(
+              (element) => element.questaoLegadoId == questaoLocal.questaoLegadoId,
+            )
+            .first;
 
-          try {
-            // verificar se a questao ja esta no banco
-            var questaoDb = await db.questaoDao.getByQuestaoLegadoId(questaoDTO.questaoLegadoId);
+        await gravarVinculoQuestaoCaderno(download);
+      }
 
-            if (questaoDb == null) {
+      var questoesParaBaixar = idsParaBaixar.toSet().difference(questoesDb.map((e) => e.questaoLegadoId).toSet());
+
+      if (questoesParaBaixar.isNotEmpty) {
+        Response<List<QuestaoDetalhesLegadoResponseDTO>> response =
+            await apiService.questao.getQuestaoCompletaLegado(idsLegado: questoesParaBaixar.toList());
+
+        if (response.isSuccessful) {
+          List<QuestaoDetalhesLegadoResponseDTO> questoesDTO = response.body!;
+
+          if (questoesDTO.isEmpty || questoesParaBaixar.length != questoesDTO.length) {
+            await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
+            return;
+          }
+
+          for (QuestaoDetalhesLegadoResponseDTO questaoDTO in questoesDTO) {
+            DownloadProvaDb download = downloads
+                .where(
+                  (element) => element.questaoLegadoId == questaoDTO.questaoLegadoId,
+                )
+                .first;
+
+            try {
               info("[Prova $provaId - $caderno] - Salvando questao ${questaoDTO.questaoLegadoId}");
 
               await baixarAlternativa(questaoDTO.alternativas, questaoDTO.questaoLegadoId);
@@ -492,35 +509,37 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
               );
 
               await db.questaoDao.inserirOuAtualizar(questao);
-            } else {
-              severe("[Prova $provaId - $caderno] - Questao ${questaoDTO.questaoLegadoId} ja existe no banco");
+
+              await gravarVinculoQuestaoCaderno(download);
+            } catch (e, stack) {
+              await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+              await recordError(e, stack);
             }
-
-            var provaCaderno = ProvaCaderno(
-              questaoId: download.id,
-              questaoLegadoId: questaoDTO.questaoLegadoId,
-              provaId: provaId,
-              caderno: caderno,
-              ordem: download.ordem!,
-            );
-
-            // salva referencia prova caderno questao
-            await db.provaCadernoDao.inserirOuAtualizar(provaCaderno);
-
-            await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
-          } catch (e, stack) {
-            await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
-            await recordError(e, stack);
           }
+        } else {
+          await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
         }
-      } else {
-        await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
       }
     } catch (e, stack) {
       await _updateDownloadsStatus(downloads, EnumDownloadStatus.ERRO);
       severe('[Prova $provaId - $caderno] - ERRO: $e');
       await recordError(e, stack);
     }
+  }
+
+  gravarVinculoQuestaoCaderno(DownloadProvaDb download) async {
+    var provaCaderno = ProvaCaderno(
+      questaoId: download.id,
+      questaoLegadoId: download.questaoLegadoId!,
+      provaId: provaId,
+      caderno: caderno,
+      ordem: download.ordem!,
+    );
+
+    // salva referencia prova caderno questao
+    await db.provaCadernoDao.inserirOuAtualizar(provaCaderno);
+
+    await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
   }
 
   baixarAlternativa(List<AlternativaResponseDTO> alternativas, int questaoLegadoId) async {
@@ -682,12 +701,12 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   }
 
   _updateProvaDownloadStatus(int provaId, EnumDownloadStatus status) async {
-    await db.provaDao.updateDownloadStatus(provaId, status);
+    await db.provaDao.updateDownloadStatus(provaId, caderno, status);
     provaStore?.downloadStatus = status;
   }
 
   _updateProvaDownloadId(int provaId, String downloadId) async {
-    await db.provaDao.updateDownloadId(provaId, downloadId);
+    await db.provaDao.updateDownloadId(provaId, caderno, downloadId);
     provaStore?.prova.idDownload = downloadId;
   }
 

@@ -62,7 +62,7 @@ class FinalizarProvasPendenteJob with Job, Loggable, Database {
         await dbRespostas.respostaProvaDao.removerSincronizadasPorProva(prova.id);
 
         // Atualiza Status da prova
-        await db.provaDao.atualizarStatus(prova.id, EnumProvaStatus.FINALIZADA);
+        await db.provaDao.atualizarStatus(prova.id, prova.caderno, EnumProvaStatus.FINALIZADA);
       } catch (e, stack) {
         await recordError(e, stack);
       }
