@@ -119,7 +119,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
         ..addEntries(mapEntries);
 
       for (var provaStore in provasStore.values) {
-        await carregaProva(provaStore.id, provaStore);
+        await carregaProva(provaStore.id, provaStore.caderno, provaStore);
         provaStore.configure();
       }
     }
@@ -137,10 +137,10 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     provaStore.prova.downloadStatus = EnumDownloadStatus.ATUALIZAR;
   }
 
-  Future<void> carregaProva(int idProva, ProvaStore provaStoreAtualizada) async {
+  Future<void> carregaProva(int idProva, String caderno, ProvaStore provaStoreAtualizada) async {
     var provaDao = ServiceLocator.get<AppDatabase>().provaDao;
 
-    Prova? prova = await provaDao.obterPorIdNull(idProva);
+    Prova? prova = await provaDao.obterPorIdNull(idProva, caderno);
 
     if (prova != null) {
       // atualizar prova com os valores remotos

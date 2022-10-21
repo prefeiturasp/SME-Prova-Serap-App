@@ -518,7 +518,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     return BotaoDefaultWidget(
-      largura: largura,
+      largura: kIsTablet ? largura : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

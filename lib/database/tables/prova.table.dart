@@ -30,5 +30,5 @@ class ProvasDb extends Table {
   TextColumn get caderno => text().withDefault(Constant("A"))();
 
   @override
-  Set<Column> get primaryKey => {id};
+  Set<Column> get primaryKey => {id, caderno};
 }

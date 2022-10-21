@@ -79,9 +79,6 @@ void _entrypointForDriftIsolate(_IsolateStartRequest request) {
   final databaseImpl = NativeDatabase(
     File(request.databasePath),
     logStatements: AppConfigReader.debugSql(),
-    setup: (rawDb) {
-      rawDb.execute('PRAGMA journal_mode=WAL;');
-    },
   );
 
   // We can use DriftIsolate.inCurrent because this function is the entrypoint

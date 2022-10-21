@@ -161,6 +161,7 @@ void main() {
 
     test('Deve baixar a prova pelo job de download antecipado', () async {
       var provaId = 179;
+      var caderno = "A";
 
       when(GetIt.instance.get<UsuarioStore>().isRespondendoProva).thenReturn(false);
 
@@ -170,7 +171,7 @@ void main() {
 
       var db = GetIt.instance.get<AppDatabase>();
 
-      var prova = await db.provaDao.obterPorProvaId(provaId);
+      var prova = await db.provaDao.obterPorProvaId(provaId, caderno);
       var questoes = await db.questaoDao.obterPorProvaId(provaId);
 
       expect(prova, isNotNull);
@@ -212,7 +213,7 @@ void main() {
 
       var db = GetIt.instance.get<AppDatabase>();
 
-      var prova = await db.provaDao.obterPorProvaId(provaId);
+      var prova = await db.provaDao.obterPorProvaId(provaId, caderno);
       expect(prova.downloadStatus, EnumDownloadStatus.ERRO);
 
       var questoes = await db.questaoDao.obterPorProvaId(provaId);

@@ -38,12 +38,12 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     return select(provasDb).get();
   }
 
-  Future<Prova> obterPorProvaId(int provaId) {
-    return (select(provasDb)..where((t) => t.id.equals(provaId))).getSingle();
+  Future<Prova> obterPorProvaId(int provaId, String caderno) {
+    return (select(provasDb)..where((t) => t.id.equals(provaId) & t.caderno.equals(caderno))).getSingle();
   }
 
-  Future<Prova?> obterPorIdNull(int id) {
-    return (select(provasDb)..where((t) => t.id.equals(id))).getSingleOrNull();
+  Future<Prova?> obterPorIdNull(int id, String caderno) {
+    return (select(provasDb)..where((t) => t.id.equals(id) & t.caderno.equals(caderno))).getSingleOrNull();
   }
 
   Future<List<int>> obterIds() {
@@ -73,10 +73,10 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
         .get();
   }
 
-  Future<int> updateDownloadStatus(int provaId, EnumDownloadStatus status) {
+  Future<int> updateDownloadStatus(int provaId, String caderno, EnumDownloadStatus status) {
     return (update(provasDb)
           ..where(
-            (t) => t.id.equals(provaId),
+            (t) => t.id.equals(provaId) & t.caderno.equals(caderno),
           ))
         .write(
       ProvasDbCompanion(
@@ -85,10 +85,10 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     );
   }
 
-  Future<int> updateDownloadId(int provaId, String downloadId) {
+  Future<int> updateDownloadId(int provaId, String caderno, String downloadId) {
     return (update(provasDb)
           ..where(
-            (t) => t.id.equals(provaId),
+            (t) => t.id.equals(provaId) & t.caderno.equals(caderno),
           ))
         .write(
       ProvasDbCompanion(
@@ -97,10 +97,10 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     );
   }
 
-  Future<int> atualizarStatus(int provaId, EnumProvaStatus status) {
+  Future<int> atualizarStatus(int provaId, String caderno, EnumProvaStatus status) {
     return (update(provasDb)
           ..where(
-            (t) => t.id.equals(provaId),
+            (t) => t.id.equals(provaId) & t.caderno.equals(caderno),
           ))
         .write(
       ProvasDbCompanion(
@@ -109,10 +109,10 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     );
   }
 
-  Future<int> atualizaDataFimProvaAluno(int provaId, DateTime dataFimProvaAluno) {
+  Future<int> atualizaDataFimProvaAluno(int provaId, String caderno, DateTime dataFimProvaAluno) {
     return (update(provasDb)
           ..where(
-            (t) => t.id.equals(provaId),
+            (t) => t.id.equals(provaId) & t.caderno.equals(caderno),
           ))
         .write(
       ProvasDbCompanion(
@@ -121,10 +121,10 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     );
   }
 
-  Future<int> atualizaDataInicioProvaAluno(int provaId, DateTime dataInicioProvaAluno) {
+  Future<int> atualizaDataInicioProvaAluno(int provaId, String caderno, DateTime dataInicioProvaAluno) {
     return (update(provasDb)
           ..where(
-            (t) => t.id.equals(provaId),
+            (t) => t.id.equals(provaId) & t.caderno.equals(caderno),
           ))
         .write(
       ProvasDbCompanion(
