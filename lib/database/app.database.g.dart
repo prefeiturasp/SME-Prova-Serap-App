@@ -47,7 +47,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.caderno = const Value.absent(),
   });
   ProvasDbCompanion.insert({
-    this.id = const Value.absent(),
+    required int id,
     required String descricao,
     this.ultimaAtualizacao = const Value.absent(),
     required EnumDownloadStatus downloadStatus,
@@ -65,7 +65,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     required int quantidadeRespostaSincronizacao,
     this.ultimaAlteracao = const Value.absent(),
     this.caderno = const Value.absent(),
-  })  : descricao = Value(descricao),
+  })  : id = Value(id),
+        descricao = Value(descricao),
         downloadStatus = Value(downloadStatus),
         itensQuantidade = Value(itensQuantidade),
         tempoExecucao = Value(tempoExecucao),
@@ -261,7 +262,7 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: false);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   final VerificationMeta _descricaoMeta = const VerificationMeta('descricao');
   @override
   late final GeneratedColumn<String> descricao = GeneratedColumn<String>(
@@ -399,6 +400,8 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
     }
     if (data.containsKey('descricao')) {
       context.handle(_descricaoMeta,
@@ -501,7 +504,7 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {id, caderno};
   @override
   Prova map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';

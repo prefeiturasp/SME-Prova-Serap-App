@@ -89,7 +89,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 21;
+  int get schemaVersion => 22;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -166,27 +166,33 @@ class AppDatabase extends _$AppDatabase {
             await m.create(provaCadernoTable);
             await m.create(questaoArquivoTable);
 
-            await m.addColumn(questoesDb, questoesDb.questaoLegadoId);
-            await m.alterTable(TableMigration(questoesDb));
+            await m.drop(provasDb);
+            await m.create(provasDb);
 
-            await m.addColumn(alternativasDb, alternativasDb.questaoLegadoId);
-            await m.alterTable(TableMigration(alternativasDb));
+            await m.drop(questoesDb);
+            await m.create(questoesDb);
 
-            await m.addColumn(arquivosVideoDb, arquivosVideoDb.questaoLegadoId);
-            await m.alterTable(TableMigration(arquivosVideoDb));
+            await m.drop(alternativasDb);
+            await m.create(alternativasDb);
 
-            await m.addColumn(arquivosAudioDb, arquivosAudioDb.questaoLegadoId);
-            await m.alterTable(TableMigration(arquivosAudioDb));
+            await m.drop(arquivosVideoDb);
+            await m.create(arquivosVideoDb);
 
-            await m.addColumn(downloadProvasDb, downloadProvasDb.questaoLegadoId);
-            await m.addColumn(downloadProvasDb, downloadProvasDb.ordem);
-            await m.alterTable(TableMigration(downloadProvasDb));
+            await m.drop(arquivosAudioDb);
+            await m.create(arquivosAudioDb);
+
+            await m.drop(downloadProvasDb);
+            await m.create(downloadProvasDb);
 
             await m.alterTable(TableMigration(arquivosDb));
           }
 
           if (from < 21) {
             await m.createTable(jobsTable);
+          }
+
+          if (from < 22) {
+            await m.alterTable(TableMigration(provasDb));
           }
         });
 

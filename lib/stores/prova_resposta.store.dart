@@ -25,7 +25,12 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   @observable
   int idProva;
 
-  _ProvaRespostaStoreBase({required this.idProva});
+  String caderno;
+
+  _ProvaRespostaStoreBase({
+    required this.idProva,
+    required this.caderno,
+  });
 
   @observable
   String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
@@ -98,7 +103,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
       return;
     }
 
-    var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaId(idProva);
+    var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaId(idProva, caderno);
 
     if (respostasNaoSincronizadas.length == prova.quantidadeRespostaSincronizacao || force) {
       List<QuestaoRespostaDTO> respostas = [];

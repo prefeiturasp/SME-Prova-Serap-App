@@ -132,7 +132,6 @@ class Worker with Loggable, Database {
         frequency: config.frequency,
         constraints: config.constraints,
         initialDelay: Duration(minutes: 1),
-        existingWorkPolicy: ExistingWorkPolicy.replace,
         backoffPolicy: BackoffPolicy.linear,
       );
     } else {
