@@ -75,7 +75,6 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
     if (listProvas.isEmpty) {
       return Center(
         child: SizedBox(
-          height: MediaQuery.of(context).size.height - 400,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,

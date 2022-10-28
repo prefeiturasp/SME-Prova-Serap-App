@@ -1,8 +1,10 @@
 import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/dtos/prova.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart';
 import 'package:appserap/dtos/questao_detalhes_legado.response.dto.dart';
 import 'package:appserap/enums/download_status.enum.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -11,10 +13,10 @@ import 'package:chopper/chopper.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart' as mobx;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../fixtures/fixture_reader.dart';
@@ -38,7 +40,7 @@ void main() {
 
   group('Download -', () {
     mocksUsuarioStore() {
-      when(GetIt.instance.get<UsuarioStore>().deficiencias).thenReturn(mobx.ObservableList());
+      when(ServiceLocator.get<UsuarioStore>().deficiencias).thenReturn(mobx.ObservableList());
     }
 
     mocksProvaService() {
@@ -61,7 +63,7 @@ void main() {
       }
 
       var provaServiceMock = MockProvaService();
-      when(GetIt.instance.get<ApiService>().prova).thenAnswer((_) => provaServiceMock);
+      when(ServiceLocator.get<ApiService>().prova).thenAnswer((_) => provaServiceMock);
 
       when(provaServiceMock.getResumoProvaCaderno(idProva: anyNamed('idProva'), caderno: anyNamed('caderno')))
           .thenAnswer((_) => getProvaDetalhesCadernoResponseDTO());
@@ -93,7 +95,7 @@ void main() {
 
       var downloadServiceMock = MockDownloadService();
 
-      when(GetIt.instance.get<ApiService>().download).thenAnswer((_) => downloadServiceMock);
+      when(ServiceLocator.get<ApiService>().download).thenAnswer((_) => downloadServiceMock);
 
       when(downloadServiceMock.informarDownloadConcluido(
         provaId: anyNamed("provaId"),
@@ -105,8 +107,17 @@ void main() {
       )).thenAnswer((realInvocation) => getInformarDownloadResponse());
     }
 
+    setUp(() {
+      Logger.root.level = Level.FINER;
+
+      Logger.root.onRecord.listen((rec) {
+        print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
+      });
+    });
+
     setUp(() async {
       registerInjection<AppDatabase>(AppDatabase.executor(NativeDatabase.memory()));
+      registerInjection<RespostasDatabase>(RespostasDatabase.executor(NativeDatabase.memory()));
 
       registerInjection<ApiService>(MockApiService());
       registerInjection<ProvaService>(MockProvaService());
@@ -116,7 +127,7 @@ void main() {
 
       registerInjection<http.BaseResponse>(MockBaseResponse());
 
-      registerInjection<SharedPreferences>(await SharedPreferences.getInstance());
+      registerInjectionAsync<SharedPreferences>(() => SharedPreferences.getInstance());
 
       mocksUsuarioStore();
 
@@ -125,13 +136,14 @@ void main() {
     });
 
     tearDown(() {
-      unregisterInjection<AppDatabase>();
+      unregisterInjection<AppDatabase>(disposingFunction: (p0) => p0.close());
+      unregisterInjection<RespostasDatabase>(disposingFunction: (p0) => p0.close());
     });
 
     test('Deve fazer o download da prova', () async {
       var questaoServiceMock = MockQuestaoService();
 
-      when(GetIt.instance.get<ApiService>().questao).thenAnswer((_) => questaoServiceMock);
+      when(ServiceLocator.get<ApiService>().questao).thenAnswer((_) => questaoServiceMock);
 
       when(questaoServiceMock.getQuestaoCompletaLegado(idsLegado: [21138, 21139]))
           .thenAnswer((_) => (getQuestaoCompletaLegado([21138, 21139])));
@@ -152,37 +164,63 @@ void main() {
 
       await downloadManagerStore.iniciarDownload();
 
-      var db = GetIt.instance.get<AppDatabase>();
+      var db = ServiceLocator.get<AppDatabase>();
 
       var questoes = await db.questaoDao.obterPorProvaId(provaId);
 
       expect(questoes.length, 5);
     });
 
+    mockQuestoes(MockQuestaoService mock) {
+      when(ServiceLocator.get<ApiService>().questao).thenAnswer((_) => mock);
+
+      when(
+        mock.getQuestaoCompletaLegado(idsLegado: [21138, 21139]),
+      ).thenAnswer(
+        (_) => (getQuestaoCompletaLegado([21138, 21139])),
+      );
+
+      when(
+        mock.getQuestaoCompletaLegado(idsLegado: [21137, 21313]),
+      ).thenAnswer(
+        (_) => (getQuestaoCompletaLegado([21137, 21313])),
+      );
+
+      when(
+        mock.getQuestaoCompletaLegado(idsLegado: [21312]),
+      ).thenAnswer(
+        (_) => (getQuestaoCompletaLegado([21312])),
+      );
+    }
+
     test('Deve baixar a prova pelo job de download antecipado', () async {
       var provaId = 179;
       var caderno = "A";
 
-      when(GetIt.instance.get<UsuarioStore>().isRespondendoProva).thenReturn(false);
+      var questaoServiceMock = MockQuestaoService();
+      mockQuestoes(questaoServiceMock);
 
-      GetIt.instance.get<SharedPreferences>().setString('token', UserFixture().autenticacaoResponse.token);
+      when(ServiceLocator.get<UsuarioStore>().isRespondendoProva).thenReturn(false);
+
+      var sp = await ServiceLocator.getAsync<SharedPreferences>();
+      sp.setString('token', UserFixture().autenticacaoResponse.token);
 
       await BaixarProvaJob().run();
 
-      var db = GetIt.instance.get<AppDatabase>();
+      var db = ServiceLocator.get<AppDatabase>();
 
       var prova = await db.provaDao.obterPorProvaId(provaId, caderno);
-      var questoes = await db.questaoDao.obterPorProvaId(provaId);
-
       expect(prova, isNotNull);
       expect(prova.id, provaId);
+
+      var questoes = await db.questaoDao.obterPorProvaId(provaId);
       expect(questoes.length, 5);
     });
 
     test('Deve retornar erro ao tentar baixar uma questao com imagem que tenha link da imagem invalido', () async {
       var questaoServiceMock = MockQuestaoService();
 
-      when(GetIt.instance.get<ApiService>().questao).thenAnswer((_) => questaoServiceMock);
+      when(ServiceLocator.get<ApiService>().questao).thenAnswer((_) => questaoServiceMock);
 
       when(questaoServiceMock.getQuestaoCompletaLegado(idsLegado: [21138, 21139]))
           .thenAnswer((_) => (getQuestaoCompletaLegado([21138, 21139])));
@@ -196,9 +234,9 @@ void main() {
       int provaId = 179;
       String caderno = 'A';
 
-      var provas = await GetIt.instance.get<ApiService>().prova.getProvas();
+      var provas = await ServiceLocator.get<ApiService>().prova.getProvas();
 
-      GetIt.instance.get<AppDatabase>().provaDao.inserirOuAtualizar(provas.body!.first.toProvaModel());
+      ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(provas.body!.first.toProvaModel());
 
       DownloadManagerStore downloadManagerStore = DownloadManagerStore(
         provaId: provaId,
@@ -211,7 +249,7 @@ void main() {
 
       await downloadManagerStore.iniciarDownload();
 
-      var db = GetIt.instance.get<AppDatabase>();
+      var db = ServiceLocator.get<AppDatabase>();
 
       var prova = await db.provaDao.obterPorProvaId(provaId, caderno);
       expect(prova.downloadStatus, EnumDownloadStatus.ERRO);

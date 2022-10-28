@@ -9,7 +9,6 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 import '../main.ioc.dart';
@@ -19,9 +18,6 @@ part 'prova_resposta.store.g.dart';
 class ProvaRespostaStore = _ProvaRespostaStoreBase with _$ProvaRespostaStore;
 
 abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
-  final _service = GetIt.I.get<ApiService>().questaoResposta;
-  final _serviceProva = GetIt.I.get<ApiService>().prova;
-
   @observable
   int idProva;
 
@@ -49,7 +45,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
     fine('[Prova $idProva] - Carregando respostas da prova');
 
     try {
-      var respostaBanco = await _serviceProva.getRespostasPorProvaId(idProva: idProva);
+      var respostaBanco = await ServiceLocator.get<ApiService>().prova.getRespostasPorProvaId(idProva: idProva);
 
       if (respostaBanco.isSuccessful) {
         var questoesResponse = respostaBanco.body!;
@@ -123,10 +119,10 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
       }
 
       try {
-        var response = await _service.postResposta(
-          chaveAPI: AppConfigReader.getChaveApi(),
-          respostas: respostas,
-        );
+        var response = await ServiceLocator.get<ApiService>().questaoResposta.postResposta(
+              chaveAPI: AppConfigReader.getChaveApi(),
+              respostas: respostas,
+            );
 
         if (response.isSuccessful) {
           for (var resposta in respostasNaoSincronizadas) {

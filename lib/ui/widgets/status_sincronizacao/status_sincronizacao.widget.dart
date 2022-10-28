@@ -41,10 +41,6 @@ class StatusSincronizacao extends StatelessWidget {
               child: Observer(builder: (_) {
                 var jobStatus = jobStore.statusJob[JobsEnum.SINCRONIZAR_RESPOSTAS];
 
-                if (kDebugMode) {
-                  print('Status - $jobStatus');
-                }
-
                 var status = Icon(
                   Icons.check_circle_rounded,
                   color: Colors.green,

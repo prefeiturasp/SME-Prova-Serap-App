@@ -130,7 +130,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  removerProva(ProvaStore provaStore, [bool manterRegistroProva = false]) async {
+  Future<void> removerProva(ProvaStore provaStore, [bool manterRegistroProva = false]) async {
     await provaStore.removerDownload(manterRegistroProva);
 
     provaStore.downloadStatus = EnumDownloadStatus.ATUALIZAR;

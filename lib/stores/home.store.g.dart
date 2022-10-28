@@ -53,7 +53,7 @@ mixin _$HomeStore on _HomeStoreBase, Store {
       AsyncAction('_HomeStoreBase.removerProva', context: context);
 
   @override
-  Future removerProva(ProvaStore provaStore,
+  Future<void> removerProva(ProvaStore provaStore,
       [bool manterRegistroProva = false]) {
     return _$removerProvaAsyncAction
         .run(() => super.removerProva(provaStore, manterRegistroProva));
