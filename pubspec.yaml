@@ -44,7 +44,7 @@ dependencies:
   retry: ^3.1.0
 
   # Render html
-  flutter_html: ^2.2.1
+  flutter_html: ^3.0.0-alpha.6
 
   # Firebase
   firebase_messaging: ^13.1.0
