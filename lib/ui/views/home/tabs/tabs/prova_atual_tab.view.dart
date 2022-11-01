@@ -421,6 +421,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildSemConexao(ProvaStore provaStore) {
     return SizedBox(
+      key: Key('card-sem-conexao'),
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -462,6 +463,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildPausado(ProvaStore provaStore) {
     return SizedBox(
+      key: Key('card-download-pausado'),
       width: 350,
       height: 40,
       child: Column(
@@ -544,6 +546,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildProvaPendente(ProvaStore provaStore) {
     return SizedBox(
+      key: Key('card-prova-pendente'),
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,

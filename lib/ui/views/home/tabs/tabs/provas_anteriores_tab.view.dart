@@ -74,6 +74,7 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
 
     if (listProvas.isEmpty) {
       return Center(
+        key: Key('sem-itens-finalizados'),
         child: SizedBox(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,6 +116,7 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
     return Padding(
       padding: getPadding(EdgeInsets.symmetric(horizontal: 8)),
       child: Card(
+        key: Key('card-prova-finalizada'),
         shape: RoundedRectangleBorder(
           side: BorderSide(color: TemaUtil.cinza, width: 1),
           borderRadius: BorderRadius.circular(12),

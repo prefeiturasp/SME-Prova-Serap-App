@@ -63,3 +63,4 @@ google-services.json
 /android/app/release
 .vscode/settings.json
 *.apk
+coverage/lcov.info
