@@ -1,6 +1,7 @@
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:clock/clock.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
 class HomeViewUtil {
@@ -8,7 +9,9 @@ class HomeViewUtil {
     bool provaVigente = false;
 
     if (provaStore.prova.dataFim != null) {
-      DateTime dataAtual = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      DateTime agora = clock.now();
+
+      DateTime dataAtual = DateTime(agora.year, agora.month, agora.day);
 
       DateTime dataInicio = DateTime(
         provaStore.prova.dataInicio.year,
@@ -33,10 +36,10 @@ class HomeViewUtil {
   }
 
   bool verificaProvaDisponivel(ProvaStore provaStore) {
-    bool isFinalDeSemanaEPossuiTempo = isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
-    bool isFinalDeSemanaENaoPossuiTempo = isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
-    bool naoEFinalDeSemanaEPossuiTempo = !isFinalDeSemana(DateTime.now()) && provaStore.possuiTempoExecucao();
-    bool naoEFinalDeSemanaENaoPossuiTempo = !isFinalDeSemana(DateTime.now()) && !provaStore.possuiTempoExecucao();
+    bool isFinalDeSemanaEPossuiTempo = isFinalDeSemana(clock.now()) && provaStore.possuiTempoExecucao();
+    bool isFinalDeSemanaENaoPossuiTempo = isFinalDeSemana(clock.now()) && !provaStore.possuiTempoExecucao();
+    bool naoEFinalDeSemanaEPossuiTempo = !isFinalDeSemana(clock.now()) && provaStore.possuiTempoExecucao();
+    bool naoEFinalDeSemanaENaoPossuiTempo = !isFinalDeSemana(clock.now()) && !provaStore.possuiTempoExecucao();
 
     bool podeIniciarProva = !isFinalDeSemanaEPossuiTempo ||
         isFinalDeSemanaENaoPossuiTempo ||
@@ -49,7 +52,7 @@ class HomeViewUtil {
   bool verificaProvaTurno(ProvaStore provaStore, UsuarioStore usuarioStore) {
     bool vigente = false;
 
-    DateTime horaAtual = DateTime.now();
+    DateTime horaAtual = clock.now();
     if (usuarioStore.fimTurno != 0) {
       vigente = horaAtual.hour >= usuarioStore.inicioTurno && horaAtual.hour < usuarioStore.fimTurno;
     } else {

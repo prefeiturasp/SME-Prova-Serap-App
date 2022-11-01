@@ -15,6 +15,7 @@ class BotaoDefaultWidget extends StatelessWidget {
   final temaStore = GetIt.I.get<TemaStore>();
 
   BotaoDefaultWidget({
+    super.key,
     this.textoBotao,
     this.largura,
     this.onPressed,

@@ -38,7 +38,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   @observable
   String? dispositivoId;
 
-  setup() async {
+  Future<void> setup() async {
     _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
     await obterVersaoDoApp();
   }

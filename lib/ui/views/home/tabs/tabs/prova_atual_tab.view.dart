@@ -68,6 +68,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
           if (store.carregando) {
             return Center(
+              key: Key('carregando'),
               child: CircularProgressIndicator(),
             );
           }
@@ -88,8 +89,8 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
     if (listProvas.isEmpty) {
       return Center(
+        key: Key("sem-itens"),
         child: SizedBox(
-          height: MediaQuery.of(context).size.height - 400,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -117,6 +118,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     return ListView.builder(
+      key: Key("lista-provas"),
       itemCount: listProvas.length,
       itemBuilder: (_, index) {
         var key = listProvas.keys.toList()[index];
@@ -130,6 +132,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     return Padding(
       padding: getPadding(EdgeInsets.symmetric(horizontal: 8)),
       child: Card(
+        key: Key("card-prova"),
         shape: RoundedRectangleBorder(
           side: BorderSide(color: TemaUtil.cinza, width: 1),
           borderRadius: BorderRadius.circular(12),
@@ -418,6 +421,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildSemConexao(ProvaStore provaStore) {
     return SizedBox(
+      key: Key('card-sem-conexao'),
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -459,6 +463,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildPausado(ProvaStore provaStore) {
     return SizedBox(
+      key: Key('card-download-pausado'),
       width: 350,
       height: 40,
       child: Column(
@@ -518,6 +523,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     return BotaoDefaultWidget(
+      key: Key('botao-baixar-prova'),
       largura: kIsTablet ? largura : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -540,6 +546,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildProvaPendente(ProvaStore provaStore) {
     return SizedBox(
+      key: Key('card-prova-pendente'),
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -574,13 +581,16 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildIniciarProva(ProvaStore provaStore) {
     String texto = '';
+    String key = '';
 
     switch (provaStore.prova.status) {
       case EnumProvaStatus.INICIADA:
         texto = "CONTINUAR PROVA";
+        key = "botao-prova-continuar";
         break;
       default:
         texto = "INICIAR PROVA";
+        key = "botao-prova-iniciar";
     }
 
     var tamanhoFonte = 14.0;
@@ -592,6 +602,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     return BotaoDefaultWidget(
+      key: Key(key),
       largura: kIsTablet ? 256 : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -780,6 +791,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildProvaTurnoIndisponivel(ProvaStore provaStore) {
     return SizedBox(
+      key: Key("prova-indiponivel-turno"),
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
