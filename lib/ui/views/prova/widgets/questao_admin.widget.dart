@@ -4,18 +4,17 @@ import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/tema.store.dart';
+import 'package:appserap/ui/views/prova/prova.view.util.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
-import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:photo_view/photo_view.dart';
 
-class QuestaoAdminWidget extends StatelessWidget {
+class QuestaoAdminWidget extends StatelessWidget with ProvaViewUtil {
   final TemaStore temaStore = ServiceLocator.get<TemaStore>();
   final controller = HtmlEditorController();
 
@@ -34,115 +33,28 @@ class QuestaoAdminWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Html(
-          data: tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO),
-          style: {
-            '*': Style.fromTextStyle(
-              TemaUtil.temaTextoHtmlPadrao.copyWith(
-                fontSize: temaStore.tTexto16,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-              ),
-            ),
-            'span': Style.fromTextStyle(
-              TextStyle(
-                  fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  color: TemaUtil.pretoSemFoco3),
-            ),
-          },
-          onImageTap: (url, _, attributes, element) {
-            _exibirImagem(context, url!);
-          },
-        ),
+        Observer(builder: (_) {
+          return renderizarHtml(
+            context,
+            questao.titulo,
+            imagens.map((e) => e.toArquivoModel()).toList(),
+            EnumTipoImagem.QUESTAO,
+            TratamentoImagemEnum.URL,
+          );
+        }),
         SizedBox(height: 8),
-        Html(
-          data: tratarArquivos(questao.descricao, imagens, EnumTipoImagem.QUESTAO),
-          style: {
-            '*': Style.fromTextStyle(
-              TemaUtil.temaTextoHtmlPadrao.copyWith(
-                fontSize: temaStore.tTexto16,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-              ),
-            ),
-            'span': Style.fromTextStyle(
-              TextStyle(
-                fontSize: temaStore.tTexto16,
-                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                color: TemaUtil.pretoSemFoco3,
-              ),
-            ),
-          },
-          onImageTap: (url, _, attributes, element) {
-            _exibirImagem(context, url!);
-          },
-        ),
+        Observer(builder: (_) {
+          return renderizarHtml(
+            context,
+            questao.descricao,
+            imagens.map((e) => e.toArquivoModel()).toList(),
+            EnumTipoImagem.QUESTAO,
+            TratamentoImagemEnum.URL,
+          );
+        }),
         SizedBox(height: 16),
         _buildResposta(),
       ],
-    );
-  }
-
-  Future<T?> _exibirImagem<T>(BuildContext context, String urlImagem) async {
-    return await showDialog<T>(
-      context: context,
-      builder: (_) {
-        var background = Colors.transparent;
-
-        return AlertDialog(
-          insetPadding: EdgeInsets.zero,
-          backgroundColor: Colors.black.withOpacity(0.5),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 50),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: PhotoView(
-                      backgroundDecoration: BoxDecoration(color: background),
-                      imageProvider: NetworkImage(urlImagem),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: TextButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context, rootNavigator: true).pop('dialog');
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Icon(Icons.close, color: TemaUtil.laranja02),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Observer(
-                          builder: (_) {
-                            return Text(
-                              'Fechar',
-                              style: TemaUtil.temaTextoFecharImagem.copyWith(
-                                fontSize: temaStore.tTexto18,
-                                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -220,17 +132,15 @@ class QuestaoAdminWidget extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Html(
-                    data: tratarArquivos(descricao, imagens, EnumTipoImagem.ALTERNATIVA),
-                    style: {
-                      '*': Style.fromTextStyle(
-                        TemaUtil.temaTextoPadrao.copyWith(
-                          fontSize: temaStore.tTexto16,
-                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                        ),
-                      )
-                    },
-                  ),
+                  child: Observer(builder: (context) {
+                    return renderizarHtml(
+                      context,
+                      descricao,
+                      imagens.map((e) => e.toArquivoModel()).toList(),
+                      EnumTipoImagem.ALTERNATIVA,
+                      TratamentoImagemEnum.URL,
+                    );
+                  }),
                 ),
               ],
             ),
@@ -238,25 +148,5 @@ class QuestaoAdminWidget extends StatelessWidget {
         );
       },
     );
-  }
-
-  String tratarArquivos(String? texto, List<ArquivoResponseDTO> arquivos, EnumTipoImagem tipoImagem) {
-    if (texto == null) {
-      return '';
-    }
-
-    if (tipoImagem == EnumTipoImagem.QUESTAO) {
-      texto = texto.replaceAllMapped(RegExp(r'(<img[^>]*>)'), (match) {
-        return '<div style="text-align: center; position:relative">${match.group(0)}<p><span>Toque na imagem para ampliar</span></p></div>';
-      });
-    }
-
-    for (var arquivo in arquivos) {
-      texto = texto!.replaceAll("#${arquivo.legadoId}#", arquivo.caminho.replaceFirst('http://', 'https://'));
-    }
-
-    texto = texto!.replaceAll("#0#", AssetsUtil.notfound);
-
-    return texto;
   }
 }
