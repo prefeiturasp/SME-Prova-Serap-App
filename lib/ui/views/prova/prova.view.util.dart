@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/main.ioc.dart';
@@ -6,11 +10,18 @@ import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/prova.store.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/assets.util.dart';
+import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_all/flutter_html_all.dart';
 
 abstract class ProvaViewUtil {
   buildTratamentoImagem(ProvaStore provaStore, List<Arquivo> imagens, Questao questao, List<Alternativa> alternativas) {
@@ -123,5 +134,138 @@ abstract class ProvaViewUtil {
     texto = texto!.replaceAll("#0#", AssetsUtil.notfound);
 
     return texto;
+  }
+
+  renderizarHtml(
+    BuildContext context,
+    String? texto,
+    List<Arquivo> imagens,
+    EnumTipoImagem tipoImagem,
+    TratamentoImagemEnum tratamentoImagem,
+  ) {
+    TemaStore temaStore = ServiceLocator.get<TemaStore>();
+    CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';
+
+    return Html(
+      customRenders: {
+        // Audio e vídeo
+        audioMatcher(): audioRender(),
+        videoMatcher(): videoRender(),
+        // Iframe
+        iframeMatcher(): iframeRender(),
+        // Math
+        mathMatcher(): mathRender(),
+        // Imagem
+        svgTagMatcher(): svgTagRender(),
+        svgDataUriMatcher(): svgDataImageRender(),
+        svgAssetUriMatcher(): svgAssetImageRender(),
+        svgNetworkSourceMatcher(): svgNetworkImageRender(),
+        // Tabela
+        tableMatcher(): tableRender(),
+        // Tex
+        texMatcher(): CustomRender.widget(
+          widget: (context, buildChildren) => Math.tex(
+            context.tree.element?.innerHtml ?? '',
+            mathStyle: MathStyle.display,
+            textStyle: context.style.generateTextStyle(),
+            onErrorFallback: (FlutterMathException e) {
+              return Text(e.message);
+            },
+          ),
+        ),
+      },
+      data: tratarArquivos(texto, imagens, tipoImagem, tratamentoImagem),
+      style: {
+        '*': Style.fromTextStyle(
+          TemaUtil.temaTextoHtmlPadrao.copyWith(
+            fontSize: temaStore.tTexto16,
+            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+          ),
+        ),
+        'span': Style.fromTextStyle(
+          TextStyle(
+              fontSize: temaStore.tTexto16,
+              fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              color: TemaUtil.pretoSemFoco3),
+        ),
+      },
+      onImageTap: (url, _, attributes, element) async {
+        late Uint8List imagem;
+
+        if (url!.startsWith('http')) {
+          imagem = (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
+        } else {
+          imagem = base64.decode(url.split(',').last);
+        }
+
+        _exibirImagem(context, imagem);
+      },
+    );
+  }
+
+  Future<T?> _exibirImagem<T>(BuildContext context, Uint8List image) async {
+    TemaStore temaStore = ServiceLocator.get<TemaStore>();
+
+    return await showDialog<T>(
+      context: context,
+      builder: (_) {
+        var background = Colors.transparent;
+
+        return AlertDialog(
+          insetPadding: EdgeInsets.zero,
+          backgroundColor: Colors.black.withOpacity(0.5),
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Stack(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 50),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: PhotoView(
+                      backgroundDecoration: BoxDecoration(color: background),
+                      imageProvider: MemoryImage(image),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(Icons.close, color: TemaUtil.laranja02),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Observer(
+                          builder: (_) {
+                            return Text(
+                              'Fechar',
+                              style: TemaUtil.temaTextoFecharImagem.copyWith(
+                                fontSize: temaStore.tTexto18,
+                                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
