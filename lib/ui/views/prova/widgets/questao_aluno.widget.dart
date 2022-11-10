@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
@@ -16,11 +13,8 @@ import 'package:appserap/ui/views/prova/prova.view.util.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:photo_view/photo_view.dart';
 
 class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   final TemaStore temaStore = ServiceLocator.get<TemaStore>();
@@ -47,65 +41,22 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
       children: [
         buildTratamentoImagem(provaStore, imagens, questao, alternativas),
         Observer(builder: (_) {
-          return Html(
-            data: tratarArquivos(questao.titulo, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem),
-            style: {
-              '*': Style.fromTextStyle(
-                TemaUtil.temaTextoHtmlPadrao.copyWith(
-                  fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                ),
-              ),
-              'span': Style.fromTextStyle(
-                TextStyle(
-                    fontSize: temaStore.tTexto16,
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                    color: TemaUtil.pretoSemFoco3),
-              ),
-            },
-            onImageTap: (url, _, attributes, element) async {
-              late Uint8List imagem;
-
-              if (url!.startsWith('http')) {
-                imagem = (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
-              } else {
-                imagem = base64.decode(url.split(',').last);
-              }
-
-              _exibirImagem(context, imagem);
-            },
+          return renderizarHtml(
+            context,
+            questao.titulo,
+            imagens,
+            EnumTipoImagem.QUESTAO,
+            provaStore.tratamentoImagem,
           );
         }),
         SizedBox(height: 8),
         Observer(builder: (_) {
-          return Html(
-            data: tratarArquivos(questao.descricao, imagens, EnumTipoImagem.QUESTAO, provaStore.tratamentoImagem),
-            style: {
-              '*': Style.fromTextStyle(
-                TemaUtil.temaTextoHtmlPadrao.copyWith(
-                  fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                ),
-              ),
-              'span': Style.fromTextStyle(
-                TextStyle(
-                  fontSize: temaStore.tTexto16,
-                  fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  color: TemaUtil.pretoSemFoco3,
-                ),
-              ),
-            },
-            onImageTap: (url, _, attributes, element) async {
-              late Uint8List imagem;
-
-              if (url!.startsWith('http')) {
-                imagem = (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
-              } else {
-                imagem = base64.decode(url.split(',').last);
-              }
-
-              _exibirImagem(context, imagem);
-            },
+          return renderizarHtml(
+            context,
+            questao.descricao,
+            imagens,
+            EnumTipoImagem.QUESTAO,
+            provaStore.tratamentoImagem,
           );
         }),
         SizedBox(height: 16),
@@ -113,70 +64,6 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
           return _buildResposta(questao);
         }),
       ],
-    );
-  }
-
-  Future<T?> _exibirImagem<T>(BuildContext context, Uint8List image) async {
-    return await showDialog<T>(
-      context: context,
-      builder: (_) {
-        var background = Colors.transparent;
-
-        return AlertDialog(
-          insetPadding: EdgeInsets.zero,
-          backgroundColor: Colors.black.withOpacity(0.5),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 50),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: PhotoView(
-                      backgroundDecoration: BoxDecoration(color: background),
-                      imageProvider: MemoryImage(image),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: TextButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context, rootNavigator: true).pop('dialog');
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Icon(Icons.close, color: TemaUtil.laranja02),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Observer(
-                          builder: (_) {
-                            return Text(
-                              'Fechar',
-                              style: TemaUtil.temaTextoFecharImagem.copyWith(
-                                fontSize: temaStore.tTexto18,
-                                fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -319,17 +206,13 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
                   ),
                 ),
                 Expanded(
-                  child: Observer(builder: (_) {
-                    return Html(
-                      data: tratarArquivos(descricao, imagens, EnumTipoImagem.ALTERNATIVA, provaStore.tratamentoImagem),
-                      style: {
-                        '*': Style.fromTextStyle(
-                          TemaUtil.temaTextoPadrao.copyWith(
-                            fontSize: temaStore.tTexto16,
-                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                          ),
-                        )
-                      },
+                  child: Observer(builder: (context) {
+                    return renderizarHtml(
+                      context,
+                      descricao,
+                      imagens,
+                      EnumTipoImagem.ALTERNATIVA,
+                      provaStore.tratamentoImagem,
                     );
                   }),
                 ),
