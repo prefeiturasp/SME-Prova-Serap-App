@@ -206,7 +206,7 @@ abstract class ProvaViewUtil {
     late Uint8List imagem;
 
     if (url!.startsWith('http')) {
-      imagem = await networkAssetBundleFromUrl(url);
+      imagem = await networkAssetBundleFromUrl(url.replaceFirst('http://', 'https://'));
     } else {
       imagem = base64.decode(url.split(',').last);
     }
