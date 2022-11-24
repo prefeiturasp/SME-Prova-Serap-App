@@ -299,17 +299,21 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
 
   _buildVisualizar(int idQuestaoLegado, int questaoOrdem) {
     return InkWell(
+      enableFeedback: !store.prova!.apresentarResultadosPorItem,
       borderRadius: BorderRadius.all(
         Radius.circular(10),
       ),
       onTap: () {
-        context.push(
-          "/prova/resposta/${widget.provaId}/${widget.caderno}/$questaoOrdem/detalhes",
-          extra: store.resumo.toList(),
-        );
+        if (store.prova!.apresentarResultadosPorItem) {
+          context.push(
+            "/prova/resposta/${widget.provaId}/${widget.caderno}/$questaoOrdem/detalhes",
+            extra: store.resumo.toList(),
+          );
+        }
       },
       child: SvgPicture.asset(
         AssetsUtil.iconeRevisarQuestao,
+        color: !store.prova!.apresentarResultadosPorItem ? TemaUtil.cinza : null,
       ),
     );
   }
