@@ -19,6 +19,7 @@ import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:http/http.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html_all/flutter_html_all.dart';
@@ -190,20 +191,26 @@ abstract class ProvaViewUtil {
         ),
       },
       onImageTap: (url, _, attributes, element) async {
-        late Uint8List imagem;
-
-        if (url!.startsWith('http')) {
-          imagem = (await NetworkAssetBundle(Uri.parse(url)).load(url)).buffer.asUint8List();
-        } else {
-          imagem = base64.decode(url.split(',').last);
-        }
-
-        _exibirImagem(context, imagem);
+        await _exibirImagem(context, url);
       },
     );
   }
 
-  Future<T?> _exibirImagem<T>(BuildContext context, Uint8List image) async {
+  Future<Uint8List> networkAssetBundleFromUrl(String url) async {
+    final uri = Uri.parse(url);
+    final Response response = await get(uri);
+    return response.bodyBytes;
+  }
+
+  Future<T?> _exibirImagem<T>(BuildContext context, String? url) async {
+    late Uint8List imagem;
+
+    if (url!.startsWith('http')) {
+      imagem = await networkAssetBundleFromUrl(url.replaceFirst('http://', 'https://'));
+    } else {
+      imagem = base64.decode(url.split(',').last);
+    }
+
     TemaStore temaStore = ServiceLocator.get<TemaStore>();
 
     return await showDialog<T>(
@@ -225,7 +232,7 @@ abstract class ProvaViewUtil {
                     alignment: Alignment.center,
                     child: PhotoView(
                       backgroundDecoration: BoxDecoration(color: background),
-                      imageProvider: MemoryImage(image),
+                      imageProvider: MemoryImage(imagem),
                     ),
                   ),
                 ),
