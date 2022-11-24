@@ -1,3 +1,4 @@
+import 'package:appserap/models/alternativa.model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'alternativa.response.dto.g.dart';
@@ -20,6 +21,10 @@ class AlternativaResponseDTO {
 
   static const fromJson = _$AlternativaResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$AlternativaResponseDTOToJson(this);
+
+  Alternativa toModel() {
+    return Alternativa(id: id, questaoLegadoId: id, descricao: descricao, ordem: ordem, numeracao: numeracao);
+  }
 
   @override
   String toString() {

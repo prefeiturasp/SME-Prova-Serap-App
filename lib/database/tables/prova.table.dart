@@ -29,6 +29,10 @@ class ProvasDb extends Table {
 
   TextColumn get caderno => text().withDefault(Constant("A"))();
 
+  BoolColumn get provaComProficiencia => boolean().withDefault(Constant(false))();
+  BoolColumn get apresentarResultados => boolean().withDefault(Constant(false))();
+  BoolColumn get apresentarResultadosPorItem => boolean().withDefault(Constant(false))();
+
   @override
   Set<Column> get primaryKey => {id, caderno};
 }

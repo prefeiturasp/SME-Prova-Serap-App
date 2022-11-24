@@ -18,7 +18,7 @@ import 'package:html_editor_enhanced/html_editor.dart';
 
 class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   final TemaStore temaStore = ServiceLocator.get<TemaStore>();
-  final controller = HtmlEditorController();
+  final HtmlEditorController controller;
 
   final ProvaStore provaStore;
   final int questaoId;
@@ -28,6 +28,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
 
   QuestaoAlunoWidget({
     Key? key,
+    required this.controller,
     required this.provaStore,
     required this.questaoId,
     required this.questao,
@@ -80,7 +81,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   }
 
   _buildRespostaConstruida(Questao questao) {
-    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.questaoLegadoId);
+    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questaoId);
 
     return Column(
       children: [
@@ -140,11 +141,13 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
         Container(
           padding: EdgeInsets.symmetric(vertical: 15),
           width: double.infinity,
-          child: Texto(
-            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length}',
-            textAlign: TextAlign.end,
-            fontSize: 16,
-          ),
+          child: Observer(builder: (_) {
+            return Texto(
+              'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length ?? 0}',
+              textAlign: TextAlign.end,
+              fontSize: 16,
+            );
+          }),
         ),
       ],
     );

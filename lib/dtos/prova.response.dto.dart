@@ -34,6 +34,10 @@ class ProvaResponseDTO {
 
   final String caderno;
 
+  final bool provaComProficiencia;
+  final bool apresentarResultados;
+  final bool apresentarResultadosPorItem;
+
   ProvaResponseDTO({
     required this.id,
     required this.descricao,
@@ -51,6 +55,9 @@ class ProvaResponseDTO {
     required this.quantidadeRespostaSincronizacao,
     required this.ultimaAlteracao,
     required this.caderno,
+    required this.provaComProficiencia,
+    required this.apresentarResultados,
+    required this.apresentarResultadosPorItem,
   });
 
   bool isFinalizada() {
@@ -77,6 +84,9 @@ class ProvaResponseDTO {
       senha: senha,
       dataFim: dataFim,
       caderno: caderno,
+      provaComProficiencia: provaComProficiencia,
+      apresentarResultados: apresentarResultados,
+      apresentarResultadosPorItem: apresentarResultadosPorItem,
     );
   }
 

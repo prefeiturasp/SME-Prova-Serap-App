@@ -25,7 +25,7 @@ main() {
       SharedPreferences.setMockInitialValues({"token": UserFixture().autenticacaoResponse.token});
 
       registerInjection<ApiService>(MockApiService());
-      registerInjection<SharedPreferences>(await SharedPreferences.getInstance());
+      registerInjectionAsync<SharedPreferences>(() => SharedPreferences.getInstance());
     });
 
     tearDown(() async {

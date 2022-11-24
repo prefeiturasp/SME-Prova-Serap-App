@@ -1,3 +1,4 @@
+import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -37,6 +38,17 @@ class QuestaoCompletaResponseDTO {
 
   static const fromJson = _$QuestaoCompletaResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$QuestaoCompletaResponseDTOToJson(this);
+
+  QuestaoResponseDTO getQuestaoResponseDTO() {
+    return QuestaoResponseDTO(
+      id: id,
+      descricao: descricao,
+      titulo: titulo,
+      ordem: ordem,
+      tipo: tipo,
+      quantidadeAlternativas: quantidadeAlternativas,
+    );
+  }
 
   @override
   String toString() {

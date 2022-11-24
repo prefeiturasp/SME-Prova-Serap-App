@@ -1,0 +1,25 @@
+{
+  "serapUsuarioToken": "",
+  
+  "serapUsuarioNome": "LIZY SHIYENE AGUIRRE HUARINA",
+  "serapUsuarioCodigoEOL": "5720828",
+  "serapUsuarioAno": "5",
+  
+  "serapUsuarioTipoTurno": "3",
+  
+  "serapUsuarioDreAbreviacao": "DRE - JT",
+  "serapUsuarioEscola": "DERVILLE ALLEGRETTI, PROF.",
+  "serapUsuarioTurma": "5A",
+  
+  "serapUsuarioDeficiencia": [],
+  
+  "serapUsuarioInicioTurno": 13,
+  "serapUsuarioFimTurno": 19,
+  
+  "serapUsuarioModalidade": 5,
+  
+  "familiaFonte": 1,
+  "tamanhoFonte": 16.0,
+  
+  "serapIsAdmin": false
+}

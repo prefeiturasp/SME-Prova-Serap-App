@@ -127,6 +127,7 @@ class MyApp extends StatelessWidget {
         final GoRouter goRouter = ServiceLocator.get<AppRouter>().router;
 
         return MaterialApp.router(
+          routeInformationProvider: goRouter.routeInformationProvider,
           routeInformationParser: goRouter.routeInformationParser,
           routerDelegate: goRouter.routerDelegate,
           debugShowCheckedModeBanner: false,
