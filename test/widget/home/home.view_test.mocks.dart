@@ -118,20 +118,26 @@ class _FakeConfiguracaoService_15 extends _i1.SmartFake
       : super(parent, parentInvocation);
 }
 
-class _FakeUsuarioStore_16 extends _i1.SmartFake implements _i7.UsuarioStore {
-  _FakeUsuarioStore_16(Object parent, Invocation parentInvocation)
+class _FakeProvaResultadoService_16 extends _i1.SmartFake
+    implements _i3.ProvaResultadoService {
+  _FakeProvaResultadoService_16(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeObservableStream_17<T> extends _i1.SmartFake
+class _FakeUsuarioStore_17 extends _i1.SmartFake implements _i7.UsuarioStore {
+  _FakeUsuarioStore_17(Object parent, Invocation parentInvocation)
+      : super(parent, parentInvocation);
+}
+
+class _FakeObservableStream_18<T> extends _i1.SmartFake
     implements _i8.ObservableStream<T> {
-  _FakeObservableStream_17(Object parent, Invocation parentInvocation)
+  _FakeObservableStream_18(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
-class _FakeReactiveContext_18 extends _i1.SmartFake
+class _FakeReactiveContext_19 extends _i1.SmartFake
     implements _i8.ReactiveContext {
-  _FakeReactiveContext_18(Object parent, Invocation parentInvocation)
+  _FakeReactiveContext_19(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
@@ -227,6 +233,12 @@ class MockApiService extends _i1.Mock implements _i3.ApiService {
       Invocation.getter(#configuracao),
       returnValue: _FakeConfiguracaoService_15(
           this, Invocation.getter(#configuracao))) as _i3.ConfiguracaoService);
+  @override
+  _i3.ProvaResultadoService get provaResultado =>
+      (super.noSuchMethod(Invocation.getter(#provaResultado),
+              returnValue: _FakeProvaResultadoService_16(
+                  this, Invocation.getter(#provaResultado)))
+          as _i3.ProvaResultadoService);
 }
 
 /// A class which mocks [PrincipalStore].
@@ -240,12 +252,12 @@ class MockPrincipalStore extends _i1.Mock implements _i9.PrincipalStore {
   @override
   _i7.UsuarioStore get usuario => (super.noSuchMethod(
           Invocation.getter(#usuario),
-          returnValue: _FakeUsuarioStore_16(this, Invocation.getter(#usuario)))
+          returnValue: _FakeUsuarioStore_17(this, Invocation.getter(#usuario)))
       as _i7.UsuarioStore);
   @override
   _i8.ObservableStream<_i10.ConnectivityResult> get conexaoStream =>
       (super.noSuchMethod(Invocation.getter(#conexaoStream),
-              returnValue: _FakeObservableStream_17<_i10.ConnectivityResult>(
+              returnValue: _FakeObservableStream_18<_i10.ConnectivityResult>(
                   this, Invocation.getter(#conexaoStream)))
           as _i8.ObservableStream<_i10.ConnectivityResult>);
   @override
@@ -286,7 +298,7 @@ class MockPrincipalStore extends _i1.Mock implements _i9.PrincipalStore {
   _i8.ReactiveContext get context =>
       (super.noSuchMethod(Invocation.getter(#context),
               returnValue:
-                  _FakeReactiveContext_18(this, Invocation.getter(#context)))
+                  _FakeReactiveContext_19(this, Invocation.getter(#context)))
           as _i8.ReactiveContext);
   @override
   void Function(Object?, [Object?, StackTrace?]) get shout =>

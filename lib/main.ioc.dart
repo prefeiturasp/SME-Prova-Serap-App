@@ -27,7 +27,9 @@ import 'stores/home.admin.store.dart';
 import 'stores/home_provas_anteriores.store.dart';
 import 'stores/job.store.dart';
 import 'stores/login_adm.store.dart';
+import 'stores/prova_resultado_resumo_view.store.dart';
 import 'stores/questao.store.dart';
+import 'stores/questao_resultado_detalhes_view.store.dart';
 
 // ignore: non_constant_identifier_names
 GetIt ServiceLocator = GetIt.instance;
@@ -79,6 +81,8 @@ class DependenciasIoC with Loggable {
     registerSingleton<AdminProvaContextoViewStore>(AdminProvaContextoViewStore());
     registerSingleton<ContextoProvaViewStore>(ContextoProvaViewStore());
     registerSingleton<JobStore>(JobStore());
+    registerSingleton<ProvaResultadoResumoViewStore>(ProvaResultadoResumoViewStore());
+    registerSingleton<QuestaoResultadoDetalhesViewStore>(QuestaoResultadoDetalhesViewStore());
   }
 
   void registerSingletonAsync<T extends Object>(

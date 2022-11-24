@@ -26,6 +26,9 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
   final Value<int> quantidadeRespostaSincronizacao;
   final Value<DateTime> ultimaAlteracao;
   final Value<String> caderno;
+  final Value<bool> provaComProficiencia;
+  final Value<bool> apresentarResultados;
+  final Value<bool> apresentarResultadosPorItem;
   const ProvasDbCompanion({
     this.id = const Value.absent(),
     this.descricao = const Value.absent(),
@@ -45,6 +48,9 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.quantidadeRespostaSincronizacao = const Value.absent(),
     this.ultimaAlteracao = const Value.absent(),
     this.caderno = const Value.absent(),
+    this.provaComProficiencia = const Value.absent(),
+    this.apresentarResultados = const Value.absent(),
+    this.apresentarResultadosPorItem = const Value.absent(),
   });
   ProvasDbCompanion.insert({
     required int id,
@@ -65,6 +71,9 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     required int quantidadeRespostaSincronizacao,
     this.ultimaAlteracao = const Value.absent(),
     this.caderno = const Value.absent(),
+    this.provaComProficiencia = const Value.absent(),
+    this.apresentarResultados = const Value.absent(),
+    this.apresentarResultadosPorItem = const Value.absent(),
   })  : id = Value(id),
         descricao = Value(descricao),
         downloadStatus = Value(downloadStatus),
@@ -94,6 +103,9 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     Expression<int>? quantidadeRespostaSincronizacao,
     Expression<DateTime>? ultimaAlteracao,
     Expression<String>? caderno,
+    Expression<bool>? provaComProficiencia,
+    Expression<bool>? apresentarResultados,
+    Expression<bool>? apresentarResultadosPorItem,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -116,6 +128,12 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
         'quantidade_resposta_sincronizacao': quantidadeRespostaSincronizacao,
       if (ultimaAlteracao != null) 'ultima_alteracao': ultimaAlteracao,
       if (caderno != null) 'caderno': caderno,
+      if (provaComProficiencia != null)
+        'prova_com_proficiencia': provaComProficiencia,
+      if (apresentarResultados != null)
+        'apresentar_resultados': apresentarResultados,
+      if (apresentarResultadosPorItem != null)
+        'apresentar_resultados_por_item': apresentarResultadosPorItem,
     });
   }
 
@@ -137,7 +155,10 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       Value<String?>? idDownload,
       Value<int>? quantidadeRespostaSincronizacao,
       Value<DateTime>? ultimaAlteracao,
-      Value<String>? caderno}) {
+      Value<String>? caderno,
+      Value<bool>? provaComProficiencia,
+      Value<bool>? apresentarResultados,
+      Value<bool>? apresentarResultadosPorItem}) {
     return ProvasDbCompanion(
       id: id ?? this.id,
       descricao: descricao ?? this.descricao,
@@ -158,6 +179,10 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
           this.quantidadeRespostaSincronizacao,
       ultimaAlteracao: ultimaAlteracao ?? this.ultimaAlteracao,
       caderno: caderno ?? this.caderno,
+      provaComProficiencia: provaComProficiencia ?? this.provaComProficiencia,
+      apresentarResultados: apresentarResultados ?? this.apresentarResultados,
+      apresentarResultadosPorItem:
+          apresentarResultadosPorItem ?? this.apresentarResultadosPorItem,
     );
   }
 
@@ -223,6 +248,17 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     if (caderno.present) {
       map['caderno'] = Variable<String>(caderno.value);
     }
+    if (provaComProficiencia.present) {
+      map['prova_com_proficiencia'] =
+          Variable<bool>(provaComProficiencia.value);
+    }
+    if (apresentarResultados.present) {
+      map['apresentar_resultados'] = Variable<bool>(apresentarResultados.value);
+    }
+    if (apresentarResultadosPorItem.present) {
+      map['apresentar_resultados_por_item'] =
+          Variable<bool>(apresentarResultadosPorItem.value);
+    }
     return map;
   }
 
@@ -247,7 +283,10 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
           ..write(
               'quantidadeRespostaSincronizacao: $quantidadeRespostaSincronizacao, ')
           ..write('ultimaAlteracao: $ultimaAlteracao, ')
-          ..write('caderno: $caderno')
+          ..write('caderno: $caderno, ')
+          ..write('provaComProficiencia: $provaComProficiencia, ')
+          ..write('apresentarResultados: $apresentarResultados, ')
+          ..write('apresentarResultadosPorItem: $apresentarResultadosPorItem')
           ..write(')'))
         .toString();
   }
@@ -368,6 +407,35 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: Constant("A"));
+  final VerificationMeta _provaComProficienciaMeta =
+      const VerificationMeta('provaComProficiencia');
+  @override
+  late final GeneratedColumn<bool> provaComProficiencia = GeneratedColumn<bool>(
+      'prova_com_proficiencia', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (prova_com_proficiencia IN (0, 1))',
+      defaultValue: Constant(false));
+  final VerificationMeta _apresentarResultadosMeta =
+      const VerificationMeta('apresentarResultados');
+  @override
+  late final GeneratedColumn<bool> apresentarResultados = GeneratedColumn<bool>(
+      'apresentar_resultados', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (apresentar_resultados IN (0, 1))',
+      defaultValue: Constant(false));
+  final VerificationMeta _apresentarResultadosPorItemMeta =
+      const VerificationMeta('apresentarResultadosPorItem');
+  @override
+  late final GeneratedColumn<bool> apresentarResultadosPorItem =
+      GeneratedColumn<bool>(
+          'apresentar_resultados_por_item', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints:
+              'CHECK (apresentar_resultados_por_item IN (0, 1))',
+          defaultValue: Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -387,7 +455,10 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
         idDownload,
         quantidadeRespostaSincronizacao,
         ultimaAlteracao,
-        caderno
+        caderno,
+        provaComProficiencia,
+        apresentarResultados,
+        apresentarResultadosPorItem
       ];
   @override
   String get aliasedName => _alias ?? 'provas_db';
@@ -500,6 +571,25 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
       context.handle(_cadernoMeta,
           caderno.isAcceptableOrUnknown(data['caderno']!, _cadernoMeta));
     }
+    if (data.containsKey('prova_com_proficiencia')) {
+      context.handle(
+          _provaComProficienciaMeta,
+          provaComProficiencia.isAcceptableOrUnknown(
+              data['prova_com_proficiencia']!, _provaComProficienciaMeta));
+    }
+    if (data.containsKey('apresentar_resultados')) {
+      context.handle(
+          _apresentarResultadosMeta,
+          apresentarResultados.isAcceptableOrUnknown(
+              data['apresentar_resultados']!, _apresentarResultadosMeta));
+    }
+    if (data.containsKey('apresentar_resultados_por_item')) {
+      context.handle(
+          _apresentarResultadosPorItemMeta,
+          apresentarResultadosPorItem.isAcceptableOrUnknown(
+              data['apresentar_resultados_por_item']!,
+              _apresentarResultadosPorItemMeta));
+    }
     return context;
   }
 
@@ -547,6 +637,13 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
           DriftSqlType.dateTime, data['${effectivePrefix}ultima_alteracao'])!,
       caderno: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}caderno'])!,
+      provaComProficiencia: attachedDatabase.options.types.read(
+          DriftSqlType.bool, data['${effectivePrefix}prova_com_proficiencia'])!,
+      apresentarResultados: attachedDatabase.options.types.read(
+          DriftSqlType.bool, data['${effectivePrefix}apresentar_resultados'])!,
+      apresentarResultadosPorItem: attachedDatabase.options.types.read(
+          DriftSqlType.bool,
+          data['${effectivePrefix}apresentar_resultados_por_item'])!,
     );
   }
 

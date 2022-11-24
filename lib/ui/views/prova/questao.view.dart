@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
@@ -222,6 +220,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                                   SizedBox(height: 8),
                                   QuestaoAlunoWidget(
                                     provaStore: provaStore,
+                                    controller: controller,
                                     questaoId: questaoId,
                                     questao: questao,
                                     alternativas: alternativas,

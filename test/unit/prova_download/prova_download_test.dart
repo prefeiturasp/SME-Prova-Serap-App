@@ -111,6 +111,7 @@ void main() {
       Logger.root.level = Level.FINER;
 
       Logger.root.onRecord.listen((rec) {
+        // ignore: avoid_print
         print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
       });
     });

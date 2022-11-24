@@ -1,13 +1,12 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tipo_imagem.enum.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
-import 'package:appserap/models/resposta_prova.model.dart';
-import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/views/prova/prova.view.util.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
@@ -16,38 +15,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 
-class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
+class QuestaoAlunoRespostaWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   final TemaStore temaStore = ServiceLocator.get<TemaStore>();
   final HtmlEditorController controller;
 
-  final ProvaStore provaStore;
-  final int questaoId;
   final Questao questao;
   final List<Arquivo> imagens;
   final List<Alternativa> alternativas;
+  final int? ordemAlternativaCorreta;
+  final int? ordemAlternativaResposta;
+  final String? respostaConstruida;
 
-  QuestaoAlunoWidget({
+  QuestaoAlunoRespostaWidget({
     Key? key,
     required this.controller,
-    required this.provaStore,
-    required this.questaoId,
     required this.questao,
     required this.imagens,
     required this.alternativas,
+    required this.ordemAlternativaCorreta,
+    required this.ordemAlternativaResposta,
+    required this.respostaConstruida,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        buildTratamentoImagem(provaStore, imagens, questao, alternativas),
         Observer(builder: (_) {
           return renderizarHtml(
             context,
             questao.titulo,
             imagens,
             EnumTipoImagem.QUESTAO,
-            provaStore.tratamentoImagem,
+            TratamentoImagemEnum.URL,
           );
         }),
         SizedBox(height: 8),
@@ -57,13 +57,11 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
             questao.descricao,
             imagens,
             EnumTipoImagem.QUESTAO,
-            provaStore.tratamentoImagem,
+            TratamentoImagemEnum.URL,
           );
         }),
         SizedBox(height: 16),
-        Observer(builder: (_) {
-          return _buildResposta(questao);
-        }),
+        _buildResposta(questao),
       ],
     );
   }
@@ -81,8 +79,6 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   }
 
   _buildRespostaConstruida(Questao questao) {
-    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questaoId);
-
     return Column(
       children: [
         //
@@ -99,10 +95,8 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
                 callbacks: Callbacks(
                   onInit: () {
                     controller.execCommand('fontName', argument: temaStore.fonteDoTexto.nomeFonte);
-                    controller.setText(provaResposta?.resposta ?? "");
-                  },
-                  onChangeContent: (String? textoDigitado) {
-                    provaStore.respostas.definirResposta(questaoId, textoResposta: textoDigitado);
+                    controller.setText(respostaConstruida ?? "");
+                    controller.disable();
                   },
                 ),
                 htmlToolbarOptions: HtmlToolbarOptions(
@@ -141,13 +135,11 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
         Container(
           padding: EdgeInsets.symmetric(vertical: 15),
           width: double.infinity,
-          child: Observer(builder: (_) {
-            return Texto(
-              'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length ?? 0}',
-              textAlign: TextAlign.end,
-              fontSize: 16,
-            );
-          }),
+          child: Texto(
+            'Caracteres digitados: ${respostaConstruida?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length}',
+            textAlign: TextAlign.end,
+            fontSize: 16,
+          ),
         ),
       ],
     );
@@ -164,15 +156,20 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
                   e.numeracao,
                   questao,
                   e.descricao,
+                  e.ordem,
                 ))
             .toList(),
       ),
     );
   }
 
-  Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
-
+  Widget _buildAlternativa(
+    int idAlternativa,
+    String numeracao,
+    Questao questao,
+    String descricao,
+    int ordem,
+  ) {
     return Observer(
       builder: (_) {
         return Container(
@@ -191,16 +188,11 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
             toggleable: true,
             dense: true,
             value: idAlternativa,
-            groupValue: resposta?.alternativaId,
-            onChanged: (value) async {
-              await provaStore.respostas.definirResposta(
-                questaoId,
-                alternativaId: value,
-                tempoQuestao: provaStore.segundos,
-              );
-            },
+            groupValue: ordemAlternativaResposta == ordem ? idAlternativa : null,
+            onChanged: (value) async {},
             title: Row(
               children: [
+                _buildResultadoIcone(ordemAlternativaCorreta == ordem),
                 Text(
                   "$numeracao ",
                   style: TemaUtil.temaTextoNumeracao.copyWith(
@@ -215,7 +207,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
                       descricao,
                       imagens,
                       EnumTipoImagem.ALTERNATIVA,
-                      provaStore.tratamentoImagem,
+                      TratamentoImagemEnum.URL,
                     );
                   }),
                 ),
@@ -224,6 +216,20 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
           ),
         );
       },
+    );
+  }
+
+  _buildResultadoIcone(bool acerto) {
+    if (acerto) {
+      return Icon(
+        Icons.check,
+        color: TemaUtil.verde01,
+      );
+    }
+
+    return Icon(
+      Icons.close,
+      color: TemaUtil.vermelhoErro,
     );
   }
 }

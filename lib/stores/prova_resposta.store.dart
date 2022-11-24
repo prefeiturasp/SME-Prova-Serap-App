@@ -82,6 +82,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
     }
   }
 
+  @action
   RespostaProva? obterResposta(int questaoId) {
     return respostasLocal[questaoId];
   }

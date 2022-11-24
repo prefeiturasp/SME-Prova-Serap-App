@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:android_id/android_id.dart';
 import 'package:appserap/database/app.database.dart';

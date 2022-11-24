@@ -1,7 +1,6 @@
 // ignore_for_file: unused_import
 
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';

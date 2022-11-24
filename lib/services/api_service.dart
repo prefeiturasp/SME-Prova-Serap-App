@@ -54,6 +54,7 @@ class ApiService {
         AutenticacaoAdminService.create(),
         LogService.create(),
         ConfiguracaoService.create(),
+        ProvaResultadoService.create(),
       ],
       interceptors: [
         CompressaoInterceptor(),
@@ -81,4 +82,5 @@ class ApiService {
   AutenticacaoAdminService get adminAuth => chopper.getService<AutenticacaoAdminService>();
   LogService get log => chopper.getService<LogService>();
   ConfiguracaoService get configuracao => chopper.getService<ConfiguracaoService>();
+  ProvaResultadoService get provaResultado => chopper.getService<ProvaResultadoService>();
 }
