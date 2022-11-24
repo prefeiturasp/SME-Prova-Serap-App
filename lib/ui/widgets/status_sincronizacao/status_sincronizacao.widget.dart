@@ -4,7 +4,6 @@ import 'package:appserap/stores/job.store.dart';
 import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.dialog.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/workers/jobs.enum.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 

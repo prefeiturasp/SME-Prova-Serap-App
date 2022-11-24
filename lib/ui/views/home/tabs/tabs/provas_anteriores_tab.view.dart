@@ -9,17 +9,20 @@ import 'package:appserap/ui/views/home/home.view.util.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_tab.widget.dart';
+import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:clock/clock.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
@@ -229,13 +232,57 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
                         maxLines: 2,
                         fontSize: 12,
                       ),
-                    )
+                    ),
+                    _buildBotaoVisualizarRespostas(prova),
                   ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  _buildBotaoVisualizarRespostas(Prova prova) {
+    var temDataFinal = prova.dataFim != null;
+
+    if (!prova.apresentarResultados || !temDataFinal || Clock().now().isBefore(prova.dataFim!)) {
+      return Container();
+    }
+
+    var tamanhoFonte = temaStore.tTexto16;
+    if (kIsMobile) {
+      tamanhoFonte = temaStore.tTexto14;
+    }
+
+    double largura = 256;
+
+    if (temaStore.incrementador >= 22) {
+      largura = 300;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: BotaoDefaultWidget(
+        key: Key('botao-visualizar-resposta'),
+        largura: kIsTablet ? largura : null,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.download, color: Colors.white, size: 18),
+            Texto(
+              " Resultados",
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+              fontSize: tamanhoFonte,
+            ),
+          ],
+        ),
+        onPressed: () async {
+          context.push("/prova/resposta/${prova.id}/${prova.caderno}/resumo");
+        },
       ),
     );
   }

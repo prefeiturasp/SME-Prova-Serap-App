@@ -34,6 +34,10 @@ class Prova implements Insertable<Prova> {
 
   String caderno;
 
+  bool provaComProficiencia;
+  bool apresentarResultados;
+  bool apresentarResultadosPorItem;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -52,6 +56,9 @@ class Prova implements Insertable<Prova> {
     required this.quantidadeRespostaSincronizacao,
     required this.ultimaAlteracao,
     required this.caderno,
+    required this.provaComProficiencia,
+    required this.apresentarResultados,
+    required this.apresentarResultadosPorItem,
   });
 
   bool isFinalizada() {
@@ -87,6 +94,9 @@ class Prova implements Insertable<Prova> {
       quantidadeRespostaSincronizacao: Value(quantidadeRespostaSincronizacao),
       ultimaAlteracao: Value(ultimaAlteracao),
       caderno: Value(caderno),
+      provaComProficiencia: Value(provaComProficiencia),
+      apresentarResultados: Value(apresentarResultados),
+      apresentarResultadosPorItem: Value(apresentarResultadosPorItem),
     ).toColumns(nullToAbsent);
   }
 }

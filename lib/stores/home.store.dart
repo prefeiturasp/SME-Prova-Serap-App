@@ -171,6 +171,10 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       prova.senha = provaStoreAtualizada.prova.senha;
       prova.caderno = provaStoreAtualizada.prova.caderno;
 
+      prova.apresentarResultados = provaStoreAtualizada.prova.apresentarResultados;
+      prova.apresentarResultadosPorItem = provaStoreAtualizada.prova.apresentarResultadosPorItem;
+      prova.provaComProficiencia = provaStoreAtualizada.prova.provaComProficiencia;
+
       provaStoreAtualizada.prova = prova;
       provaStoreAtualizada.downloadStatus = prova.downloadStatus;
     }

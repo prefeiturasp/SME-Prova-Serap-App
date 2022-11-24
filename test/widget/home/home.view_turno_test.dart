@@ -1,8 +1,5 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/respostas.database.dart';
-import 'package:appserap/dtos/prova.response.dto.dart';
-import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart';
-import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/home.store.dart';
@@ -43,6 +40,7 @@ void main() {
     Logger.root.level = Level.FINER;
 
     Logger.root.onRecord.listen((rec) {
+      // ignore: avoid_print
       print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
     });
 

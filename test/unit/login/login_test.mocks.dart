@@ -112,6 +112,12 @@ class _FakeConfiguracaoService_15 extends _i1.SmartFake
       : super(parent, parentInvocation);
 }
 
+class _FakeProvaResultadoService_16 extends _i1.SmartFake
+    implements _i3.ProvaResultadoService {
+  _FakeProvaResultadoService_16(Object parent, Invocation parentInvocation)
+      : super(parent, parentInvocation);
+}
+
 /// A class which mocks [ApiService].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -204,4 +210,10 @@ class MockApiService extends _i1.Mock implements _i3.ApiService {
       Invocation.getter(#configuracao),
       returnValue: _FakeConfiguracaoService_15(
           this, Invocation.getter(#configuracao))) as _i3.ConfiguracaoService);
+  @override
+  _i3.ProvaResultadoService get provaResultado =>
+      (super.noSuchMethod(Invocation.getter(#provaResultado),
+              returnValue: _FakeProvaResultadoService_16(
+                  this, Invocation.getter(#provaResultado)))
+          as _i3.ProvaResultadoService);
 }

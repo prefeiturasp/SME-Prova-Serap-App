@@ -1,3 +1,4 @@
+import 'package:appserap/dtos/prova_resultado_resumo.response.dto.dart';
 import 'package:appserap/ui/views/admin/prova_contexto.admin.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/views/login/login.view.dart';
@@ -6,6 +7,7 @@ import 'package:appserap/ui/views/prova/contexto_prova.view.dart';
 import 'package:appserap/ui/views/prova/prova.view.dart';
 import 'package:appserap/ui/views/prova/questao.view.dart';
 import 'package:appserap/ui/views/prova/resumo_respostas.view.dart';
+import 'package:appserap/ui/views/prova_resultado/questao_resultado_detalhe.view.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/router.util.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,6 +21,7 @@ import 'ui/views/error/error.view.dart';
 import 'ui/views/admin/home.admin.view.dart';
 import 'ui/views/login/login.adm.view.dart';
 import 'ui/views/prova/questao_revisao.view.dart';
+import 'ui/views/prova_resultado/prova_resultado_resumo.view.dart';
 
 class AppRouter {
   GoRouter get router => _goRouter;
@@ -184,9 +187,41 @@ class AppRouter {
           );
         },
       ),
+      GoRoute(
+        path: APP_PAGE.QUESTAO_RESPOSTA_RESUMO.toPath,
+        name: APP_PAGE.QUESTAO_RESPOSTA_RESUMO.toName,
+        builder: (context, state) {
+          int? idProva = int.tryParse(state.params['idProva']!);
+          String? nomeCaderno = state.params['nomeCaderno']!;
+
+          return ProvaResultadoResumoView(
+            key: ValueKey("$idProva"),
+            provaId: idProva!,
+            caderno: nomeCaderno,
+          );
+        },
+      ),
+      GoRoute(
+        path: APP_PAGE.QUESTAO_RESPOSTA_DETALHES.toPath,
+        name: APP_PAGE.QUESTAO_RESPOSTA_DETALHES.toName,
+        builder: (context, state) {
+          int idProva = int.tryParse(state.params['idProva']!)!;
+          String? nomeCaderno = state.params['nomeCaderno']!;
+          int ordem = int.tryParse(state.params['ordem']!)!;
+
+          var resumo = state.extra as List<ProvaResultadoResumoResponseDto>;
+          return QuestaoResultadoDetalhesView(
+            key: ValueKey("$idProva-$ordem"),
+            provaId: idProva,
+            caderno: nomeCaderno,
+            ordem: ordem,
+            resumo: resumo,
+          );
+        },
+      ),
     ],
     errorBuilder: (context, state) => ErrorPage(error: state.error.toString()),
-    redirect: (state) {
+    redirect: (context, state) {
       // final loginLocation = state.namedLocation(APP_PAGE.LOGIN.toName);
       // final homeLocation = state.namedLocation(APP_PAGE.home.toName);
       // final splashLocation = state.namedLocation(APP_PAGE.splash.toName);

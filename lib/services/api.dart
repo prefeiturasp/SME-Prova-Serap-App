@@ -11,3 +11,4 @@ export 'rest/contexto_prova.service.dart';
 export 'rest/log.service.dart';
 export 'rest/download.service.dart';
 export 'rest/configuracao.service.dart';
+export 'rest/prova_resultado.service.dart';
