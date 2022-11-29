@@ -1,6 +1,7 @@
 import 'package:appserap/dtos/prova_resultado_resumo.response.dto.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/stores/prova_resultado_resumo_view.store.dart';
+import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
@@ -30,6 +31,26 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
   var espacamentoTabela = [2, 8, 3, 3, 2];
 
   @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
+  AppBarWidget buildAppBar() {
+    return AppBarWidget(
+      popView: true,
+      leading: _buildLeading(),
+    );
+  }
+
+  Widget? _buildLeading() {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () async {
+        context.push("/");
+      },
+    );
+  }
+
+  @override
   void initState() {
     super.initState();
     store.carregarResumo(provaId: widget.provaId, caderno: widget.caderno);
@@ -53,7 +74,7 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20),
                     child: Texto(
-                      'Resumo da prova',
+                      'Resultado da prova',
                       textAlign: TextAlign.start,
                       color: TemaUtil.preto,
                       fontSize: 20,
@@ -299,17 +320,21 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
 
   _buildVisualizar(int idQuestaoLegado, int questaoOrdem) {
     return InkWell(
+      enableFeedback: !store.prova!.apresentarResultadosPorItem,
       borderRadius: BorderRadius.all(
         Radius.circular(10),
       ),
       onTap: () {
-        context.push(
-          "/prova/resposta/${widget.provaId}/${widget.caderno}/$questaoOrdem/detalhes",
-          extra: store.resumo.toList(),
-        );
+        if (store.prova!.apresentarResultadosPorItem) {
+          context.push(
+            "/prova/resposta/${widget.provaId}/${widget.caderno}/$questaoOrdem/detalhes",
+            extra: store.resumo.toList(),
+          );
+        }
       },
       child: SvgPicture.asset(
         AssetsUtil.iconeRevisarQuestao,
+        color: !store.prova!.apresentarResultadosPorItem ? TemaUtil.cinza : null,
       ),
     );
   }
