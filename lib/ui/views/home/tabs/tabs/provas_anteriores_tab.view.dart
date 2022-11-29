@@ -247,7 +247,7 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
   _buildBotaoVisualizarRespostas(Prova prova) {
     var temDataFinal = prova.dataFim != null;
 
-    if (!prova.apresentarResultados || !temDataFinal || Clock().now().isBefore(prova.dataFim!)) {
+    if (!prova.apresentarResultados || !temDataFinal || isDepoisData(Clock().now(), prova.dataFim!)) {
       return Container();
     }
 
