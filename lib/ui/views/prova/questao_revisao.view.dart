@@ -289,7 +289,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   Widget _buildRespostaConstruida(Questao questao) {
-    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questaoId);
+    RespostaProva? provaResposta = provaStore.respostas.respostasLocal[questaoId];
 
     return Column(
       children: [
@@ -377,7 +377,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
+    RespostaProva? resposta = provaStore.respostas.respostasLocal[questaoId];
 
     return Observer(
       builder: (_) {

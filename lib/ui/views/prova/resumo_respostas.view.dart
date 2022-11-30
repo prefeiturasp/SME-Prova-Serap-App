@@ -308,7 +308,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         questao.questaoLegadoId,
       );
 
-      RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
+      RespostaProva? resposta = provaStore.respostas.respostasLocal[questaoId];
       ProvaCaderno provaCaderno = await db.provaCadernoDao.findByQuestaoId(
         questaoId,
         widget.idProva,

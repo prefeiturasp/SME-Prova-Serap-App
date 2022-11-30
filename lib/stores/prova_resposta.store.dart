@@ -83,11 +83,6 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   }
 
   @action
-  RespostaProva? obterResposta(int questaoId) {
-    return respostasLocal[questaoId];
-  }
-
-  @action
   sincronizarResposta({bool force = false}) async {
     fine('[$idProva] - Sincronizando respostas para o servidor');
     var respostasNaoSincronizadas = await dbRespostas.respostaProvaDao.obterTodasNaoSincronizadasPorCodigoEProva(
@@ -160,7 +155,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
 
   @action
   Future<void> definirTempoResposta(int questaoId, {int tempoQuestao = 0}) async {
-    var resposta = obterResposta(questaoId);
+    var resposta = respostasLocal[questaoId];
 
     if (resposta != null) {
       resposta.sincronizado = false;

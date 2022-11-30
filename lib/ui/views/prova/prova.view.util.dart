@@ -136,7 +136,7 @@ abstract class ProvaViewUtil {
     return texto;
   }
 
-  renderizarHtml(
+  Widget renderizarHtml(
     BuildContext context,
     String? texto,
     List<Arquivo> imagens,
