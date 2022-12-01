@@ -81,7 +81,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   }
 
   _buildRespostaConstruida(Questao questao) {
-    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questaoId);
+    RespostaProva? provaResposta = provaStore.respostas.respostasLocal[questaoId];
 
     return Column(
       children: [
@@ -171,7 +171,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   }
 
   Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
+    RespostaProva? resposta = provaStore.respostas.respostasLocal[questaoId];
 
     return Observer(
       builder: (_) {

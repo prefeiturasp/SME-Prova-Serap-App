@@ -301,7 +301,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     } else if (Platform.isAndroid) {
       const _androidId = AndroidId();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      modeloDispositivo = "${androidInfo.manufacturer!} ${androidInfo.model!}";
+      modeloDispositivo = "${androidInfo.manufacturer} ${androidInfo.model}";
       dispositivoId = (await _androidId.getId())!;
       versao = "Android ${androidInfo.version.release} (SDK ${androidInfo.version.release})";
     } else if (Platform.isIOS) {

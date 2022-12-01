@@ -100,20 +100,6 @@ mixin _$ProvaRespostaStore on _ProvaRespostaStoreBase, Store {
         super.definirTempoResposta(questaoId, tempoQuestao: tempoQuestao));
   }
 
-  late final _$_ProvaRespostaStoreBaseActionController =
-      ActionController(name: '_ProvaRespostaStoreBase', context: context);
-
-  @override
-  RespostaProva? obterResposta(int questaoId) {
-    final _$actionInfo = _$_ProvaRespostaStoreBaseActionController.startAction(
-        name: '_ProvaRespostaStoreBase.obterResposta');
-    try {
-      return super.obterResposta(questaoId);
-    } finally {
-      _$_ProvaRespostaStoreBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
   @override
   String toString() {
     return '''
