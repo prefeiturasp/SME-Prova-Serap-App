@@ -26,19 +26,19 @@ mixin _$ProvaResultadoResumoViewStore
     });
   }
 
-  late final _$resumoAtom =
-      Atom(name: '_ProvaResultadoResumoViewStoreBase.resumo', context: context);
+  late final _$responseAtom = Atom(
+      name: '_ProvaResultadoResumoViewStoreBase.response', context: context);
 
   @override
-  ObservableList<ProvaResultadoResumoResponseDto> get resumo {
-    _$resumoAtom.reportRead();
-    return super.resumo;
+  ProvaResultadoResumoResponseDto? get response {
+    _$responseAtom.reportRead();
+    return super.response;
   }
 
   @override
-  set resumo(ObservableList<ProvaResultadoResumoResponseDto> value) {
-    _$resumoAtom.reportWrite(value, super.resumo, () {
-      super.resumo = value;
+  set response(ProvaResultadoResumoResponseDto? value) {
+    _$responseAtom.reportWrite(value, super.response, () {
+      super.response = value;
     });
   }
 
@@ -72,7 +72,7 @@ mixin _$ProvaResultadoResumoViewStore
   String toString() {
     return '''
 carregando: ${carregando},
-resumo: ${resumo},
+response: ${response},
 prova: ${prova}
     ''';
   }

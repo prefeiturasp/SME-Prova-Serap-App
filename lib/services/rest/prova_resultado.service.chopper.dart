@@ -17,11 +17,11 @@ class _$ProvaResultadoService extends ProvaResultadoService {
   final definitionType = ProvaResultadoService;
 
   @override
-  Future<Response<List<ProvaResultadoResumoResponseDto>>>
-      getResumoPorProvaIdECaderno({required int provaId}) {
+  Future<Response<ProvaResultadoResumoResponseDto>> getResumoPorProvaId(
+      {required int provaId}) {
     final $url = '/v1/prova-resultados/${provaId}/resumo';
     final $request = Request('GET', $url, client.baseUrl);
-    return client.send<List<ProvaResultadoResumoResponseDto>,
+    return client.send<ProvaResultadoResumoResponseDto,
         ProvaResultadoResumoResponseDto>($request);
   }
 

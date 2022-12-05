@@ -1,28 +1,17 @@
-import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import 'prova_resultado_resumo_questao.response.dto.dart';
 
 part 'prova_resultado_resumo.response.dto.g.dart';
 
 @JsonSerializable()
 class ProvaResultadoResumoResponseDto {
-  int idQuestaoLegado;
-  String? descricaoQuestao;
-  int ordemQuestao;
-  EnumTipoQuestao tipoQuestao;
-  String? alternativaAluno;
-  bool alternativaCorreta;
-  bool respostaConstruidaRespondida;
-  double? proficiencia;
+  List<ProvaResultadoResumoQuestaoResponseDto> resumos;
+  double proficiencia;
 
   ProvaResultadoResumoResponseDto({
-    required this.idQuestaoLegado,
-    required this.descricaoQuestao,
-    required this.ordemQuestao,
-    required this.tipoQuestao,
-    required this.alternativaAluno,
-    required this.alternativaCorreta,
-    required this.respostaConstruidaRespondida,
-    this.proficiencia,
+    required this.resumos,
+    required this.proficiencia,
   });
 
   static const fromJson = _$ProvaResultadoResumoResponseDtoFromJson;

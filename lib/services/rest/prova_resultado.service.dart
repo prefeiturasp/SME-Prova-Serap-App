@@ -9,7 +9,7 @@ abstract class ProvaResultadoService extends ChopperService {
   static ProvaResultadoService create([ChopperClient? client]) => _$ProvaResultadoService(client);
 
   @Get(path: '{provaId}/resumo')
-  Future<Response<List<ProvaResultadoResumoResponseDto>>> getResumoPorProvaIdECaderno({
+  Future<Response<ProvaResultadoResumoResponseDto>> getResumoPorProvaId({
     @Path() required int provaId,
   });
 

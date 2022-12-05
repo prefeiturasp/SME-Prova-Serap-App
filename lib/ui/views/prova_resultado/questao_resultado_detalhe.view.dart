@@ -1,5 +1,5 @@
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/dtos/prova_resultado_resumo.response.dto.dart';
+import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/questao_resultado_detalhes_view.store.dart';
@@ -26,7 +26,7 @@ class QuestaoResultadoDetalhesView extends BaseStatefulWidget {
   final int provaId;
   final String caderno;
   final int ordem;
-  final List<ProvaResultadoResumoResponseDto> resumo;
+  final List<ProvaResultadoResumoQuestaoResponseDto> resumo;
 
   const QuestaoResultadoDetalhesView({
     super.key,

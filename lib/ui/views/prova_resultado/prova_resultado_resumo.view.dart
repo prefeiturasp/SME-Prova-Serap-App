@@ -1,4 +1,4 @@
-import 'package:appserap/dtos/prova_resultado_resumo.response.dto.dart';
+import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/stores/prova_resultado_resumo_view.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
@@ -28,7 +28,7 @@ class ProvaResultadoResumoView extends BaseStatefulWidget {
 }
 
 class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResumoView, ProvaResultadoResumoViewStore> {
-  var espacamentoTabela = [2, 8, 3, 3, 2];
+  var espacamentoTabela = [2, 6, 5, 3, 3];
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
@@ -59,48 +59,40 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
   @override
   Widget builder(BuildContext context) {
     return SingleChildScrollView(
-      child: Padding(
-        padding: getPadding(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Texto(
-                      'Resultado da prova',
-                      textAlign: TextAlign.start,
-                      color: TemaUtil.preto,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Texto(
-                          "Total de questões: ${store.resumo.length}",
-                          color: TemaUtil.azul02,
-                          fontSize: 14,
-                          maxLines: 2,
-                        ),
+      child: Observer(builder: (_) {
+        if (store.carregando) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        return Padding(
+          padding: getPadding(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    //
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Texto(
+                        'Resultado da prova',
+                        textAlign: TextAlign.start,
+                        color: TemaUtil.preto,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: Row(
+                    ),
+                    Row(
                       children: [
-                        //
                         Expanded(
                           child: Texto(
-                            "Total de acertos: ${store.resumo.where((element) => element.alternativaCorreta).toList().length}",
+                            "Total de questões: ${store.response!.resumos.length}",
                             color: TemaUtil.azul02,
                             fontSize: 14,
                             maxLines: 2,
@@ -108,30 +100,41 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
                         ),
                       ],
                     ),
-                  ),
-                  //
-                  SizedBox(height: 20),
-                  Observer(builder: (_) {
-                    if (store.carregando) {
-                      return Center(
-                        child: CircularProgressIndicator(),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Row(
+                        children: [
+                          //
+                          Expanded(
+                            child: Texto(
+                              "Total de acertos: ${store.response!.resumos.where((element) => element.correta).toList().length}",
+                              color: TemaUtil.azul02,
+                              fontSize: 14,
+                              maxLines: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _buildProficiencia(),
+                    //
+                    SizedBox(height: 20),
+                    Observer(builder: (_) {
+                      return Column(
+                        children: [
+                          _buildCabecalho(),
+                          _divider(),
+                          ..._buildListaRespostas(),
+                        ],
                       );
-                    }
-
-                    return Column(
-                      children: [
-                        _buildCabecalho(),
-                        _divider(),
-                        ..._buildListaRespostas(),
-                      ],
-                    );
-                  }),
-                ],
+                    }),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -158,22 +161,19 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
           flex: espacamentoTabela[2],
           child: Center(
             child: Texto(
-              "Resposta",
+              "Resposta Correta",
               fontSize: 14,
               color: TemaUtil.appBar,
             ),
           ),
         ),
-        Visibility(
-          visible: store.prova!.provaComProficiencia,
-          child: Expanded(
-            flex: espacamentoTabela[3],
-            child: Center(
-              child: Texto(
-                "Proficiencia",
-                fontSize: 14,
-                color: TemaUtil.appBar,
-              ),
+        Expanded(
+          flex: espacamentoTabela[3],
+          child: Center(
+            child: Texto(
+              "Resposta",
+              fontSize: 14,
+              color: TemaUtil.appBar,
             ),
           ),
         ),
@@ -205,7 +205,7 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
   }
 
   List<Widget> _buildListaRespostas() {
-    var resumo = store.resumo;
+    var resumo = store.response!.resumos;
     List<Widget> questoes = [];
 
     for (var item in resumo) {
@@ -221,7 +221,7 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
     return questoes;
   }
 
-  Widget _buildResumo(ProvaResultadoResumoResponseDto questaoResumo) {
+  Widget _buildResumo(ProvaResultadoResumoQuestaoResponseDto questaoResumo) {
     String ordemQuestaoTratada =
         questaoResumo.ordemQuestao < 9 ? '0${questaoResumo.ordemQuestao + 1}' : '${questaoResumo.ordemQuestao + 1}';
 
@@ -245,24 +245,21 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
         ),
         Expanded(
           flex: espacamentoTabela[2],
+          child: Center(
+            child: Texto(
+              questaoResumo.alternativaCorreta,
+              maxLines: 1,
+              fontSize: 14,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: espacamentoTabela[3],
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ..._buildResposta(questaoResumo),
             ],
-          ),
-        ),
-        Visibility(
-          visible: store.prova!.provaComProficiencia,
-          child: Expanded(
-            flex: espacamentoTabela[3],
-            child: Center(
-              child: Texto(
-                questaoResumo.proficiencia?.toStringAsFixed(2) ?? "0",
-                maxLines: 1,
-                fontSize: 14,
-              ),
-            ),
           ),
         ),
         Expanded(
@@ -275,7 +272,7 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
     );
   }
 
-  List<Widget> _buildResposta(ProvaResultadoResumoResponseDto questaoResumo) {
+  List<Widget> _buildResposta(ProvaResultadoResumoQuestaoResponseDto questaoResumo) {
     if (questaoResumo.tipoQuestao == EnumTipoQuestao.MULTIPLA_ESCOLHA) {
       return [
         Texto(
@@ -283,7 +280,7 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
           maxLines: 1,
           fontSize: 14,
         ),
-        _buildResultadoAlternativaIcone(questaoResumo.alternativaCorreta),
+        _buildResultadoAlternativaIcone(questaoResumo.correta),
       ];
     } else {
       return [_buildResultadoConstruidoIcone(questaoResumo.respostaConstruidaRespondida)];
@@ -328,7 +325,7 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
         if (store.prova!.apresentarResultadosPorItem) {
           context.push(
             "/prova/resposta/${widget.provaId}/${widget.caderno}/$questaoOrdem/detalhes",
-            extra: store.resumo.toList(),
+            extra: store.response!.resumos,
           );
         }
       },
@@ -337,5 +334,28 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
         color: !store.prova!.apresentarResultadosPorItem ? TemaUtil.cinza : null,
       ),
     );
+  }
+
+  Widget _buildProficiencia() {
+    if (store.prova!.provaComProficiencia) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Row(
+          children: [
+            //
+            Expanded(
+              child: Texto(
+                "Proficiência: ${store.response?.proficiencia.toStringAsFixed(2) ?? 0}",
+                color: TemaUtil.azul02,
+                fontSize: 14,
+                maxLines: 2,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SizedBox.shrink();
   }
 }
