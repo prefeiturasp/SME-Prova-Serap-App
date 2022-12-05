@@ -29,6 +29,7 @@ class QuestaoResponseDTO {
     return Questao(
       questaoLegadoId: id,
       descricao: descricao,
+      titulo: titulo,
       tipo: tipo,
       quantidadeAlternativas: quantidadeAlternativas,
     );
