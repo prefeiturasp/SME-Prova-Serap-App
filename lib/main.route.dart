@@ -1,4 +1,4 @@
-import 'package:appserap/dtos/prova_resultado_resumo.response.dto.dart';
+import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/ui/views/admin/prova_contexto.admin.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:appserap/ui/views/login/login.view.dart';
@@ -209,7 +209,7 @@ class AppRouter {
           String? nomeCaderno = state.params['nomeCaderno']!;
           int ordem = int.tryParse(state.params['ordem']!)!;
 
-          var resumo = state.extra as List<ProvaResultadoResumoResponseDto>;
+          var resumo = state.extra as List<ProvaResultadoResumoQuestaoResponseDto>;
           return QuestaoResultadoDetalhesView(
             key: ValueKey("$idProva-$ordem"),
             provaId: idProva,

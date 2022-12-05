@@ -271,7 +271,7 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.download, color: Colors.white, size: 18),
+            Icon(Icons.search, color: Colors.white, size: 18),
             Texto(
               " Resultados",
               color: Colors.white,
