@@ -28,7 +28,7 @@ class ProvaResultadoResumoView extends BaseStatefulWidget {
 }
 
 class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResumoView, ProvaResultadoResumoViewStore> {
-  var espacamentoTabela = [2, 8, 3, 3, 3];
+  var espacamentoTabela = [2, 6, 5, 3, 3];
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
@@ -161,7 +161,7 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
           flex: espacamentoTabela[2],
           child: Center(
             child: Texto(
-              "Respondido",
+              "Resposta Correta",
               fontSize: 14,
               color: TemaUtil.appBar,
             ),
@@ -245,21 +245,21 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
         ),
         Expanded(
           flex: espacamentoTabela[2],
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ..._buildResposta(questaoResumo),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: espacamentoTabela[3],
           child: Center(
             child: Texto(
               questaoResumo.alternativaCorreta,
               maxLines: 1,
               fontSize: 14,
             ),
+          ),
+        ),
+        Expanded(
+          flex: espacamentoTabela[3],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ..._buildResposta(questaoResumo),
+            ],
           ),
         ),
         Expanded(
