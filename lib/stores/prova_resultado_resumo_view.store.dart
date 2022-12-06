@@ -16,7 +16,7 @@ abstract class _ProvaResultadoResumoViewStoreBase with Store, Loggable, Database
   bool carregando = false;
 
   @observable
-  ObservableList<ProvaResultadoResumoResponseDto> resumo = ObservableList<ProvaResultadoResumoResponseDto>();
+  ProvaResultadoResumoResponseDto? response;
 
   @observable
   Prova? prova;
@@ -28,13 +28,13 @@ abstract class _ProvaResultadoResumoViewStoreBase with Store, Loggable, Database
       () async {
         prova = await db.provaDao.obterPorProvaId(provaId, caderno);
 
-        Response<List<ProvaResultadoResumoResponseDto>> res =
-            await ServiceLocator.get<ApiService>().provaResultado.getResumoPorProvaIdECaderno(
+        Response<ProvaResultadoResumoResponseDto> res =
+            await ServiceLocator.get<ApiService>().provaResultado.getResumoPorProvaId(
                   provaId: provaId,
                 );
 
         if (res.isSuccessful) {
-          resumo = res.body!.asObservable();
+          response = res.body!;
         }
       },
       onRetry: (e) {
