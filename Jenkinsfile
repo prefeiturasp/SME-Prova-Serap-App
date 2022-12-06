@@ -51,6 +51,7 @@ pipeline {
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
 	    sh "ls -ltra /opt/android-sdk-linux/build-tools/"
 	    sh "ls -ltra"
+	    sh 'if [ -d "config" ]; then rm -Rf config; fi'
             sh "cd ~/ && /opt/android-sdk-linux/build-tools/30.0.2/apksigner sign --ks ~/key.jks --ks-pass file:key.pass ${WORKSPACE}/build/app/outputs/flutter-apk/app.apk"
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
           }
