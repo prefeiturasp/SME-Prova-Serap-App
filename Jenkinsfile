@@ -44,12 +44,16 @@ pipeline {
 	  ]) {
             sh 'cp ${APPKEYJKS} ~/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cat ${WORKSPACE}/android/key.properties | grep keyPassword | cut -d\'=\' -f2 > ~/key.pass'
-            sh 'cd ${WORKSPACE} && mkdir config && cp $APPCONFIGDEV config/app_config.json'
+	    sh 'cd ${WORKSPACE}'
+            sh 'if [ -d "config" ]; then rm -Rf config; fi'
+            sh 'mkdir config && cp $APPCONFIGDEV config/app_config.json'
             sh 'cp $GOOGLEJSONDEV android/app/google-services.json'
+            sh 'flutter clean'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
 	    sh "ls -ltra /opt/android-sdk-linux/build-tools/"
 	    sh "ls -ltra"
+	    sh 'if [ -d "config" ]; then rm -Rf config; fi'
             sh "cd ~/ && /opt/android-sdk-linux/build-tools/30.0.2/apksigner sign --ks ~/key.jks --ks-pass file:key.pass ${WORKSPACE}/build/app/outputs/flutter-apk/app.apk"
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
           }
@@ -71,12 +75,16 @@ pipeline {
           ]) {
             sh 'cp ${APPKEYJKS} ~/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cat ${WORKSPACE}/android/key.properties | grep keyPassword | cut -d\'=\' -f2 > ~/key.pass'
-            sh 'cd ${WORKSPACE} && mkdir config && cp $APPCONFIGHOM config/app_config.json'
+            sh 'cd ${WORKSPACE}'
+            sh 'if [ -d "config" ]; then rm -Rf config; fi'
+            sh 'mkdir config && cp $APPCONFIGHOM config/app_config.json'
             sh 'cp $GOOGLEJSONHOM android/app/google-services.json'
+            sh 'flutter clean'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
 	    sh "ls -ltra /opt/android-sdk-linux/build-tools/"
 	    sh "ls -ltra"
+	    sh 'if [ -d "config" ]; then rm -Rf config; fi'
             sh "cd ~/ && /opt/android-sdk-linux/build-tools/30.0.2/apksigner sign --ks ~/key.jks --ks-pass file:key.pass ${WORKSPACE}/build/app/outputs/flutter-apk/app.apk"
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
           }
@@ -96,12 +104,16 @@ pipeline {
           ]) {
             sh 'cp ${APPKEYJKS} ~/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cat ${WORKSPACE}/android/key.properties | grep keyPassword | cut -d\'=\' -f2 > ~/key.pass'
-            sh 'cd ${WORKSPACE} && mkdir config && cp $APPCONFIGPROD config/app_config.json'
+            sh 'cd ${WORKSPACE}'
+            sh 'if [ -d "config" ]; then rm -Rf config; fi'
+            sh 'mkdir config && cp $APPCONFIGPROD config/app_config.json'
             sh 'cp ${GOOGLEJSONPROD} android/app/google-services.json'
+            sh 'flutter clean'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
 	    sh "ls -ltra /opt/android-sdk-linux/build-tools/"
 	    sh "ls -ltra"
+	    sh 'if [ -d "config" ]; then rm -Rf config; fi'
             sh "cd ~/ && /opt/android-sdk-linux/build-tools/30.0.2/apksigner sign --ks ~/key.jks --ks-pass file:key.pass ${WORKSPACE}/build/app/outputs/flutter-apk/app.apk"
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
 	        }
