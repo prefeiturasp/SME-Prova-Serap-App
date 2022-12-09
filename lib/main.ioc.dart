@@ -10,6 +10,7 @@ import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
 import 'package:appserap/stores/questao_revisao.store.dart';
+import 'package:appserap/stores/questao_tai_view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
@@ -28,6 +29,7 @@ import 'stores/home_provas_anteriores.store.dart';
 import 'stores/job.store.dart';
 import 'stores/login_adm.store.dart';
 import 'stores/prova_resultado_resumo_view.store.dart';
+import 'stores/prova_tai.view.store.dart';
 import 'stores/questao.store.dart';
 import 'stores/questao_resultado_detalhes_view.store.dart';
 
@@ -83,6 +85,8 @@ class DependenciasIoC with Loggable {
     registerSingleton<JobStore>(JobStore());
     registerSingleton<ProvaResultadoResumoViewStore>(ProvaResultadoResumoViewStore());
     registerSingleton<QuestaoResultadoDetalhesViewStore>(QuestaoResultadoDetalhesViewStore());
+    registerSingleton<ProvaTaiViewStore>(ProvaTaiViewStore());
+    registerSingleton<QuestaoTaiViewStore>(QuestaoTaiViewStore());
   }
 
   void registerSingletonAsync<T extends Object>(

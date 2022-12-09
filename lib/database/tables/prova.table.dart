@@ -33,6 +33,11 @@ class ProvasDb extends Table {
   BoolColumn get apresentarResultados => boolean().withDefault(Constant(false))();
   BoolColumn get apresentarResultadosPorItem => boolean().withDefault(Constant(false))();
 
+  BoolColumn get formatoTai => boolean().withDefault(Constant(false))();
+  IntColumn get formatoTaiItem => integer().nullable()();
+  BoolColumn get formatoTaiAvancarSemResponder => boolean().withDefault(Constant(false))();
+  BoolColumn get formatoTaiVoltarItemAnterior => boolean().withDefault(Constant(false))();
+
   @override
   Set<Column> get primaryKey => {id, caderno};
 }

@@ -89,7 +89,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 23;
+  int get schemaVersion => 24;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -199,6 +199,13 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(provasDb, provasDb.provaComProficiencia);
             await m.addColumn(provasDb, provasDb.apresentarResultados);
             await m.addColumn(provasDb, provasDb.apresentarResultadosPorItem);
+          }
+
+          if (from < 24) {
+            await m.addColumn(provasDb, provasDb.formatoTai);
+            await m.addColumn(provasDb, provasDb.formatoTaiItem);
+            await m.addColumn(provasDb, provasDb.formatoTaiAvancarSemResponder);
+            await m.addColumn(provasDb, provasDb.formatoTaiVoltarItemAnterior);
           }
         });
 

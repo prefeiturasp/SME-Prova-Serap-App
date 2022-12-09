@@ -26,7 +26,7 @@ abstract class _ProvaResultadoResumoViewStoreBase with Store, Loggable, Database
     carregando = true;
     await retry(
       () async {
-        prova = await db.provaDao.obterPorProvaId(provaId, caderno);
+        prova = await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
 
         Response<ProvaResultadoResumoResponseDto> res =
             await ServiceLocator.get<ApiService>().provaResultado.getResumoPorProvaId(

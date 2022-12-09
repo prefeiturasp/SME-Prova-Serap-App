@@ -210,7 +210,7 @@ void main() {
 
       var db = ServiceLocator.get<AppDatabase>();
 
-      var prova = await db.provaDao.obterPorProvaId(provaId, caderno);
+      var prova = await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
       expect(prova, isNotNull);
       expect(prova.id, provaId);
 
@@ -252,7 +252,7 @@ void main() {
 
       var db = ServiceLocator.get<AppDatabase>();
 
-      var prova = await db.provaDao.obterPorProvaId(provaId, caderno);
+      var prova = await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
       expect(prova.downloadStatus, EnumDownloadStatus.ERRO);
 
       var questoes = await db.questaoDao.obterPorProvaId(provaId);
