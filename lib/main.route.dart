@@ -22,6 +22,8 @@ import 'ui/views/admin/home.admin.view.dart';
 import 'ui/views/login/login.adm.view.dart';
 import 'ui/views/prova/questao_revisao.view.dart';
 import 'ui/views/prova_resultado/prova_resultado_resumo.view.dart';
+import 'ui/views/tai/prova_tai.view.dart';
+import 'ui/views/tai/questao_tai.view.dart';
 
 class AppRouter {
   GoRouter get router => _goRouter;
@@ -216,6 +218,28 @@ class AppRouter {
             caderno: nomeCaderno,
             ordem: ordem,
             resumo: resumo,
+          );
+        },
+      ),
+      // Tai
+      GoRoute(
+        path: APP_PAGE.PROVA_TAI.toPath,
+        name: APP_PAGE.PROVA_TAI.toName,
+        builder: (context, state) {
+          var idProva = int.tryParse(state.params['idProva']!);
+          return ProvaTaiView(key: ValueKey("$idProva"), provaId: idProva!);
+        },
+      ),
+
+      GoRoute(
+        path: APP_PAGE.PROVA_TAI_QUESTAO.toPath,
+        name: APP_PAGE.PROVA_TAI_QUESTAO.toName,
+        builder: (context, state) {
+          var idProva = int.tryParse(state.params['idProva']!);
+
+          return QuestaoTaiView(
+            key: ValueKey("$idProva"),
+            provaId: idProva!,
           );
         },
       ),

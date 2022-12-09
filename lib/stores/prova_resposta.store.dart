@@ -95,7 +95,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
       return;
     }
 
-    var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaId(idProva, caderno);
+    var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaIdECaderno(idProva, caderno);
 
     if (respostasNaoSincronizadas.length == prova.quantidadeRespostaSincronizacao || force) {
       List<QuestaoRespostaDTO> respostas = [];

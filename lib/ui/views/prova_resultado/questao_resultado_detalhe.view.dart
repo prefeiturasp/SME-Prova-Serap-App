@@ -129,7 +129,7 @@ class _QuestaoResultadoDetalhesViewState
                                     controller: controller,
                                     questao: store.questao!.toModel(),
                                     alternativas: store.alternativas.map((e) => e.toModel()).toList(),
-                                    imagens: store.imagens.map((e) => e.toArquivoModel()).toList(),
+                                    imagens: store.imagens.map((e) => e.toModel()).toList(),
                                     ordemAlternativaCorreta: store.detalhes!.ordemAlternativaCorreta,
                                     ordemAlternativaResposta: store.detalhes!.ordemAlternativaResposta,
                                     respostaConstruida: store.detalhes!.respostaConstruida,

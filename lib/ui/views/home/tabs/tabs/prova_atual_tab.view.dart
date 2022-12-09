@@ -189,7 +189,9 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                               fontWeight: FontWeight.normal,
                             ),
                             Texto(
-                              provaStore.prova.itensQuantidade.toString(),
+                              provaStore.prova.formatoTai
+                                  ? provaStore.prova.formatoTaiItem.toString()
+                                  : provaStore.prova.itensQuantidade.toString(),
                               fontSize: 14,
                               color: TemaUtil.preto,
                               fontWeight: FontWeight.bold,
@@ -370,6 +372,11 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   }
 
   _buildBotao(ProvaStore provaStore) {
+    // ProvaTai
+    if (provaStore.prova.formatoTai) {
+      return _buildBotaoProvaTai(provaStore);
+    }
+
     // Download não iniciado e sem conexão
     if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
@@ -812,6 +819,52 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           ),
         ],
       ),
+    );
+  }
+
+  _buildBotaoProvaTai(ProvaStore provaStore) {
+    String texto = '';
+    String key = '';
+
+    switch (provaStore.prova.status) {
+      case EnumProvaStatus.INICIADA:
+        texto = "CONTINUAR PROVA";
+        key = "botao-prova-continuar-tai";
+        break;
+      default:
+        texto = "INICIAR PROVA";
+        key = "botao-prova-iniciar-tai";
+    }
+
+    var tamanhoFonte = 14.0;
+    if (kIsMobile) {
+      tamanhoFonte = 14.0;
+      if (temaStore.incrementador >= 22) {
+        tamanhoFonte = 12.0;
+      }
+    }
+
+    return BotaoDefaultWidget(
+      key: Key(key),
+      largura: kIsTablet ? 256 : null,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Texto(
+            '$texto ',
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: tamanhoFonte,
+          ),
+          Icon(Icons.arrow_forward, color: Colors.white, size: 18),
+        ],
+      ),
+      onPressed: () async {
+        await verificarHoraServidor();
+
+        context.push("/prova/tai/${provaStore.id}/carregar");
+      },
     );
   }
 }

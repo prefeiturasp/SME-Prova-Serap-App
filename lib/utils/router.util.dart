@@ -20,6 +20,8 @@ enum APP_PAGE {
   ADMIN_PROVA_QUESTAO_CADERNO,
   QUESTAO_RESPOSTA_RESUMO,
   QUESTAO_RESPOSTA_DETALHES,
+  PROVA_TAI,
+  PROVA_TAI_QUESTAO,
 }
 
 extension AppPageExtension on APP_PAGE {
@@ -65,6 +67,10 @@ extension AppPageExtension on APP_PAGE {
         return "/prova/resposta/:idProva/:nomeCaderno/resumo";
       case APP_PAGE.QUESTAO_RESPOSTA_DETALHES:
         return "/prova/resposta/:idProva/:nomeCaderno/:ordem/detalhes";
+      case APP_PAGE.PROVA_TAI:
+        return "/prova/tai/:idProva/carregar";
+      case APP_PAGE.PROVA_TAI_QUESTAO:
+        return "/prova/tai/:idProva";
     }
   }
 
@@ -110,6 +116,10 @@ extension AppPageExtension on APP_PAGE {
         return "Resultado - Resumo";
       case APP_PAGE.QUESTAO_RESPOSTA_DETALHES:
         return "Resultado - Detalhes";
+      case APP_PAGE.PROVA_TAI:
+        return "Prova Tai";
+      case APP_PAGE.PROVA_TAI_QUESTAO:
+        return "Prova Tai Questao";
     }
   }
 
@@ -155,6 +165,10 @@ extension AppPageExtension on APP_PAGE {
         return "QUESTAO_RESPOSTA_RESUMO";
       case APP_PAGE.QUESTAO_RESPOSTA_DETALHES:
         return "QUESTAO_RESPOSTA_DETALHES";
+      case APP_PAGE.PROVA_TAI:
+        return "PROVA_TAI";
+      case APP_PAGE.PROVA_TAI_QUESTAO:
+        return "PROVA_TAI_QUESTAO";
     }
   }
 }

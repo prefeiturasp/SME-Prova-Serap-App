@@ -12,3 +12,4 @@ export 'rest/log.service.dart';
 export 'rest/download.service.dart';
 export 'rest/configuracao.service.dart';
 export 'rest/prova_resultado.service.dart';
+export 'rest/prova_tai.service.dart';
