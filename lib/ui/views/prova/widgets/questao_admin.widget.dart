@@ -37,7 +37,7 @@ class QuestaoAdminWidget extends StatelessWidget with ProvaViewUtil {
           return renderizarHtml(
             context,
             questao.titulo,
-            imagens.map((e) => e.toArquivoModel()).toList(),
+            imagens.map((e) => e.toModel()).toList(),
             EnumTipoImagem.QUESTAO,
             TratamentoImagemEnum.URL,
           );
@@ -47,7 +47,7 @@ class QuestaoAdminWidget extends StatelessWidget with ProvaViewUtil {
           return renderizarHtml(
             context,
             questao.descricao,
-            imagens.map((e) => e.toArquivoModel()).toList(),
+            imagens.map((e) => e.toModel()).toList(),
             EnumTipoImagem.QUESTAO,
             TratamentoImagemEnum.URL,
           );
@@ -136,7 +136,7 @@ class QuestaoAdminWidget extends StatelessWidget with ProvaViewUtil {
                     return renderizarHtml(
                       context,
                       descricao,
-                      imagens.map((e) => e.toArquivoModel()).toList(),
+                      imagens.map((e) => e.toModel()).toList(),
                       EnumTipoImagem.ALTERNATIVA,
                       TratamentoImagemEnum.URL,
                     );

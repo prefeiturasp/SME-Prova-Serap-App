@@ -38,6 +38,11 @@ class Prova implements Insertable<Prova> {
   bool apresentarResultados;
   bool apresentarResultadosPorItem;
 
+  bool formatoTai;
+  int? formatoTaiItem;
+  bool formatoTaiAvancarSemResponder;
+  bool formatoTaiVoltarItemAnterior;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -59,6 +64,10 @@ class Prova implements Insertable<Prova> {
     required this.provaComProficiencia,
     required this.apresentarResultados,
     required this.apresentarResultadosPorItem,
+    required this.formatoTai,
+    required this.formatoTaiItem,
+    required this.formatoTaiAvancarSemResponder,
+    required this.formatoTaiVoltarItemAnterior,
   });
 
   bool isFinalizada() {
@@ -97,6 +106,10 @@ class Prova implements Insertable<Prova> {
       provaComProficiencia: Value(provaComProficiencia),
       apresentarResultados: Value(apresentarResultados),
       apresentarResultadosPorItem: Value(apresentarResultadosPorItem),
+      formatoTai: Value(formatoTai),
+      formatoTaiItem: Value(formatoTaiItem),
+      formatoTaiAvancarSemResponder: Value(formatoTaiAvancarSemResponder),
+      formatoTaiVoltarItemAnterior: Value(formatoTaiVoltarItemAnterior),
     ).toColumns(nullToAbsent);
   }
 }

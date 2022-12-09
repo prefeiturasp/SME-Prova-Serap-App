@@ -29,6 +29,10 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
   final Value<bool> provaComProficiencia;
   final Value<bool> apresentarResultados;
   final Value<bool> apresentarResultadosPorItem;
+  final Value<bool> formatoTai;
+  final Value<int?> formatoTaiItem;
+  final Value<bool> formatoTaiAvancarSemResponder;
+  final Value<bool> formatoTaiVoltarItemAnterior;
   const ProvasDbCompanion({
     this.id = const Value.absent(),
     this.descricao = const Value.absent(),
@@ -51,6 +55,10 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.provaComProficiencia = const Value.absent(),
     this.apresentarResultados = const Value.absent(),
     this.apresentarResultadosPorItem = const Value.absent(),
+    this.formatoTai = const Value.absent(),
+    this.formatoTaiItem = const Value.absent(),
+    this.formatoTaiAvancarSemResponder = const Value.absent(),
+    this.formatoTaiVoltarItemAnterior = const Value.absent(),
   });
   ProvasDbCompanion.insert({
     required int id,
@@ -74,6 +82,10 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.provaComProficiencia = const Value.absent(),
     this.apresentarResultados = const Value.absent(),
     this.apresentarResultadosPorItem = const Value.absent(),
+    this.formatoTai = const Value.absent(),
+    this.formatoTaiItem = const Value.absent(),
+    this.formatoTaiAvancarSemResponder = const Value.absent(),
+    this.formatoTaiVoltarItemAnterior = const Value.absent(),
   })  : id = Value(id),
         descricao = Value(descricao),
         downloadStatus = Value(downloadStatus),
@@ -106,6 +118,10 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     Expression<bool>? provaComProficiencia,
     Expression<bool>? apresentarResultados,
     Expression<bool>? apresentarResultadosPorItem,
+    Expression<bool>? formatoTai,
+    Expression<int>? formatoTaiItem,
+    Expression<bool>? formatoTaiAvancarSemResponder,
+    Expression<bool>? formatoTaiVoltarItemAnterior,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -134,6 +150,12 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
         'apresentar_resultados': apresentarResultados,
       if (apresentarResultadosPorItem != null)
         'apresentar_resultados_por_item': apresentarResultadosPorItem,
+      if (formatoTai != null) 'formato_tai': formatoTai,
+      if (formatoTaiItem != null) 'formato_tai_item': formatoTaiItem,
+      if (formatoTaiAvancarSemResponder != null)
+        'formato_tai_avancar_sem_responder': formatoTaiAvancarSemResponder,
+      if (formatoTaiVoltarItemAnterior != null)
+        'formato_tai_voltar_item_anterior': formatoTaiVoltarItemAnterior,
     });
   }
 
@@ -158,7 +180,11 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       Value<String>? caderno,
       Value<bool>? provaComProficiencia,
       Value<bool>? apresentarResultados,
-      Value<bool>? apresentarResultadosPorItem}) {
+      Value<bool>? apresentarResultadosPorItem,
+      Value<bool>? formatoTai,
+      Value<int?>? formatoTaiItem,
+      Value<bool>? formatoTaiAvancarSemResponder,
+      Value<bool>? formatoTaiVoltarItemAnterior}) {
     return ProvasDbCompanion(
       id: id ?? this.id,
       descricao: descricao ?? this.descricao,
@@ -183,6 +209,12 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       apresentarResultados: apresentarResultados ?? this.apresentarResultados,
       apresentarResultadosPorItem:
           apresentarResultadosPorItem ?? this.apresentarResultadosPorItem,
+      formatoTai: formatoTai ?? this.formatoTai,
+      formatoTaiItem: formatoTaiItem ?? this.formatoTaiItem,
+      formatoTaiAvancarSemResponder:
+          formatoTaiAvancarSemResponder ?? this.formatoTaiAvancarSemResponder,
+      formatoTaiVoltarItemAnterior:
+          formatoTaiVoltarItemAnterior ?? this.formatoTaiVoltarItemAnterior,
     );
   }
 
@@ -259,6 +291,20 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       map['apresentar_resultados_por_item'] =
           Variable<bool>(apresentarResultadosPorItem.value);
     }
+    if (formatoTai.present) {
+      map['formato_tai'] = Variable<bool>(formatoTai.value);
+    }
+    if (formatoTaiItem.present) {
+      map['formato_tai_item'] = Variable<int>(formatoTaiItem.value);
+    }
+    if (formatoTaiAvancarSemResponder.present) {
+      map['formato_tai_avancar_sem_responder'] =
+          Variable<bool>(formatoTaiAvancarSemResponder.value);
+    }
+    if (formatoTaiVoltarItemAnterior.present) {
+      map['formato_tai_voltar_item_anterior'] =
+          Variable<bool>(formatoTaiVoltarItemAnterior.value);
+    }
     return map;
   }
 
@@ -286,7 +332,12 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
           ..write('caderno: $caderno, ')
           ..write('provaComProficiencia: $provaComProficiencia, ')
           ..write('apresentarResultados: $apresentarResultados, ')
-          ..write('apresentarResultadosPorItem: $apresentarResultadosPorItem')
+          ..write('apresentarResultadosPorItem: $apresentarResultadosPorItem, ')
+          ..write('formatoTai: $formatoTai, ')
+          ..write('formatoTaiItem: $formatoTaiItem, ')
+          ..write(
+              'formatoTaiAvancarSemResponder: $formatoTaiAvancarSemResponder, ')
+          ..write('formatoTaiVoltarItemAnterior: $formatoTaiVoltarItemAnterior')
           ..write(')'))
         .toString();
   }
@@ -436,6 +487,42 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
           defaultConstraints:
               'CHECK (apresentar_resultados_por_item IN (0, 1))',
           defaultValue: Constant(false));
+  final VerificationMeta _formatoTaiMeta = const VerificationMeta('formatoTai');
+  @override
+  late final GeneratedColumn<bool> formatoTai = GeneratedColumn<bool>(
+      'formato_tai', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (formato_tai IN (0, 1))',
+      defaultValue: Constant(false));
+  final VerificationMeta _formatoTaiItemMeta =
+      const VerificationMeta('formatoTaiItem');
+  @override
+  late final GeneratedColumn<int> formatoTaiItem = GeneratedColumn<int>(
+      'formato_tai_item', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  final VerificationMeta _formatoTaiAvancarSemResponderMeta =
+      const VerificationMeta('formatoTaiAvancarSemResponder');
+  @override
+  late final GeneratedColumn<bool> formatoTaiAvancarSemResponder =
+      GeneratedColumn<bool>(
+          'formato_tai_avancar_sem_responder', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints:
+              'CHECK (formato_tai_avancar_sem_responder IN (0, 1))',
+          defaultValue: Constant(false));
+  final VerificationMeta _formatoTaiVoltarItemAnteriorMeta =
+      const VerificationMeta('formatoTaiVoltarItemAnterior');
+  @override
+  late final GeneratedColumn<bool> formatoTaiVoltarItemAnterior =
+      GeneratedColumn<bool>(
+          'formato_tai_voltar_item_anterior', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints:
+              'CHECK (formato_tai_voltar_item_anterior IN (0, 1))',
+          defaultValue: Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -458,7 +545,11 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
         caderno,
         provaComProficiencia,
         apresentarResultados,
-        apresentarResultadosPorItem
+        apresentarResultadosPorItem,
+        formatoTai,
+        formatoTaiItem,
+        formatoTaiAvancarSemResponder,
+        formatoTaiVoltarItemAnterior
       ];
   @override
   String get aliasedName => _alias ?? 'provas_db';
@@ -590,6 +681,32 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
               data['apresentar_resultados_por_item']!,
               _apresentarResultadosPorItemMeta));
     }
+    if (data.containsKey('formato_tai')) {
+      context.handle(
+          _formatoTaiMeta,
+          formatoTai.isAcceptableOrUnknown(
+              data['formato_tai']!, _formatoTaiMeta));
+    }
+    if (data.containsKey('formato_tai_item')) {
+      context.handle(
+          _formatoTaiItemMeta,
+          formatoTaiItem.isAcceptableOrUnknown(
+              data['formato_tai_item']!, _formatoTaiItemMeta));
+    }
+    if (data.containsKey('formato_tai_avancar_sem_responder')) {
+      context.handle(
+          _formatoTaiAvancarSemResponderMeta,
+          formatoTaiAvancarSemResponder.isAcceptableOrUnknown(
+              data['formato_tai_avancar_sem_responder']!,
+              _formatoTaiAvancarSemResponderMeta));
+    }
+    if (data.containsKey('formato_tai_voltar_item_anterior')) {
+      context.handle(
+          _formatoTaiVoltarItemAnteriorMeta,
+          formatoTaiVoltarItemAnterior.isAcceptableOrUnknown(
+              data['formato_tai_voltar_item_anterior']!,
+              _formatoTaiVoltarItemAnteriorMeta));
+    }
     return context;
   }
 
@@ -644,6 +761,16 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
       apresentarResultadosPorItem: attachedDatabase.options.types.read(
           DriftSqlType.bool,
           data['${effectivePrefix}apresentar_resultados_por_item'])!,
+      formatoTai: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}formato_tai'])!,
+      formatoTaiItem: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}formato_tai_item']),
+      formatoTaiAvancarSemResponder: attachedDatabase.options.types.read(
+          DriftSqlType.bool,
+          data['${effectivePrefix}formato_tai_avancar_sem_responder'])!,
+      formatoTaiVoltarItemAnterior: attachedDatabase.options.types.read(
+          DriftSqlType.bool,
+          data['${effectivePrefix}formato_tai_voltar_item_anterior'])!,
     );
   }
 
