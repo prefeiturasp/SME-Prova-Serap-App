@@ -91,12 +91,15 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
         _buildAudioPlayer(),
         _buildLayout(
           body: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildSumario(),
-                _buildQuestao(),
-                _buildBotoes(),
-              ],
+            child: Padding(
+              padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
+              child: Column(
+                children: [
+                  _buildSumario(),
+                  _buildQuestao(),
+                  _buildBotoes(),
+                ],
+              ),
             ),
           ),
         ),
