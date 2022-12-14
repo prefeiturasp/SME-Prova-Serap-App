@@ -1,4 +1,5 @@
 import 'package:appserap/dtos/questao_completa.response.dto.dart';
+import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
@@ -47,6 +48,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
       var prova = await db.provaDao.obterPorProvaId(provaId);
 
       provaStore = ProvaStore(prova: prova);
+      provaStore!.tratamentoImagem = TratamentoImagemEnum.URL;
     }
 
     carregando = false;

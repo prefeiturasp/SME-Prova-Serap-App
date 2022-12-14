@@ -42,4 +42,11 @@ class _$ProvaTaiService extends ProvaTaiService {
     return client
         .send<QuestaoCompletaResponseDTO, QuestaoCompletaResponseDTO>($request);
   }
+
+  @override
+  Future<Response<bool>> existeConexaoR() {
+    final $url = '/v1/provas-tai/existe-conexao-R';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<bool, bool>($request);
+  }
 }

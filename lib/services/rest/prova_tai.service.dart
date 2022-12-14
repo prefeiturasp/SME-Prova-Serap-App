@@ -20,4 +20,7 @@ abstract class ProvaTaiService extends ChopperService {
   Future<Response<QuestaoCompletaResponseDTO>> obterQuestao({
     @Path() required int provaId,
   });
+
+  @Get(path: 'existe-conexao-R')
+  Future<Response<bool>> existeConexaoR();
 }

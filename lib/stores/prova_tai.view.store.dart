@@ -31,24 +31,26 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
       provaStore = ProvaStore(prova: prova);
     }
 
-    if (provaStore!.prova.status == EnumProvaStatus.NAO_INICIADA) {
-      await provaStore!.setStatusProva(EnumProvaStatus.INICIADA);
-      await provaStore!.setHoraInicioProva(DateTime.now());
+    var responseConexao = await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
 
-      var response = await ServiceLocator.get<ApiService>().provaTai.iniciarProva(
-            provaId: provaId,
-            status: EnumProvaStatus.INICIADA.index,
-            tipoDispositivo: kDeviceType.index,
-            dataInicio: getTicks(provaStore!.prova.dataInicioProvaAluno!),
-          );
+    if (responseConexao.isSuccessful) {
+      taiDisponivel = responseConexao.body!;
 
-      if (response.isSuccessful) {
-        taiDisponivel = response.body!;
-      } else {
-        taiDisponivel = false;
+      if (taiDisponivel!) {
+        if (provaStore!.prova.status == EnumProvaStatus.NAO_INICIADA) {
+          await provaStore!.setStatusProva(EnumProvaStatus.INICIADA);
+          await provaStore!.setHoraInicioProva(DateTime.now());
+
+          await ServiceLocator.get<ApiService>().provaTai.iniciarProva(
+                provaId: provaId,
+                status: EnumProvaStatus.INICIADA.index,
+                tipoDispositivo: kDeviceType.index,
+                dataInicio: getTicks(provaStore!.prova.dataInicioProvaAluno!),
+              );
+        }
       }
     } else {
-      taiDisponivel = true;
+      taiDisponivel = false;
     }
 
     carregando = false;
