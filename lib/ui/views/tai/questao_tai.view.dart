@@ -149,23 +149,6 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
     );
   }
 
-  // Widget _buildQuestao() {
-  //   return QuestaoAlunoWidget(
-  //     controller: controller,
-  //     provaStore: store.provaStore!,
-  //     questaoId: store.questao!.id,
-  //     questao: store.questao!.getQuestaoResponseDTO().toModel(),
-  //     imagens: store.questao!.arquivos.map((e) => e.toModel()).toList(),
-  //     alternativas: store.questao!.alternativas.map((e) => e.toModel()).toList(),
-  //     // onRespostaChange: (alternativaId, texto) async {
-  //     //   info("Definindo resposta $alternativaId");
-
-  //     //   store.dataHoraResposta = clock.now();
-  //     //   store.alternativaIdMarcada = alternativaId;
-  //     // },
-  //   );
-  // }
-
   Widget _buildQuestao() {
     return QuestaoTaiWidget(
       controller: controller,
@@ -273,7 +256,8 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
           if (!continuar) {
             context.go("/prova/tai/${widget.provaId}/resumo");
           } else {
-            context.go("/prova/tai/${widget.provaId}/questao/${store.questao!.ordem}");
+            var ordem = store.questao!.ordem == 0 ? 1 : store.questao!.ordem + 1;
+            context.go("/prova/tai/${widget.provaId}/questao/$ordem");
           }
           store.botaoFinalizarOcupado = false;
         },
