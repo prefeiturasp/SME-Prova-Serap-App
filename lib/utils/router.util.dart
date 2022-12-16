@@ -22,6 +22,7 @@ enum APP_PAGE {
   QUESTAO_RESPOSTA_DETALHES,
   PROVA_TAI,
   PROVA_TAI_QUESTAO,
+  PROVA_TAI_RESUMO,
 }
 
 extension AppPageExtension on APP_PAGE {
@@ -70,7 +71,9 @@ extension AppPageExtension on APP_PAGE {
       case APP_PAGE.PROVA_TAI:
         return "/prova/tai/:idProva/carregar";
       case APP_PAGE.PROVA_TAI_QUESTAO:
-        return "/prova/tai/:idProva";
+        return "/prova/tai/:idProva/questao/:ordem";
+      case APP_PAGE.PROVA_TAI_RESUMO:
+        return "/prova/tai/:idProva/resumo";
     }
   }
 
@@ -119,7 +122,9 @@ extension AppPageExtension on APP_PAGE {
       case APP_PAGE.PROVA_TAI:
         return "Prova Tai";
       case APP_PAGE.PROVA_TAI_QUESTAO:
-        return "Prova Tai Questao";
+        return "Prova Tai - Questao";
+      case APP_PAGE.PROVA_TAI_RESUMO:
+        return "Prova Tai - Resumo";
     }
   }
 
@@ -169,6 +174,8 @@ extension AppPageExtension on APP_PAGE {
         return "PROVA_TAI";
       case APP_PAGE.PROVA_TAI_QUESTAO:
         return "PROVA_TAI_QUESTAO";
+      case APP_PAGE.PROVA_TAI_RESUMO:
+        return "PROVA_TAI_RESUMO";
     }
   }
 }

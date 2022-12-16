@@ -32,7 +32,7 @@ class _ProvaTaiViewState extends BaseStateWidget<ProvaTaiView, ProvaTaiViewStore
       if (taiDisponivel != null && taiDisponivel) {
         Timer(Duration(milliseconds: 500), () {
           // Navegar para a questao informada na listagem de provas
-          context.go("/prova/tai/${store.provaStore!.id}");
+          context.go("/prova/tai/${store.provaStore!.id}/questao/0");
         });
       }
     });
@@ -55,7 +55,7 @@ class _ProvaTaiViewState extends BaseStateWidget<ProvaTaiView, ProvaTaiViewStore
         );
       }
 
-      if (store.taiDisponivel != null && !store.taiDisponivel!) {
+      if (!store.taiDisponivel) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

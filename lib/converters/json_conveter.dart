@@ -19,6 +19,7 @@ import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes_caderno_questao.response.dto.dart';
 import 'package:appserap/dtos/prova_resultado_resumo.response.dto.dart';
+import 'package:appserap/dtos/prova_resumo_tai.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/dtos/questao_completa.response.dto.dart';
 import 'package:appserap/dtos/questao_completa_resposta.response.dto.dart';
@@ -98,4 +99,5 @@ final jsonConverter = JsonSerializableConverter({
   "DataHoraServidorDTO": DataHoraServidorDTO.fromJson,
   "ProvaResultadoResumoResponseDto": ProvaResultadoResumoResponseDto.fromJson,
   "QuestaoCompletaRespostaResponseDto": QuestaoCompletaRespostaResponseDto.fromJson,
+  "ProvaResumoTaiResponseDto": ProvaResumoTaiResponseDto.fromJson,
 });

@@ -1,7 +1,7 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/questao_tai_view.store.dart';
 import 'package:appserap/ui/views/prova/prova.media.util.dart';
-import 'package:appserap/ui/views/prova/widgets/questao_aluno.widget.dart';
+import 'package:appserap/ui/views/prova/widgets/questao_tai.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
@@ -13,6 +13,7 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
@@ -37,9 +38,14 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
   @override
+  double get defaultPadding => 0;
+
+  @override
   void initState() {
     super.initState();
-    store.carregarQuestao(widget.provaId);
+    store.carregarQuestao(
+      widget.provaId,
+    );
   }
 
   @override
@@ -81,6 +87,16 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
         );
       }
 
+      if (!store.taiDisponivel) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Texto("Não é possível iniciar a prova pois não há conexão disponível."),
+          ],
+        );
+      }
+
       return _buildProva();
     });
   }
@@ -93,12 +109,15 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
           body: SingleChildScrollView(
             child: Padding(
               padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
-              child: Column(
-                children: [
-                  _buildSumario(),
-                  _buildQuestao(),
-                  _buildBotoes(),
-                ],
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Column(
+                  children: [
+                    _buildSumario(),
+                    _buildQuestao(),
+                    _buildBotoes(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -113,7 +132,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
     }
 
     return AudioPlayerWidget(
-      audioPath: store.response!.audios.first.caminho,
+      audioPath: store.questao!.audios.first.caminho,
     );
   }
 
@@ -121,13 +140,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
     return Row(
       children: [
         Texto(
-          'Questão ${store.response!.ordem + 1} ',
-          color: TemaUtil.preto,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-        ),
-        Texto(
-          'de ${store.provaStore!.prova.formatoTaiItem}',
+          'Questão ${store.questao!.ordem + 1} ',
           color: TemaUtil.preto,
           fontSize: 20,
           fontWeight: FontWeight.w600,
@@ -136,14 +149,38 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
     );
   }
 
+  // Widget _buildQuestao() {
+  //   return QuestaoAlunoWidget(
+  //     controller: controller,
+  //     provaStore: store.provaStore!,
+  //     questaoId: store.questao!.id,
+  //     questao: store.questao!.getQuestaoResponseDTO().toModel(),
+  //     imagens: store.questao!.arquivos.map((e) => e.toModel()).toList(),
+  //     alternativas: store.questao!.alternativas.map((e) => e.toModel()).toList(),
+  //     // onRespostaChange: (alternativaId, texto) async {
+  //     //   info("Definindo resposta $alternativaId");
+
+  //     //   store.dataHoraResposta = clock.now();
+  //     //   store.alternativaIdMarcada = alternativaId;
+  //     // },
+  //   );
+  // }
+
   Widget _buildQuestao() {
-    return QuestaoAlunoWidget(
+    return QuestaoTaiWidget(
       controller: controller,
       provaStore: store.provaStore!,
-      questaoId: store.response!.id,
-      questao: store.response!.getQuestaoResponseDTO().toModel(),
-      imagens: store.response!.arquivos.map((e) => e.toModel()).toList(),
-      alternativas: store.response!.alternativas.map((e) => e.toModel()).toList(),
+      questaoId: store.questao!.id,
+      questao: store.questao!.getQuestaoResponseDTO().toModel(),
+      imagens: store.questao!.arquivos.map((e) => e.toModel()).toList(),
+      alternativas: store.questao!.alternativas.map((e) => e.toModel()).toList(),
+      alternativaIdResposta: store.alternativaIdMarcada,
+      onRespostaChange: (alternativaId, texto) async {
+        info("Definindo resposta $alternativaId");
+
+        store.dataHoraResposta = clock.now();
+        store.alternativaIdMarcada = alternativaId;
+      },
     );
   }
 
@@ -182,7 +219,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
 
   Future<Widget> showVideoPlayer() async {
     return VideoPlayerWidget(
-      videoUrl: store.response!.videos.first.caminho,
+      videoUrl: store.questao!.videos.first.caminho,
     );
   }
 
@@ -196,7 +233,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
       ],
     );
 
-    if (kIsMobile || kIsTablet && store.response!.videos.isNotEmpty) {
+    if (kIsMobile || kIsTablet && store.questao!.videos.isNotEmpty) {
       botoesRespondendoProva = Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -214,7 +251,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
   }
 
   Widget _buildBotaoVoltar() {
-    if (store.response!.ordem == 0 || store.provaStore!.prova.formatoTaiVoltarItemAnterior) {
+    if (store.questao!.ordem == 0 || !store.provaStore!.prova.formatoTaiVoltarItemAnterior) {
       return SizedBox.shrink();
     }
 
@@ -225,23 +262,27 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
   }
 
   Widget _buildBotaoProximo() {
-    return BotaoDefaultWidget(
-      textoBotao: 'Próxima questão',
-      onPressed: () async {},
-    );
+    return Observer(builder: (_) {
+      return BotaoDefaultWidget(
+        textoBotao: 'Próxima questão',
+        desabilitado: store.botaoFinalizarOcupado,
+        onPressed: () async {
+          store.botaoFinalizarOcupado = true;
+          bool continuar = await store.enviarResposta();
 
-    return _buildBotaoFinalizarProva();
-  }
-
-  Widget _buildBotaoFinalizarProva() {
-    return BotaoDefaultWidget(
-      textoBotao: 'Finalizar prova',
-      onPressed: () async {},
-    );
+          if (!continuar) {
+            context.go("/prova/tai/${widget.provaId}/resumo");
+          } else {
+            context.go("/prova/tai/${widget.provaId}/questao/${store.questao!.ordem}");
+          }
+          store.botaoFinalizarOcupado = false;
+        },
+      );
+    });
   }
 
   bool exibirAudio() {
-    if (store.response!.audios.isEmpty) {
+    if (store.questao!.audios.isEmpty) {
       return false;
     }
 
@@ -249,7 +290,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
   }
 
   bool exibirVideo() {
-    if (store.response!.videos.isEmpty) {
+    if (store.questao!.videos.isEmpty) {
       return false;
     }
 
