@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/ui/views/admin/prova_contexto.admin.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
@@ -10,6 +12,8 @@ import 'package:appserap/ui/views/prova/resumo_respostas.view.dart';
 import 'package:appserap/ui/views/prova_resultado/questao_resultado_detalhe.view.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/router.util.dart';
+import 'package:appserap/utils/string.util.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,6 +28,7 @@ import 'ui/views/prova/questao_revisao.view.dart';
 import 'ui/views/prova_resultado/prova_resultado_resumo.view.dart';
 import 'ui/views/tai/prova_tai.view.dart';
 import 'ui/views/tai/questao_tai.view.dart';
+import 'ui/views/tai/resumo_tai.view.dart';
 
 class AppRouter {
   GoRouter get router => _goRouter;
@@ -236,11 +241,17 @@ class AppRouter {
         name: APP_PAGE.PROVA_TAI_QUESTAO.toName,
         builder: (context, state) {
           var idProva = int.tryParse(state.params['idProva']!);
+          var ordem = int.tryParse(state.params['ordem']!) ?? 0;
+          return QuestaoTaiView(key: ValueKey("$idProva-$ordem"), provaId: idProva!);
+        },
+      ),
 
-          return QuestaoTaiView(
-            key: ValueKey("$idProva"),
-            provaId: idProva!,
-          );
+      GoRoute(
+        path: APP_PAGE.PROVA_TAI_RESUMO.toPath,
+        name: APP_PAGE.PROVA_TAI_RESUMO.toName,
+        builder: (context, state) {
+          var idProva = int.tryParse(state.params['idProva']!);
+          return ResumoTaiView(key: ValueKey("$idProva"), provaId: idProva!);
         },
       ),
     ],

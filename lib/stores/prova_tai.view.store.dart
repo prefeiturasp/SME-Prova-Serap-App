@@ -16,7 +16,7 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
   bool carregando = false;
 
   @observable
-  bool? taiDisponivel;
+  bool taiDisponivel = false;
 
   @observable
   ProvaStore? provaStore;
@@ -25,18 +25,15 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
   Future<bool?> configurarProva(int provaId) async {
     carregando = true;
 
-    if (provaStore == null) {
-      var prova = await db.provaDao.obterPorProvaId(provaId);
-
-      provaStore = ProvaStore(prova: prova);
-    }
-
+    var prova = await db.provaDao.obterPorProvaId(provaId);
+    provaStore = ProvaStore(prova: prova);
+    
     var responseConexao = await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
 
     if (responseConexao.isSuccessful) {
       taiDisponivel = responseConexao.body!;
 
-      if (taiDisponivel!) {
+      if (taiDisponivel) {
         if (provaStore!.prova.status == EnumProvaStatus.NAO_INICIADA) {
           await provaStore!.setStatusProva(EnumProvaStatus.INICIADA);
           await provaStore!.setHoraInicioProva(DateTime.now());

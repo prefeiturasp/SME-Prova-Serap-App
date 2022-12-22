@@ -17,6 +17,13 @@ class _$ProvaTaiService extends ProvaTaiService {
   final definitionType = ProvaTaiService;
 
   @override
+  Future<Response<bool>> existeConexaoR() {
+    final $url = '/v1/provas-tai/existe-conexao-R';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<bool, bool>($request);
+  }
+
+  @override
   Future<Response<bool>> iniciarProva(
       {required int provaId,
       required int status,
@@ -24,6 +31,24 @@ class _$ProvaTaiService extends ProvaTaiService {
       int? dataInicio,
       int? dataFim}) {
     final $url = '/v1/provas-tai/${provaId}/iniciar-prova';
+    final $body = <String, dynamic>{
+      'status': status,
+      'tipoDispositivo': tipoDispositivo,
+      'dataInicio': dataInicio,
+      'dataFim': dataFim
+    };
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<bool, bool>($request);
+  }
+
+  @override
+  Future<Response<bool>> finalizarProva(
+      {required int provaId,
+      required int status,
+      required int tipoDispositivo,
+      int? dataInicio,
+      int? dataFim}) {
+    final $url = '/v1/provas-tai/${provaId}/finalizar-prova';
     final $body = <String, dynamic>{
       'status': status,
       'tipoDispositivo': tipoDispositivo,
@@ -44,9 +69,20 @@ class _$ProvaTaiService extends ProvaTaiService {
   }
 
   @override
-  Future<Response<bool>> existeConexaoR() {
-    final $url = '/v1/provas-tai/existe-conexao-R';
-    final $request = Request('GET', $url, client.baseUrl);
+  Future<Response<bool>> proximaQuestao(
+      {required int provaId, required QuestaoRespostaDTO resposta}) {
+    final $url = '/v1/provas-tai/${provaId}/proximo';
+    final $body = resposta;
+    final $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<bool, bool>($request);
+  }
+
+  @override
+  Future<Response<List<ProvaResumoTaiResponseDto>>> obterResumo(
+      {required int provaId}) {
+    final $url = '/v1/provas-tai/${provaId}/resumo';
+    final $request = Request('GET', $url, client.baseUrl);
+    return client.send<List<ProvaResumoTaiResponseDto>,
+        ProvaResumoTaiResponseDto>($request);
   }
 }
