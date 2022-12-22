@@ -31,7 +31,9 @@ class QuestaoTaiView extends BaseStatefulWidget {
   State<QuestaoTaiView> createState() => _QuestaoTaiViewState();
 }
 
-class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiViewStore> with Loggable, ProvaMediaUtil {
+class _QuestaoTaiViewState
+    extends BaseStateWidget<QuestaoTaiView, QuestaoTaiViewStore>
+    with Loggable, ProvaMediaUtil {
   final controller = HtmlEditorController();
 
   @override
@@ -92,7 +94,8 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Texto("Não é possível iniciar a prova pois não há conexão disponível."),
+            Texto(
+                "Não é possível iniciar a prova pois não há conexão disponível."),
           ],
         );
       }
@@ -156,7 +159,8 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
       questaoId: store.questao!.id,
       questao: store.questao!.getQuestaoResponseDTO().toModel(),
       imagens: store.questao!.arquivos.map((e) => e.toModel()).toList(),
-      alternativas: store.questao!.alternativas.map((e) => e.toModel()).toList(),
+      alternativas:
+          store.questao!.alternativas.map((e) => e.toModel()).toList(),
       alternativaIdResposta: store.alternativaIdMarcada,
       onRespostaChange: (alternativaId, texto) async {
         info("Definindo resposta $alternativaId");
@@ -194,7 +198,9 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
       child: FutureBuilder<Widget>(
         future: showVideoPlayer(),
         builder: (context, snapshot) {
-          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
+          return snapshot.connectionState == ConnectionState.done
+              ? snapshot.data!
+              : Container();
         },
       ),
     );
@@ -234,7 +240,8 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
   }
 
   Widget _buildBotaoVoltar() {
-    if (store.questao!.ordem == 0 || !store.provaStore!.prova.formatoTaiVoltarItemAnterior) {
+    if (store.questao!.ordem == 0 ||
+        !store.provaStore!.prova.formatoTaiVoltarItemAnterior) {
       return SizedBox.shrink();
     }
 
@@ -251,13 +258,17 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
         desabilitado: store.botaoFinalizarOcupado,
         onPressed: () async {
           store.botaoFinalizarOcupado = true;
-          bool continuar = await store.enviarResposta();
 
-          if (!continuar) {
-            context.go("/prova/tai/${widget.provaId}/resumo");
-          } else {
-            var ordem = store.questao!.ordem == 0 ? 1 : store.questao!.ordem + 1;
-            context.go("/prova/tai/${widget.provaId}/questao/$ordem");
+          if (store.alternativaIdMarcada != null) {
+            bool continuar = await store.enviarResposta();
+
+            if (!continuar) {
+              context.go("/prova/tai/${widget.provaId}/resumo");
+            } else {
+              var ordem =
+                  store.questao!.ordem == 0 ? 1 : store.questao!.ordem + 1;
+              context.go("/prova/tai/${widget.provaId}/questao/$ordem");
+            }
           }
           store.botaoFinalizarOcupado = false;
         },

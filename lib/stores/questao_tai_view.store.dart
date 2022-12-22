@@ -53,28 +53,28 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
       provaStore!.tratamentoImagem = TratamentoImagemEnum.URL;
     }
 
-    var responseConexao = await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
+    var responseConexao =
+        await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
 
     if (responseConexao.isSuccessful) {
       taiDisponivel = responseConexao.body!;
 
-      if (questao == null) {
-        await retry(
-          () async {
-            Response<QuestaoCompletaResponseDTO>? response =
-                await ServiceLocator.get<ApiService>().provaTai.obterQuestao(
-                      provaId: provaId,
-                    );
+      await retry(
+        () async {
+          Response<QuestaoCompletaResponseDTO>? response =
+              await ServiceLocator.get<ApiService>().provaTai.obterQuestao(
+                    provaId: provaId,
+                  );
 
-            if (response.isSuccessful) {
-              questao = response.body!;
-            }
-          },
-          onRetry: (e) {
-            fine('[Prova $provaId] - Tentativa de carregamento da Questao ordem ${questao!.ordem} - ${e.toString()}');
-          },
-        );
-      }
+          if (response.isSuccessful) {
+            questao = response.body!;
+          }
+        },
+        onRetry: (e) {
+          fine(
+              '[Prova $provaId] - Tentativa de carregamento da Questao ordem ${questao!.ordem} - ${e.toString()}');
+        },
+      );
     } else {
       taiDisponivel = false;
     }
@@ -97,10 +97,11 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
       tempoRespostaAluno: 0,
     );
 
-    var response = await ServiceLocator.get<ApiService>().provaTai.proximaQuestao(
-          provaId: provaStore!.id,
-          resposta: questaoResposta,
-        );
+    var response =
+        await ServiceLocator.get<ApiService>().provaTai.proximaQuestao(
+              provaId: provaStore!.id,
+              resposta: questaoResposta,
+            );
 
     if (response.isSuccessful) {
       return response.body!;

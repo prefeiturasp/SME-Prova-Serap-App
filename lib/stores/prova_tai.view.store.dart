@@ -25,12 +25,9 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
   Future<bool?> configurarProva(int provaId) async {
     carregando = true;
 
-    if (provaStore == null) {
-      var prova = await db.provaDao.obterPorProvaId(provaId);
-
-      provaStore = ProvaStore(prova: prova);
-    }
-
+    var prova = await db.provaDao.obterPorProvaId(provaId);
+    provaStore = ProvaStore(prova: prova);
+    
     var responseConexao = await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
 
     if (responseConexao.isSuccessful) {

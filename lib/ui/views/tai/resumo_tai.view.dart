@@ -12,6 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../main.ioc.dart';
+import '../../../main.route.dart';
+
 class ResumoTaiView extends BaseStatefulWidget {
   final int provaId;
 
@@ -116,13 +119,13 @@ class _ResumoTaiViewState extends BaseStateWidget<ResumoTaiView, ResumoTaiViewSt
                             SizedBox(height: 32),
                             Center(
                               child: BotaoDefaultWidget(
-                                textoBotao: 'FINALIZAR E ENVIAR',
+                                textoBotao: 'FECHAR',
                                 largura: 392,
                                 desabilitado: store.botaoFinalizarOcupado,
                                 onPressed: () async {
                                   try {
                                     store.botaoFinalizarOcupado = true;
-                                    await store.finalizarProva();
+                                    ServiceLocator.get<AppRouter>().router.go("/");
                                   } catch (e, stack) {
                                     await recordError(e, stack);
                                   } finally {

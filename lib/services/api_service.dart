@@ -60,7 +60,7 @@ class ApiService {
       interceptors: [
         CompressaoInterceptor(),
         CustomAuthInterceptor(),
-        // CurlInterceptor(),
+        CurlInterceptor(),
         // HttpLoggingInterceptor(),
       ],
     ));
