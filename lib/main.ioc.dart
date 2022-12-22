@@ -32,6 +32,7 @@ import 'stores/prova_resultado_resumo_view.store.dart';
 import 'stores/prova_tai.view.store.dart';
 import 'stores/questao.store.dart';
 import 'stores/questao_resultado_detalhes_view.store.dart';
+import 'stores/resumo_tai_view.store.dart';
 
 // ignore: non_constant_identifier_names
 GetIt ServiceLocator = GetIt.instance;
@@ -87,6 +88,7 @@ class DependenciasIoC with Loggable {
     registerSingleton<QuestaoResultadoDetalhesViewStore>(QuestaoResultadoDetalhesViewStore());
     registerSingleton<ProvaTaiViewStore>(ProvaTaiViewStore());
     registerSingleton<QuestaoTaiViewStore>(QuestaoTaiViewStore());
+    registerSingleton<ResumoTaiViewStore>(ResumoTaiViewStore());
   }
 
   void registerSingletonAsync<T extends Object>(

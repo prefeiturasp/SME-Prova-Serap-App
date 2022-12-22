@@ -156,51 +156,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                   ),
                   SizedBox(height: 10),
                   // Quantidade de itens
-                  Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: TemaUtil.laranja02.withOpacity(0.1),
-                        ),
-                        padding: EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.format_list_numbered,
-                          color: TemaUtil.laranja02,
-                          size: 24,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      //
-                      Observer(builder: (_) {
-                        return AdaptativeWidget(
-                          mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC &&
-                                  temaStore.incrementador > 22 &&
-                                  kIsMobile
-                              ? AdaptativeWidgetMode.COLUMN
-                              : AdaptativeWidgetMode.ROW,
-                          children: [
-                            Texto(
-                              "Quantidade de itens: ",
-                              fontSize: 14,
-                              color: TemaUtil.preto,
-                              fontWeight: FontWeight.normal,
-                            ),
-                            Texto(
-                              provaStore.prova.formatoTai
-                                  ? provaStore.prova.formatoTaiItem.toString()
-                                  : provaStore.prova.itensQuantidade.toString(),
-                              fontSize: 14,
-                              color: TemaUtil.preto,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ],
-                        );
-                      }),
-                    ],
-                  ),
+                  _buildQuantidadeItens(provaStore),
                   SizedBox(height: 10),
                   // Data aplicacao
                   Row(
@@ -865,6 +821,54 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
         context.push("/prova/tai/${provaStore.id}/carregar");
       },
+    );
+  }
+
+  Widget _buildQuantidadeItens(ProvaStore provaStore) {
+    if (provaStore.prova.formatoTai) {
+      return SizedBox.shrink();
+    }
+
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: TemaUtil.laranja02.withOpacity(0.1),
+          ),
+          padding: EdgeInsets.all(4),
+          child: Icon(
+            Icons.format_list_numbered,
+            color: TemaUtil.laranja02,
+            size: 24,
+          ),
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        //
+        Observer(builder: (_) {
+          return AdaptativeWidget(
+            mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC && temaStore.incrementador > 22 && kIsMobile
+                ? AdaptativeWidgetMode.COLUMN
+                : AdaptativeWidgetMode.ROW,
+            children: [
+              Texto(
+                "Quantidade de itens: ",
+                fontSize: 14,
+                color: TemaUtil.preto,
+                fontWeight: FontWeight.normal,
+              ),
+              Texto(
+                provaStore.prova.itensQuantidade.toString(),
+                fontSize: 14,
+                color: TemaUtil.preto,
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          );
+        }),
+      ],
     );
   }
 }

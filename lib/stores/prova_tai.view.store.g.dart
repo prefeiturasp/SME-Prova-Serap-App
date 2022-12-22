@@ -29,13 +29,13 @@ mixin _$ProvaTaiViewStore on _ProvaTaiViewStoreBase, Store {
       Atom(name: '_ProvaTaiViewStoreBase.taiDisponivel', context: context);
 
   @override
-  bool? get taiDisponivel {
+  bool get taiDisponivel {
     _$taiDisponivelAtom.reportRead();
     return super.taiDisponivel;
   }
 
   @override
-  set taiDisponivel(bool? value) {
+  set taiDisponivel(bool value) {
     _$taiDisponivelAtom.reportWrite(value, super.taiDisponivel, () {
       super.taiDisponivel = value;
     });
