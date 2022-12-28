@@ -35,20 +35,21 @@ abstract class _ResumoTaiViewStoreBase with Store, Loggable, Database {
       provaStore = ProvaStore(prova: prova);
     }
 
-    if (resumo == null) {
-      await retry(
-        () async {
-          var response = await ServiceLocator.get<ApiService>().provaTai.obterResumo(provaId: provaId);
+    await retry(
+      () async {
+        var response = await ServiceLocator.get<ApiService>()
+            .provaTai
+            .obterResumo(provaId: provaId);
 
-          if (response.isSuccessful) {
-            resumo = response.body!.asObservable();
-          }
-        },
-        onRetry: (e) {
-          fine('[Prova $provaId] - Tentativa de carregamento do resumo da prova - ${e.toString()}');
-        },
-      );
-    }
+        if (response.isSuccessful) {
+          resumo = response.body!.asObservable();
+        }
+      },
+      onRetry: (e) {
+        fine(
+            '[Prova $provaId] - Tentativa de carregamento do resumo da prova - ${e.toString()}');
+      },
+    );
 
     carregando = false;
   }
