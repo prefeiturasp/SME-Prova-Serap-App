@@ -46,6 +46,8 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
   Future carregarQuestao(int provaId) async {
     carregando = true;
 
+    alternativaIdMarcada = null;
+    
     if (provaStore == null) {
       var prova = await db.provaDao.obterPorProvaId(provaId);
 

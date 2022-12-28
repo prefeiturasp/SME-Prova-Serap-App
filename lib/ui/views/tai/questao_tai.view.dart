@@ -257,6 +257,7 @@ class _QuestaoTaiViewState
         textoBotao: 'Próxima questão',
         desabilitado: store.botaoFinalizarOcupado,
         onPressed: () async {
+          store.carregando = true;
           store.botaoFinalizarOcupado = true;
 
           if (store.alternativaIdMarcada != null) {
@@ -271,6 +272,7 @@ class _QuestaoTaiViewState
             }
           }
           store.botaoFinalizarOcupado = false;
+          store.carregando = false;
         },
       );
     });
