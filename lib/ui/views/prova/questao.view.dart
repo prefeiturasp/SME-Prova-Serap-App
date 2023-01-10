@@ -47,6 +47,12 @@ class QuestaoView extends BaseStatefulWidget {
 }
 
 class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable, ProvaMediaUtil {
+  @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
+  double get defaultPadding => 0;
+
   late ProvaStore provaStore;
   late Questao questao;
   late List<Alternativa> alternativas;
@@ -61,6 +67,30 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   var db = ServiceLocator.get<AppDatabase>();
 
   final controller = HtmlEditorController();
+
+  @override
+  AppBarWidget buildAppBar() {
+    return AppBarWidget(
+      popView: true,
+      subtitulo: provaStore.prova.descricao,
+      leading: _buildLeading(),
+    );
+  }
+
+  Widget? _buildLeading() {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () async {
+        bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
+
+        if (voltar) {
+          provaStore.setRespondendoProva(false);
+          provaStore.onDispose();
+          context.go("/");
+        }
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -128,36 +158,6 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         arquivoAudio = readContents;
       }
     }
-  }
-
-  @override
-  Color? get backgroundColor => TemaUtil.corDeFundo;
-
-  @override
-  double get defaultPadding => 0;
-
-  @override
-  AppBarWidget buildAppBar() {
-    return AppBarWidget(
-      popView: true,
-      subtitulo: provaStore.prova.descricao,
-      leading: _buildLeading(),
-    );
-  }
-
-  Widget? _buildLeading() {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () async {
-        bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
-
-        if (voltar) {
-          provaStore.setRespondendoProva(false);
-          provaStore.onDispose();
-          context.go("/");
-        }
-      },
-    );
   }
 
   @override

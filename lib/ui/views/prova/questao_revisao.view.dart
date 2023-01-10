@@ -18,6 +18,7 @@ import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao_revisao.store.dart';
 import 'package:appserap/ui/views/prova/prova.view.util.dart';
+import 'package:appserap/ui/views/prova/widgets/questao_aluno.widget.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
@@ -56,14 +57,18 @@ class QuestaoRevisaoView extends BaseStatefulWidget {
 
 class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, QuestaoRevisaoStore>
     with Loggable, ProvaViewUtil, ProvaMediaUtil {
+  @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
+  double get defaultPadding => 0;
+
   late ProvaStore provaStore;
   late Questao questao;
   late List<Alternativa> alternativas;
   late List<Arquivo> imagens;
-
   late Uint8List arquivoVideo;
   late Uint8List arquivoAudio;
-
   late int questaoId;
 
   ArquivoVideoDb? arquivoVideoDb;
@@ -72,12 +77,6 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   var db = ServiceLocator.get<AppDatabase>();
 
   final controller = HtmlEditorController();
-
-  @override
-  Color? get backgroundColor => TemaUtil.corDeFundo;
-
-  @override
-  double get defaultPadding => 0;
 
   @override
   AppBarWidget buildAppBar() {
@@ -94,19 +93,20 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
     configure().then((_) {
       store.isLoading = false;
+      provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
     });
-
-    provaStore.tempoCorrendo = EnumTempoStatus.CORRENDO;
   }
 
-  Future<void> configure() async {
+  configure() async {
     var provas = ServiceLocator.get<HomeStore>().provas;
 
     if (provas.isEmpty) {
       ServiceLocator.get<AppRouter>().router.go("/");
+      return;
     }
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
+
     questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
     alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
     imagens = await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
@@ -156,9 +156,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
   @override
   Widget builder(BuildContext context) {
-    store.totalDeQuestoesParaRevisar = store.questoesParaRevisar.length;
-
-    return Observer(builder: (_) {
+    return Observer(builder: (context) {
       if (store.isLoading) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -173,93 +171,89 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
         );
       }
 
-      return Column(
-        children: [
-          TempoExecucaoWidget(provaStore: provaStore),
-          _buildAudioPlayer(),
-          StatusSincronizacao(),
-          Expanded(
-            child: _buildLayout(
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding: getPadding(),
-                  child: Column(
-                    children: [
-                      Observer(builder: (_) {
-                        return Container(
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+      return Scaffold(
+        backgroundColor: backgroundColor,
+        body: Column(
+          children: [
+            TempoExecucaoWidget(provaStore: provaStore),
+            _buildAudioPlayer(),
+            StatusSincronizacao(),
+            Expanded(
+              child: _buildLayout(
+                body: SingleChildScrollView(
+                  child: Padding(
+                    padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: exibirVideo() ? MediaQuery.of(context).size.width / 2 : null,
+                          child: Observer(builder: (_) {
+                            return Container(
+                              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'Questão ${widget.ordem + 1} ',
-                                    style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                      fontSize: temaStore.tTexto20,
-                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Questão ${widget.ordem + 1} ',
+                                        style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                          fontSize: temaStore.tTexto20,
+                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                        ),
+                                      ),
+                                      Text(
+                                        'de ${provaStore.prova.itensQuantidade}',
+                                        style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                          fontSize: temaStore.tTexto20,
+                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    'de ${provaStore.prova.itensQuantidade}',
-                                    style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                                      fontSize: temaStore.tTexto20,
-                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    ),
+                                  SizedBox(height: 8),
+                                  QuestaoAlunoWidget(
+                                    provaStore: provaStore,
+                                    controller: controller,
+                                    questaoId: questaoId,
+                                    questao: questao,
+                                    alternativas: alternativas,
+                                    imagens: imagens,
                                   ),
+                                  SizedBox(height: 8),
                                 ],
                               ),
-                              SizedBox(height: 8),
-                              buildTratamentoImagem(provaStore, imagens, questao, alternativas),
-                              Observer(builder: (_) {
-                                return renderizarHtml(
-                                  context,
-                                  questao.titulo,
-                                  imagens,
-                                  EnumTipoImagem.QUESTAO,
-                                  provaStore.tratamentoImagem,
-                                );
-                              }),
-                              SizedBox(height: 8),
-                              Observer(builder: (_) {
-                                return renderizarHtml(
-                                  context,
-                                  questao.descricao,
-                                  imagens,
-                                  EnumTipoImagem.QUESTAO,
-                                  provaStore.tratamentoImagem,
-                                );
-                              }),
-                              SizedBox(height: 16),
-                              Observer(builder: (_) {
-                                return _buildResposta(questao);
-                              }),
-                            ],
-                          ),
-                        );
-                      }),
-                      Observer(builder: (context) {
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                            left: 24,
-                            right: 24,
-                            bottom: 20,
-                          ),
-                          child: _buildBotoes(questao),
-                        );
-                      }),
-                    ],
+                            );
+                          }),
+                        ),
+                        Observer(builder: (context) {
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                              left: 24,
+                              right: 24,
+                              bottom: 20,
+                            ),
+                            child: Column(
+                              children: [
+                                // kDebugMode ? _buildBotaoFinalizarProva() : Container(),
+                                _buildBotoes(questao),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     });
   }
 
-  Widget _buildLayout({required Widget body}) {
+  _buildLayout({required Widget body}) {
     if (exibirVideo()) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,160 +270,36 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
     }
   }
 
-  Widget _buildResposta(Questao questao) {
-    switch (questao.tipo) {
-      case EnumTipoQuestao.MULTIPLA_ESCOLHA:
-        return _buildAlternativas(questao);
-      case EnumTipoQuestao.RESPOSTA_CONTRUIDA:
-        return _buildRespostaConstruida(questao);
-
-      default:
-        return SizedBox.shrink();
+  Widget _buildAudioPlayer() {
+    if (!exibirAudio()) {
+      return SizedBox.shrink();
     }
-  }
 
-  Widget _buildRespostaConstruida(Questao questao) {
-    RespostaProva? provaResposta = provaStore.respostas.respostasLocal[questaoId];
-
-    return Column(
-      children: [
-        //
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Observer(builder: (_) {
-              return HtmlEditor(
-                controller: controller,
-                callbacks: Callbacks(
-                  onInit: () {
-                    controller.execCommand('fontName', argument: temaStore.fonteDoTexto.nomeFonte);
-                    controller.setText(provaResposta?.resposta ?? "");
-                  },
-                  onChangeContent: (String? textoDigitado) {
-                    provaStore.respostas.definirResposta(questaoId, textoResposta: textoDigitado);
-                  },
-                ),
-                htmlToolbarOptions: HtmlToolbarOptions(
-                  toolbarPosition: ToolbarPosition.belowEditor,
-                  defaultToolbarButtons: [
-                    FontButtons(
-                      subscript: false,
-                      superscript: false,
-                      strikethrough: false,
-                    ),
-                    ParagraphButtons(
-                      lineHeight: false,
-                      caseConverter: false,
-                      decreaseIndent: true,
-                      increaseIndent: true,
-                      textDirection: false,
-                      alignRight: false,
-                    ),
-                    ListButtons(
-                      listStyles: false,
-                    ),
-                  ],
-                ),
-                htmlEditorOptions: HtmlEditorOptions(
-                  autoAdjustHeight: false,
-                  hint: "Digite sua resposta aqui...",
-                ),
-                otherOptions: OtherOptions(
-                  height: 400,
-                ),
-              );
-            }),
-          ),
-        ),
-        //
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 15),
-          width: MediaQuery.of(context).size.width,
-          child: Texto(
-            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length}',
-            textAlign: TextAlign.end,
-            fontSize: 16,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAlternativas(Questao questao) {
-    alternativas.sort((a, b) => a.ordem.compareTo(b.ordem));
-    return ListTileTheme.merge(
-      horizontalTitleGap: 0,
-      child: Column(
-        children: alternativas
-            .map((e) => _buildAlternativa(
-                  e.id,
-                  e.numeracao,
-                  questao,
-                  e.descricao,
-                ))
-            .toList(),
-      ),
-    );
-  }
-
-  Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    RespostaProva? resposta = provaStore.respostas.respostasLocal[questaoId];
-
-    return Observer(
-      builder: (_) {
-        return Container(
-          margin: EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: Colors.black.withOpacity(0.34),
-            ),
-            borderRadius: BorderRadius.all(
-              Radius.circular(12),
-            ),
-          ),
-          child: RadioListTile<int>(
-            contentPadding: EdgeInsets.all(0),
-            toggleable: true,
-            dense: true,
-            value: idAlternativa,
-            groupValue: resposta?.alternativaId,
-            onChanged: (value) async {
-              await provaStore.respostas.definirResposta(
-                questaoId,
-                alternativaId: value,
-                tempoQuestao: provaStore.segundos,
-              );
-            },
-            title: Row(
-              children: [
-                Text(
-                  "$numeracao ",
-                  style: TemaUtil.temaTextoNumeracao.copyWith(
-                    fontSize: temaStore.tTexto16,
-                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                  ),
-                ),
-                Expanded(
-                  child: Observer(builder: (_) {
-                    return renderizarHtml(
-                      context,
-                      descricao,
-                      imagens,
-                      EnumTipoImagem.ALTERNATIVA,
-                      provaStore.tratamentoImagem,
-                    );
-                  }),
-                ),
-              ],
-            ),
-          ),
+    if (kIsWeb) {
+      return AudioPlayerWidget(
+        audioBytes: arquivoAudio,
+      );
+    } else {
+      if (arquivoAudioDb != null) {
+        return AudioPlayerWidget(
+          audioPath: arquivoAudioDb!.path,
         );
-      },
+      }
+    }
+
+    return SizedBox.shrink();
+  }
+
+  Widget _buildVideoPlayer() {
+    return Container(
+      width: MediaQuery.of(context).size.width / 2,
+      padding: EdgeInsets.only(right: 16),
+      child: FutureBuilder<Widget>(
+        future: showVideoPlayer(),
+        builder: (context, snapshot) {
+          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
+        },
+      ),
     );
   }
 
@@ -513,39 +383,6 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
           store.botaoOcupado = false;
         }
       },
-    );
-  }
-
-  Widget _buildAudioPlayer() {
-    if (!exibirAudio()) {
-      return SizedBox.shrink();
-    }
-
-    if (kIsWeb) {
-      return AudioPlayerWidget(
-        audioBytes: arquivoAudio,
-      );
-    } else {
-      if (arquivoAudioDb != null) {
-        return AudioPlayerWidget(
-          audioPath: arquivoAudioDb!.path,
-        );
-      }
-    }
-
-    return SizedBox.shrink();
-  }
-
-  Widget _buildVideoPlayer() {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.5,
-      padding: EdgeInsets.only(right: 16),
-      child: FutureBuilder<Widget>(
-        future: showVideoPlayer(),
-        builder: (context, snapshot) {
-          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
-        },
-      ),
     );
   }
 
