@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:wakelock/wakelock.dart';
 
 class QuestaoTaiView extends BaseStatefulWidget {
   final int provaId;
@@ -31,9 +32,7 @@ class QuestaoTaiView extends BaseStatefulWidget {
   State<QuestaoTaiView> createState() => _QuestaoTaiViewState();
 }
 
-class _QuestaoTaiViewState
-    extends BaseStateWidget<QuestaoTaiView, QuestaoTaiViewStore>
-    with Loggable, ProvaMediaUtil {
+class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiViewStore> with Loggable, ProvaMediaUtil {
   final controller = HtmlEditorController();
 
   @override
@@ -66,6 +65,8 @@ class _QuestaoTaiViewState
         bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
 
         if (voltar) {
+          await Wakelock.disable();
+
           context.go("/");
         }
       },
@@ -94,8 +95,7 @@ class _QuestaoTaiViewState
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Texto(
-                "Não é possível iniciar a prova pois não há conexão disponível."),
+            Texto("Não é possível iniciar a prova pois não há conexão disponível."),
           ],
         );
       }
@@ -159,8 +159,7 @@ class _QuestaoTaiViewState
       questaoId: store.questao!.id,
       questao: store.questao!.getQuestaoResponseDTO().toModel(),
       imagens: store.questao!.arquivos.map((e) => e.toModel()).toList(),
-      alternativas:
-          store.questao!.alternativas.map((e) => e.toModel()).toList(),
+      alternativas: store.questao!.alternativas.map((e) => e.toModel()).toList(),
       alternativaIdResposta: store.alternativaIdMarcada,
       onRespostaChange: (alternativaId, texto) async {
         info("Definindo resposta $alternativaId");
@@ -198,9 +197,7 @@ class _QuestaoTaiViewState
       child: FutureBuilder<Widget>(
         future: showVideoPlayer(),
         builder: (context, snapshot) {
-          return snapshot.connectionState == ConnectionState.done
-              ? snapshot.data!
-              : Container();
+          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
         },
       ),
     );
@@ -240,8 +237,7 @@ class _QuestaoTaiViewState
   }
 
   Widget _buildBotaoVoltar() {
-    if (store.questao!.ordem == 0 ||
-        !store.provaStore!.prova.formatoTaiVoltarItemAnterior) {
+    if (store.questao!.ordem == 0 || !store.provaStore!.prova.formatoTaiVoltarItemAnterior) {
       return SizedBox.shrink();
     }
 
@@ -266,8 +262,7 @@ class _QuestaoTaiViewState
             if (!continuar) {
               context.go("/prova/tai/${widget.provaId}/resumo");
             } else {
-              var ordem =
-                  store.questao!.ordem == 0 ? 1 : store.questao!.ordem + 1;
+              var ordem = store.questao!.ordem == 0 ? 1 : store.questao!.ordem + 1;
               context.go("/prova/tai/${widget.provaId}/questao/$ordem");
             }
           }

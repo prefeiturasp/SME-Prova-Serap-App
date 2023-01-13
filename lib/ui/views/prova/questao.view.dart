@@ -35,6 +35,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
+import 'package:wakelock/wakelock.dart';
 
 class QuestaoView extends BaseStatefulWidget {
   final int idProva;
@@ -84,6 +85,8 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
 
         if (voltar) {
+          await Wakelock.disable();
+
           provaStore.setRespondendoProva(false);
           provaStore.onDispose();
           context.go("/");
