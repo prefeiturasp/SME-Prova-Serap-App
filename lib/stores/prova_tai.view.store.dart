@@ -7,6 +7,7 @@ import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:mobx/mobx.dart';
+import 'package:wakelock/wakelock.dart';
 part 'prova_tai.view.store.g.dart';
 
 class ProvaTaiViewStore = _ProvaTaiViewStoreBase with _$ProvaTaiViewStore;
@@ -27,7 +28,7 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
 
     var prova = await db.provaDao.obterPorProvaId(provaId);
     provaStore = ProvaStore(prova: prova);
-    
+
     var responseConexao = await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
 
     if (responseConexao.isSuccessful) {
@@ -49,6 +50,8 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
     } else {
       taiDisponivel = false;
     }
+
+    await Wakelock.enable();
 
     carregando = false;
 
