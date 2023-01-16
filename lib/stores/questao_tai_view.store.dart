@@ -12,6 +12,7 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:chopper/chopper.dart';
 import 'package:mobx/mobx.dart';
 import 'package:retry/retry.dart';
+import 'package:wakelock/wakelock.dart';
 
 part 'questao_tai_view.store.g.dart';
 
@@ -47,7 +48,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
     carregando = true;
 
     alternativaIdMarcada = null;
-    
+
     if (provaStore == null) {
       var prova = await db.provaDao.obterPorProvaId(provaId);
 
@@ -55,31 +56,30 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
       provaStore!.tratamentoImagem = TratamentoImagemEnum.URL;
     }
 
-    var responseConexao =
-        await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
+    var responseConexao = await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
 
     if (responseConexao.isSuccessful) {
       taiDisponivel = responseConexao.body!;
 
       await retry(
         () async {
-          Response<QuestaoCompletaResponseDTO>? response =
-              await ServiceLocator.get<ApiService>().provaTai.obterQuestao(
-                    provaId: provaId,
-                  );
+          Response<QuestaoCompletaResponseDTO>? response = await ServiceLocator.get<ApiService>().provaTai.obterQuestao(
+                provaId: provaId,
+              );
 
           if (response.isSuccessful) {
             questao = response.body!;
           }
         },
         onRetry: (e) {
-          fine(
-              '[Prova $provaId] - Tentativa de carregamento da Questao ordem ${questao!.ordem} - ${e.toString()}');
+          fine('[Prova $provaId] - Tentativa de carregamento da Questao ordem ${questao!.ordem} - ${e.toString()}');
         },
       );
     } else {
       taiDisponivel = false;
     }
+
+    await Wakelock.enable();
 
     carregando = false;
   }
@@ -99,11 +99,10 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
       tempoRespostaAluno: 0,
     );
 
-    var response =
-        await ServiceLocator.get<ApiService>().provaTai.proximaQuestao(
-              provaId: provaStore!.id,
-              resposta: questaoResposta,
-            );
+    var response = await ServiceLocator.get<ApiService>().provaTai.proximaQuestao(
+          provaId: provaStore!.id,
+          resposta: questaoResposta,
+        );
 
     if (response.isSuccessful) {
       return response.body!;
