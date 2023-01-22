@@ -89,7 +89,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 24;
+  int get schemaVersion => 25;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {

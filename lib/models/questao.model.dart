@@ -8,7 +8,6 @@ part 'questao.model.g.dart';
 @JsonSerializable()
 class Questao implements Insertable<Questao> {
   int questaoLegadoId;
-
   String? titulo;
   String descricao;
   EnumTipoQuestao tipo;
