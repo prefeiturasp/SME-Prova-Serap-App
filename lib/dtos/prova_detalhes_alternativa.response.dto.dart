@@ -4,12 +4,14 @@ part 'prova_detalhes_alternativa.response.dto.g.dart';
 
 @JsonSerializable()
 class ProvaDetalhesAlternativaResponseDTO {
-  int id;
-  int legadoId;
+  int alternativaId;
+  int alternativaLegadoId;
+  int ordem;
 
   ProvaDetalhesAlternativaResponseDTO({
-    required this.id,
-    required this.legadoId,
+    required this.alternativaId,
+    required this.alternativaLegadoId,
+    required this.ordem,
   });
 
   static const fromJson = _$ProvaDetalhesAlternativaResponseDTOFromJson;

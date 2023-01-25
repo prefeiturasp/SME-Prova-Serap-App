@@ -9,13 +9,15 @@ part of 'prova_detalhes_alternativa.response.dto.dart';
 ProvaDetalhesAlternativaResponseDTO
     _$ProvaDetalhesAlternativaResponseDTOFromJson(Map<String, dynamic> json) =>
         ProvaDetalhesAlternativaResponseDTO(
-          id: json['id'] as int,
-          legadoId: json['legadoId'] as int,
+          alternativaId: json['alternativaId'] as int,
+          alternativaLegadoId: json['alternativaLegadoId'] as int,
+          ordem: json['ordem'] as int,
         );
 
 Map<String, dynamic> _$ProvaDetalhesAlternativaResponseDTOToJson(
         ProvaDetalhesAlternativaResponseDTO instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'legadoId': instance.legadoId,
+      'alternativaId': instance.alternativaId,
+      'alternativaLegadoId': instance.alternativaLegadoId,
+      'ordem': instance.ordem,
     };

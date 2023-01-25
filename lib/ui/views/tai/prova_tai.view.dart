@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:appserap/stores/prova_tai.view.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -30,10 +28,9 @@ class _ProvaTaiViewState extends BaseStateWidget<ProvaTaiView, ProvaTaiViewStore
     super.initState();
     store.configurarProva(widget.provaId).then((taiDisponivel) {
       if (taiDisponivel != null && taiDisponivel) {
-
         // Timer(Duration(milliseconds: 500), () {
-          // Navegar para a questao informada na listagem de provas
-          context.go("/prova/tai/${store.provaStore!.id}/questao/0");
+        // Navegar para a questao informada na listagem de provas
+        context.go("/prova/tai/${store.provaStore!.id}/questao/0");
         // });
       }
     });

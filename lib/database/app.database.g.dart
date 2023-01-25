@@ -1008,20 +1008,20 @@ class $QuestoesDbTable extends QuestoesDb
 }
 
 class AlternativasDbCompanion extends UpdateCompanion<Alternativa> {
-  final Value<int> legadoId;
+  final Value<int> id;
   final Value<int> questaoLegadoId;
   final Value<String> descricao;
   final Value<int> ordem;
   final Value<String> numeracao;
   const AlternativasDbCompanion({
-    this.legadoId = const Value.absent(),
+    this.id = const Value.absent(),
     this.questaoLegadoId = const Value.absent(),
     this.descricao = const Value.absent(),
     this.ordem = const Value.absent(),
     this.numeracao = const Value.absent(),
   });
   AlternativasDbCompanion.insert({
-    this.legadoId = const Value.absent(),
+    this.id = const Value.absent(),
     required int questaoLegadoId,
     required String descricao,
     required int ordem,
@@ -1031,14 +1031,14 @@ class AlternativasDbCompanion extends UpdateCompanion<Alternativa> {
         ordem = Value(ordem),
         numeracao = Value(numeracao);
   static Insertable<Alternativa> custom({
-    Expression<int>? legadoId,
+    Expression<int>? id,
     Expression<int>? questaoLegadoId,
     Expression<String>? descricao,
     Expression<int>? ordem,
     Expression<String>? numeracao,
   }) {
     return RawValuesInsertable({
-      if (legadoId != null) 'legado_id': legadoId,
+      if (id != null) 'id': id,
       if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
       if (descricao != null) 'descricao': descricao,
       if (ordem != null) 'ordem': ordem,
@@ -1047,13 +1047,13 @@ class AlternativasDbCompanion extends UpdateCompanion<Alternativa> {
   }
 
   AlternativasDbCompanion copyWith(
-      {Value<int>? legadoId,
+      {Value<int>? id,
       Value<int>? questaoLegadoId,
       Value<String>? descricao,
       Value<int>? ordem,
       Value<String>? numeracao}) {
     return AlternativasDbCompanion(
-      legadoId: legadoId ?? this.legadoId,
+      id: id ?? this.id,
       questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
       descricao: descricao ?? this.descricao,
       ordem: ordem ?? this.ordem,
@@ -1064,8 +1064,8 @@ class AlternativasDbCompanion extends UpdateCompanion<Alternativa> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (legadoId.present) {
-      map['legado_id'] = Variable<int>(legadoId.value);
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
     }
     if (questaoLegadoId.present) {
       map['questao_legado_id'] = Variable<int>(questaoLegadoId.value);
@@ -1085,7 +1085,7 @@ class AlternativasDbCompanion extends UpdateCompanion<Alternativa> {
   @override
   String toString() {
     return (StringBuffer('AlternativasDbCompanion(')
-          ..write('legadoId: $legadoId, ')
+          ..write('id: $id, ')
           ..write('questaoLegadoId: $questaoLegadoId, ')
           ..write('descricao: $descricao, ')
           ..write('ordem: $ordem, ')
@@ -1101,10 +1101,10 @@ class $AlternativasDbTable extends AlternativasDb
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $AlternativasDbTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _legadoIdMeta = const VerificationMeta('legadoId');
+  final VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> legadoId = GeneratedColumn<int>(
-      'legado_id', aliasedName, false,
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: false);
   final VerificationMeta _questaoLegadoIdMeta =
       const VerificationMeta('questaoLegadoId');
@@ -1129,7 +1129,7 @@ class $AlternativasDbTable extends AlternativasDb
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [legadoId, questaoLegadoId, descricao, ordem, numeracao];
+      [id, questaoLegadoId, descricao, ordem, numeracao];
   @override
   String get aliasedName => _alias ?? 'alternativas_db';
   @override
@@ -1139,9 +1139,8 @@ class $AlternativasDbTable extends AlternativasDb
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('legado_id')) {
-      context.handle(_legadoIdMeta,
-          legadoId.isAcceptableOrUnknown(data['legado_id']!, _legadoIdMeta));
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
     if (data.containsKey('questao_legado_id')) {
       context.handle(
@@ -1173,13 +1172,13 @@ class $AlternativasDbTable extends AlternativasDb
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {legadoId};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Alternativa map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Alternativa(
-      legadoId: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}legado_id'])!,
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       questaoLegadoId: attachedDatabase.options.types
           .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id'])!,
       descricao: attachedDatabase.options.types

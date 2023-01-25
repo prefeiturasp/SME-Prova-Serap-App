@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/ui/views/admin/prova_contexto.admin.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
@@ -12,8 +10,6 @@ import 'package:appserap/ui/views/prova/resumo_respostas.view.dart';
 import 'package:appserap/ui/views/prova_resultado/questao_resultado_detalhe.view.dart';
 import 'package:appserap/ui/views/splashscreen/splash_screen.view.dart';
 import 'package:appserap/utils/router.util.dart';
-import 'package:appserap/utils/string.util.dart';
-import 'package:clock/clock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
