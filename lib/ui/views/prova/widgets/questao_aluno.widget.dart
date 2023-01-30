@@ -161,6 +161,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
         children: alternativas
             .map((e) => _buildAlternativa(
                   e.id,
+                  e.ordem,
                   e.numeracao,
                   questao,
                   e.descricao,
@@ -170,7 +171,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
     );
   }
 
-  Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
+  Widget _buildAlternativa(int idAlternativa, int ordem, String numeracao, Questao questao, String descricao) {
     RespostaProva? resposta = provaStore.respostas.respostasLocal[questaoId];
 
     return Observer(
@@ -190,12 +191,12 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
             contentPadding: EdgeInsets.all(0),
             toggleable: true,
             dense: true,
-            value: idAlternativa,
-            groupValue: resposta?.alternativaId,
+            value: ordem,
+            groupValue: resposta?.ordem,
             onChanged: (value) async {
               await provaStore.respostas.definirResposta(
                 questaoId,
-                alternativaLegadoId: value,
+                alternativaLegadoId: idAlternativa,
                 tempoQuestao: provaStore.segundos,
               );
             },

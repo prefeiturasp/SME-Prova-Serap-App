@@ -63,11 +63,22 @@ class ProvaQuestaoAlternativaDao extends DatabaseAccessor<AppDatabase> with _$Pr
     return questao.questaoId;
   }
 
-  Future<ProvaQuestaoAlternativa> obterAlternativaPorProvaECadernoEQuestao(int idProva, String caderno, int questaoId, int alternativaLegadoId) async {
+  Future<ProvaQuestaoAlternativa> obterAlternativaPorProvaECadernoEQuestaoEAlternativaLegadoId(
+      int idProva, String caderno, int questaoId, int alternativaLegadoId) async {
     var questao = await (select(provaQuestaoAlternativaTable)
-      ..where(
-              (t) => t.provaId.equals(idProva) & t.caderno.equals(caderno) & t.questaoId.equals(questaoId) & t.alternativaLegadoId.equals(alternativaLegadoId)))
+          ..where((t) =>
+              t.provaId.equals(idProva) &
+              t.caderno.equals(caderno) &
+              t.questaoId.equals(questaoId) &
+              t.alternativaLegadoId.equals(alternativaLegadoId)))
         .getSingle();
+
+    return questao;
+  }
+
+  Future<ProvaQuestaoAlternativa> obterPorAlternativaId(int alternativaId) async {
+    var questao =
+        await (select(provaQuestaoAlternativaTable)..where((t) => t.alternativaId.equals(alternativaId))).getSingle();
 
     return questao;
   }

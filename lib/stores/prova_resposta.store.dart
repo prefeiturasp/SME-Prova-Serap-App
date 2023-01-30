@@ -51,12 +51,23 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
         var questoesResponse = respostaBanco.body!;
 
         for (var questaoResponse in questoesResponse) {
+          int? ordem;
+
+          if (questaoResponse.alternativaId != null) {
+            var provaQuestaoAlternativa = await db.provaQuestaoAlternativaDao.obterPorAlternativaId(
+              questaoResponse.alternativaId!,
+            );
+
+            ordem = provaQuestaoAlternativa.ordem;
+          }
+
           var entity = RespostaProva(
             codigoEOL: codigoEOL,
             dispositivoId: ServiceLocator<PrincipalStore>().dispositivoId!,
             provaId: idProva,
             caderno: caderno,
             questaoId: questaoResponse.questaoId,
+            ordem: ordem,
             alternativaId: questaoResponse.alternativaId,
             resposta: questaoResponse.resposta,
             dataHoraResposta: questaoResponse.dataHoraResposta.toLocal(),
@@ -147,7 +158,8 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
     int? ordem;
 
     if (alternativaLegadoId != null) {
-      var provaQuestaoAlternativa = await db.provaQuestaoAlternativaDao.obterAlternativaPorProvaECadernoEQuestao(
+      var provaQuestaoAlternativa =
+          await db.provaQuestaoAlternativaDao.obterAlternativaPorProvaECadernoEQuestaoEAlternativaLegadoId(
         idProva,
         caderno,
         questaoId,
