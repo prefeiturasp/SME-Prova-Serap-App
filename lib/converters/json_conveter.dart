@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
 import 'package:appserap/dtos/admin_questao_detalhes.response.dto.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
@@ -65,8 +67,8 @@ class JsonSerializableConverter extends JsonConverter {
   }
 
   @override
-  Response<ResultType> convertResponse<ResultType, Item>(Response response) {
-    final jsonRes = super.convertResponse(response);
+  FutureOr<Response<ResultType>> convertResponse<ResultType, Item>(Response response) async {
+    final jsonRes = await super.convertResponse(response);
     return jsonRes.copyWith<ResultType>(body: _decode<Item>(jsonRes.body));
   }
 }

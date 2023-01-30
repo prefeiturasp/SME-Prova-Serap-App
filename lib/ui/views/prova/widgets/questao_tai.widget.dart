@@ -196,7 +196,7 @@ class QuestaoTaiWidget extends StatelessWidget with Loggable, ProvaViewUtil {
               await onRespostaChange(value, null);
               await provaStore.respostas.definirResposta(
                 questaoId,
-                alternativaId: value,
+                alternativaLegadoId: value,
                 tempoQuestao: provaStore.segundos,
               );
             },

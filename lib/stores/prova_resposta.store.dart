@@ -55,6 +55,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
             codigoEOL: codigoEOL,
             dispositivoId: ServiceLocator<PrincipalStore>().dispositivoId!,
             provaId: idProva,
+            caderno: caderno,
             questaoId: questaoResponse.questaoId,
             alternativaId: questaoResponse.alternativaId,
             resposta: questaoResponse.resposta,
@@ -136,13 +137,34 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   }
 
   @action
-  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int tempoQuestao = 0}) async {
+  Future<void> definirResposta(
+    int questaoId, {
+    int? alternativaLegadoId,
+    String? textoResposta,
+    int tempoQuestao = 0,
+  }) async {
+    int? alternativaId;
+    int? ordem;
+
+    if (alternativaLegadoId != null) {
+      var provaQuestaoAlternativa = await db.provaQuestaoAlternativaDao.obterAlternativaPorProvaECadernoEQuestao(
+        idProva,
+        caderno,
+        questaoId,
+        alternativaLegadoId,
+      );
+      alternativaId = provaQuestaoAlternativa.alternativaId;
+      ordem = provaQuestaoAlternativa.ordem;
+    }
+
     var resposta = RespostaProva(
       codigoEOL: codigoEOL,
       dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId!,
       provaId: idProva,
+      caderno: caderno,
       questaoId: questaoId,
       alternativaId: alternativaId,
+      ordem: ordem,
       resposta: textoResposta,
       sincronizado: false,
       tempoRespostaAluno: tempoQuestao,

@@ -195,7 +195,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
             onChanged: (value) async {
               await provaStore.respostas.definirResposta(
                 questaoId,
-                alternativaId: value,
+                alternativaLegadoId: value,
                 tempoQuestao: provaStore.segundos,
               );
             },

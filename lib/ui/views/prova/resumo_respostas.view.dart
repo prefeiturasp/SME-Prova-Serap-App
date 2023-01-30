@@ -325,7 +325,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         var alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
 
         for (var alternativa in alternativas) {
-          if (alternativa.id == resposta!.alternativaId) {
+          if (alternativa.ordem == resposta!.ordem) {
             alternativaSelecionada = alternativa.numeracao;
           }
         }

@@ -24,8 +24,8 @@ class _$AdminService extends AdminService {
       int? modalidade,
       String? descricao,
       String? ano}) {
-    final $url = '/v1/admin/provas';
-    final $params = <String, dynamic>{
+    final Uri $url = Uri.parse('/v1/admin/provas');
+    final Map<String, dynamic> $params = <String, dynamic>{
       'quantidadeRegistros': quantidadeRegistros,
       'numeroPagina': numeroPagina,
       'provaLegadoId': provaLegadoId,
@@ -33,7 +33,8 @@ class _$AdminService extends AdminService {
       'descricao': descricao,
       'ano': ano
     };
-    final $request = Request('GET', $url, client.baseUrl, parameters: $params);
+    final Request $request =
+        Request('GET', $url, client.baseUrl, parameters: $params);
     return client.send<ListagemAdminProvaResponseDTO,
         ListagemAdminProvaResponseDTO>($request);
   }
@@ -41,8 +42,8 @@ class _$AdminService extends AdminService {
   @override
   Future<Response<AdminProvaCadernoResponseDTO>> getCadernos(
       {required int idProva}) {
-    final $url = '/v1/admin/provas/${idProva}/cadernos';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/admin/provas/${idProva}/cadernos');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<AdminProvaCadernoResponseDTO,
         AdminProvaCadernoResponseDTO>($request);
   }
@@ -50,8 +51,8 @@ class _$AdminService extends AdminService {
   @override
   Future<Response<List<AdminProvaResumoResponseDTO>>> getResumo(
       {required int idProva}) {
-    final $url = '/v1/admin/provas/${idProva}/resumos';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/admin/provas/${idProva}/resumos');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<List<AdminProvaResumoResponseDTO>,
         AdminProvaResumoResponseDTO>($request);
   }
@@ -59,8 +60,9 @@ class _$AdminService extends AdminService {
   @override
   Future<Response<List<AdminProvaResumoResponseDTO>>> getResumoByCaderno(
       {required int idProva, required String caderno}) {
-    final $url = '/v1/admin/provas/${idProva}/cadernos/${caderno}/resumos';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url =
+        Uri.parse('/v1/admin/provas/${idProva}/cadernos/${caderno}/resumos');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<List<AdminProvaResumoResponseDTO>,
         AdminProvaResumoResponseDTO>($request);
   }
@@ -68,8 +70,9 @@ class _$AdminService extends AdminService {
   @override
   Future<Response<AdminQuestaoDetalhesResponseDTO>> getDetalhes(
       {required int idProva, required int idQuestao}) {
-    final $url = '/v1/admin/provas/${idProva}/questoes/${idQuestao}/detalhes';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url =
+        Uri.parse('/v1/admin/provas/${idProva}/questoes/${idQuestao}/detalhes');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<AdminQuestaoDetalhesResponseDTO,
         AdminQuestaoDetalhesResponseDTO>($request);
   }
