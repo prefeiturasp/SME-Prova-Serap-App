@@ -13,6 +13,10 @@ ProvaDetalhesCadernoQuestaoResponseDTO
           questaoId: json['questaoId'] as int,
           questaoLegadoId: json['questaoLegadoId'] as int,
           ordem: json['ordem'] as int,
+          alternativas: (json['alternativas'] as List<dynamic>)
+              .map((e) => ProvaDetalhesAlternativaResponseDTO.fromJson(
+                  e as Map<String, dynamic>))
+              .toList(),
         );
 
 Map<String, dynamic> _$ProvaDetalhesCadernoQuestaoResponseDTOToJson(
@@ -21,4 +25,5 @@ Map<String, dynamic> _$ProvaDetalhesCadernoQuestaoResponseDTOToJson(
       'questaoId': instance.questaoId,
       'questaoLegadoId': instance.questaoLegadoId,
       'ordem': instance.ordem,
+      'alternativas': instance.alternativas,
     };

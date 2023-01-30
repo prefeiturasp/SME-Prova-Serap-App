@@ -2,10 +2,7 @@
 
 part of 'arquivo.dao.dart';
 
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
+// ignore_for_file: type=lint
 mixin _$ArquivoDaoMixin on DatabaseAccessor<AppDatabase> {
   $ArquivosDbTable get arquivosDb => attachedDatabase.arquivosDb;
   $QuestaoArquivoTableTable get questaoArquivoTable =>

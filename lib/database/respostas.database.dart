@@ -23,7 +23,7 @@ class RespostasDatabase extends _$RespostasDatabase {
   RespostasDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -31,7 +31,16 @@ class RespostasDatabase extends _$RespostasDatabase {
       onCreate: (Migrator m) {
         return m.createAll();
       },
-      onUpgrade: (Migrator m, int from, int to) async {},
+      onUpgrade: (Migrator m, int from, int to) async {
+        await transaction(() async {
+          // put your migration logic here
+
+          if (from < 2) {
+            await m.addColumn(respostaProvaTable, respostaProvaTable.caderno);
+            await m.addColumn(respostaProvaTable, respostaProvaTable.ordem);
+          }
+        });
+      },
       beforeOpen: (details) async {
         await customStatement('PRAGMA auto_vacuum = FULL;');
         await customStatement('PRAGMA foreign_keys = ON;');

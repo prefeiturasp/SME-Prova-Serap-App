@@ -73,21 +73,23 @@ class ProvasDb extends Table with TableInfo {
       'prova_com_proficiencia', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: false,
-      defaultConstraints: 'CHECK (prova_com_proficiencia IN (0, 1))',
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK (prova_com_proficiencia IN (0, 1))'),
       defaultValue: Constant(false));
   late final GeneratedColumn<bool> apresentarResultados = GeneratedColumn<bool>(
       'apresentar_resultados', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: false,
-      defaultConstraints: 'CHECK (apresentar_resultados IN (0, 1))',
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK (apresentar_resultados IN (0, 1))'),
       defaultValue: Constant(false));
   late final GeneratedColumn<bool> apresentarResultadosPorItem =
       GeneratedColumn<bool>(
           'apresentar_resultados_por_item', aliasedName, false,
           type: DriftSqlType.bool,
           requiredDuringInsert: false,
-          defaultConstraints:
-              'CHECK (apresentar_resultados_por_item IN (0, 1))',
+          defaultConstraints: GeneratedColumn.constraintIsAlways(
+              'CHECK (apresentar_resultados_por_item IN (0, 1))'),
           defaultValue: Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
@@ -128,9 +130,6 @@ class ProvasDb extends Table with TableInfo {
   ProvasDb createAlias(String alias) {
     return ProvasDb(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class QuestoesDb extends Table with TableInfo {
@@ -180,9 +179,6 @@ class QuestoesDb extends Table with TableInfo {
   QuestoesDb createAlias(String alias) {
     return QuestoesDb(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class AlternativasDb extends Table with TableInfo {
@@ -223,9 +219,6 @@ class AlternativasDb extends Table with TableInfo {
   AlternativasDb createAlias(String alias) {
     return AlternativasDb(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class ArquivosDb extends Table with TableInfo {
@@ -262,9 +255,6 @@ class ArquivosDb extends Table with TableInfo {
   ArquivosDb createAlias(String alias) {
     return ArquivosDb(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class ContextosProvaDb extends Table with TableInfo {
@@ -314,9 +304,6 @@ class ContextosProvaDb extends Table with TableInfo {
   ContextosProvaDb createAlias(String alias) {
     return ContextosProvaDb(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class ArquivosVideoDb extends Table with TableInfo {
@@ -350,9 +337,6 @@ class ArquivosVideoDb extends Table with TableInfo {
   ArquivosVideoDb createAlias(String alias) {
     return ArquivosVideoDb(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class ArquivosAudioDb extends Table with TableInfo {
@@ -386,9 +370,6 @@ class ArquivosAudioDb extends Table with TableInfo {
   ArquivosAudioDb createAlias(String alias) {
     return ArquivosAudioDb(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class DownloadProvasDb extends Table with TableInfo {
@@ -446,9 +427,6 @@ class DownloadProvasDb extends Table with TableInfo {
   DownloadProvasDb createAlias(String alias) {
     return DownloadProvasDb(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class ProvaAlunoTable extends Table with TableInfo {
@@ -479,9 +457,6 @@ class ProvaAlunoTable extends Table with TableInfo {
   ProvaAlunoTable createAlias(String alias) {
     return ProvaAlunoTable(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class ProvaCadernoTable extends Table with TableInfo {
@@ -522,9 +497,6 @@ class ProvaCadernoTable extends Table with TableInfo {
   ProvaCadernoTable createAlias(String alias) {
     return ProvaCadernoTable(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class QuestaoArquivoTable extends Table with TableInfo {
@@ -555,9 +527,6 @@ class QuestaoArquivoTable extends Table with TableInfo {
   QuestaoArquivoTable createAlias(String alias) {
     return QuestaoArquivoTable(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class JobsTable extends Table with TableInfo {
@@ -598,9 +567,6 @@ class JobsTable extends Table with TableInfo {
   JobsTable createAlias(String alias) {
     return JobsTable(attachedDatabase, alias);
   }
-
-  @override
-  bool get dontWriteConstraints => false;
 }
 
 class DatabaseAtV23 extends GeneratedDatabase {
@@ -620,7 +586,7 @@ class DatabaseAtV23 extends GeneratedDatabase {
       QuestaoArquivoTable(this);
   late final JobsTable jobsTable = JobsTable(this);
   @override
-  Iterable<TableInfo<Table, dynamic>> get allTables =>
+  Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [

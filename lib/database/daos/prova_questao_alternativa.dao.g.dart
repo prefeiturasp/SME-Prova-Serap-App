@@ -1,10 +1,9 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'alternativa.dao.dart';
+part of 'prova_questao_alternativa.dao.dart';
 
 // ignore_for_file: type=lint
-mixin _$AlternativaDaoMixin on DatabaseAccessor<AppDatabase> {
-  $AlternativasDbTable get alternativasDb => attachedDatabase.alternativasDb;
+mixin _$ProvaQuestaoAlternativaDaoMixin on DatabaseAccessor<AppDatabase> {
   $ProvaQuestaoAlternativaTableTable get provaQuestaoAlternativaTable =>
       attachedDatabase.provaQuestaoAlternativaTable;
 }

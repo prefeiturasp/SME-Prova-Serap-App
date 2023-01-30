@@ -19,8 +19,8 @@ class _$QuestaoRespostaService extends QuestaoRespostaService {
   @override
   Future<Response<QuestaoRespostaResponseDTO>> getRespostaPorQuestaoId(
       {required int questaoId}) {
-    final $url = '/v1/questoes/${questaoId}/respostas';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/questoes/${questaoId}/respostas');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client
         .send<QuestaoRespostaResponseDTO, QuestaoRespostaResponseDTO>($request);
   }
@@ -28,13 +28,12 @@ class _$QuestaoRespostaService extends QuestaoRespostaService {
   @override
   Future<Response<bool>> postResposta(
       {required String chaveAPI, required List<QuestaoRespostaDTO> respostas}) {
-    final $url = '/v1/questoes/respostas/sincronizar';
-    final $headers = {
+    final Uri $url = Uri.parse('/v1/questoes/respostas/sincronizar');
+    final Map<String, String> $headers = {
       'chave-api': chaveAPI,
     };
-
     final $body = respostas;
-    final $request =
+    final Request $request =
         Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
     return client.send<bool, bool>($request);
   }

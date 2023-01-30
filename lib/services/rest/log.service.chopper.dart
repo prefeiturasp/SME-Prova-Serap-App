@@ -23,18 +23,17 @@ class _$LogService extends LogService {
       required String aluno,
       required String escola,
       required String html}) {
-    final $url = '/v1/imagemLog';
-    final $headers = {
+    final Uri $url = Uri.parse('/v1/imagemLog');
+    final Map<String, String> $headers = {
       'chave-api': chaveAPI,
     };
-
     final $body = <String, dynamic>{
       'prova': prova,
       'aluno': aluno,
       'escola': escola,
       'html': html
     };
-    final $request =
+    final Request $request =
         Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
     return client.send<bool, bool>($request);
   }

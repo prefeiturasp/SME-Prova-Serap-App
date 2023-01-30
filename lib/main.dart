@@ -11,6 +11,8 @@ import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';
 import 'package:appserap/utils/firebase.util.dart';
+import 'package:drift_local_storage_inspector/drift_local_storage_inspector.dart';
+import 'package:file_local_storage_inspector/file_local_storage_inspector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,7 +25,11 @@ import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_ios/path_provider_ios.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
+import 'package:storage_inspector/storage_inspector.dart';
 
+
+import 'database/app.database.dart';
+import 'database/respostas.database.dart';
 import 'main.isolate.dart';
 
 var logger = Logger('Main');
@@ -63,7 +69,7 @@ registerPluginsForIsolate() {
   }).sendPort);
 }
 
-configure(bool background) async {
+configure(bool isBackground) async {
   print('Configurando App');
   setupDateFormating();
   setupLogging();
@@ -73,11 +79,44 @@ configure(bool background) async {
 
   await DependenciasIoC().setup();
 
-  if (!background) {
+  if (isBackground) {
     await AppIsolates().setup();
   }
 
+  if(!isBackground && kDebugMode){
+    setupDatabaseInspector();
+  }
+
   TelaAdaptativaUtil().setup();
+}
+
+setupDatabaseInspector() async {
+  logger.info("Configurando inspetor");
+
+  final driver = StorageServerDriver(
+    bundleId: 'br.gov.sp.prefeitura.sme.appserap',
+  );
+
+  final driftDb = ServiceLocator.get<AppDatabase>();
+  final sqlServer = DriftSQLDatabaseServer(
+    id: "1",
+    name: "App",
+    database: driftDb,
+  );
+  driver.addSQLServer(sqlServer);
+
+  final respostasDb = ServiceLocator.get<RespostasDatabase>();
+  final sqlServerRespostas = DriftSQLDatabaseServer(
+    id: "1",
+    name: "Respostas",
+    database: respostasDb,
+  );
+  driver.addSQLServer(sqlServerRespostas);
+
+  final fileServer = DefaultFileServer('.', 'App Documents');
+  driver.addFileServer(fileServer);
+
+  await driver.start(paused: false);
 }
 
 Future setupAppConfig() async {

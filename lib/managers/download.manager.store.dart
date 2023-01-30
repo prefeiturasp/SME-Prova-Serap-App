@@ -8,6 +8,7 @@ import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
+import 'package:appserap/dtos/prova_detalhes_alternativa.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart';
 import 'package:appserap/dtos/questao_detalhes_legado.response.dto.dart';
 import 'package:appserap/enums/deficiencia.enum.dart';
@@ -21,6 +22,7 @@ import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/contexto_prova.model.dart';
 import 'package:appserap/models/prova_caderno.model.dart';
+import 'package:appserap/models/prova_questao_alternativa.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/models/questao_arquivo.model.dart';
 import 'package:appserap/services/api.dart';
@@ -157,6 +159,21 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
             dataHoraInicio: DateTime.now(),
           ),
         );
+
+        //Ssalvar relações de alternativas
+        for (ProvaDetalhesAlternativaResponseDTO alternativa in questao.alternativas) {
+          ProvaQuestaoAlternativa provaQuestaoAlternativa = ProvaQuestaoAlternativa(
+            provaId: provaId,
+            caderno: caderno,
+            alternativaId: alternativa.alternativaId,
+            alternativaLegadoId: alternativa.alternativaLegadoId,
+            ordem: alternativa.ordem,
+            questaoId: questao.questaoId,
+            questaoLegadoId: questao.questaoLegadoId,
+          );
+
+          await db.provaQuestaoAlternativaDao.inserirOuAtualizar(provaQuestaoAlternativa);
+        }
       }
     }
 
@@ -544,7 +561,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   baixarAlternativa(List<AlternativaResponseDTO> alternativas, int questaoLegadoId) async {
     finer("[Prova $provaId - $caderno] - Salvando ${alternativas.length} alternativas");
 
-    for (var alternativaDTO in alternativas) {
+    for (AlternativaResponseDTO alternativaDTO in alternativas) {
       Alternativa alternativaDb = Alternativa(
         id: alternativaDTO.id,
         questaoLegadoId: questaoLegadoId,
@@ -823,6 +840,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       await removerCacheAluno(provaId);
       await removerProva(provaId);
       await removerProvaCaderno(provaId);
+      await removerProvaQuestaoAlternativa(provaId);
     }
   }
 
@@ -893,5 +911,9 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
   removerProvaCaderno(int provaid) async {
     await db.provaCadernoDao.removerPorProvaId(provaId);
+  }
+
+  removerProvaQuestaoAlternativa(int provaid) async {
+    await db.provaQuestaoAlternativaDao.removerPorProvaId(provaId);
   }
 }

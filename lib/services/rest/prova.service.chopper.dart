@@ -18,16 +18,16 @@ class _$ProvaService extends ProvaService {
 
   @override
   Future<Response<List<ProvaResponseDTO>>> getProvas() {
-    final $url = '/v1/provas';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/provas');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<List<ProvaResponseDTO>, ProvaResponseDTO>($request);
   }
 
   @override
   Future<Response<ProvaDetalhesResponseDTO>> getResumoProva(
       {required int idProva}) {
-    final $url = '/v1/provas/${idProva}/detalhes-resumido';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/provas/${idProva}/detalhes-resumido');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client
         .send<ProvaDetalhesResponseDTO, ProvaDetalhesResponseDTO>($request);
   }
@@ -35,16 +35,17 @@ class _$ProvaService extends ProvaService {
   @override
   Future<Response<ProvaDetalhesCadernoResponseDTO>> getResumoProvaCaderno(
       {required int idProva, required String caderno}) {
-    final $url = '/v1/provas/${idProva}/detalhes-resumido-caderno/${caderno}';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url =
+        Uri.parse('/v1/provas/${idProva}/detalhes-resumido-caderno/${caderno}');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<ProvaDetalhesCadernoResponseDTO,
         ProvaDetalhesCadernoResponseDTO>($request);
   }
 
   @override
   Future<Response<int>> getStatusProva({required int idProva}) {
-    final $url = '/v1/provas/${idProva}/status-aluno';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/provas/${idProva}/status-aluno');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<int, int>($request);
   }
 
@@ -55,30 +56,30 @@ class _$ProvaService extends ProvaService {
       required int tipoDispositivo,
       int? dataInicio,
       int? dataFim}) {
-    final $url = '/v1/provas/${idProva}/status-aluno';
+    final Uri $url = Uri.parse('/v1/provas/${idProva}/status-aluno');
     final $body = <String, dynamic>{
       'status': status,
       'tipoDispositivo': tipoDispositivo,
       'dataInicio': dataInicio,
       'dataFim': dataFim
     };
-    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
     return client.send<bool, bool>($request);
   }
 
   @override
   Future<Response<List<QuestaoRespostaResponseDTO>>> getRespostasPorProvaId(
       {required int idProva}) {
-    final $url = '/v1/provas/${idProva}/respostas';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/provas/${idProva}/respostas');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<List<QuestaoRespostaResponseDTO>,
         QuestaoRespostaResponseDTO>($request);
   }
 
   @override
   Future<Response<List<ProvaAnteriorResponseDTO>>> getProvasAnteriores() {
-    final $url = '/v1/provas/finalizadas';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/provas/finalizadas');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<List<ProvaAnteriorResponseDTO>,
         ProvaAnteriorResponseDTO>($request);
   }

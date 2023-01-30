@@ -5,29 +5,37 @@ part 'alternativa.response.dto.g.dart';
 
 @JsonSerializable()
 class AlternativaResponseDTO {
+  @JsonKey(name: 'alternativaLegadoId')
   int id;
   String descricao;
   int ordem;
   String numeracao;
-  int questaoId;
+  @JsonKey(name: 'questaoId')
+  int questaoLegadoId;
 
   AlternativaResponseDTO({
     required this.id,
     required this.descricao,
     required this.ordem,
     required this.numeracao,
-    required this.questaoId,
+    required this.questaoLegadoId,
   });
 
   static const fromJson = _$AlternativaResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$AlternativaResponseDTOToJson(this);
 
   Alternativa toModel() {
-    return Alternativa(id: id, questaoLegadoId: id, descricao: descricao, ordem: ordem, numeracao: numeracao);
+    return Alternativa(
+      id: id,
+      questaoLegadoId: questaoLegadoId,
+      descricao: descricao,
+      ordem: ordem,
+      numeracao: numeracao,
+    );
   }
 
   @override
   String toString() {
-    return 'AlternativaResponseDTO(id: $id, descricao: $descricao, ordem: $ordem, numeracao: $numeracao, questaoId: $questaoId)';
+    return 'AlternativaResponseDTO(id: $id, descricao: $descricao, ordem: $ordem, numeracao: $numeracao, questaoLegadoId: $questaoLegadoId)';
   }
 }

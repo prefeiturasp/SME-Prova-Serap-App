@@ -51,11 +51,23 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
         var questoesResponse = respostaBanco.body!;
 
         for (var questaoResponse in questoesResponse) {
+          int? ordem;
+
+          if (questaoResponse.alternativaId != null) {
+            var provaQuestaoAlternativa = await db.provaQuestaoAlternativaDao.obterPorAlternativaId(
+              questaoResponse.alternativaId!,
+            );
+
+            ordem = provaQuestaoAlternativa.ordem;
+          }
+
           var entity = RespostaProva(
             codigoEOL: codigoEOL,
             dispositivoId: ServiceLocator<PrincipalStore>().dispositivoId!,
             provaId: idProva,
+            caderno: caderno,
             questaoId: questaoResponse.questaoId,
+            ordem: ordem,
             alternativaId: questaoResponse.alternativaId,
             resposta: questaoResponse.resposta,
             dataHoraResposta: questaoResponse.dataHoraResposta.toLocal(),
@@ -136,13 +148,35 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   }
 
   @action
-  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int tempoQuestao = 0}) async {
+  Future<void> definirResposta(
+    int questaoId, {
+    int? alternativaLegadoId,
+    String? textoResposta,
+    int tempoQuestao = 0,
+  }) async {
+    int? alternativaId;
+    int? ordem;
+
+    if (alternativaLegadoId != null) {
+      var provaQuestaoAlternativa =
+          await db.provaQuestaoAlternativaDao.obterAlternativaPorProvaECadernoEQuestaoEAlternativaLegadoId(
+        idProva,
+        caderno,
+        questaoId,
+        alternativaLegadoId,
+      );
+      alternativaId = provaQuestaoAlternativa.alternativaId;
+      ordem = provaQuestaoAlternativa.ordem;
+    }
+
     var resposta = RespostaProva(
       codigoEOL: codigoEOL,
       dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId!,
       provaId: idProva,
+      caderno: caderno,
       questaoId: questaoId,
       alternativaId: alternativaId,
+      ordem: ordem,
       resposta: textoResposta,
       sincronizado: false,
       tempoRespostaAluno: tempoQuestao,
