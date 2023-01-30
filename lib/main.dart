@@ -83,7 +83,7 @@ configure(bool isBackground) async {
     await AppIsolates().setup();
   }
 
-  if(!isBackground){
+  if(!isBackground && kDebugMode){
     setupDatabaseInspector();
   }
 
