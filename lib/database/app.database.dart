@@ -213,7 +213,7 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(provasDb, provasDb.formatoTaiVoltarItemAnterior);
           }
 
-          if (from < 2) {
+          if (from < 25) {
             await m.createTable(provaQuestaoAlternativaTable);
           }
         });
