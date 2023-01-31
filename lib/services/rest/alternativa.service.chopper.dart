@@ -19,8 +19,8 @@ class _$AlternativaService extends AlternativaService {
   @override
   Future<Response<AlternativaResponseDTO>> getAlternativa(
       {required int idAlternativa}) {
-    final $url = '/v1/alternativas/${idAlternativa}';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/alternativas/${idAlternativa}');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client
         .send<AlternativaResponseDTO, AlternativaResponseDTO>($request);
   }

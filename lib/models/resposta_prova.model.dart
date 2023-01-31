@@ -9,8 +9,10 @@ class RespostaProva implements Insertable<RespostaProva> {
   String codigoEOL;
   String dispositivoId;
   int provaId;
+  String caderno;
   int questaoId;
   int? alternativaId;
+  int? ordem;
   String? resposta;
   bool sincronizado = false;
   int tempoRespostaAluno;
@@ -20,8 +22,10 @@ class RespostaProva implements Insertable<RespostaProva> {
     required this.codigoEOL,
     required this.dispositivoId,
     required this.provaId,
+    required this.caderno,
     required this.questaoId,
     this.alternativaId,
+    this.ordem,
     this.resposta,
     required this.sincronizado,
     this.dataHoraResposta,
@@ -42,8 +46,10 @@ class RespostaProva implements Insertable<RespostaProva> {
       codigoEOL: Value(codigoEOL),
       dispositivoId: Value(dispositivoId),
       provaId: Value(provaId),
+      caderno: Value(caderno),
       questaoId: Value(questaoId),
       alternativaId: Value(alternativaId),
+      ordem: Value(ordem),
       resposta: Value(resposta),
       sincronizado: Value(sincronizado),
       tempoRespostaAluno: Value(tempoRespostaAluno),

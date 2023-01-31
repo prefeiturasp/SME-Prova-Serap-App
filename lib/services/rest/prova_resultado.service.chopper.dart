@@ -19,8 +19,8 @@ class _$ProvaResultadoService extends ProvaResultadoService {
   @override
   Future<Response<ProvaResultadoResumoResponseDto>> getResumoPorProvaId(
       {required int provaId}) {
-    final $url = '/v1/prova-resultados/${provaId}/resumo';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/prova-resultados/${provaId}/resumo');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<ProvaResultadoResumoResponseDto,
         ProvaResultadoResumoResponseDto>($request);
   }
@@ -28,9 +28,9 @@ class _$ProvaResultadoService extends ProvaResultadoService {
   @override
   Future<Response<QuestaoCompletaRespostaResponseDto>> getQuestaoCompleta(
       {required int provaId, required int questaoLegadoId}) {
-    final $url =
-        '/v1/prova-resultados/${provaId}/${questaoLegadoId}/questao-completa';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse(
+        '/v1/prova-resultados/${provaId}/${questaoLegadoId}/questao-completa');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<QuestaoCompletaRespostaResponseDto,
         QuestaoCompletaRespostaResponseDto>($request);
   }

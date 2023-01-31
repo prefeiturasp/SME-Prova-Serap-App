@@ -1,11 +1,12 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/tables/alternativa.table.dart';
+import 'package:appserap/database/tables/prova_questao_alternativa.table.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:drift/drift.dart';
 
 part 'alternativa.dao.g.dart';
 
-@DriftAccessor(tables: [AlternativasDb])
+@DriftAccessor(tables: [AlternativasDb, ProvaQuestaoAlternativaTable])
 class AlternativaDao extends DatabaseAccessor<AppDatabase> with _$AlternativaDaoMixin {
   AlternativaDao(AppDatabase db) : super(db);
 

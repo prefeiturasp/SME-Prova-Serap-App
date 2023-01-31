@@ -2,10 +2,7 @@
 
 part of 'arquivo_audio.dao.dart';
 
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
+// ignore_for_file: type=lint
 mixin _$ArquivosAudioDaoMixin on DatabaseAccessor<AppDatabase> {
   $ArquivosAudioDbTable get arquivosAudioDb => attachedDatabase.arquivosAudioDb;
 }

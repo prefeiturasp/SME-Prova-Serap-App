@@ -117,7 +117,8 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
 
     questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
-    alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
+    alternativas =
+        await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
     imagens = await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
     questaoId =
         await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(widget.idProva, provaStore.caderno, widget.ordem);

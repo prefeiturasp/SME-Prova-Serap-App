@@ -19,6 +19,7 @@ import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao_arquivo.model.dart';
 import 'package:appserap/models/job.model.dart';
+import 'package:appserap/models/prova_questao_alternativa.model.dart';
 
 import 'daos/alternativa.dao.dart';
 import 'daos/arquivo.dao.dart';
@@ -28,6 +29,7 @@ import 'daos/jobs.dao.dart';
 import 'daos/prova.dao.dart';
 import 'daos/prova_aluno.dao.dart';
 import 'daos/prova_caderno.dao.dart';
+import 'daos/prova_questao_alternativa.dao.dart';
 import 'daos/questao.dao.dart';
 import 'daos/questao_arquivo.dao.dart';
 import 'tables/alternativa.table.dart';
@@ -38,6 +40,7 @@ import 'tables/contexto_prova.table.dart';
 import 'tables/download_prova.table.dart';
 import 'tables/jobs.table.dart';
 import 'tables/prova.table.dart';
+import 'tables/prova_questao_alternativa.table.dart';
 import 'tables/prova_aluno.table.dart';
 import 'tables/prova_caderno.table.dart';
 import 'tables/questao.table.dart';
@@ -63,6 +66,7 @@ part 'app.database.g.dart';
     ProvaCadernoTable,
     QuestaoArquivoTable,
     JobsTable,
+    ProvaQuestaoAlternativaTable,
   ],
   daos: [
     ArquivosVideosDao,
@@ -77,6 +81,7 @@ part 'app.database.g.dart';
     ProvaCadernoDao,
     QuestaoArquivoDao,
     JobDao,
+    ProvaQuestaoAlternativaDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -89,7 +94,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 24;
+  int get schemaVersion => 25;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -207,6 +212,10 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(provasDb, provasDb.formatoTaiAvancarSemResponder);
             await m.addColumn(provasDb, provasDb.formatoTaiVoltarItemAnterior);
           }
+
+          if (from < 25) {
+            await m.createTable(provaQuestaoAlternativaTable);
+          }
         });
 
         // Assert that the schema is valid after migrations
@@ -252,6 +261,7 @@ class AppDatabase extends _$AppDatabase {
       await customUpdate("delete from questao_arquivo_table;");
       await customUpdate("delete from questoes_db;");
       await customUpdate("delete from jobs_table;");
+      await customUpdate("delete from prova_questao_alternativa_table;");
     });
   }
 }

@@ -7,9 +7,11 @@ class RespostaProvaTable extends Table {
 
   IntColumn get questaoId => integer()();
   IntColumn get provaId => integer()();
+  TextColumn get caderno => text().withDefault(Constant("A"))();
   TextColumn get dispositivoId => text()();
 
   IntColumn get alternativaId => integer().nullable()();
+  IntColumn get ordem => integer().nullable()();
   TextColumn get resposta => text().nullable()();
 
   IntColumn get tempoRespostaAluno => integer()();
@@ -18,5 +20,5 @@ class RespostaProvaTable extends Table {
   BoolColumn get sincronizado => boolean()();
 
   @override
-  Set<Column> get primaryKey => {codigoEOL, provaId, questaoId};
+  Set<Column> get primaryKey => {codigoEOL, provaId, caderno, questaoId};
 }

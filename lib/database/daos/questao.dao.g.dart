@@ -2,10 +2,7 @@
 
 part of 'questao.dao.dart';
 
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
+// ignore_for_file: type=lint
 mixin _$QuestaoDaoMixin on DatabaseAccessor<AppDatabase> {
   $QuestoesDbTable get questoesDb => attachedDatabase.questoesDb;
   $AlternativasDbTable get alternativasDb => attachedDatabase.alternativasDb;

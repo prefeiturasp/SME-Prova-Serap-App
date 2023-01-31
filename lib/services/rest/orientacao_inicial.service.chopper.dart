@@ -19,8 +19,8 @@ class _$OrientacaoInicialService extends OrientacaoInicialService {
   @override
   Future<Response<List<OrientacaoInicialResponseDTO>>>
       getOrientacoesIniciais() {
-    final $url = '/v1/configuracoes/telas-boas-vindas';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/configuracoes/telas-boas-vindas');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<List<OrientacaoInicialResponseDTO>,
         OrientacaoInicialResponseDTO>($request);
   }

@@ -34,7 +34,7 @@ class ApiService {
                 ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true),
             )
           : http.Client(),
-      baseUrl: options.baseUrl,
+      baseUrl: Uri.tryParse(options.baseUrl),
       converter: jsonConverter,
       errorConverter: JsonErrorConverter(),
       authenticator: ServiceAuthenticator(),
