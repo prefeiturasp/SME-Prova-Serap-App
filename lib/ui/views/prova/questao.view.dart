@@ -11,7 +11,6 @@ import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao.store.dart';
-import 'package:appserap/ui/views/prova/prova.media.util.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_aluno.widget.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
@@ -47,7 +46,7 @@ class QuestaoView extends BaseStatefulWidget {
   _QuestaoViewState createState() => _QuestaoViewState();
 }
 
-class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable, ProvaMediaUtil {
+class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable {
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
@@ -116,22 +115,35 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
 
-    questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
-    alternativas =
-        await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
-    imagens = await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
-    questaoId =
-        await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
-
+    await _carregarProva();
     await _carregarArquivos();
   }
 
+  _carregarProva()  async {
+    questao = await db.questaoDao.getByProvaEOrdem(
+      widget.idProva,
+      provaStore.caderno,
+      widget.ordem,
+    );
+    alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(
+      questao.questaoLegadoId,
+    );
+    imagens = await db.arquivoDao.obterPorQuestaoLegadoId(
+      questao.questaoLegadoId,
+    );
+    questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(
+      widget.idProva,
+      provaStore.caderno,
+      widget.ordem,
+    );
+  }
+
   _carregarArquivos() async {
-    if (verificarDeficienciaVisual()) {
+    if (provaStore.prova.exibirAudio) {
       await loadAudio(questao);
     }
 
-    if (verificarDeficienciaAuditiva()) {
+    if (provaStore.prova.exibirVideo) {
       await loadVideos(questao);
     }
   }
@@ -432,18 +444,22 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   bool exibirAudio() {
-    if (arquivoAudioDb == null) {
-      return false;
+    if(provaStore.prova.exibirAudio){
+      if (arquivoAudioDb != null) {
+        return true;
+      }
     }
 
-    return verificarDeficienciaVisual();
+    return false;
   }
 
   bool exibirVideo() {
-    if (arquivoVideoDb == null) {
-      return false;
+    if(provaStore.prova.exibirVideo){
+      if (arquivoVideoDb != null) {
+        return true;
+      }
     }
 
-    return verificarDeficienciaAuditiva();
+    return false;
   }
 }

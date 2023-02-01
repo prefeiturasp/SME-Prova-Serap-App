@@ -43,6 +43,9 @@ class Prova implements Insertable<Prova> {
   bool formatoTaiAvancarSemResponder;
   bool formatoTaiVoltarItemAnterior;
 
+  bool exibirVideo;
+  bool exibirAudio;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -68,6 +71,8 @@ class Prova implements Insertable<Prova> {
     required this.formatoTaiItem,
     required this.formatoTaiAvancarSemResponder,
     required this.formatoTaiVoltarItemAnterior,
+    required this.exibirVideo,
+    required this.exibirAudio,
   });
 
   bool isFinalizada() {

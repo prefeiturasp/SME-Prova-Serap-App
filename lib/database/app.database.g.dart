@@ -215,6 +215,32 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
             SqlDialect.postgres: '',
           }),
           defaultValue: Constant(false));
+  static const VerificationMeta _exibirVideoMeta =
+      const VerificationMeta('exibirVideo');
+  @override
+  late final GeneratedColumn<bool> exibirVideo =
+      GeneratedColumn<bool>('exibir_video', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("exibir_video" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: Constant(false));
+  static const VerificationMeta _exibirAudioMeta =
+      const VerificationMeta('exibirAudio');
+  @override
+  late final GeneratedColumn<bool> exibirAudio =
+      GeneratedColumn<bool>('exibir_audio', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("exibir_audio" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -241,7 +267,9 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
         formatoTai,
         formatoTaiItem,
         formatoTaiAvancarSemResponder,
-        formatoTaiVoltarItemAnterior
+        formatoTaiVoltarItemAnterior,
+        exibirVideo,
+        exibirAudio
       ];
   @override
   String get aliasedName => _alias ?? 'provas_db';
@@ -399,6 +427,18 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
               data['formato_tai_voltar_item_anterior']!,
               _formatoTaiVoltarItemAnteriorMeta));
     }
+    if (data.containsKey('exibir_video')) {
+      context.handle(
+          _exibirVideoMeta,
+          exibirVideo.isAcceptableOrUnknown(
+              data['exibir_video']!, _exibirVideoMeta));
+    }
+    if (data.containsKey('exibir_audio')) {
+      context.handle(
+          _exibirAudioMeta,
+          exibirAudio.isAcceptableOrUnknown(
+              data['exibir_audio']!, _exibirAudioMeta));
+    }
     return context;
   }
 
@@ -464,6 +504,10 @@ class $ProvasDbTable extends ProvasDb with TableInfo<$ProvasDbTable, Prova> {
       formatoTaiVoltarItemAnterior: attachedDatabase.typeMapping.read(
           DriftSqlType.bool,
           data['${effectivePrefix}formato_tai_voltar_item_anterior'])!,
+      exibirVideo: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}exibir_video'])!,
+      exibirAudio: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}exibir_audio'])!,
     );
   }
 
@@ -505,6 +549,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
   final Value<int?> formatoTaiItem;
   final Value<bool> formatoTaiAvancarSemResponder;
   final Value<bool> formatoTaiVoltarItemAnterior;
+  final Value<bool> exibirVideo;
+  final Value<bool> exibirAudio;
   const ProvasDbCompanion({
     this.id = const Value.absent(),
     this.descricao = const Value.absent(),
@@ -531,6 +577,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.formatoTaiItem = const Value.absent(),
     this.formatoTaiAvancarSemResponder = const Value.absent(),
     this.formatoTaiVoltarItemAnterior = const Value.absent(),
+    this.exibirVideo = const Value.absent(),
+    this.exibirAudio = const Value.absent(),
   });
   ProvasDbCompanion.insert({
     required int id,
@@ -558,6 +606,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.formatoTaiItem = const Value.absent(),
     this.formatoTaiAvancarSemResponder = const Value.absent(),
     this.formatoTaiVoltarItemAnterior = const Value.absent(),
+    this.exibirVideo = const Value.absent(),
+    this.exibirAudio = const Value.absent(),
   })  : id = Value(id),
         descricao = Value(descricao),
         downloadStatus = Value(downloadStatus),
@@ -594,6 +644,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     Expression<int>? formatoTaiItem,
     Expression<bool>? formatoTaiAvancarSemResponder,
     Expression<bool>? formatoTaiVoltarItemAnterior,
+    Expression<bool>? exibirVideo,
+    Expression<bool>? exibirAudio,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -628,6 +680,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
         'formato_tai_avancar_sem_responder': formatoTaiAvancarSemResponder,
       if (formatoTaiVoltarItemAnterior != null)
         'formato_tai_voltar_item_anterior': formatoTaiVoltarItemAnterior,
+      if (exibirVideo != null) 'exibir_video': exibirVideo,
+      if (exibirAudio != null) 'exibir_audio': exibirAudio,
     });
   }
 
@@ -656,7 +710,9 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       Value<bool>? formatoTai,
       Value<int?>? formatoTaiItem,
       Value<bool>? formatoTaiAvancarSemResponder,
-      Value<bool>? formatoTaiVoltarItemAnterior}) {
+      Value<bool>? formatoTaiVoltarItemAnterior,
+      Value<bool>? exibirVideo,
+      Value<bool>? exibirAudio}) {
     return ProvasDbCompanion(
       id: id ?? this.id,
       descricao: descricao ?? this.descricao,
@@ -687,6 +743,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
           formatoTaiAvancarSemResponder ?? this.formatoTaiAvancarSemResponder,
       formatoTaiVoltarItemAnterior:
           formatoTaiVoltarItemAnterior ?? this.formatoTaiVoltarItemAnterior,
+      exibirVideo: exibirVideo ?? this.exibirVideo,
+      exibirAudio: exibirAudio ?? this.exibirAudio,
     );
   }
 
@@ -777,6 +835,12 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       map['formato_tai_voltar_item_anterior'] =
           Variable<bool>(formatoTaiVoltarItemAnterior.value);
     }
+    if (exibirVideo.present) {
+      map['exibir_video'] = Variable<bool>(exibirVideo.value);
+    }
+    if (exibirAudio.present) {
+      map['exibir_audio'] = Variable<bool>(exibirAudio.value);
+    }
     return map;
   }
 
@@ -809,7 +873,10 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
           ..write('formatoTaiItem: $formatoTaiItem, ')
           ..write(
               'formatoTaiAvancarSemResponder: $formatoTaiAvancarSemResponder, ')
-          ..write('formatoTaiVoltarItemAnterior: $formatoTaiVoltarItemAnterior')
+          ..write(
+              'formatoTaiVoltarItemAnterior: $formatoTaiVoltarItemAnterior, ')
+          ..write('exibirVideo: $exibirVideo, ')
+          ..write('exibirAudio: $exibirAudio')
           ..write(')'))
         .toString();
   }

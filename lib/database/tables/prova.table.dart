@@ -38,6 +38,9 @@ class ProvasDb extends Table {
   BoolColumn get formatoTaiAvancarSemResponder => boolean().withDefault(Constant(false))();
   BoolColumn get formatoTaiVoltarItemAnterior => boolean().withDefault(Constant(false))();
 
+  BoolColumn get exibirVideo => boolean().withDefault(Constant(false))();
+  BoolColumn get exibirAudio => boolean().withDefault(Constant(false))();
+
   @override
   Set<Column> get primaryKey => {id, caderno};
 }

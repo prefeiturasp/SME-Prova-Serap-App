@@ -3,7 +3,6 @@ import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/questao_resultado_detalhes_view.store.dart';
-import 'package:appserap/ui/views/prova/prova.media.util.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_aluno_resposta.widget.dart';
 import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -41,7 +40,7 @@ class QuestaoResultadoDetalhesView extends BaseStatefulWidget {
 }
 
 class _QuestaoResultadoDetalhesViewState
-    extends BaseStateWidget<QuestaoResultadoDetalhesView, QuestaoResultadoDetalhesViewStore> with ProvaMediaUtil {
+    extends BaseStateWidget<QuestaoResultadoDetalhesView, QuestaoResultadoDetalhesViewStore> {
   late Uint8List arquivoVideo;
   late Uint8List arquivoAudio;
 
@@ -59,6 +58,7 @@ class _QuestaoResultadoDetalhesViewState
     var questaoLegadoId = widget.resumo.where((element) => element.ordemQuestao == widget.ordem).first.idQuestaoLegado;
     store.carregarDetalhesQuestao(
       provaId: widget.provaId,
+      caderno: widget.caderno,
       questaoLegadoId: questaoLegadoId,
     );
   }
@@ -293,18 +293,22 @@ class _QuestaoResultadoDetalhesViewState
   }
 
   bool exibirAudio() {
-    if (arquivoAudioDb == null) {
-      return false;
+    if(store.prova!.exibirAudio){
+      if (arquivoAudioDb != null) {
+        return true;
+      }
     }
 
-    return verificarDeficienciaVisual();
+    return false;
   }
 
   bool exibirVideo() {
-    if (arquivoVideoDb == null) {
-      return false;
+    if(store.prova!.exibirVideo){
+      if (arquivoVideoDb != null) {
+        return true;
+      }
     }
 
-    return verificarDeficienciaAuditiva();
+    return false;
   }
 }
