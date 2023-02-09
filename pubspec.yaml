@@ -75,9 +75,7 @@ dependencies:
   lottie: ^1.1.0
 
   # Editor de texto
-  html_editor_enhanced: #^2.4.0+1
-    git:
-      url: "https://github.com/ksilz/html-editor-enhanced"
+  html_editor_enhanced: ^2.5.1
 
   # Workmanager
   # background   _fetch: ^1.0.1
