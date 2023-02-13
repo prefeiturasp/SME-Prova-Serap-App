@@ -1,4 +1,4 @@
-FROM cirrusci/flutter:3.3.8 as build
+FROM cirrusci/flutter:3.7.1 as build
 
 WORKDIR /usr/src/app
 
