@@ -38,6 +38,8 @@ ProvaResponseDTO _$ProvaResponseDTOFromJson(Map<String, dynamic> json) =>
           json['formatoTaiAvancarSemResponder'] as bool,
       formatoTaiVoltarItemAnterior:
           json['formatoTaiVoltarItemAnterior'] as bool,
+      exibirVideo: json['exibirVideo'] as bool,
+      exibirAudio: json['exibirAudio'] as bool,
     );
 
 Map<String, dynamic> _$ProvaResponseDTOToJson(ProvaResponseDTO instance) =>
@@ -66,6 +68,8 @@ Map<String, dynamic> _$ProvaResponseDTOToJson(ProvaResponseDTO instance) =>
       'formatoTaiItem': instance.formatoTaiItem,
       'formatoTaiAvancarSemResponder': instance.formatoTaiAvancarSemResponder,
       'formatoTaiVoltarItemAnterior': instance.formatoTaiVoltarItemAnterior,
+      'exibirVideo': instance.exibirVideo,
+      'exibirAudio': instance.exibirAudio,
     };
 
 const _$EnumProvaStatusEnumMap = {

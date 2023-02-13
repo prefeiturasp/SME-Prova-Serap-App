@@ -94,7 +94,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 25;
+  int get schemaVersion => 26;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -216,6 +216,11 @@ class AppDatabase extends _$AppDatabase {
           if (from < 25) {
             await m.createTable(provaQuestaoAlternativaTable);
           }
+
+          if (from < 26) {
+            await m.addColumn(provasDb, provasDb.exibirVideo);
+            await m.addColumn(provasDb, provasDb.exibirAudio);
+          }
         });
 
         // Assert that the schema is valid after migrations
@@ -230,19 +235,6 @@ class AppDatabase extends _$AppDatabase {
 
   Future limpar() {
     return transaction(() async {
-      // await customUpdate("delete from alternativas_db;");
-
-      // await customUpdate("delete from questoes_db;");
-
-      // await customUpdate("delete from arquivos_db;");
-
-      // await customUpdate("delete from contextos_prova_db;");
-
-      // await customUpdate("delete from arquivos_video_db;");
-      // await customUpdate("delete from arquivos_audio_db;");
-
-      // await customUpdate("delete from provas_db;");
-
       await customUpdate("delete from download_provas_db;");
     });
   }

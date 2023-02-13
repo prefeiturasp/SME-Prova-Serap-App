@@ -43,7 +43,6 @@ import 'package:photo_view/photo_view.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
 import '../../widgets/video_player/video_player.widget.dart';
-import 'prova.media.util.dart';
 
 class QuestaoRevisaoView extends BaseStatefulWidget {
   final int idProva;
@@ -56,7 +55,7 @@ class QuestaoRevisaoView extends BaseStatefulWidget {
 }
 
 class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, QuestaoRevisaoStore>
-    with Loggable, ProvaViewUtil, ProvaMediaUtil {
+    with Loggable, ProvaViewUtil {
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
@@ -107,22 +106,35 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
 
-    questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
-    alternativas =
-        await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
-    imagens = await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
-    questaoId =
-        await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
-
+    await _carregarProva();
     await _carregarArquivos();
   }
 
+  _carregarProva()  async {
+    questao = await db.questaoDao.getByProvaEOrdem(
+      widget.idProva,
+      provaStore.caderno,
+      widget.ordem,
+    );
+    alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(
+      questao.questaoLegadoId,
+    );
+    imagens = await db.arquivoDao.obterPorQuestaoLegadoId(
+      questao.questaoLegadoId,
+    );
+    questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(
+      widget.idProva,
+      provaStore.caderno,
+      widget.ordem,
+    );
+  }
+
   _carregarArquivos() async {
-    if (verificarDeficienciaVisual()) {
+    if (provaStore.prova.exibirAudio) {
       await loadAudio(questao);
     }
 
-    if (verificarDeficienciaAuditiva()) {
+    if (provaStore.prova.exibirVideo) {
       await loadVideos(questao);
     }
   }
@@ -397,18 +409,22 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   bool exibirAudio() {
-    if (arquivoAudioDb == null) {
-      return false;
+    if(provaStore.prova.exibirAudio){
+      if (arquivoAudioDb != null) {
+        return true;
+      }
     }
 
-    return verificarDeficienciaVisual();
+    return false;
   }
 
   bool exibirVideo() {
-    if (arquivoVideoDb == null) {
-      return false;
+    if(provaStore.prova.exibirVideo){
+      if (arquivoVideoDb != null) {
+        return true;
+      }
     }
 
-    return verificarDeficienciaAuditiva();
+    return false;
   }
 }

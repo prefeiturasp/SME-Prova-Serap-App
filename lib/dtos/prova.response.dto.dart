@@ -38,10 +38,13 @@ class ProvaResponseDTO {
   final bool apresentarResultados;
   final bool apresentarResultadosPorItem;
 
-  bool formatoTai;
-  int? formatoTaiItem;
-  bool formatoTaiAvancarSemResponder;
-  bool formatoTaiVoltarItemAnterior;
+  final bool formatoTai;
+  final int? formatoTaiItem;
+  final bool formatoTaiAvancarSemResponder;
+  final bool formatoTaiVoltarItemAnterior;
+
+  final bool exibirVideo;
+  final bool exibirAudio;
 
   ProvaResponseDTO({
     required this.id,
@@ -67,6 +70,8 @@ class ProvaResponseDTO {
     required this.formatoTaiItem,
     required this.formatoTaiAvancarSemResponder,
     required this.formatoTaiVoltarItemAnterior,
+    required this.exibirVideo,
+    required this.exibirAudio,
   });
 
   bool isFinalizada() {
@@ -100,6 +105,8 @@ class ProvaResponseDTO {
       formatoTaiItem: formatoTaiItem,
       formatoTaiAvancarSemResponder: formatoTaiAvancarSemResponder,
       formatoTaiVoltarItemAnterior: formatoTaiVoltarItemAnterior,
+      exibirVideo: exibirVideo,
+      exibirAudio: exibirAudio,
     );
   }
 
