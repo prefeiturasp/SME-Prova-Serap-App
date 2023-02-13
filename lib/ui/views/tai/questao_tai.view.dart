@@ -1,6 +1,5 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/questao_tai_view.store.dart';
-import 'package:appserap/ui/views/prova/prova.media.util.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_tai.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
@@ -32,7 +31,7 @@ class QuestaoTaiView extends BaseStatefulWidget {
   State<QuestaoTaiView> createState() => _QuestaoTaiViewState();
 }
 
-class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiViewStore> with Loggable, ProvaMediaUtil {
+class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiViewStore> with Loggable {
   final controller = HtmlEditorController();
 
   @override
@@ -274,18 +273,18 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
   }
 
   bool exibirAudio() {
-    if (store.questao!.audios.isEmpty) {
-      return false;
+    if (store.provaStore!.prova.exibirAudio) {
+      return true;
     }
 
-    return verificarDeficienciaVisual();
+    return false;
   }
 
   bool exibirVideo() {
-    if (store.questao!.videos.isEmpty) {
-      return false;
+    if (store.provaStore!.prova.exibirVideo) {
+      return true;
     }
 
-    return verificarDeficienciaAuditiva();
+    return false;
   }
 }

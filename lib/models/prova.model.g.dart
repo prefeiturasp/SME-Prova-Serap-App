@@ -43,6 +43,8 @@ Prova _$ProvaFromJson(Map<String, dynamic> json) => Prova(
           json['formatoTaiAvancarSemResponder'] as bool,
       formatoTaiVoltarItemAnterior:
           json['formatoTaiVoltarItemAnterior'] as bool,
+      exibirVideo: json['exibirVideo'] as bool,
+      exibirAudio: json['exibirAudio'] as bool,
     );
 
 Map<String, dynamic> _$ProvaToJson(Prova instance) => <String, dynamic>{
@@ -71,6 +73,8 @@ Map<String, dynamic> _$ProvaToJson(Prova instance) => <String, dynamic>{
       'formatoTaiItem': instance.formatoTaiItem,
       'formatoTaiAvancarSemResponder': instance.formatoTaiAvancarSemResponder,
       'formatoTaiVoltarItemAnterior': instance.formatoTaiVoltarItemAnterior,
+      'exibirVideo': instance.exibirVideo,
+      'exibirAudio': instance.exibirAudio,
     };
 
 const _$EnumDownloadStatusEnumMap = {

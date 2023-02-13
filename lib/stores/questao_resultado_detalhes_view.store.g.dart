@@ -66,10 +66,14 @@ mixin _$QuestaoResultadoDetalhesViewStore
 
   @override
   Future<void> carregarDetalhesQuestao(
-      {required int provaId, required int questaoLegadoId}) {
+      {required int provaId,
+      required String caderno,
+      required int questaoLegadoId}) {
     return _$carregarDetalhesQuestaoAsyncAction.run(() => super
         .carregarDetalhesQuestao(
-            provaId: provaId, questaoLegadoId: questaoLegadoId));
+            provaId: provaId,
+            caderno: caderno,
+            questaoLegadoId: questaoLegadoId));
   }
 
   late final _$carregarDetalhesAsyncAction = AsyncAction(

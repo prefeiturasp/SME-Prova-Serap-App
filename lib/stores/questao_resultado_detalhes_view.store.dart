@@ -5,15 +5,18 @@ import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/dtos/questao_completa_resposta.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:mobx/mobx.dart';
 import 'package:retry/retry.dart';
+
+import '../interfaces/database.interface.dart';
 part 'questao_resultado_detalhes_view.store.g.dart';
 
 class QuestaoResultadoDetalhesViewStore = _QuestaoResultadoDetalhesViewStoreBase
     with _$QuestaoResultadoDetalhesViewStore;
 
-abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable {
+abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable, Database {
   @observable
   bool carregando = false;
 
@@ -31,9 +34,14 @@ abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable {
 
   List<ArquivoVideoResponseDTO> videos = [];
 
+  Prova? prova;
+
   @action
-  Future<void> carregarDetalhesQuestao({required int provaId, required int questaoLegadoId}) async {
+  Future<void> carregarDetalhesQuestao({required int provaId, required String caderno, required int questaoLegadoId}) async {
     carregando = true;
+
+    prova ??= await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
+
     await retry(
       () async {
         var res = await ServiceLocator.get<ApiService>().provaResultado.getQuestaoCompleta(
