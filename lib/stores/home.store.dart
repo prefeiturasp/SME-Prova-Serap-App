@@ -175,6 +175,9 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       prova.apresentarResultadosPorItem = provaStoreAtualizada.prova.apresentarResultadosPorItem;
       prova.provaComProficiencia = provaStoreAtualizada.prova.provaComProficiencia;
 
+      prova.exibirAudio = provaStoreAtualizada.prova.exibirAudio;
+      prova.exibirVideo = provaStoreAtualizada.prova.exibirVideo;
+
       provaStoreAtualizada.prova = prova;
       provaStoreAtualizada.downloadStatus = prova.downloadStatus;
     }
