@@ -35,7 +35,6 @@ dependencies:
   jwt_decoder: ^2.0.1
   permission_handler: ^9.2.0
   json_annotation: ^4.6.0
-  android_id: ^0.0.7
   clock: ^1.1.0
   custom_radio_group_list: ^1.0.0
   native_resource: ^0.3.1
@@ -105,8 +104,8 @@ dependencies:
   file_local_storage_inspector: ^0.3.1
 
   # Informações do dispoisitivo
-  device_info_plus: ^8.0.0
-  platform_device_id: ^1.0.1
+  device_info_plus: ^8.1.0
+  android_id: ^0.1.3+1
 
   # Navegação
   go_router: ^5.2.0

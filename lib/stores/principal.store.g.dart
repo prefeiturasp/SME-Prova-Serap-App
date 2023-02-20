@@ -44,13 +44,13 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
       Atom(name: '_PrincipalStoreBase.dispositivoId', context: context);
 
   @override
-  String? get dispositivoId {
+  String get dispositivoId {
     _$dispositivoIdAtom.reportRead();
     return super.dispositivoId;
   }
 
   @override
-  set dispositivoId(String? value) {
+  set dispositivoId(String value) {
     _$dispositivoIdAtom.reportWrite(value, super.dispositivoId, () {
       super.dispositivoId = value;
     });
@@ -69,6 +69,22 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
   set status(ConnectivityResult value) {
     _$statusAtom.reportWrite(value, super.status, () {
       super.status = value;
+    });
+  }
+
+  late final _$idDispositivoAtom =
+      Atom(name: '_PrincipalStoreBase.idDispositivo', context: context);
+
+  @override
+  String get idDispositivo {
+    _$idDispositivoAtom.reportRead();
+    return super.idDispositivo;
+  }
+
+  @override
+  set idDispositivo(String value) {
+    _$idDispositivoAtom.reportWrite(value, super.idDispositivo, () {
+      super.idDispositivo = value;
     });
   }
 
@@ -97,6 +113,14 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
         .run(() => super.onChangeConexao(resultado));
   }
 
+  late final _$obetIdDispositivoAsyncAction =
+      AsyncAction('_PrincipalStoreBase.obetIdDispositivo', context: context);
+
+  @override
+  Future<String?> obetIdDispositivo() {
+    return _$obetIdDispositivoAsyncAction.run(() => super.obetIdDispositivo());
+  }
+
   late final _$obterVersaoDoAppAsyncAction =
       AsyncAction('_PrincipalStoreBase.obterVersaoDoApp', context: context);
 
@@ -119,6 +143,7 @@ mixin _$PrincipalStore on _PrincipalStoreBase, Store {
 conexaoStream: ${conexaoStream},
 dispositivoId: ${dispositivoId},
 status: ${status},
+idDispositivo: ${idDispositivo},
 versaoApp: ${versaoApp},
 temConexao: ${temConexao},
 versao: ${versao}

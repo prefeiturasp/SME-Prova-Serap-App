@@ -63,7 +63,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
 
           var entity = RespostaProva(
             codigoEOL: codigoEOL,
-            dispositivoId: ServiceLocator<PrincipalStore>().dispositivoId!,
+            dispositivoId: ServiceLocator<PrincipalStore>().dispositivoId,
             provaId: idProva,
             caderno: caderno,
             questaoId: questaoResponse.questaoId,
@@ -116,7 +116,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
         respostas.add(
           QuestaoRespostaDTO(
             alunoRa: codigoEOL,
-            dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId!,
+            dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
             questaoId: resposta.questaoId,
             alternativaId: resposta.alternativaId,
             resposta: resposta.resposta,
@@ -171,7 +171,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
 
     var resposta = RespostaProva(
       codigoEOL: codigoEOL,
-      dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId!,
+      dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
       provaId: idProva,
       caderno: caderno,
       questaoId: questaoId,

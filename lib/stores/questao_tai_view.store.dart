@@ -91,7 +91,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
 
     QuestaoRespostaDTO questaoResposta = QuestaoRespostaDTO(
       alunoRa: usuarioStore.codigoEOL!,
-      dispositivoId: principalStore.dispositivoId!,
+      dispositivoId: principalStore.dispositivoId,
       questaoId: questao!.id,
       alternativaId: alternativaIdMarcada,
       resposta: textoRespondido,

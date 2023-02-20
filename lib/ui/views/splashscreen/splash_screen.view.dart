@@ -17,7 +17,6 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:updater/updater.dart';
 import 'package:wakelock/wakelock.dart';
@@ -168,9 +167,9 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
       int buildNumber = prefs.getInt("_buildNumber") ?? 0;
       String version = prefs.getString("_version") ?? "1.0.0";
 
-      String? deviceId = await PlatformDeviceId.getDeviceId;
+      String deviceId = ServiceLocator<PrincipalStore>().dispositivoId;
 
-      await FirebaseCrashlytics.instance.setCustomKey('deviceId', deviceId!);
+      await FirebaseCrashlytics.instance.setCustomKey('deviceId', deviceId);
 
       if (buildNumber != int.parse(packageInfo.buildNumber) || version != packageInfo.version) {
         info("Informando versão...");
