@@ -1,6 +1,7 @@
 config/app_config.json
 web/config/app_config.json
 .vscode/*.redis
+*.env
 
 # Miscellaneous
 *.class

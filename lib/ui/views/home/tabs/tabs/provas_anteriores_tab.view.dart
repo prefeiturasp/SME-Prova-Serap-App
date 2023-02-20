@@ -38,11 +38,6 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
   final temaStore = GetIt.I<TemaStore>();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget builder(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 16, bottom: 8),

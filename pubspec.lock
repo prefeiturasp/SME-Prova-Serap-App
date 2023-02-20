@@ -574,6 +574,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_dotenv:
+    dependency: "direct main"
+    description:
+      name: flutter_dotenv
+      sha256: d9283d92059a22e9834bc0a31336658ffba77089fb6f3cc36751f1fc7c6661a3
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.2"
   flutter_html:
     dependency: transitive
     description:
@@ -1056,6 +1064,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.3.2"
+  native_resource:
+    dependency: "direct main"
+    description:
+      name: native_resource
+      sha256: "0809d38a7e9c42c72f0c24a64141ab6d602d7cee9dfd7cb659857098fa3c8e49"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   nested:
     dependency: transitive
     description:

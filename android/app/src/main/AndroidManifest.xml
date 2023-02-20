@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
    <application
-        android:label="SERAp Estudantes"
+        android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:name="androidx.multidex.MultiDexApplication"
         android:requestLegacyExternalStorage="true"
