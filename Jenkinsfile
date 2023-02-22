@@ -1,4 +1,4 @@
-pipeline {	
+pipeline {  
     environment {
       branchname =  env.BRANCH_NAME.toLowerCase()
     }
@@ -6,7 +6,7 @@ pipeline {
     agent {
       node { 
         label 'SME-AGENT-FLUTTER'
-	    }
+      }
     }
     
     options {
@@ -30,7 +30,7 @@ pipeline {
       }
 
       stage('Build APK Dev') {
-	      when { 
+        when { 
           anyOf { 
             branch 'development'; 
           } 
@@ -38,17 +38,20 @@ pipeline {
         steps {
           withCredentials([
             file(credentialsId: 'serap-app-google-service-dev', variable: 'GOOGLEJSONDEV'),
-            file(credentialsId: 'serap-app-config-dev', variable: 'APPCONFIGDEV'),
+            //file(credentialsId: 'serap-app-config-dev', variable: 'APPCONFIGDEV'),
             file(credentialsId: 'app-key-jks', variable: 'APPKEYJKS'),
             file(credentialsId: 'app-key-properties', variable: 'APPKEYPROPERTIES'),
-	  ]) {
+            file(credentialsId: 'serap-app-environment-dev', variable: 'ENVDEV'),
+    ]) {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'
             sh 'if [ -d "config" ]; then rm -Rf config; fi'
-            sh 'mkdir config && cp $APPCONFIGDEV config/app_config.json'
-            sh 'cp ${GOOGLEJSONDEV} android/app/google-services.json'
+            //sh 'mkdir config && cp $APPCONFIGDEV config/app_config.json'
+            //sh 'cp ${GOOGLEJSONDEV} android/app/google-services.json'
+            sh 'mkdir android/app/src/dev && cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} . && source serap-app-environ.dev && rm -f serap-app-environ.dev'
+            sh 'touch .env'
             sh 'flutter clean'
-            sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release"
+            sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=dev"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
             sh 'if [ -d "config" ]; then rm -Rf config; fi'
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
@@ -57,7 +60,7 @@ pipeline {
       }
 
       stage('Build APK Hom') {
-	      when { 
+        when { 
           anyOf { 
             branch 'release' 
           } 
@@ -82,7 +85,7 @@ pipeline {
           }
         }
       }
-	    
+      
       stage('Build APK Prod') {
         when {
           branch 'master'
@@ -110,7 +113,7 @@ pipeline {
 
       stage('Tag Github Dev') {
         agent { label 'master' }
-	      when { anyOf {  branch 'development'; }}
+        when { anyOf {  branch 'development'; }}
         steps{
           script{
             try {
@@ -122,12 +125,12 @@ pipeline {
                 echo err.getMessage()
             }
           }
-        }		
+        }   
       }
 
       stage('Tag Github Hom') {
         agent { label 'master' }
-	      when { anyOf {  branch 'release'; }}
+        when { anyOf {  branch 'release'; }}
         steps{
           script{
             try {
@@ -139,12 +142,12 @@ pipeline {
                 echo err.getMessage()
             }
           }
-        }		
-      }	    
+        }   
+      }     
 
       stage('Tag Github Prod') {
         agent { label 'master' }
-	      when { anyOf {  branch 'master'; }}
+        when { anyOf {  branch 'master'; }}
         steps{
           script{
             try {
@@ -156,73 +159,73 @@ pipeline {
                 echo err.getMessage()
             }
           }
-        }		
+        }   
       }   
 
       stage('Release Github Dev') {
         agent { label 'master' }
-	      when { anyOf {  branch 'development'; }}
+        when { anyOf {  branch 'development'; }}
         steps{
           script{
             try {
                 withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
-	                  sh ("rm -Rf tmp")
+                    sh ("rm -Rf tmp")
                     dir('tmp'){
                         unstash 'appbuild'
                     }
                     sh ("echo \"app-${env.branchname}.apk\"")
-	                  sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name "+"app-${APP_VERSION}-dev.apk"+" --file tmp/build/app/outputs/flutter-apk/app-release.apk --replace")
+                    sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name "+"app-${APP_VERSION}-dev.apk"+" --file tmp/build/app/outputs/flutter-apk/app-release.apk --replace")
                 }
             } 
             catch (err) {
                 echo err.getMessage()
             }
           }
-        }		
+        }   
       }  
 
       stage('Release Github Hom') {
         agent { label 'master' }
-	      when { anyOf {  branch 'release'; }}
+        when { anyOf {  branch 'release'; }}
         steps{
           script{
             try {
                 withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
-	                  sh ("rm -Rf tmp")
+                    sh ("rm -Rf tmp")
                     dir('tmp'){
                         unstash 'appbuild'
                     }
                     sh ("echo \"app-${env.branchname}.apk\"")
-	                  sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/flutter-apk/app-release.apk --replace")
+                    sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/flutter-apk/app-release.apk --replace")
                 }
             } 
             catch (err) {
                 echo err.getMessage()
             }
           }
-        }		
+        }   
       }
-	    
+      
       stage('Release Github Prod') {
         agent { label 'master' }
-	      when { anyOf {  branch 'master'; }}
+        when { anyOf {  branch 'master'; }}
         steps{
           script{
             try {
                 withCredentials([string(credentialsId: "github_token_serap_app", variable: 'token')]) {
-	                  sh ("rm -Rf tmp")
+                    sh ("rm -Rf tmp")
                     dir('tmp'){
                         unstash 'appbuild'
                     }
                     sh ("echo \"app-${env.branchname}.apk\"")
-	                  sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-prod --name "+"app-${APP_VERSION}-prod.apk"+" --file tmp/build/app/outputs/flutter-apk/app-release.apk --replace")
+                    sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-prod --name "+"app-${APP_VERSION}-prod.apk"+" --file tmp/build/app/outputs/flutter-apk/app-release.apk --replace")
                 }
             } 
             catch (err) {
                 echo err.getMessage()
             }
           }
-        }		
+        }   
       }  
 
   }
