@@ -97,7 +97,6 @@ android {
             resValue "string", "app_name", "SERAp Estudantes Dev"
             
             resValue "string", "api_url", "https://dev-serap-estudante.sme.prefeitura.sp.gov.br/api"
-            resValue "string", "api_chave", "59A3DB6382FE4519886E859F71E06C1E"
             resValue "string", "serap_url", "https://hom-serap.sme.prefeitura.sp.gov.br/"
             
             //applicationId "br.gov.sp.prefeitura.sme.appserap.dev"
@@ -108,7 +107,6 @@ android {
             resValue "string", "app_name", "SERAp Estudantes Hom"
 
             resValue "string", "api_url", "https://hom-serap-estudante.sme.prefeitura.sp.gov.br/api"
-            resValue "string", "api_chave", "59A3DB6382FE4519886E859F71E06C1E"
             resValue "string", "serap_url", "https://hom-serap.sme.prefeitura.sp.gov.br/"
 
             //applicationId "br.gov.sp.prefeitura.sme.appserap.hom"
@@ -119,7 +117,6 @@ android {
             resValue "string", "app_name", "SERAp Estudantes"
 
             resValue "string", "api_url", "https://serap-estudante.sme.prefeitura.sp.gov.br/api"
-            resValue "string", "api_chave", "DB4DFC629E934F93A621263989C7F93D"
             resValue "string", "serap_url", "https://serap.sme.prefeitura.sp.gov.br/"
         }
     }

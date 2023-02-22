@@ -13,11 +13,6 @@ abstract class AppConfigReader {
       iosPlistKey: 'ApiUrl',
     );
 
-    _config["chaveApi"] = await NativeResource().read(
-      androidResourceName: 'api_chave',
-      iosPlistKey: 'ApiChave',
-    );
-
     _config["serapUrl"] = await NativeResource().read(
       androidResourceName: 'serap_url',
       iosPlistKey: 'SerapUrl',
@@ -31,7 +26,7 @@ abstract class AppConfigReader {
   }
 
   static String getChaveApi() {
-    return _config["chaveApi"];
+    return dotenv.get("CHAVE_API", fallback: "NONE");
   }
 
   static String getSerapUrl() {
