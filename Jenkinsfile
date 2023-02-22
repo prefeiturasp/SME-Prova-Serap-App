@@ -49,7 +49,7 @@ pipeline {
             sh 'if [ ! -d "android/app/src/dev" ]; then mkdir android/app/src/dev; fi'
             //sh 'mkdir config && cp $APPCONFIGDEV config/app_config.json'
             //sh 'cp ${GOOGLEJSONDEV} android/app/google-services.json'
-            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . envdev && rm -f envdev'
+            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . $(realpath envdev) && rm -f envdev'
             sh 'touch .env'
             sh 'flutter clean'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=dev"
