@@ -59,6 +59,7 @@ class DependenciasIoC with Loggable {
     registerSingleton<ApiService>(ApiService.build(
       ConnectionOptions(
         baseUrl: AppConfigReader.getApiHost(),
+        debugRequest: AppConfigReader.debugRequest(),
       ),
     ));
     registerSingleton<AppRouter>(AppRouter());

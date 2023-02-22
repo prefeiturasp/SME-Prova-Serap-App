@@ -40,8 +40,11 @@ executarJobs(String task) async {
 
   try {
     registerPluginsForIsolate();
-    setupLogging();
+
     await setupAppConfig();
+
+    setupLogging();
+
     await DependenciasIoC().setup();
 
     sendStatus(sendPort, job, EnumJobStatus.EXECUTANDO);

@@ -14,9 +14,11 @@ import 'package:http/http.dart' as http;
 
 class ConnectionOptions {
   final String baseUrl;
+  final String debugRequest;
 
   ConnectionOptions({
     required this.baseUrl,
+    required this.debugRequest,
   });
 }
 
@@ -60,8 +62,8 @@ class ApiService {
       interceptors: [
         CompressaoInterceptor(),
         CustomAuthInterceptor(),
-        // CurlInterceptor(),
-        // HttpLoggingInterceptor(),
+        ...options.debugRequest == "BASIC" ? [CurlInterceptor()] : [],
+        ...options.debugRequest == "FULL" ? [HttpLoggingInterceptor()] : [],
       ],
     ));
     return client;
