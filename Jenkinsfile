@@ -48,7 +48,7 @@ pipeline {
             sh 'if [ -d "config" ]; then rm -Rf config; fi'
             //sh 'mkdir config && cp $APPCONFIGDEV config/app_config.json'
             //sh 'cp ${GOOGLEJSONDEV} android/app/google-services.json'
-            sh 'mkdir android/app/src/dev && cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} . && source serap-app-environ.dev && rm -f serap-app-environ.dev'
+            sh 'mkdir android/app/src/dev && cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} . && . serap-app-environ.dev && rm -f serap-app-environ.dev'
             sh 'touch .env'
             sh 'flutter clean'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=dev"
