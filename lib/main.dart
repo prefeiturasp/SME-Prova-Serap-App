@@ -123,7 +123,7 @@ Future setupAppConfig() async {
     await AppConfigReader.initialize();
   } catch (e, stack) {
     print("Erro ao ler arquivo de configurações.");
-    print("Verifique se seu projeto possui o arquivo config/app_config.json");
+    print("Verifique o arquivo .env");
     print('$e');
     await recordError(e, stack);
   }

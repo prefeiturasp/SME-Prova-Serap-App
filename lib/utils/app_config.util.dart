@@ -1,36 +1,44 @@
+import 'dart:io';
+
 import 'package:appserap/utils/string.util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:logging/src/level.dart';
 import 'package:native_resource/native_resource.dart';
 
 abstract class AppConfigReader {
-  static Map<String, dynamic> _config = {};
-
   static Future<void> initialize() async {
-    _config["apiHost"] = await NativeResource().read(
-      androidResourceName: 'api_url',
-      iosPlistKey: 'ApiUrl',
-    );
+    Map<String, String> defaultNative = const {};
 
-    _config["serapUrl"] = await NativeResource().read(
-      androidResourceName: 'serap_url',
-      iosPlistKey: 'SerapUrl',
-    );
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      try {
+        defaultNative["HOST_API"] = await NativeResource().read(
+          androidResourceName: 'api_url',
+          iosPlistKey: 'ApiUrl',
+        );
 
-    await dotenv.load(fileName: ".env");
+        defaultNative["SERAP_URL"] = await NativeResource().read(
+          androidResourceName: 'serap_url',
+          iosPlistKey: 'SerapUrl',
+        );
+        // ignore: empty_catches
+      } on Exception {}
+    }
+
+    await dotenv.load(fileName: ".env", mergeWith: defaultNative);
   }
 
   static String getApiHost() {
-    return _config["apiHost"];
+    return dotenv.get("HOST_API", fallback: "NONE");
+  }
+
+  static String getSerapUrl() {
+    return dotenv.get("SERAP_URL", fallback: "NONE");
   }
 
   static String getChaveApi() {
     return dotenv.get("CHAVE_API", fallback: "NONE");
-  }
-
-  static String getSerapUrl() {
-    return _config["serapUrl"];
   }
 
   static bool debugSql() {
