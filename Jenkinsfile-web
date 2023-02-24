@@ -22,6 +22,7 @@ pipeline {
         }
 
       stage('Build Dev') {
+        agent { label 'SME-AGENT-FLUTTER' }
         when { 
           anyOf { 
             branch 'development'; 
@@ -29,7 +30,6 @@ pipeline {
         }
 
         steps {
-	agent { label 'SME-AGENT-FLUTTER' }
           withCredentials([ file(credentialsId: 'serap-app-environment-dev', variable: 'ENVDEV')]) {
             script {
               sh 'cp ${ENVDEV} envdev'
