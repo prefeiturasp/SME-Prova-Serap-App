@@ -22,7 +22,6 @@ pipeline {
         }
 
       stage('Build Dev') {
-        agent { label 'SME-AGENT-FLUTTER' }
         when { 
           anyOf { 
             branch 'development'; 
