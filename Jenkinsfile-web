@@ -33,7 +33,7 @@ pipeline {
           withCredentials([ file(credentialsId: 'serap-app-environment-dev', variable: 'ENVDEV')]) {
             script {
               sh 'cp ${ENVDEV} envdev'
-	      sh "touch .env && . $(realpath envdev)"
+	      sh 'touch .env && . $(realpath envdev)'
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-prova-serap-front"
               dockerImage1 = docker.build(imagename1, "-f Dockerfile.flutter .")
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
