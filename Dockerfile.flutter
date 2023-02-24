@@ -6,6 +6,7 @@ COPY . .
 
 RUN flutter pub get
 RUN flutter build web --web-renderer html --profile
+RUN rm -f .env
 
 FROM nginx:1.20.1-alpine
 
