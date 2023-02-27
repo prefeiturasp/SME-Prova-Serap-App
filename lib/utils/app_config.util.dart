@@ -9,7 +9,7 @@ import 'package:native_resource/native_resource.dart';
 
 abstract class AppConfigReader {
   static Future<void> initialize() async {
-    Map<String, String> defaultNative = const {};
+    Map<String, String> defaultNative = {};
 
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       try {
