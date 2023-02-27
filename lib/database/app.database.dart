@@ -94,7 +94,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 26;
+  int get schemaVersion => 27;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(onCreate: (Migrator m) {
@@ -220,6 +220,11 @@ class AppDatabase extends _$AppDatabase {
           if (from < 26) {
             await m.addColumn(provasDb, provasDb.exibirVideo);
             await m.addColumn(provasDb, provasDb.exibirAudio);
+          }
+
+          if (from < 27) {
+            await m.addColumn(arquivosAudioDb, arquivosAudioDb.caminho);
+            await m.addColumn(arquivosVideoDb, arquivosVideoDb.caminho);
           }
         });
 

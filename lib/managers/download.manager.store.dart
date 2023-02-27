@@ -473,6 +473,26 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
             .first;
 
         await _gravarVinculoQuestaoCaderno(download);
+
+        // força baixar os arquivos das questões salvas local.
+        try {
+          // Verifica o arquivo de video existe
+          ArquivoVideoDb? arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoLegadoId(download.questaoLegadoId!);
+          if (arquivoVideoDb != null) {
+            await _baixarArquivoVideo(arquivoVideoDb);
+          }
+
+          // Verifica o arquivo de áudio existe
+          ArquivoAudioDb? arquivoAudioDb = await db.arquivosAudioDao.findByQuestaoLegadoId(download.questaoLegadoId!);
+          if (arquivoAudioDb != null) {
+            await _baixarArquivoAudio(arquivoAudioDb);
+          }
+
+          await _updateDownloadStatus(download, EnumDownloadStatus.CONCLUIDO);
+        } catch (e, stack) {
+          await _updateDownloadStatus(download, EnumDownloadStatus.ERRO);
+          await recordError(e, stack);
+        }
       }
 
       var questoesParaBaixar = idsParaBaixar.toSet().difference(questoesDb.map((e) => e.questaoLegadoId).toSet());
@@ -505,13 +525,9 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
                 await _baixarArquivoImagem(questaoDTO.arquivos, questaoDTO.questaoLegadoId);
               }
 
-              if(prova!.exibirVideo){
-                await _baixarArquivoVideo(questaoDTO.videos, questaoDTO.questaoLegadoId);
-              }
+              await _salvarArquivoVideo(questaoDTO.videos, questaoDTO.questaoLegadoId);
 
-              if(prova!.exibirAudio){
-                await _baixarArquivoAudio(questaoDTO.audios, questaoDTO.questaoLegadoId);
-              }
+              await _salvarArquivoAudio(questaoDTO.audios, questaoDTO.questaoLegadoId);
 
               var questao = Questao(
                 questaoLegadoId: questaoDTO.questaoLegadoId,
@@ -539,6 +555,8 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       await recordError(e, stack);
     }
   }
+
+  _verificarArquivosDeMidiaEBaixar() {}
 
   _gravarVinculoQuestaoCaderno(DownloadProvaDb download) async {
     var provaCaderno = ProvaCaderno(
@@ -625,33 +643,32 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  _baixarArquivoVideo(List<ArquivoVideoResponseDTO> videos, int questaoLegadoId) async {
+  _salvarArquivoVideo(List<ArquivoVideoResponseDTO> videos, int questaoLegadoId) async {
     finer("[Prova $provaId - $caderno] - Salvando ${videos.length} arquivos de video");
 
     for (var arquivoVideoDTO in videos) {
       try {
-        var arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoLegadoId(questaoLegadoId);
+        ArquivoVideoDb? arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoLegadoId(questaoLegadoId);
 
-        String path = join(
-          'prova',
-          provaId.toString(),
-          'video',
-          arquivoVideoDTO.questaoId.toString() + extension(arquivoVideoDTO.caminho),
-        );
+        if (arquivoVideoDb == null) {
+          String path = join(
+            'prova',
+            provaId.toString(),
+            'video',
+            arquivoVideoDTO.questaoId.toString() + extension(arquivoVideoDTO.caminho),
+          );
 
-        if (arquivoVideoDb == null || !(await fileExists(path))) {
-          await _salvarArquivoLocal(arquivoVideoDTO.caminho, path);
-
-          var arquivoVideo = ArquivoVideoDb(
+          arquivoVideoDb = ArquivoVideoDb(
             id: arquivoVideoDTO.id,
             questaoLegadoId: questaoLegadoId,
             path: path,
+            caminho: arquivoVideoDTO.caminho,
           );
 
-          await db.arquivosVideosDao.inserirOuAtualizar(arquivoVideo);
-
-          fine("[Prova $provaId - $caderno] - Arquivo salvo: ${arquivoVideoDTO.caminho}");
+          await db.arquivosVideosDao.inserirOuAtualizar(arquivoVideoDb);
         }
+
+        await _baixarArquivoVideo(arquivoVideoDb);
       } catch (e) {
         severe("[Prova $provaId - $caderno] - Erro ao baixar arquivo de vídeo ${arquivoVideoDTO.id} - ${e.toString()}");
 
@@ -660,38 +677,51 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  _baixarArquivoAudio(List<ArquivoResponseDTO> audios, int questaoLegadoId) async {
+  _baixarArquivoVideo(ArquivoVideoDb arquivoVideoDb) async {
+    if (prova!.exibirVideo && !(await fileExists(arquivoVideoDb.path))) {
+      await _salvarArquivoLocal(arquivoVideoDb.caminho, arquivoVideoDb.path);
+      fine("[Prova $provaId - $caderno] - Arquivo vídeo salvo: ${arquivoVideoDb.caminho}");
+    }
+  }
+
+  _salvarArquivoAudio(List<ArquivoResponseDTO> audios, int questaoLegadoId) async {
     finer("[Prova $provaId - $caderno] - Salvando ${audios.length} arquivos de audio");
 
     for (var arquivoAudioDTO in audios) {
       try {
-        var arquivoAudioDb = await db.arquivosAudioDao.findByQuestaoLegadoId(questaoLegadoId);
+        ArquivoAudioDb? arquivoAudioDb = await db.arquivosAudioDao.findByQuestaoLegadoId(questaoLegadoId);
 
-        String path = join(
-          'prova',
-          provaId.toString(),
-          'audio',
-          arquivoAudioDTO.questaoId.toString() + extension(arquivoAudioDTO.caminho),
-        );
+        if (arquivoAudioDb == null) {
+          String path = join(
+            'prova',
+            provaId.toString(),
+            'audio',
+            arquivoAudioDTO.questaoId.toString() + extension(arquivoAudioDTO.caminho),
+          );
 
-        if (arquivoAudioDb == null || !(await fileExists(path))) {
-          await _salvarArquivoLocal(arquivoAudioDTO.caminho, path);
-
-          var arquivoAudio = ArquivoAudioDb(
+          arquivoAudioDb = ArquivoAudioDb(
             id: arquivoAudioDTO.id,
             questaoLegadoId: questaoLegadoId,
             path: path,
+            caminho: arquivoAudioDTO.caminho,
           );
 
-          await db.arquivosAudioDao.inserirOuAtualizar(arquivoAudio);
-
-          fine("[Prova $provaId - $caderno] - Arquivo salvo: ${arquivoAudioDTO.caminho}");
+          await db.arquivosAudioDao.inserirOuAtualizar(arquivoAudioDb);
         }
+
+        await _baixarArquivoAudio(arquivoAudioDb);
       } catch (e) {
         severe("[Prova $provaId - $caderno] - Erro ao baixar arquivo de áudio ${arquivoAudioDTO.id} - ${e.toString()}");
 
         rethrow;
       }
+    }
+  }
+
+  _baixarArquivoAudio(ArquivoAudioDb arquivoAudioDb) async {
+    if (prova!.exibirAudio && !(await fileExists(arquivoAudioDb.path))) {
+      await _salvarArquivoLocal(arquivoAudioDb.caminho, arquivoAudioDb.path);
+      fine("[Prova $provaId - $caderno] - Arquivo áudio salvo: ${arquivoAudioDb.caminho}");
     }
   }
 
