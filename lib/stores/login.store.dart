@@ -13,7 +13,6 @@ import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login.store.g.dart';
@@ -119,7 +118,7 @@ abstract class _LoginStoreBase with Store, Loggable {
       var responseLogin = await _autenticacaoService.login(
         login: codigoEOL,
         senha: senha,
-        dispositivo: (await PlatformDeviceId.getDeviceId)!,
+        dispositivo: ServiceLocator.get<PrincipalStore>().dispositivoId,
       );
 
       if (responseLogin.isSuccessful) {

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:android_id/android_id.dart';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/enums/download_status.enum.dart';
@@ -11,10 +14,11 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -25,7 +29,7 @@ class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 abstract class _PrincipalStoreBase with Store, Loggable {
   _PrincipalStoreBase() {
     Connectivity().checkConnectivity().then((value) => status = value);
-    PlatformDeviceId.getDeviceId.then((value) => dispositivoId = value!);
+    obetIdDispositivo().then((value) => dispositivoId = value!);
   }
 
   final usuario = GetIt.I.get<UsuarioStore>();
@@ -36,7 +40,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   ReactionDisposer? _disposer;
 
   @observable
-  String? dispositivoId;
+  String dispositivoId = "Indefinido";
 
   Future<void> setup() async {
     _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
@@ -51,6 +55,9 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   ConnectivityResult status = ConnectivityResult.none;
 
   @observable
+  String idDispositivo = "";
+
+  @observable
   String versaoApp = "Versão 0";
 
   @computed
@@ -63,6 +70,39 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   Future onChangeConexao(ConnectivityResult? resultado) async {
     info("Conexão alterada: $resultado");
     status = resultado!;
+  }
+
+  @action
+  Future<String?> obetIdDispositivo() async {
+    var deviceInfo = DeviceInfoPlugin();
+
+    // Web
+    if (kIsWeb) {
+      var webBrowserInfo = await deviceInfo.webBrowserInfo;
+      return webBrowserInfo.userAgent;
+      // Ios
+    } else if (Platform.isIOS) {
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor;
+      // Android
+    } else if (Platform.isAndroid) {
+      const _androidIdPlugin = AndroidId();
+      return await _androidIdPlugin.getId();
+      // Windows
+    } else if (Platform.isWindows) {
+      var windowsInfo = await deviceInfo.windowsInfo;
+      return windowsInfo.deviceId;
+      // MacOS
+    } else if (Platform.isMacOS) {
+      var macOsInfo = await deviceInfo.macOsInfo;
+      return macOsInfo.systemGUID!;
+      // Linux
+    } else if (Platform.isLinux) {
+      var linuxInfo = await deviceInfo.linuxInfo;
+      return linuxInfo.machineId!;
+    } else {
+      return "Não identificado";
+    }
   }
 
   @action

@@ -286,6 +286,10 @@ class MockPrincipalStore extends _i1.Mock implements _i10.PrincipalStore {
       super.noSuchMethod(Invocation.setter(#conexaoStream, _conexaoStream),
           returnValueForMissingStub: null);
   @override
+  String get dispositivoId =>
+      (super.noSuchMethod(Invocation.getter(#dispositivoId), returnValue: '')
+          as String);
+  @override
   set dispositivoId(String? _dispositivoId) =>
       super.noSuchMethod(Invocation.setter(#dispositivoId, _dispositivoId),
           returnValueForMissingStub: null);
@@ -297,6 +301,14 @@ class MockPrincipalStore extends _i1.Mock implements _i10.PrincipalStore {
   @override
   set status(_i11.ConnectivityResult? _status) =>
       super.noSuchMethod(Invocation.setter(#status, _status),
+          returnValueForMissingStub: null);
+  @override
+  String get idDispositivo =>
+      (super.noSuchMethod(Invocation.getter(#idDispositivo), returnValue: '')
+          as String);
+  @override
+  set idDispositivo(String? _idDispositivo) =>
+      super.noSuchMethod(Invocation.setter(#idDispositivo, _idDispositivo),
           returnValueForMissingStub: null);
   @override
   String get versaoApp =>
@@ -373,6 +385,10 @@ class MockPrincipalStore extends _i1.Mock implements _i10.PrincipalStore {
   _i12.Future<dynamic> onChangeConexao(_i11.ConnectivityResult? resultado) =>
       (super.noSuchMethod(Invocation.method(#onChangeConexao, [resultado]),
           returnValue: _i12.Future<dynamic>.value()) as _i12.Future<dynamic>);
+  @override
+  _i12.Future<String?> obetIdDispositivo() =>
+      (super.noSuchMethod(Invocation.method(#obetIdDispositivo, []),
+          returnValue: _i12.Future<String?>.value()) as _i12.Future<String?>);
   @override
   _i12.Future<void> obterVersaoDoApp() =>
       (super.noSuchMethod(Invocation.method(#obterVersaoDoApp, []),

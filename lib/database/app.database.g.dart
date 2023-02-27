@@ -1752,8 +1752,14 @@ class $ArquivosVideoDbTable extends ArquivosVideoDb
   late final GeneratedColumn<String> path = GeneratedColumn<String>(
       'path', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _caminhoMeta =
+      const VerificationMeta('caminho');
   @override
-  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
+  late final GeneratedColumn<String> caminho = GeneratedColumn<String>(
+      'caminho', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path, caminho];
   @override
   String get aliasedName => _alias ?? 'arquivos_video_db';
   @override
@@ -1780,6 +1786,12 @@ class $ArquivosVideoDbTable extends ArquivosVideoDb
     } else if (isInserting) {
       context.missing(_pathMeta);
     }
+    if (data.containsKey('caminho')) {
+      context.handle(_caminhoMeta,
+          caminho.isAcceptableOrUnknown(data['caminho']!, _caminhoMeta));
+    } else if (isInserting) {
+      context.missing(_caminhoMeta);
+    }
     return context;
   }
 
@@ -1795,6 +1807,8 @@ class $ArquivosVideoDbTable extends ArquivosVideoDb
           .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id'])!,
       path: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}path'])!,
+      caminho: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}caminho'])!,
     );
   }
 
@@ -1808,14 +1822,19 @@ class ArquivoVideoDb extends DataClass implements Insertable<ArquivoVideoDb> {
   final int id;
   final int questaoLegadoId;
   final String path;
+  final String caminho;
   const ArquivoVideoDb(
-      {required this.id, required this.questaoLegadoId, required this.path});
+      {required this.id,
+      required this.questaoLegadoId,
+      required this.path,
+      required this.caminho});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['questao_legado_id'] = Variable<int>(questaoLegadoId);
     map['path'] = Variable<String>(path);
+    map['caminho'] = Variable<String>(caminho);
     return map;
   }
 
@@ -1824,6 +1843,7 @@ class ArquivoVideoDb extends DataClass implements Insertable<ArquivoVideoDb> {
       id: Value(id),
       questaoLegadoId: Value(questaoLegadoId),
       path: Value(path),
+      caminho: Value(caminho),
     );
   }
 
@@ -1834,6 +1854,7 @@ class ArquivoVideoDb extends DataClass implements Insertable<ArquivoVideoDb> {
       id: serializer.fromJson<int>(json['id']),
       questaoLegadoId: serializer.fromJson<int>(json['questaoLegadoId']),
       path: serializer.fromJson<String>(json['path']),
+      caminho: serializer.fromJson<String>(json['caminho']),
     );
   }
   @override
@@ -1843,69 +1864,84 @@ class ArquivoVideoDb extends DataClass implements Insertable<ArquivoVideoDb> {
       'id': serializer.toJson<int>(id),
       'questaoLegadoId': serializer.toJson<int>(questaoLegadoId),
       'path': serializer.toJson<String>(path),
+      'caminho': serializer.toJson<String>(caminho),
     };
   }
 
-  ArquivoVideoDb copyWith({int? id, int? questaoLegadoId, String? path}) =>
+  ArquivoVideoDb copyWith(
+          {int? id, int? questaoLegadoId, String? path, String? caminho}) =>
       ArquivoVideoDb(
         id: id ?? this.id,
         questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
         path: path ?? this.path,
+        caminho: caminho ?? this.caminho,
       );
   @override
   String toString() {
     return (StringBuffer('ArquivoVideoDb(')
           ..write('id: $id, ')
           ..write('questaoLegadoId: $questaoLegadoId, ')
-          ..write('path: $path')
+          ..write('path: $path, ')
+          ..write('caminho: $caminho')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, questaoLegadoId, path);
+  int get hashCode => Object.hash(id, questaoLegadoId, path, caminho);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ArquivoVideoDb &&
           other.id == this.id &&
           other.questaoLegadoId == this.questaoLegadoId &&
-          other.path == this.path);
+          other.path == this.path &&
+          other.caminho == this.caminho);
 }
 
 class ArquivosVideoDbCompanion extends UpdateCompanion<ArquivoVideoDb> {
   final Value<int> id;
   final Value<int> questaoLegadoId;
   final Value<String> path;
+  final Value<String> caminho;
   const ArquivosVideoDbCompanion({
     this.id = const Value.absent(),
     this.questaoLegadoId = const Value.absent(),
     this.path = const Value.absent(),
+    this.caminho = const Value.absent(),
   });
   ArquivosVideoDbCompanion.insert({
     this.id = const Value.absent(),
     required int questaoLegadoId,
     required String path,
+    required String caminho,
   })  : questaoLegadoId = Value(questaoLegadoId),
-        path = Value(path);
+        path = Value(path),
+        caminho = Value(caminho);
   static Insertable<ArquivoVideoDb> custom({
     Expression<int>? id,
     Expression<int>? questaoLegadoId,
     Expression<String>? path,
+    Expression<String>? caminho,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
       if (path != null) 'path': path,
+      if (caminho != null) 'caminho': caminho,
     });
   }
 
   ArquivosVideoDbCompanion copyWith(
-      {Value<int>? id, Value<int>? questaoLegadoId, Value<String>? path}) {
+      {Value<int>? id,
+      Value<int>? questaoLegadoId,
+      Value<String>? path,
+      Value<String>? caminho}) {
     return ArquivosVideoDbCompanion(
       id: id ?? this.id,
       questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
       path: path ?? this.path,
+      caminho: caminho ?? this.caminho,
     );
   }
 
@@ -1921,6 +1957,9 @@ class ArquivosVideoDbCompanion extends UpdateCompanion<ArquivoVideoDb> {
     if (path.present) {
       map['path'] = Variable<String>(path.value);
     }
+    if (caminho.present) {
+      map['caminho'] = Variable<String>(caminho.value);
+    }
     return map;
   }
 
@@ -1929,7 +1968,8 @@ class ArquivosVideoDbCompanion extends UpdateCompanion<ArquivoVideoDb> {
     return (StringBuffer('ArquivosVideoDbCompanion(')
           ..write('id: $id, ')
           ..write('questaoLegadoId: $questaoLegadoId, ')
-          ..write('path: $path')
+          ..write('path: $path, ')
+          ..write('caminho: $caminho')
           ..write(')'))
         .toString();
   }
@@ -1957,8 +1997,14 @@ class $ArquivosAudioDbTable extends ArquivosAudioDb
   late final GeneratedColumn<String> path = GeneratedColumn<String>(
       'path', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _caminhoMeta =
+      const VerificationMeta('caminho');
   @override
-  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
+  late final GeneratedColumn<String> caminho = GeneratedColumn<String>(
+      'caminho', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path, caminho];
   @override
   String get aliasedName => _alias ?? 'arquivos_audio_db';
   @override
@@ -1985,6 +2031,12 @@ class $ArquivosAudioDbTable extends ArquivosAudioDb
     } else if (isInserting) {
       context.missing(_pathMeta);
     }
+    if (data.containsKey('caminho')) {
+      context.handle(_caminhoMeta,
+          caminho.isAcceptableOrUnknown(data['caminho']!, _caminhoMeta));
+    } else if (isInserting) {
+      context.missing(_caminhoMeta);
+    }
     return context;
   }
 
@@ -2000,6 +2052,8 @@ class $ArquivosAudioDbTable extends ArquivosAudioDb
           .read(DriftSqlType.int, data['${effectivePrefix}questao_legado_id'])!,
       path: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}path'])!,
+      caminho: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}caminho'])!,
     );
   }
 
@@ -2013,14 +2067,19 @@ class ArquivoAudioDb extends DataClass implements Insertable<ArquivoAudioDb> {
   final int id;
   final int questaoLegadoId;
   final String path;
+  final String caminho;
   const ArquivoAudioDb(
-      {required this.id, required this.questaoLegadoId, required this.path});
+      {required this.id,
+      required this.questaoLegadoId,
+      required this.path,
+      required this.caminho});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['questao_legado_id'] = Variable<int>(questaoLegadoId);
     map['path'] = Variable<String>(path);
+    map['caminho'] = Variable<String>(caminho);
     return map;
   }
 
@@ -2029,6 +2088,7 @@ class ArquivoAudioDb extends DataClass implements Insertable<ArquivoAudioDb> {
       id: Value(id),
       questaoLegadoId: Value(questaoLegadoId),
       path: Value(path),
+      caminho: Value(caminho),
     );
   }
 
@@ -2039,6 +2099,7 @@ class ArquivoAudioDb extends DataClass implements Insertable<ArquivoAudioDb> {
       id: serializer.fromJson<int>(json['id']),
       questaoLegadoId: serializer.fromJson<int>(json['questaoLegadoId']),
       path: serializer.fromJson<String>(json['path']),
+      caminho: serializer.fromJson<String>(json['caminho']),
     );
   }
   @override
@@ -2048,69 +2109,84 @@ class ArquivoAudioDb extends DataClass implements Insertable<ArquivoAudioDb> {
       'id': serializer.toJson<int>(id),
       'questaoLegadoId': serializer.toJson<int>(questaoLegadoId),
       'path': serializer.toJson<String>(path),
+      'caminho': serializer.toJson<String>(caminho),
     };
   }
 
-  ArquivoAudioDb copyWith({int? id, int? questaoLegadoId, String? path}) =>
+  ArquivoAudioDb copyWith(
+          {int? id, int? questaoLegadoId, String? path, String? caminho}) =>
       ArquivoAudioDb(
         id: id ?? this.id,
         questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
         path: path ?? this.path,
+        caminho: caminho ?? this.caminho,
       );
   @override
   String toString() {
     return (StringBuffer('ArquivoAudioDb(')
           ..write('id: $id, ')
           ..write('questaoLegadoId: $questaoLegadoId, ')
-          ..write('path: $path')
+          ..write('path: $path, ')
+          ..write('caminho: $caminho')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, questaoLegadoId, path);
+  int get hashCode => Object.hash(id, questaoLegadoId, path, caminho);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ArquivoAudioDb &&
           other.id == this.id &&
           other.questaoLegadoId == this.questaoLegadoId &&
-          other.path == this.path);
+          other.path == this.path &&
+          other.caminho == this.caminho);
 }
 
 class ArquivosAudioDbCompanion extends UpdateCompanion<ArquivoAudioDb> {
   final Value<int> id;
   final Value<int> questaoLegadoId;
   final Value<String> path;
+  final Value<String> caminho;
   const ArquivosAudioDbCompanion({
     this.id = const Value.absent(),
     this.questaoLegadoId = const Value.absent(),
     this.path = const Value.absent(),
+    this.caminho = const Value.absent(),
   });
   ArquivosAudioDbCompanion.insert({
     this.id = const Value.absent(),
     required int questaoLegadoId,
     required String path,
+    required String caminho,
   })  : questaoLegadoId = Value(questaoLegadoId),
-        path = Value(path);
+        path = Value(path),
+        caminho = Value(caminho);
   static Insertable<ArquivoAudioDb> custom({
     Expression<int>? id,
     Expression<int>? questaoLegadoId,
     Expression<String>? path,
+    Expression<String>? caminho,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
       if (path != null) 'path': path,
+      if (caminho != null) 'caminho': caminho,
     });
   }
 
   ArquivosAudioDbCompanion copyWith(
-      {Value<int>? id, Value<int>? questaoLegadoId, Value<String>? path}) {
+      {Value<int>? id,
+      Value<int>? questaoLegadoId,
+      Value<String>? path,
+      Value<String>? caminho}) {
     return ArquivosAudioDbCompanion(
       id: id ?? this.id,
       questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
       path: path ?? this.path,
+      caminho: caminho ?? this.caminho,
     );
   }
 
@@ -2126,6 +2202,9 @@ class ArquivosAudioDbCompanion extends UpdateCompanion<ArquivoAudioDb> {
     if (path.present) {
       map['path'] = Variable<String>(path.value);
     }
+    if (caminho.present) {
+      map['caminho'] = Variable<String>(caminho.value);
+    }
     return map;
   }
 
@@ -2134,7 +2213,8 @@ class ArquivosAudioDbCompanion extends UpdateCompanion<ArquivoAudioDb> {
     return (StringBuffer('ArquivosAudioDbCompanion(')
           ..write('id: $id, ')
           ..write('questaoLegadoId: $questaoLegadoId, ')
-          ..write('path: $path')
+          ..write('path: $path, ')
+          ..write('caminho: $caminho')
           ..write(')'))
         .toString();
   }

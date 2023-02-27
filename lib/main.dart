@@ -27,7 +27,6 @@ import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 import 'package:storage_inspector/storage_inspector.dart';
 
-
 import 'database/app.database.dart';
 import 'database/respostas.database.dart';
 import 'main.isolate.dart';
@@ -71,11 +70,11 @@ registerPluginsForIsolate() {
 
 configure(bool isBackground) async {
   print('Configurando App');
+  await setupAppConfig();
+
   setupDateFormating();
   setupLogging();
   registerFonts();
-
-  await setupAppConfig();
 
   await DependenciasIoC().setup();
 
@@ -83,7 +82,7 @@ configure(bool isBackground) async {
     await AppIsolates().setup();
   }
 
-  if(!isBackground && kDebugMode){
+  if (!isBackground && kDebugMode) {
     setupDatabaseInspector();
   }
 
@@ -124,7 +123,7 @@ Future setupAppConfig() async {
     await AppConfigReader.initialize();
   } catch (e, stack) {
     print("Erro ao ler arquivo de configurações.");
-    print("Verifique se seu projeto possui o arquivo config/app_config.json");
+    print("Verifique o arquivo .env");
     print('$e');
     await recordError(e, stack);
   }

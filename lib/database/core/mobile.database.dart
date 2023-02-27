@@ -38,7 +38,10 @@ DatabaseConnection connect([String dbName = 'serapdb', bool external = false]) {
     final dbPath = p.join(path, '$dbName.sqlite');
 
     final receiveDriftIsolate = ReceivePort();
-    await Isolate.spawn(_entrypointForDriftIsolate, _IsolateStartRequest(receiveDriftIsolate.sendPort, dbPath));
+    await Isolate.spawn(
+      _entrypointForDriftIsolate,
+      _IsolateStartRequest(receiveDriftIsolate.sendPort, dbPath, AppConfigReader.debugSql()),
+    );
 
     final driftIsolate = await receiveDriftIsolate.first as DriftIsolate;
     return await driftIsolate.connect();
@@ -65,8 +68,9 @@ Future<void> askPermission() async {
 class _IsolateStartRequest {
   final SendPort talkToMain;
   final String databasePath;
+  final bool logStatements;
 
-  _IsolateStartRequest(this.talkToMain, this.databasePath);
+  _IsolateStartRequest(this.talkToMain, this.databasePath, this.logStatements);
 }
 
 /// The entrypoint for a background isolate launching a drift server.
@@ -78,7 +82,7 @@ void _entrypointForDriftIsolate(_IsolateStartRequest request) {
   // a fast database implementation that doesn't require platform channels.
   final databaseImpl = NativeDatabase(
     File(request.databasePath),
-    logStatements: AppConfigReader.debugSql(),
+    logStatements: request.logStatements,
   );
 
   // We can use DriftIsolate.inCurrent because this function is the entrypoint
