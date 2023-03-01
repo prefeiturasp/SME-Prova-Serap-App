@@ -64,19 +64,18 @@ pipeline {
         steps {
           withCredentials([
             file(credentialsId: 'serap-app-google-service-hom', variable: 'GOOGLEJSONHOM'),
-            file(credentialsId: 'serap-app-config-hom', variable: 'APPCONFIGHOM'),
+            //file(credentialsId: 'serap-app-config-hom', variable: 'APPCONFIGHOM'),
             file(credentialsId: 'app-key-jks', variable: 'APPKEYJKS'),
             file(credentialsId: 'app-key-properties', variable: 'APPKEYPROPERTIES'),
+            file(credentialsId: 'serap-app-environment-hom', variable: 'ENVHOM'),
           ]) {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'
-            sh 'if [ -d "config" ]; then rm -Rf config; fi'
-            sh 'mkdir config && cp $APPCONFIGHOM config/app_config.json'
-            sh 'cp ${GOOGLEJSONHOM} android/app/google-services.json'
+            sh 'if [ ! -d "android/app/src/hom" ]; then mkdir android/app/src/hom; fi'
+            sh 'cp ${GOOGLEJSONHOM} android/app/src/hom/google-services.json && cp ${ENVHOM} envhom && chmod a+r+x envhom && . $(realpath envhom) && rm -f envhom && touch .env'
             sh 'flutter clean'
-            sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release"
+            sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=hom"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
-            sh 'if [ -d "config" ]; then rm -Rf config; fi'
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
           }
         }
