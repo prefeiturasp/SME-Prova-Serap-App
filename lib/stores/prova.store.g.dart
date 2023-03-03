@@ -9,22 +9,6 @@ part of 'prova.store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$ProvaStore on _ProvaStoreBase, Store {
-  late final _$conexaoStreamAtom =
-      Atom(name: '_ProvaStoreBase.conexaoStream', context: context);
-
-  @override
-  ObservableStream<ConnectivityResult> get conexaoStream {
-    _$conexaoStreamAtom.reportRead();
-    return super.conexaoStream;
-  }
-
-  @override
-  set conexaoStream(ObservableStream<ConnectivityResult> value) {
-    _$conexaoStreamAtom.reportWrite(value, super.conexaoStream, () {
-      super.conexaoStream = value;
-    });
-  }
-
   late final _$isVisibleAtom =
       Atom(name: '_ProvaStoreBase.isVisible', context: context);
 
@@ -255,9 +239,9 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
       AsyncAction('_ProvaStoreBase.onChangeConexao', context: context);
 
   @override
-  Future<dynamic> onChangeConexao(ConnectivityResult? resultado) {
+  Future<dynamic> onChangeConexao(bool temConexao) {
     return _$onChangeConexaoAsyncAction
-        .run(() => super.onChangeConexao(resultado));
+        .run(() => super.onChangeConexao(temConexao));
   }
 
   late final _$iniciarProvaAsyncAction =
@@ -390,7 +374,6 @@ mixin _$ProvaStore on _ProvaStoreBase, Store {
   @override
   String toString() {
     return '''
-conexaoStream: ${conexaoStream},
 isVisible: ${isVisible},
 prova: ${prova},
 tratamentoImagem: ${tratamentoImagem},

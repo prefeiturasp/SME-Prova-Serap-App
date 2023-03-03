@@ -30,7 +30,7 @@ abstract class ProvaTaiService extends ChopperService {
     @Field() int? dataFim,
   });
 
-  @Post(path: '{provaId}/obter-questao')
+  @Post(path: '{provaId}/obter-questao', optionalBody: true)
   Future<Response<QuestaoCompletaResponseDTO>> obterQuestao({
     @Path() required int provaId,
   });

@@ -3,7 +3,7 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i11;
+import 'dart:async' as _i10;
 
 import 'package:appserap/services/api.dart' as _i3;
 import 'package:appserap/services/rest/admin.service.dart' as _i5;
@@ -12,7 +12,6 @@ import 'package:appserap/services/rest/usuario.service.dart' as _i4;
 import 'package:appserap/stores/principal.store.dart' as _i9;
 import 'package:appserap/stores/usuario.store.dart' as _i7;
 import 'package:chopper/chopper.dart' as _i2;
-import 'package:connectivity_plus/connectivity_plus.dart' as _i10;
 import 'package:mobx/mobx.dart' as _i8;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -135,15 +134,9 @@ class _FakeUsuarioStore_18 extends _i1.SmartFake implements _i7.UsuarioStore {
       : super(parent, parentInvocation);
 }
 
-class _FakeObservableStream_19<T> extends _i1.SmartFake
-    implements _i8.ObservableStream<T> {
-  _FakeObservableStream_19(Object parent, Invocation parentInvocation)
-      : super(parent, parentInvocation);
-}
-
-class _FakeReactiveContext_20 extends _i1.SmartFake
+class _FakeReactiveContext_19 extends _i1.SmartFake
     implements _i8.ReactiveContext {
-  _FakeReactiveContext_20(Object parent, Invocation parentInvocation)
+  _FakeReactiveContext_19(Object parent, Invocation parentInvocation)
       : super(parent, parentInvocation);
 }
 
@@ -267,32 +260,12 @@ class MockPrincipalStore extends _i1.Mock implements _i9.PrincipalStore {
           returnValue: _FakeUsuarioStore_18(this, Invocation.getter(#usuario)))
       as _i7.UsuarioStore);
   @override
-  _i8.ObservableStream<_i10.ConnectivityResult> get conexaoStream =>
-      (super.noSuchMethod(Invocation.getter(#conexaoStream),
-              returnValue: _FakeObservableStream_19<_i10.ConnectivityResult>(
-                  this, Invocation.getter(#conexaoStream)))
-          as _i8.ObservableStream<_i10.ConnectivityResult>);
-  @override
-  set conexaoStream(
-          _i8.ObservableStream<_i10.ConnectivityResult>? _conexaoStream) =>
-      super.noSuchMethod(Invocation.setter(#conexaoStream, _conexaoStream),
-          returnValueForMissingStub: null);
-  @override
   String get dispositivoId =>
       (super.noSuchMethod(Invocation.getter(#dispositivoId), returnValue: '')
           as String);
   @override
   set dispositivoId(String? _dispositivoId) =>
       super.noSuchMethod(Invocation.setter(#dispositivoId, _dispositivoId),
-          returnValueForMissingStub: null);
-  @override
-  _i10.ConnectivityResult get status =>
-      (super.noSuchMethod(Invocation.getter(#status),
-              returnValue: _i10.ConnectivityResult.bluetooth)
-          as _i10.ConnectivityResult);
-  @override
-  set status(_i10.ConnectivityResult? _status) =>
-      super.noSuchMethod(Invocation.setter(#status, _status),
           returnValueForMissingStub: null);
   @override
   String get idDispositivo =>
@@ -315,6 +288,10 @@ class MockPrincipalStore extends _i1.Mock implements _i9.PrincipalStore {
       (super.noSuchMethod(Invocation.getter(#temConexao), returnValue: false)
           as bool);
   @override
+  set temConexao(bool? _temConexao) =>
+      super.noSuchMethod(Invocation.setter(#temConexao, _temConexao),
+          returnValueForMissingStub: null);
+  @override
   String get versao =>
       (super.noSuchMethod(Invocation.getter(#versao), returnValue: '')
           as String);
@@ -322,7 +299,7 @@ class MockPrincipalStore extends _i1.Mock implements _i9.PrincipalStore {
   _i8.ReactiveContext get context =>
       (super.noSuchMethod(Invocation.getter(#context),
               returnValue:
-                  _FakeReactiveContext_20(this, Invocation.getter(#context)))
+                  _FakeReactiveContext_19(this, Invocation.getter(#context)))
           as _i8.ReactiveContext);
   @override
   void Function(Object?, [Object?, StackTrace?]) get shout =>
@@ -365,31 +342,27 @@ class MockPrincipalStore extends _i1.Mock implements _i9.PrincipalStore {
               returnValue: (Object? __p0, [Object? __p1, StackTrace? __p2]) {})
           as void Function(Object?, [Object?, StackTrace?]));
   @override
-  _i11.Future<void> setup() =>
+  _i10.Future<void> setup() =>
       (super.noSuchMethod(Invocation.method(#setup, []),
-              returnValue: _i11.Future<void>.value(),
-              returnValueForMissingStub: _i11.Future<void>.value())
-          as _i11.Future<void>);
+              returnValue: _i10.Future<void>.value(),
+              returnValueForMissingStub: _i10.Future<void>.value())
+          as _i10.Future<void>);
   @override
   void dispose() => super.noSuchMethod(Invocation.method(#dispose, []),
       returnValueForMissingStub: null);
   @override
-  _i11.Future<dynamic> onChangeConexao(_i10.ConnectivityResult? resultado) =>
-      (super.noSuchMethod(Invocation.method(#onChangeConexao, [resultado]),
-          returnValue: _i11.Future<dynamic>.value()) as _i11.Future<dynamic>);
-  @override
-  _i11.Future<String?> obetIdDispositivo() =>
+  _i10.Future<String?> obetIdDispositivo() =>
       (super.noSuchMethod(Invocation.method(#obetIdDispositivo, []),
-          returnValue: _i11.Future<String?>.value()) as _i11.Future<String?>);
+          returnValue: _i10.Future<String?>.value()) as _i10.Future<String?>);
   @override
-  _i11.Future<void> obterVersaoDoApp() =>
+  _i10.Future<void> obterVersaoDoApp() =>
       (super.noSuchMethod(Invocation.method(#obterVersaoDoApp, []),
-              returnValue: _i11.Future<void>.value(),
-              returnValueForMissingStub: _i11.Future<void>.value())
-          as _i11.Future<void>);
+              returnValue: _i10.Future<void>.value(),
+              returnValueForMissingStub: _i10.Future<void>.value())
+          as _i10.Future<void>);
   @override
-  _i11.Future<void> sair() => (super.noSuchMethod(Invocation.method(#sair, []),
-          returnValue: _i11.Future<void>.value(),
-          returnValueForMissingStub: _i11.Future<void>.value())
-      as _i11.Future<void>);
+  _i10.Future<void> sair() => (super.noSuchMethod(Invocation.method(#sair, []),
+          returnValue: _i10.Future<void>.value(),
+          returnValueForMissingStub: _i10.Future<void>.value())
+      as _i10.Future<void>);
 }
