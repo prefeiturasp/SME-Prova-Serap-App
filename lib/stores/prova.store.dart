@@ -10,7 +10,6 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
@@ -45,9 +44,6 @@ class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
 abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   var _usuarioStore = ServiceLocator.get<UsuarioStore>();
   List<ReactionDisposer> _reactions = [];
-
-  @observable
-  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
 
   late DownloadManagerStore downloadManagerStore;
 
@@ -150,7 +146,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction(
-        (_) => conexaoStream.value,
+        (_) => ServiceLocator.get<PrincipalStore>().temConexao,
         onChangeConexao,
         fireImmediately: false,
       ),
@@ -196,16 +192,15 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   }
 
   @action
-  Future onChangeConexao(ConnectivityResult? resultado) async {
+  Future onChangeConexao(bool temConexao) async {
     if (downloadStatus == EnumDownloadStatus.CONCLUIDO) {
       return;
     }
 
-    if (resultado == ConnectivityResult.none &&
-        (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
+    if (!temConexao && (downloadStatus == EnumDownloadStatus.BAIXANDO || downloadStatus == EnumDownloadStatus.ERRO)) {
       downloadStatus = EnumDownloadStatus.PAUSADO;
       downloadManagerStore.pauseAllDownloads();
-    } else if (resultado != ConnectivityResult.none &&
+    } else if (temConexao &&
         (downloadStatus == EnumDownloadStatus.PAUSADO || downloadStatus == EnumDownloadStatus.ERRO)) {
       await iniciarDownload();
     }
