@@ -345,7 +345,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
     // Download prova error - Download pausado
     if (provaStore.downloadStatus == EnumDownloadStatus.ERRO) {
-      return _buildPausado(provaStore);
+      return _buildErro(provaStore);
     }
 
     // Baixar prova
@@ -464,6 +464,64 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                     fontSize: temaStore.tTexto12,
                     fontFamily: temaStore.fonteDoTexto.nomeFonte,
                   ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErro(ProvaStore provaStore) {
+    return SizedBox(
+      key: Key('card-download-erro'),
+      width: 350,
+      height: 40,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: LinearPercentIndicator(
+              lineHeight: 4.0,
+              percent: provaStore.progressoDownload,
+              barRadius: const Radius.circular(16),
+              progressColor: TemaUtil.vermelhoErro,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+            child: Row(
+              children: [
+                Texto(
+                  "Erro ao baixar prova - ",
+                  color: TemaUtil.vermelhoErro,
+                  bold: true,
+                  texStyle: TemaUtil.temaTextoErroNegrito.copyWith(
+                    fontSize: temaStore.tTexto12,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
+                ),
+                Texto(
+                  "pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
+                  color: TemaUtil.vermelhoErro,
+                  texStyle: TemaUtil.temaTextoErro.copyWith(
+                    fontSize: temaStore.tTexto12,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
+                ),
+                InkWell(
+                  child: Icon(
+                    Icons.restart_alt,
+                    color: TemaUtil.laranja01,
+                  ),
+                  onTap: () async {
+                    await provaStore.iniciarDownload();
+                  },
                 ),
               ],
             ),
