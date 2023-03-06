@@ -42,7 +42,6 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
   final usuario = GetIt.I.get<UsuarioStore>();
 
-  ReactionDisposer? _disposer;
 
   @observable
   String dispositivoId = "Indefinido";
@@ -52,7 +51,6 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   }
 
   void dispose() {
-    _disposer!();
   }
 
   @observable

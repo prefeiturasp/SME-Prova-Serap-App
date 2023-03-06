@@ -209,7 +209,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   }
 
   List<Widget> _buildProvaIcon(ProvaStore provaStore) {
-    if (kIsTablet) {
+    if (kIsTablet || ServiceLocator.get<PrincipalStore>().temConexao) {
       return [
         Container(
           width: 128,
@@ -476,8 +476,6 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   Widget _buildErro(ProvaStore provaStore) {
     return SizedBox(
       key: Key('card-download-erro'),
-      width: 350,
-      height: 40,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -485,17 +483,16 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           SizedBox(
             height: 10,
           ),
-          Expanded(
-            child: LinearPercentIndicator(
-              lineHeight: 4.0,
-              percent: provaStore.progressoDownload,
-              barRadius: const Radius.circular(16),
-              progressColor: TemaUtil.vermelhoErro,
-            ),
+          LinearPercentIndicator(
+            lineHeight: 4.0,
+            percent: provaStore.progressoDownload,
+            barRadius: const Radius.circular(16),
+            progressColor: TemaUtil.vermelhoErro,
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
-            child: Row(
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Texto(
                   "Erro ao baixar prova - ",
@@ -514,20 +511,49 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                     fontFamily: temaStore.fonteDoTexto.nomeFonte,
                   ),
                 ),
-                InkWell(
-                  child: Icon(
-                    Icons.restart_alt,
-                    color: TemaUtil.laranja01,
-                  ),
-                  onTap: () async {
-                    await provaStore.iniciarDownload();
-                  },
-                ),
               ],
             ),
           ),
+          SizedBox(
+            height: 16,
+          ),
+          _buildBotaoTentarNovamente(provaStore),
         ],
       ),
+    );
+  }
+
+  Widget _buildBotaoTentarNovamente(ProvaStore provaStore) {
+    var tamanhoFonte = temaStore.tTexto16;
+    if (kIsMobile) {
+      tamanhoFonte = temaStore.tTexto14;
+    }
+
+    double largura = 256;
+
+    if (temaStore.incrementador >= 22) {
+      largura = 300;
+    }
+
+    return BotaoDefaultWidget(
+      key: Key('botao-baixar-novamente-prova'),
+      largura: kIsTablet ? largura : null,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(Icons.restart_alt, color: Colors.white, size: 18),
+          Texto(
+            " REINICIAR DOWNLOAD",
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: tamanhoFonte,
+          ),
+        ],
+      ),
+      onPressed: () async {
+        await provaStore.iniciarDownload();
+      },
     );
   }
 
@@ -774,8 +800,6 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             height: 10,
           ),
           LinearPercentIndicator(
-            //animation: true,
-            //animationDuration: 1000,
             lineHeight: 4.0,
             percent: prova.progressoDownload,
             barRadius: const Radius.circular(16),
