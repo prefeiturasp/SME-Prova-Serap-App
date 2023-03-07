@@ -209,7 +209,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   }
 
   List<Widget> _buildProvaIcon(ProvaStore provaStore) {
-    if (kIsTablet) {
+    if (kIsTablet || ServiceLocator.get<PrincipalStore>().temConexao) {
       return [
         Container(
           width: 128,
@@ -345,7 +345,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
     // Download prova error - Download pausado
     if (provaStore.downloadStatus == EnumDownloadStatus.ERRO) {
-      return _buildPausado(provaStore);
+      return _buildErro(provaStore);
     }
 
     // Baixar prova
@@ -470,6 +470,90 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildErro(ProvaStore provaStore) {
+    return SizedBox(
+      key: Key('card-download-erro'),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          LinearPercentIndicator(
+            lineHeight: 4.0,
+            percent: provaStore.progressoDownload,
+            barRadius: const Radius.circular(16),
+            progressColor: TemaUtil.vermelhoErro,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Texto(
+                  "Erro ao baixar prova - ",
+                  color: TemaUtil.vermelhoErro,
+                  bold: true,
+                  texStyle: TemaUtil.temaTextoErroNegrito.copyWith(
+                    fontSize: temaStore.tTexto12,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
+                ),
+                Texto(
+                  "pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
+                  color: TemaUtil.vermelhoErro,
+                  texStyle: TemaUtil.temaTextoErro.copyWith(
+                    fontSize: temaStore.tTexto12,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          _buildBotaoTentarNovamente(provaStore),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBotaoTentarNovamente(ProvaStore provaStore) {
+    var tamanhoFonte = temaStore.tTexto16;
+    if (kIsMobile) {
+      tamanhoFonte = temaStore.tTexto14;
+    }
+
+    double largura = 256;
+
+    if (temaStore.incrementador >= 22) {
+      largura = 300;
+    }
+
+    return BotaoDefaultWidget(
+      key: Key('botao-baixar-novamente-prova'),
+      largura: kIsTablet ? largura : null,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(Icons.restart_alt, color: Colors.white, size: 18),
+          Texto(
+            " REINICIAR DOWNLOAD",
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: tamanhoFonte,
+          ),
+        ],
+      ),
+      onPressed: () async {
+        await provaStore.iniciarDownload();
+      },
     );
   }
 
@@ -716,8 +800,6 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             height: 10,
           ),
           LinearPercentIndicator(
-            //animation: true,
-            //animationDuration: 1000,
             lineHeight: 4.0,
             percent: prova.progressoDownload,
             barRadius: const Radius.circular(16),

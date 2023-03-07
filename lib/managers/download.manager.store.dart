@@ -556,8 +556,6 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     }
   }
 
-  _verificarArquivosDeMidiaEBaixar() {}
-
   _gravarVinculoQuestaoCaderno(DownloadProvaDb download) async {
     var provaCaderno = ProvaCaderno(
       questaoId: download.id,

@@ -5,11 +5,11 @@ import 'dart:io';
 import 'package:appserap/main.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart' as fb;
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 setupFirebase() async {
@@ -71,7 +71,7 @@ setUserIdentifier(String identifier) async {
 
 inscreverTurmaFirebase(String ano) async {
   try {
-    if ((await Connectivity().checkConnectivity()) == ConnectivityResult.none) {
+    if (!await InternetConnectionCheckerPlus().hasConnection) {
       return;
     }
 
@@ -100,7 +100,7 @@ inscreverTurmaFirebase(String ano) async {
 
 desinscreverTurmaFirebase(String ano) async {
   try {
-    if ((await Connectivity().checkConnectivity()) == ConnectivityResult.none) {
+    if (!await InternetConnectionCheckerPlus().hasConnection) {
       return;
     }
 

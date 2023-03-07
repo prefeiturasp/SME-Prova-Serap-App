@@ -13,10 +13,10 @@ import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,31 +28,30 @@ class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
 abstract class _PrincipalStoreBase with Store, Loggable {
   _PrincipalStoreBase() {
-    Connectivity().checkConnectivity().then((value) => status = value);
+    InternetConnectionCheckerPlus().hasConnection.then((value) => temConexao = value);
+    InternetConnectionCheckerPlus().onStatusChange.listen((InternetConnectionStatus event) {
+      if (event == InternetConnectionStatus.connected) {
+        temConexao = true;
+      } else {
+        temConexao = false;
+      }
+    });
+
     obetIdDispositivo().then((value) => dispositivoId = value!);
   }
 
   final usuario = GetIt.I.get<UsuarioStore>();
 
-  @observable
-  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
-
-  ReactionDisposer? _disposer;
 
   @observable
   String dispositivoId = "Indefinido";
 
   Future<void> setup() async {
-    _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
     await obterVersaoDoApp();
   }
 
   void dispose() {
-    _disposer!();
   }
-
-  @observable
-  ConnectivityResult status = ConnectivityResult.none;
 
   @observable
   String idDispositivo = "";
@@ -60,17 +59,11 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   @observable
   String versaoApp = "Versão 0";
 
-  @computed
-  bool get temConexao => status != ConnectivityResult.none;
+  @observable
+  bool temConexao = false;
 
   @computed
-  String get versao => "$versaoApp ${status == ConnectivityResult.none ? ' - Sem conexão' : ''}";
-
-  @action
-  Future onChangeConexao(ConnectivityResult? resultado) async {
-    info("Conexão alterada: $resultado");
-    status = resultado!;
-  }
+  String get versao => "$versaoApp ${!temConexao ? ' - Sem conexão' : ''}";
 
   @action
   Future<String?> obetIdDispositivo() async {
