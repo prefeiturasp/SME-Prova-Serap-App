@@ -46,7 +46,7 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'
             sh 'if [ ! -d "android/app/src/dev" ]; then mkdir android/app/src/dev; fi'
-            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . $(realpath envdev) && rm -f envdev && touch .env'
+            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . $(realpath envdev) && rm -f envdev && touch .env && echo "NOTHINGTODO" > .env'
             sh 'flutter clean'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=dev"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
