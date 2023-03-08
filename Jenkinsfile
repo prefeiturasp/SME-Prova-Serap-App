@@ -168,8 +168,7 @@ pipeline {
                     dir('tmp'){
                         unstash 'appbuild'
                     }
-                    sh ("echo \"app-${env.branchname}.apk\"")
-                    sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name "+"app-${APP_VERSION}-dev.apk"+" --file tmp/build/app/outputs/flutter-apk/app-release.apk --replace")
+                    sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-dev --name "+"app-${APP_VERSION}-dev.apk"+" --file tmp/build/app/outputs/flutter-apk/app-dev-release.apk --replace")
                 }
             } 
             catch (err) {
@@ -191,7 +190,7 @@ pipeline {
                         unstash 'appbuild'
                     }
                     sh ("echo \"app-${env.branchname}.apk\"")
-                    sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/flutter-apk/app-release.apk --replace")
+                    sh ("github-release upload --security-token "+"$token"+" --user prefeiturasp --repo SME-Prova-Serap-App --tag ${APP_VERSION}-hom --name "+"app-${APP_VERSION}-hom.apk"+" --file tmp/build/app/outputs/flutter-apk/app-hom-release.apk --replace")
                 }
             } 
             catch (err) {
