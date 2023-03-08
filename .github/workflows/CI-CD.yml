@@ -3,12 +3,6 @@ name: CI-CD
  
 on:
 
-  push:
-    branches: [ development, release, release-r2, master]
-    paths-ignore:
-    - ".github/workflows/**"  
-  
-  workflow_dispatch:
 
 jobs:
 
