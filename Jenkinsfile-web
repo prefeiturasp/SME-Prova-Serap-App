@@ -31,9 +31,11 @@ pipeline {
         steps {
           withCredentials([ file(credentialsId: 'serap-app-environment-dev', variable: 'ENVDEV')]) {
             script {
+	      sh 'if [ -d "envdev" ]; then rm -f envdev; fi'
               sh 'cp ${ENVDEV} envdev'
               sh "sed 's/^export //' envdev > .env"
               sh 'cat .env'
+	      sh 'if [ -d "envdev" ]; then rm -f envdev; fi'
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-prova-serap-front"
               dockerImage1 = docker.build(imagename1, "-f Dockerfile.flutter .")
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
@@ -56,9 +58,11 @@ pipeline {
         steps {
           withCredentials([ file(credentialsId: 'serap-app-environment-hom', variable: 'ENVHOM')]) {
             script {
+	      sh 'if [ -d "envhom" ]; then rm -f envhom; fi'
               sh 'cp ${ENVHOM} envhom'
               sh "sed 's/^export //' envhom > .env"
               sh 'cat .env'
+	      sh 'if [ -d "envhom" ]; then rm -f envhom; fi'
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-prova-serap-front"
               dockerImage1 = docker.build(imagename1, "-f Dockerfile.flutter .")
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
