@@ -71,7 +71,29 @@ pipeline {
         }
       }
 
+      stage('Build Prod') {
+        when { 
+          anyOf { 
+            branch 'master'; 
+          } 
+        }
 
+        steps {
+          withCredentials([ file(credentialsId: 'serap-app-environment-prod', variable: 'ENVPROD')]) {
+            script {
+              sh 'cp ${ENVPROD} envprod'
+              sh "sed 's/^export //' envprod > .env"
+              imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-prova-serap-front"
+              dockerImage1 = docker.build(imagename1, "-f Dockerfile.flutter .")
+              docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
+                dockerImage1.push()
+              }
+              sh "docker rmi $imagename1"
+            }
+
+          }
+        }
+      }
 	    
         stage('Deploy'){
             when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'homolog';  } }        
