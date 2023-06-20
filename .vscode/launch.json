@@ -5,9 +5,31 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "SME-Prova-Serap-App",
+      "name": "Serap Dev",
       "request": "launch",
-      "type": "dart"
+      "type": "dart",
+      "args": [
+        "--flavor",
+        "dev"
+      ]
+    },
+    {
+      "name": "Serap Hom",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--flavor",
+        "hom"
+      ]
+    },
+    {
+      "name": "Serap Prod",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--flavor",
+        "prod"
+      ]
     },
     {
       "name": "SME-Prova-Serap-App (profile mode)",

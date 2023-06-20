@@ -191,6 +191,13 @@ class AppBarWidget extends StatelessWidget {
         itemBuilder: (context) {
       return [
         PopupMenuItem(
+          value: 'resumo',
+          child: ListTile(
+            leading: Icon(Icons.clean_hands_rounded),
+            title: Text('Ir para o resumo'),
+          ),
+        ),
+        PopupMenuItem(
           value: 'banco',
           child: ListTile(
             leading: Icon(Icons.data_usage),
@@ -240,6 +247,10 @@ class AppBarWidget extends StatelessWidget {
       } else if (value == 'limpar') {
         await ServiceLocator.get<AppDatabase>().limparBanco();
         context.go("/splash");
+      } else if (value == 'resumo') {
+        var url = GoRouter.of(context).location.split('/');
+
+        context.go("/prova/${url[2]}/resumo");
       }
     });
   }

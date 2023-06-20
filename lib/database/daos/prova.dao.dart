@@ -38,8 +38,12 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
     return select(provasDb).get();
   }
 
-  Future<Prova> obterPorProvaId(int provaId, String caderno) {
+  Future<Prova> obterPorProvaIdECaderno(int provaId, String caderno) {
     return (select(provasDb)..where((t) => t.id.equals(provaId) & t.caderno.equals(caderno))).getSingle();
+  }
+
+  Future<Prova> obterPorProvaId(int provaId) {
+    return (select(provasDb)..where((t) => t.id.equals(provaId))).getSingle();
   }
 
   Future<Prova?> obterPorIdNull(int id, String caderno) {

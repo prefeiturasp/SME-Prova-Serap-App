@@ -9,19 +9,19 @@ part of 'alternativa.response.dto.dart';
 AlternativaResponseDTO _$AlternativaResponseDTOFromJson(
         Map<String, dynamic> json) =>
     AlternativaResponseDTO(
-      id: json['id'] as int,
+      id: json['alternativaLegadoId'] as int,
       descricao: json['descricao'] as String,
       ordem: json['ordem'] as int,
       numeracao: json['numeracao'] as String,
-      questaoId: json['questaoId'] as int,
+      questaoLegadoId: json['questaoId'] as int,
     );
 
 Map<String, dynamic> _$AlternativaResponseDTOToJson(
         AlternativaResponseDTO instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'alternativaLegadoId': instance.id,
       'descricao': instance.descricao,
       'ordem': instance.ordem,
       'numeracao': instance.numeracao,
-      'questaoId': instance.questaoId,
+      'questaoId': instance.questaoLegadoId,
     };

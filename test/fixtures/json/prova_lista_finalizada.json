@@ -1,0 +1,22 @@
+[
+  {
+    "id": 179,
+    "descricao": "Prova Mock",
+    "itensQuantidade": 5,
+    "tempoExecucao": 3600,
+    "tempoExtra": 600,
+    "tempoAlerta": 300,
+    "senha": null,
+    "tempoTotal": 560,
+    "status": 2,
+    "dataInicio": "2022-08-01T03:00:00",
+    "dataInicioDownload": "2022-08-26T03:00:00",
+    "dataFim": "2022-08-31T03:00:00",
+    "dataInicioProvaAluno": "2022-08-02T09:00:00",
+    "dataFimProvaAluno": "2022-08-02T10:00:00",
+    "modalidade": 5,
+    "quantidadeRespostaSincronizacao": 2,
+    "ultimaAlteracao": "2022-08-01T15:09:30",
+    "caderno": "A"
+  }
+]

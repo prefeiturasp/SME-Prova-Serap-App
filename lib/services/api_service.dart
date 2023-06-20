@@ -14,9 +14,11 @@ import 'package:http/http.dart' as http;
 
 class ConnectionOptions {
   final String baseUrl;
+  final String debugRequest;
 
   ConnectionOptions({
     required this.baseUrl,
+    required this.debugRequest,
   });
 }
 
@@ -34,7 +36,7 @@ class ApiService {
                 ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true),
             )
           : http.Client(),
-      baseUrl: options.baseUrl,
+      baseUrl: Uri.tryParse(options.baseUrl),
       converter: jsonConverter,
       errorConverter: JsonErrorConverter(),
       authenticator: ServiceAuthenticator(),
@@ -54,12 +56,14 @@ class ApiService {
         AutenticacaoAdminService.create(),
         LogService.create(),
         ConfiguracaoService.create(),
+        ProvaResultadoService.create(),
+        ProvaTaiService.create(),
       ],
       interceptors: [
         CompressaoInterceptor(),
         CustomAuthInterceptor(),
-        // CurlInterceptor(),
-        // HttpLoggingInterceptor(),
+        ...options.debugRequest == "BASIC" ? [CurlInterceptor()] : [],
+        ...options.debugRequest == "FULL" ? [HttpLoggingInterceptor()] : [],
       ],
     ));
     return client;
@@ -81,4 +85,6 @@ class ApiService {
   AutenticacaoAdminService get adminAuth => chopper.getService<AutenticacaoAdminService>();
   LogService get log => chopper.getService<LogService>();
   ConfiguracaoService get configuracao => chopper.getService<ConfiguracaoService>();
+  ProvaResultadoService get provaResultado => chopper.getService<ProvaResultadoService>();
+  ProvaTaiService get provaTai => chopper.getService<ProvaTaiService>();
 }

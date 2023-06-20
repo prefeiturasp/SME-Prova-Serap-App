@@ -130,7 +130,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   }
 
   @action
-  removerProva(ProvaStore provaStore, [bool manterRegistroProva = false]) async {
+  Future<void> removerProva(ProvaStore provaStore, [bool manterRegistroProva = false]) async {
     await provaStore.removerDownload(manterRegistroProva);
 
     provaStore.downloadStatus = EnumDownloadStatus.ATUALIZAR;
@@ -170,6 +170,13 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       prova.quantidadeRespostaSincronizacao = provaStoreAtualizada.prova.quantidadeRespostaSincronizacao;
       prova.senha = provaStoreAtualizada.prova.senha;
       prova.caderno = provaStoreAtualizada.prova.caderno;
+
+      prova.apresentarResultados = provaStoreAtualizada.prova.apresentarResultados;
+      prova.apresentarResultadosPorItem = provaStoreAtualizada.prova.apresentarResultadosPorItem;
+      prova.provaComProficiencia = provaStoreAtualizada.prova.provaComProficiencia;
+
+      prova.exibirAudio = provaStoreAtualizada.prova.exibirAudio;
+      prova.exibirVideo = provaStoreAtualizada.prova.exibirVideo;
 
       provaStoreAtualizada.prova = prova;
       provaStoreAtualizada.downloadStatus = prova.downloadStatus;

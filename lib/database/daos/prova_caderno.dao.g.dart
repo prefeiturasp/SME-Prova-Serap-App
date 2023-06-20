@@ -2,10 +2,7 @@
 
 part of 'prova_caderno.dao.dart';
 
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
+// ignore_for_file: type=lint
 mixin _$ProvaCadernoDaoMixin on DatabaseAccessor<AppDatabase> {
   $ProvaCadernoTableTable get provaCadernoTable =>
       attachedDatabase.provaCadernoTable;

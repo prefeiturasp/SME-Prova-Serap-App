@@ -2,10 +2,7 @@
 
 part of 'arquivo_video.dao.dart';
 
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
+// ignore_for_file: type=lint
 mixin _$ArquivosVideosDaoMixin on DatabaseAccessor<AppDatabase> {
   $ArquivosVideoDbTable get arquivosVideoDb => attachedDatabase.arquivosVideoDb;
 }

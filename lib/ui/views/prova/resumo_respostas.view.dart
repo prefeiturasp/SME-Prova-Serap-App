@@ -308,7 +308,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         questao.questaoLegadoId,
       );
 
-      RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
+      RespostaProva? resposta = provaStore.respostas.respostasLocal[questaoId];
       ProvaCaderno provaCaderno = await db.provaCadernoDao.findByQuestaoId(
         questaoId,
         widget.idProva,
@@ -325,7 +325,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         var alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
 
         for (var alternativa in alternativas) {
-          if (alternativa.id == resposta!.alternativaId) {
+          if (alternativa.ordem == resposta!.ordem) {
             alternativaSelecionada = alternativa.numeracao;
           }
         }

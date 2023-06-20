@@ -2,10 +2,7 @@
 
 part of 'prova.dao.dart';
 
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
+// ignore_for_file: type=lint
 mixin _$ProvaDaoMixin on DatabaseAccessor<AppDatabase> {
   $ProvasDbTable get provasDb => attachedDatabase.provasDb;
   $ProvaAlunoTableTable get provaAlunoTable => attachedDatabase.provaAlunoTable;

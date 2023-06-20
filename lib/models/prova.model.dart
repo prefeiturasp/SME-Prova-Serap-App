@@ -34,6 +34,18 @@ class Prova implements Insertable<Prova> {
 
   String caderno;
 
+  bool provaComProficiencia;
+  bool apresentarResultados;
+  bool apresentarResultadosPorItem;
+
+  bool formatoTai;
+  int? formatoTaiItem;
+  bool formatoTaiAvancarSemResponder;
+  bool formatoTaiVoltarItemAnterior;
+
+  bool exibirVideo;
+  bool exibirAudio;
+
   Prova({
     required this.id,
     required this.descricao,
@@ -52,6 +64,15 @@ class Prova implements Insertable<Prova> {
     required this.quantidadeRespostaSincronizacao,
     required this.ultimaAlteracao,
     required this.caderno,
+    required this.provaComProficiencia,
+    required this.apresentarResultados,
+    required this.apresentarResultadosPorItem,
+    required this.formatoTai,
+    required this.formatoTaiItem,
+    required this.formatoTaiAvancarSemResponder,
+    required this.formatoTaiVoltarItemAnterior,
+    required this.exibirVideo,
+    required this.exibirAudio,
   });
 
   bool isFinalizada() {
@@ -87,6 +108,13 @@ class Prova implements Insertable<Prova> {
       quantidadeRespostaSincronizacao: Value(quantidadeRespostaSincronizacao),
       ultimaAlteracao: Value(ultimaAlteracao),
       caderno: Value(caderno),
+      provaComProficiencia: Value(provaComProficiencia),
+      apresentarResultados: Value(apresentarResultados),
+      apresentarResultadosPorItem: Value(apresentarResultadosPorItem),
+      formatoTai: Value(formatoTai),
+      formatoTaiItem: Value(formatoTaiItem),
+      formatoTaiAvancarSemResponder: Value(formatoTaiAvancarSemResponder),
+      formatoTaiVoltarItemAnterior: Value(formatoTaiVoltarItemAnterior),
     ).toColumns(nullToAbsent);
   }
 }

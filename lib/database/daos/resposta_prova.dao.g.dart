@@ -2,10 +2,7 @@
 
 part of 'resposta_prova.dao.dart';
 
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
+// ignore_for_file: type=lint
 mixin _$RespostaProvaDaoMixin on DatabaseAccessor<RespostasDatabase> {
   $RespostaProvaTableTable get respostaProvaTable =>
       attachedDatabase.respostaProvaTable;

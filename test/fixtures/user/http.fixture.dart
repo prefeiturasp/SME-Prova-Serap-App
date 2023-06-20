@@ -21,7 +21,7 @@ Response<T> createResponse<T>(
 
 buildClient([http.Client? httpClient]) {
   return ChopperClient(
-    baseUrl: '',
+    baseUrl: Uri.tryParse(''),
     client: httpClient,
     converter: jsonConverter,
     errorConverter: JsonErrorConverter(),

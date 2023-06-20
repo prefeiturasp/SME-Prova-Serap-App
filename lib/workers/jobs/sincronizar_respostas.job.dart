@@ -9,7 +9,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:workmanager/workmanager.dart';
 
 class SincronizarRespostasJob with Job, Loggable, Database {
@@ -32,8 +32,7 @@ class SincronizarRespostasJob with Job, Loggable, Database {
     var respostasParaSincronizar = await carregaRespostasNaoSincronizadas();
     fine('${respostasParaSincronizar.length} respostas ainda não sincronizadas');
 
-    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
-    if (respostasParaSincronizar.isNotEmpty && resultado == ConnectivityResult.none) {
+    if (respostasParaSincronizar.isNotEmpty && !await InternetConnectionCheckerPlus().hasConnection) {
       info('Falha na sincronização. Sem Conexão....');
       return;
     }
@@ -41,7 +40,7 @@ class SincronizarRespostasJob with Job, Loggable, Database {
     var respostasDTO = respostasParaSincronizar
         .map((e) => QuestaoRespostaDTO(
               alunoRa: e.codigoEOL,
-              dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId!,
+              dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
               questaoId: e.questaoId,
               alternativaId: e.alternativaId,
               resposta: e.resposta,

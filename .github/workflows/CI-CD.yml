@@ -3,9 +3,6 @@ name: CI-CD
  
 on:
 
-  
-  workflow_dispatch:
-
 jobs:
 
   flutter_conf_dev:

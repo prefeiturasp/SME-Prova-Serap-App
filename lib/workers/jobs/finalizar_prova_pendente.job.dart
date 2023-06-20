@@ -11,7 +11,7 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/workers/jobs/sincronizar_respostas.job.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:workmanager/workmanager.dart';
 
 class FinalizarProvasPendenteJob with Job, Loggable, Database {
@@ -37,8 +37,7 @@ class FinalizarProvasPendenteJob with Job, Loggable, Database {
 
     info('${provas.length} provas pendente de sincronização');
 
-    ConnectivityResult resultado = await (Connectivity().checkConnectivity());
-    if (provas.isNotEmpty && resultado == ConnectivityResult.none) {
+    if (provas.isNotEmpty && !await InternetConnectionCheckerPlus().hasConnection) {
       info('Falha na sincronização. Sem Conexão....');
       return;
     }

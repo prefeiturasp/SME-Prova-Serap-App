@@ -9,7 +9,6 @@ import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 import '../main.ioc.dart';
@@ -19,9 +18,6 @@ part 'prova_resposta.store.g.dart';
 class ProvaRespostaStore = _ProvaRespostaStoreBase with _$ProvaRespostaStore;
 
 abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
-  final _service = GetIt.I.get<ApiService>().questaoResposta;
-  final _serviceProva = GetIt.I.get<ApiService>().prova;
-
   @observable
   int idProva;
 
@@ -49,17 +45,29 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
     fine('[Prova $idProva] - Carregando respostas da prova');
 
     try {
-      var respostaBanco = await _serviceProva.getRespostasPorProvaId(idProva: idProva);
+      var respostaBanco = await ServiceLocator.get<ApiService>().prova.getRespostasPorProvaId(idProva: idProva);
 
       if (respostaBanco.isSuccessful) {
         var questoesResponse = respostaBanco.body!;
 
         for (var questaoResponse in questoesResponse) {
+          int? ordem;
+
+          if (questaoResponse.alternativaId != null) {
+            var provaQuestaoAlternativa = await db.provaQuestaoAlternativaDao.obterPorAlternativaId(
+              questaoResponse.alternativaId!,
+            );
+
+            ordem = provaQuestaoAlternativa.ordem;
+          }
+
           var entity = RespostaProva(
             codigoEOL: codigoEOL,
-            dispositivoId: ServiceLocator<PrincipalStore>().dispositivoId!,
+            dispositivoId: ServiceLocator<PrincipalStore>().dispositivoId,
             provaId: idProva,
+            caderno: caderno,
             questaoId: questaoResponse.questaoId,
+            ordem: ordem,
             alternativaId: questaoResponse.alternativaId,
             resposta: questaoResponse.resposta,
             dataHoraResposta: questaoResponse.dataHoraResposta.toLocal(),
@@ -86,10 +94,6 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
     }
   }
 
-  RespostaProva? obterResposta(int questaoId) {
-    return respostasLocal[questaoId];
-  }
-
   @action
   sincronizarResposta({bool force = false}) async {
     fine('[$idProva] - Sincronizando respostas para o servidor');
@@ -103,7 +107,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
       return;
     }
 
-    var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaId(idProva, caderno);
+    var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaIdECaderno(idProva, caderno);
 
     if (respostasNaoSincronizadas.length == prova.quantidadeRespostaSincronizacao || force) {
       List<QuestaoRespostaDTO> respostas = [];
@@ -112,7 +116,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
         respostas.add(
           QuestaoRespostaDTO(
             alunoRa: codigoEOL,
-            dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId!,
+            dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
             questaoId: resposta.questaoId,
             alternativaId: resposta.alternativaId,
             resposta: resposta.resposta,
@@ -123,10 +127,10 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
       }
 
       try {
-        var response = await _service.postResposta(
-          chaveAPI: AppConfigReader.getChaveApi(),
-          respostas: respostas,
-        );
+        var response = await ServiceLocator.get<ApiService>().questaoResposta.postResposta(
+              chaveAPI: AppConfigReader.getChaveApi(),
+              respostas: respostas,
+            );
 
         if (response.isSuccessful) {
           for (var resposta in respostasNaoSincronizadas) {
@@ -144,13 +148,35 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   }
 
   @action
-  Future<void> definirResposta(int questaoId, {int? alternativaId, String? textoResposta, int tempoQuestao = 0}) async {
+  Future<void> definirResposta(
+    int questaoId, {
+    int? alternativaLegadoId,
+    String? textoResposta,
+    int tempoQuestao = 0,
+  }) async {
+    int? alternativaId;
+    int? ordem;
+
+    if (alternativaLegadoId != null) {
+      var provaQuestaoAlternativa =
+          await db.provaQuestaoAlternativaDao.obterAlternativaPorProvaECadernoEQuestaoEAlternativaLegadoId(
+        idProva,
+        caderno,
+        questaoId,
+        alternativaLegadoId,
+      );
+      alternativaId = provaQuestaoAlternativa.alternativaId;
+      ordem = provaQuestaoAlternativa.ordem;
+    }
+
     var resposta = RespostaProva(
       codigoEOL: codigoEOL,
-      dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId!,
+      dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
       provaId: idProva,
+      caderno: caderno,
       questaoId: questaoId,
       alternativaId: alternativaId,
+      ordem: ordem,
       resposta: textoResposta,
       sincronizado: false,
       tempoRespostaAluno: tempoQuestao,
@@ -163,7 +189,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
 
   @action
   Future<void> definirTempoResposta(int questaoId, {int tempoQuestao = 0}) async {
-    var resposta = obterResposta(questaoId);
+    var resposta = respostasLocal[questaoId];
 
     if (resposta != null) {
       resposta.sincronizado = false;

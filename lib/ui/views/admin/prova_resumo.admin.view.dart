@@ -159,7 +159,7 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
       questoes.add(
         Padding(
           padding: EdgeInsets.symmetric(vertical: 4),
-          child: _buildReumo(item),
+          child: _buildResumo(item),
         ),
       );
       questoes.add(_divider());
@@ -168,7 +168,7 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
     return questoes;
   }
 
-  Widget _buildReumo(AdminProvaResumoResponseDTO questaoResumo) {
+  Widget _buildResumo(AdminProvaResumoResponseDTO questaoResumo) {
     String ordemQuestaoTratada =
         questaoResumo.ordem < 10 ? '0${questaoResumo.ordem + 1}' : '${questaoResumo.ordem + 1}';
 
