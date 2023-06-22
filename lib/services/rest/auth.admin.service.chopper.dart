@@ -19,18 +19,18 @@ class _$AutenticacaoAdminService extends AutenticacaoAdminService {
   @override
   Future<Response<AutenticacaoResponseDTO>> loginByCodigoAutenticacao(
       {required String codigo}) {
-    final $url = '/v1/admin/autenticacao/validar';
+    final Uri $url = Uri.parse('/v1/admin/autenticacao/validar');
     final $body = <String, dynamic>{'codigo': codigo};
-    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
     return client
         .send<AutenticacaoResponseDTO, AutenticacaoResponseDTO>($request);
   }
 
   @override
   Future<Response<AutenticacaoResponseDTO>> revalidar({required String token}) {
-    final $url = '/v1/admin/autenticacao/revalidar';
+    final Uri $url = Uri.parse('/v1/admin/autenticacao/revalidar');
     final $body = <String, dynamic>{'token': token};
-    final $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
     return client
         .send<AutenticacaoResponseDTO, AutenticacaoResponseDTO>($request);
   }

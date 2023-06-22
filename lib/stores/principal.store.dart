@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:android_id/android_id.dart';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/enums/download_status.enum.dart';
@@ -10,11 +13,12 @@ import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:platform_device_id/platform_device_id.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -24,45 +28,74 @@ class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
 abstract class _PrincipalStoreBase with Store, Loggable {
   _PrincipalStoreBase() {
-    Connectivity().checkConnectivity().then((value) => status = value);
-    PlatformDeviceId.getDeviceId.then((value) => dispositivoId = value!);
+    InternetConnectionCheckerPlus().hasConnection.then((value) => temConexao = value);
+    InternetConnectionCheckerPlus().onStatusChange.listen((InternetConnectionStatus event) {
+      if (event == InternetConnectionStatus.connected) {
+        temConexao = true;
+      } else {
+        temConexao = false;
+      }
+    });
+
+    obetIdDispositivo().then((value) => dispositivoId = value!);
   }
 
   final usuario = GetIt.I.get<UsuarioStore>();
 
-  @observable
-  ObservableStream<ConnectivityResult> conexaoStream = ObservableStream(Connectivity().onConnectivityChanged);
-
-  ReactionDisposer? _disposer;
 
   @observable
-  String? dispositivoId;
+  String dispositivoId = "Indefinido";
 
-  setup() async {
-    _disposer = reaction((_) => conexaoStream.value, onChangeConexao);
+  Future<void> setup() async {
     await obterVersaoDoApp();
   }
 
   void dispose() {
-    _disposer!();
   }
 
   @observable
-  ConnectivityResult status = ConnectivityResult.none;
+  String idDispositivo = "";
 
   @observable
   String versaoApp = "Versão 0";
 
-  @computed
-  bool get temConexao => status != ConnectivityResult.none;
+  @observable
+  bool temConexao = false;
 
   @computed
-  String get versao => "$versaoApp ${status == ConnectivityResult.none ? ' - Sem conexão' : ''}";
+  String get versao => "$versaoApp ${!temConexao ? ' - Sem conexão' : ''}";
 
   @action
-  Future onChangeConexao(ConnectivityResult? resultado) async {
-    info("Conexão alterada: $resultado");
-    status = resultado!;
+  Future<String?> obetIdDispositivo() async {
+    var deviceInfo = DeviceInfoPlugin();
+
+    // Web
+    if (kIsWeb) {
+      var webBrowserInfo = await deviceInfo.webBrowserInfo;
+      return webBrowserInfo.userAgent;
+      // Ios
+    } else if (Platform.isIOS) {
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor;
+      // Android
+    } else if (Platform.isAndroid) {
+      const _androidIdPlugin = AndroidId();
+      return await _androidIdPlugin.getId();
+      // Windows
+    } else if (Platform.isWindows) {
+      var windowsInfo = await deviceInfo.windowsInfo;
+      return windowsInfo.deviceId;
+      // MacOS
+    } else if (Platform.isMacOS) {
+      var macOsInfo = await deviceInfo.macOsInfo;
+      return macOsInfo.systemGUID!;
+      // Linux
+    } else if (Platform.isLinux) {
+      var linuxInfo = await deviceInfo.linuxInfo;
+      return linuxInfo.machineId!;
+    } else {
+      return "Não identificado";
+    }
   }
 
   @action

@@ -2,10 +2,7 @@
 
 part of 'contexto_prova.dao.dart';
 
-// **************************************************************************
-// DaoGenerator
-// **************************************************************************
-
+// ignore_for_file: type=lint
 mixin _$ContextoProvaDaoMixin on DatabaseAccessor<AppDatabase> {
   $ContextosProvaDbTable get contextosProvaDb =>
       attachedDatabase.contextosProvaDb;

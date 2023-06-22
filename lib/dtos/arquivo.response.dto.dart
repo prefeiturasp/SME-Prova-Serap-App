@@ -20,7 +20,7 @@ class ArquivoResponseDTO {
   static const fromJson = _$ArquivoResponseDTOFromJson;
   Map<String, dynamic> toJson() => _$ArquivoResponseDTOToJson(this);
 
-  Arquivo toArquivoModel() {
+  Arquivo toModel() {
     return Arquivo(
       id: id,
       legadoId: legadoId,

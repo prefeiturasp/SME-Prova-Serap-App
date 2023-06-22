@@ -29,6 +29,12 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     ndkVersion flutter.ndkVersion
@@ -54,15 +60,64 @@ android {
         versionName flutterVersionName
         multiDexEnabled = true
         ndk {
-          abiFilters 'x86_64', 'armeabi', 'armeabi-v7a'
+          abiFilters 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+        }
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
         }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            if (keystorePropertiesFile.exists()) {
+                println "Signing with key.properties"
+                signingConfig signingConfigs.release
+                minifyEnabled true
+            } else {
+                signingConfig signingConfigs.debug
+                println "Signing with debug keys"
+            }
+        }
+    }
+
+    flavorDimensions "default"
+
+    productFlavors {
+
+        dev {
+            dimension "default"
+            resValue "string", "app_name", "SERAp Estudantes Dev"
+            
+            resValue "string", "api_url", "https://dev-serap-estudante.sme.prefeitura.sp.gov.br/api"
+            resValue "string", "serap_url", "https://hom-serap.sme.prefeitura.sp.gov.br/"
+            
+            //applicationId "br.gov.sp.prefeitura.sme.appserap.dev"
+        }
+
+        hom {
+            dimension "default"
+            resValue "string", "app_name", "SERAp Estudantes Hom"
+
+            resValue "string", "api_url", "https://hom-serap-estudante.sme.prefeitura.sp.gov.br/api"
+            resValue "string", "serap_url", "https://hom-serap.sme.prefeitura.sp.gov.br/"
+
+            //applicationId "br.gov.sp.prefeitura.sme.appserap.hom"
+        }
+
+        prod {
+            dimension "default"
+            resValue "string", "app_name", "SERAp Estudantes"
+
+            resValue "string", "api_url", "https://serap-estudante.sme.prefeitura.sp.gov.br/api"
+            resValue "string", "serap_url", "https://serap.sme.prefeitura.sp.gov.br/"
         }
     }
 }

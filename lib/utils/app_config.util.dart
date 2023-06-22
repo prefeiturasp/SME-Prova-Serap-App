@@ -1,42 +1,55 @@
-import "dart:convert";
+import 'dart:io';
+
 import 'package:appserap/utils/string.util.dart';
-import "package:flutter/services.dart";
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:logging/src/level.dart';
+import 'package:native_resource/native_resource.dart';
 
 abstract class AppConfigReader {
-  static Map<String, dynamic> _config = {};
-
   static Future<void> initialize() async {
-    final configString = await rootBundle.loadString("config/app_config.json");
-    _config = json.decode(configString) as Map<String, dynamic>;
-  }
+    Map<String, String> defaultNative = {};
 
-  static String getEnvironment() {
-    return _config["environment"] as String;
-  }
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      try {
+        defaultNative["HOST_API"] = await NativeResource().read(
+          androidResourceName: 'api_url',
+          iosPlistKey: 'ApiUrl',
+        );
 
-  static String getSentryDsn() {
-    return _config["sentryDsn"] as String;
+        defaultNative["SERAP_URL"] = await NativeResource().read(
+          androidResourceName: 'serap_url',
+          iosPlistKey: 'SerapUrl',
+        );
+        // ignore: empty_catches
+      } on Exception {}
+    }
+
+    await dotenv.load(fileName: ".env", mergeWith: defaultNative);
   }
 
   static String getApiHost() {
-    return _config["apiHost"] as String;
-  }
-
-  static String getChaveApi() {
-    return _config["chaveApi"] as String;
+    return dotenv.get("HOST_API", fallback: "NONE");
   }
 
   static String getSerapUrl() {
-    return _config["serapUrl"] as String;
+    return dotenv.get("SERAP_URL", fallback: "NONE");
+  }
+
+  static String getChaveApi() {
+    return dotenv.get("CHAVE_API", fallback: "NONE");
   }
 
   static bool debugSql() {
-    return _config["debugSQL"] ?? false;
+    return dotenv.get("DEBUG_SQL", fallback: "false") == "true";
+  }
+
+  static String debugRequest() {
+    return dotenv.get("DEBUG_REQUEST", fallback: "NONE");
   }
 
   static Level logLevel() {
-    return parseLog(_config["logLevel"]);
+    return parseLog(dotenv.get("NIVEL_LOG", fallback: "INFO"));
   }
 }

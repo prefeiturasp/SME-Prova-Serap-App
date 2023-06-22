@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
@@ -13,7 +11,6 @@ import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/questao.store.dart';
-import 'package:appserap/ui/views/prova/prova.media.util.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_aluno.widget.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
@@ -37,6 +34,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
+import 'package:wakelock/wakelock.dart';
 
 class QuestaoView extends BaseStatefulWidget {
   final int idProva;
@@ -48,7 +46,13 @@ class QuestaoView extends BaseStatefulWidget {
   _QuestaoViewState createState() => _QuestaoViewState();
 }
 
-class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable, ProvaMediaUtil {
+class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable {
+  @override
+  Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  @override
+  double get defaultPadding => 0;
+
   late ProvaStore provaStore;
   late Questao questao;
   late List<Alternativa> alternativas;
@@ -63,6 +67,32 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   var db = ServiceLocator.get<AppDatabase>();
 
   final controller = HtmlEditorController();
+
+  @override
+  AppBarWidget buildAppBar() {
+    return AppBarWidget(
+      popView: true,
+      subtitulo: provaStore.prova.descricao,
+      leading: _buildLeading(),
+    );
+  }
+
+  Widget? _buildLeading() {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () async {
+        bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
+
+        if (voltar) {
+          await Wakelock.disable();
+
+          provaStore.setRespondendoProva(false);
+          provaStore.onDispose();
+          context.go("/");
+        }
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -85,21 +115,35 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
 
-    questao = await db.questaoDao.getByProvaEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
-    alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
-    imagens = await db.arquivoDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
-    questaoId =
-        await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(widget.idProva, provaStore.caderno, widget.ordem);
-
+    await _carregarProva();
     await _carregarArquivos();
   }
 
+  _carregarProva()  async {
+    questao = await db.questaoDao.getByProvaEOrdem(
+      widget.idProva,
+      provaStore.caderno,
+      widget.ordem,
+    );
+    alternativas = await db.alternativaDao.obterPorQuestaoLegadoId(
+      questao.questaoLegadoId,
+    );
+    imagens = await db.arquivoDao.obterPorQuestaoLegadoId(
+      questao.questaoLegadoId,
+    );
+    questaoId = await db.provaCadernoDao.obterQuestaoIdPorProvaECadernoEOrdem(
+      widget.idProva,
+      provaStore.caderno,
+      widget.ordem,
+    );
+  }
+
   _carregarArquivos() async {
-    if (verificarDeficienciaVisual()) {
+    if (provaStore.prova.exibirAudio) {
       await loadAudio(questao);
     }
 
-    if (verificarDeficienciaAuditiva()) {
+    if (provaStore.prova.exibirVideo) {
       await loadVideos(questao);
     }
   }
@@ -130,36 +174,6 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
         arquivoAudio = readContents;
       }
     }
-  }
-
-  @override
-  Color? get backgroundColor => TemaUtil.corDeFundo;
-
-  @override
-  double get defaultPadding => 0;
-
-  @override
-  AppBarWidget buildAppBar() {
-    return AppBarWidget(
-      popView: true,
-      subtitulo: provaStore.prova.descricao,
-      leading: _buildLeading(),
-    );
-  }
-
-  Widget? _buildLeading() {
-    return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () async {
-        bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
-
-        if (voltar) {
-          provaStore.setRespondendoProva(false);
-          provaStore.onDispose();
-          context.go("/");
-        }
-      },
-    );
   }
 
   @override
@@ -222,6 +236,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
                                   SizedBox(height: 8),
                                   QuestaoAlunoWidget(
                                     provaStore: provaStore,
+                                    controller: controller,
                                     questaoId: questaoId,
                                     questao: questao,
                                     alternativas: alternativas,
@@ -429,18 +444,22 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   bool exibirAudio() {
-    if (arquivoAudioDb == null) {
-      return false;
+    if(provaStore.prova.exibirAudio){
+      if (arquivoAudioDb != null) {
+        return true;
+      }
     }
 
-    return verificarDeficienciaVisual();
+    return false;
   }
 
   bool exibirVideo() {
-    if (arquivoVideoDb == null) {
-      return false;
+    if(provaStore.prova.exibirVideo){
+      if (arquivoVideoDb != null) {
+        return true;
+      }
     }
 
-    return verificarDeficienciaAuditiva();
+    return false;
   }
 }

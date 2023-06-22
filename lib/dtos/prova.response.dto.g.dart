@@ -29,6 +29,17 @@ ProvaResponseDTO _$ProvaResponseDTOFromJson(Map<String, dynamic> json) =>
           json['quantidadeRespostaSincronizacao'] as int,
       ultimaAlteracao: DateTime.parse(json['ultimaAlteracao'] as String),
       caderno: json['caderno'] as String,
+      provaComProficiencia: json['provaComProficiencia'] as bool,
+      apresentarResultados: json['apresentarResultados'] as bool,
+      apresentarResultadosPorItem: json['apresentarResultadosPorItem'] as bool,
+      formatoTai: json['formatoTai'] as bool,
+      formatoTaiItem: json['formatoTaiItem'] as int?,
+      formatoTaiAvancarSemResponder:
+          json['formatoTaiAvancarSemResponder'] as bool,
+      formatoTaiVoltarItemAnterior:
+          json['formatoTaiVoltarItemAnterior'] as bool,
+      exibirVideo: json['exibirVideo'] as bool,
+      exibirAudio: json['exibirAudio'] as bool,
     );
 
 Map<String, dynamic> _$ProvaResponseDTOToJson(ProvaResponseDTO instance) =>
@@ -50,6 +61,15 @@ Map<String, dynamic> _$ProvaResponseDTOToJson(ProvaResponseDTO instance) =>
           instance.quantidadeRespostaSincronizacao,
       'ultimaAlteracao': instance.ultimaAlteracao.toIso8601String(),
       'caderno': instance.caderno,
+      'provaComProficiencia': instance.provaComProficiencia,
+      'apresentarResultados': instance.apresentarResultados,
+      'apresentarResultadosPorItem': instance.apresentarResultadosPorItem,
+      'formatoTai': instance.formatoTai,
+      'formatoTaiItem': instance.formatoTaiItem,
+      'formatoTaiAvancarSemResponder': instance.formatoTaiAvancarSemResponder,
+      'formatoTaiVoltarItemAnterior': instance.formatoTaiVoltarItemAnterior,
+      'exibirVideo': instance.exibirVideo,
+      'exibirAudio': instance.exibirAudio,
     };
 
 const _$EnumProvaStatusEnumMap = {

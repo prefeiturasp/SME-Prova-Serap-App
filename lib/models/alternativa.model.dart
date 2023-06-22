@@ -25,7 +25,7 @@ class Alternativa implements Insertable<Alternativa> {
 
   @override
   String toString() {
-    return 'Alternativa(id: $id, descricao: $descricao, ordem: $ordem, numeracao: $numeracao, questaoLegadoId: $questaoLegadoId)';
+    return 'Alternativa(id: $id, questaoLegadoId: $questaoLegadoId, descricao: $descricao, ordem: $ordem, numeracao: $numeracao)';
   }
 
   @override

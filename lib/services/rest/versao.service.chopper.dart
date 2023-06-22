@@ -18,22 +18,22 @@ class _$VersaoService extends VersaoService {
 
   @override
   Future<Response<String>> getVersao() {
-    final $url = '/v1/versoes';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/versoes');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<String, String>($request);
   }
 
   @override
   Future<Response<String>> getVersaoFront() {
-    final $url = '/v1/versoes/front';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/versoes/front');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<String, String>($request);
   }
 
   @override
   Future<Response<VersaoAtualizacaoResponseDTO>> getAtualizacao() {
-    final $url = '/v1/versoes/atualizacao';
-    final $request = Request('GET', $url, client.baseUrl);
+    final Uri $url = Uri.parse('/v1/versoes/atualizacao');
+    final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<VersaoAtualizacaoResponseDTO,
         VersaoAtualizacaoResponseDTO>($request);
   }
@@ -46,11 +46,10 @@ class _$VersaoService extends VersaoService {
       String? dispositivoImei,
       required String atualizadoEm,
       String? dispositivoId}) {
-    final $url = '/v1/versoes/dispositivo';
-    final $headers = {
+    final Uri $url = Uri.parse('/v1/versoes/dispositivo');
+    final Map<String, String> $headers = {
       'chave-api': chaveAPI,
     };
-
     final $body = <String, dynamic>{
       'versaoCodigo': versaoCodigo,
       'versaoDescricao': versaoDescricao,
@@ -58,7 +57,7 @@ class _$VersaoService extends VersaoService {
       'atualizadoEm': atualizadoEm,
       'dispositivoId': dispositivoId
     };
-    final $request =
+    final Request $request =
         Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
     return client.send<bool, bool>($request);
   }

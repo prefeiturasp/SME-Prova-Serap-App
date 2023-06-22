@@ -34,6 +34,18 @@ class ProvaResponseDTO {
 
   final String caderno;
 
+  final bool provaComProficiencia;
+  final bool apresentarResultados;
+  final bool apresentarResultadosPorItem;
+
+  final bool formatoTai;
+  final int? formatoTaiItem;
+  final bool formatoTaiAvancarSemResponder;
+  final bool formatoTaiVoltarItemAnterior;
+
+  final bool exibirVideo;
+  final bool exibirAudio;
+
   ProvaResponseDTO({
     required this.id,
     required this.descricao,
@@ -51,6 +63,15 @@ class ProvaResponseDTO {
     required this.quantidadeRespostaSincronizacao,
     required this.ultimaAlteracao,
     required this.caderno,
+    required this.provaComProficiencia,
+    required this.apresentarResultados,
+    required this.apresentarResultadosPorItem,
+    required this.formatoTai,
+    required this.formatoTaiItem,
+    required this.formatoTaiAvancarSemResponder,
+    required this.formatoTaiVoltarItemAnterior,
+    required this.exibirVideo,
+    required this.exibirAudio,
   });
 
   bool isFinalizada() {
@@ -77,6 +98,15 @@ class ProvaResponseDTO {
       senha: senha,
       dataFim: dataFim,
       caderno: caderno,
+      provaComProficiencia: provaComProficiencia,
+      apresentarResultados: apresentarResultados,
+      apresentarResultadosPorItem: apresentarResultadosPorItem,
+      formatoTai: formatoTai,
+      formatoTaiItem: formatoTaiItem,
+      formatoTaiAvancarSemResponder: formatoTaiAvancarSemResponder,
+      formatoTaiVoltarItemAnterior: formatoTaiVoltarItemAnterior,
+      exibirVideo: exibirVideo,
+      exibirAudio: exibirAudio,
     );
   }
 

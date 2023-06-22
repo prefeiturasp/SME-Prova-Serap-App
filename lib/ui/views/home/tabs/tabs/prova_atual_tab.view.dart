@@ -68,6 +68,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
           if (store.carregando) {
             return Center(
+              key: Key('carregando'),
               child: CircularProgressIndicator(),
             );
           }
@@ -88,8 +89,8 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
     if (listProvas.isEmpty) {
       return Center(
+        key: Key("sem-itens"),
         child: SizedBox(
-          height: MediaQuery.of(context).size.height - 400,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -117,6 +118,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     return ListView.builder(
+      key: Key("lista-provas"),
       itemCount: listProvas.length,
       itemBuilder: (_, index) {
         var key = listProvas.keys.toList()[index];
@@ -130,6 +132,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     return Padding(
       padding: getPadding(EdgeInsets.symmetric(horizontal: 8)),
       child: Card(
+        key: Key("card-prova"),
         shape: RoundedRectangleBorder(
           side: BorderSide(color: TemaUtil.cinza, width: 1),
           borderRadius: BorderRadius.circular(12),
@@ -153,49 +156,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
                   ),
                   SizedBox(height: 10),
                   // Quantidade de itens
-                  Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: TemaUtil.laranja02.withOpacity(0.1),
-                        ),
-                        padding: EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.format_list_numbered,
-                          color: TemaUtil.laranja02,
-                          size: 24,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      //
-                      Observer(builder: (_) {
-                        return AdaptativeWidget(
-                          mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC &&
-                                  temaStore.incrementador > 22 &&
-                                  kIsMobile
-                              ? AdaptativeWidgetMode.COLUMN
-                              : AdaptativeWidgetMode.ROW,
-                          children: [
-                            Texto(
-                              "Quantidade de itens: ",
-                              fontSize: 14,
-                              color: TemaUtil.preto,
-                              fontWeight: FontWeight.normal,
-                            ),
-                            Texto(
-                              provaStore.prova.itensQuantidade.toString(),
-                              fontSize: 14,
-                              color: TemaUtil.preto,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ],
-                        );
-                      }),
-                    ],
-                  ),
+                  _buildQuantidadeItens(provaStore),
                   SizedBox(height: 10),
                   // Data aplicacao
                   Row(
@@ -248,7 +209,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   }
 
   List<Widget> _buildProvaIcon(ProvaStore provaStore) {
-    if (kIsTablet) {
+    if (kIsTablet || ServiceLocator.get<PrincipalStore>().temConexao) {
       return [
         Container(
           width: 128,
@@ -367,6 +328,11 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   }
 
   _buildBotao(ProvaStore provaStore) {
+    // ProvaTai
+    if (provaStore.prova.formatoTai) {
+      return _buildBotaoProvaTai(provaStore);
+    }
+
     // Download não iniciado e sem conexão
     if (provaStore.downloadStatus == EnumDownloadStatus.NAO_INICIADO && !_principalStore.temConexao) {
       return _buildSemConexao(provaStore);
@@ -379,7 +345,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
     // Download prova error - Download pausado
     if (provaStore.downloadStatus == EnumDownloadStatus.ERRO) {
-      return _buildPausado(provaStore);
+      return _buildErro(provaStore);
     }
 
     // Baixar prova
@@ -418,6 +384,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildSemConexao(ProvaStore provaStore) {
     return SizedBox(
+      key: Key('card-sem-conexao'),
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -459,6 +426,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildPausado(ProvaStore provaStore) {
     return SizedBox(
+      key: Key('card-download-pausado'),
       width: 350,
       height: 40,
       child: Column(
@@ -505,6 +473,90 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     );
   }
 
+  Widget _buildErro(ProvaStore provaStore) {
+    return SizedBox(
+      key: Key('card-download-erro'),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 10,
+          ),
+          LinearPercentIndicator(
+            lineHeight: 4.0,
+            percent: provaStore.progressoDownload,
+            barRadius: const Radius.circular(16),
+            progressColor: TemaUtil.vermelhoErro,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(5, 5, 0, 0),
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Texto(
+                  "Erro ao baixar prova - ",
+                  color: TemaUtil.vermelhoErro,
+                  bold: true,
+                  texStyle: TemaUtil.temaTextoErroNegrito.copyWith(
+                    fontSize: temaStore.tTexto12,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
+                ),
+                Texto(
+                  "pausado em ${(provaStore.progressoDownload * 100).toStringAsFixed(1)}%",
+                  color: TemaUtil.vermelhoErro,
+                  texStyle: TemaUtil.temaTextoErro.copyWith(
+                    fontSize: temaStore.tTexto12,
+                    fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 16,
+          ),
+          _buildBotaoTentarNovamente(provaStore),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBotaoTentarNovamente(ProvaStore provaStore) {
+    var tamanhoFonte = temaStore.tTexto16;
+    if (kIsMobile) {
+      tamanhoFonte = temaStore.tTexto14;
+    }
+
+    double largura = 256;
+
+    if (temaStore.incrementador >= 22) {
+      largura = 300;
+    }
+
+    return BotaoDefaultWidget(
+      key: Key('botao-baixar-novamente-prova'),
+      largura: kIsTablet ? largura : null,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(Icons.restart_alt, color: Colors.white, size: 18),
+          Texto(
+            " REINICIAR DOWNLOAD",
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: tamanhoFonte,
+          ),
+        ],
+      ),
+      onPressed: () async {
+        await provaStore.iniciarDownload();
+      },
+    );
+  }
+
   Widget _buildBaixarProva(ProvaStore provaStore) {
     var tamanhoFonte = temaStore.tTexto16;
     if (kIsMobile) {
@@ -518,6 +570,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     return BotaoDefaultWidget(
+      key: Key('botao-baixar-prova'),
       largura: kIsTablet ? largura : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -540,6 +593,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildProvaPendente(ProvaStore provaStore) {
     return SizedBox(
+      key: Key('card-prova-pendente'),
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -574,13 +628,16 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildIniciarProva(ProvaStore provaStore) {
     String texto = '';
+    String key = '';
 
     switch (provaStore.prova.status) {
       case EnumProvaStatus.INICIADA:
         texto = "CONTINUAR PROVA";
+        key = "botao-prova-continuar";
         break;
       default:
         texto = "INICIAR PROVA";
+        key = "botao-prova-iniciar";
     }
 
     var tamanhoFonte = 14.0;
@@ -592,6 +649,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     return BotaoDefaultWidget(
+      key: Key(key),
       largura: kIsTablet ? 256 : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -742,8 +800,6 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             height: 10,
           ),
           LinearPercentIndicator(
-            //animation: true,
-            //animationDuration: 1000,
             lineHeight: 4.0,
             percent: prova.progressoDownload,
             barRadius: const Radius.circular(16),
@@ -780,6 +836,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   Widget _buildProvaTurnoIndisponivel(ProvaStore provaStore) {
     return SizedBox(
+      key: Key("prova-indiponivel-turno"),
       width: 350,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -800,6 +857,100 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
           ),
         ],
       ),
+    );
+  }
+
+  _buildBotaoProvaTai(ProvaStore provaStore) {
+    String texto = '';
+    String key = '';
+
+    switch (provaStore.prova.status) {
+      case EnumProvaStatus.INICIADA:
+        texto = "CONTINUAR PROVA";
+        key = "botao-prova-continuar-tai";
+        break;
+      default:
+        texto = "INICIAR PROVA";
+        key = "botao-prova-iniciar-tai";
+    }
+
+    var tamanhoFonte = 14.0;
+    if (kIsMobile) {
+      tamanhoFonte = 14.0;
+      if (temaStore.incrementador >= 22) {
+        tamanhoFonte = 12.0;
+      }
+    }
+
+    return BotaoDefaultWidget(
+      key: Key(key),
+      largura: kIsTablet ? 256 : null,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Texto(
+            '$texto ',
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+            fontSize: tamanhoFonte,
+          ),
+          Icon(Icons.arrow_forward, color: Colors.white, size: 18),
+        ],
+      ),
+      onPressed: () async {
+        await verificarHoraServidor();
+
+        context.push("/prova/tai/${provaStore.id}/carregar");
+      },
+    );
+  }
+
+  Widget _buildQuantidadeItens(ProvaStore provaStore) {
+    if (provaStore.prova.formatoTai) {
+      return SizedBox.shrink();
+    }
+
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: TemaUtil.laranja02.withOpacity(0.1),
+          ),
+          padding: EdgeInsets.all(4),
+          child: Icon(
+            Icons.format_list_numbered,
+            color: TemaUtil.laranja02,
+            size: 24,
+          ),
+        ),
+        SizedBox(
+          width: 5,
+        ),
+        //
+        Observer(builder: (_) {
+          return AdaptativeWidget(
+            mode: temaStore.fonteDoTexto == FonteTipoEnum.OPEN_DYSLEXIC && temaStore.incrementador > 22 && kIsMobile
+                ? AdaptativeWidgetMode.COLUMN
+                : AdaptativeWidgetMode.ROW,
+            children: [
+              Texto(
+                "Quantidade de itens: ",
+                fontSize: 14,
+                color: TemaUtil.preto,
+                fontWeight: FontWeight.normal,
+              ),
+              Texto(
+                provaStore.prova.itensQuantidade.toString(),
+                fontSize: 14,
+                color: TemaUtil.preto,
+                fontWeight: FontWeight.bold,
+              ),
+            ],
+          );
+        }),
+      ],
     );
   }
 }

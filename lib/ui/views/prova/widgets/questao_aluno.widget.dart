@@ -18,7 +18,7 @@ import 'package:html_editor_enhanced/html_editor.dart';
 
 class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   final TemaStore temaStore = ServiceLocator.get<TemaStore>();
-  final controller = HtmlEditorController();
+  final HtmlEditorController controller;
 
   final ProvaStore provaStore;
   final int questaoId;
@@ -28,6 +28,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
 
   QuestaoAlunoWidget({
     Key? key,
+    required this.controller,
     required this.provaStore,
     required this.questaoId,
     required this.questao,
@@ -80,7 +81,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
   }
 
   _buildRespostaConstruida(Questao questao) {
-    RespostaProva? provaResposta = provaStore.respostas.obterResposta(questao.questaoLegadoId);
+    RespostaProva? provaResposta = provaStore.respostas.respostasLocal[questaoId];
 
     return Column(
       children: [
@@ -140,11 +141,13 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
         Container(
           padding: EdgeInsets.symmetric(vertical: 15),
           width: double.infinity,
-          child: Texto(
-            'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length}',
-            textAlign: TextAlign.end,
-            fontSize: 16,
-          ),
+          child: Observer(builder: (_) {
+            return Texto(
+              'Caracteres digitados: ${provaResposta?.resposta?.replaceAll(RegExp(r'<[^>]*>'), '').replaceAll('&nbsp;', ' ').length ?? 0}',
+              textAlign: TextAlign.end,
+              fontSize: 16,
+            );
+          }),
         ),
       ],
     );
@@ -158,6 +161,7 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
         children: alternativas
             .map((e) => _buildAlternativa(
                   e.id,
+                  e.ordem,
                   e.numeracao,
                   questao,
                   e.descricao,
@@ -167,8 +171,8 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
     );
   }
 
-  Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
-    RespostaProva? resposta = provaStore.respostas.obterResposta(questaoId);
+  Widget _buildAlternativa(int idAlternativa, int ordem, String numeracao, Questao questao, String descricao) {
+    RespostaProva? resposta = provaStore.respostas.respostasLocal[questaoId];
 
     return Observer(
       builder: (_) {
@@ -187,12 +191,12 @@ class QuestaoAlunoWidget extends StatelessWidget with Loggable, ProvaViewUtil {
             contentPadding: EdgeInsets.all(0),
             toggleable: true,
             dense: true,
-            value: idAlternativa,
-            groupValue: resposta?.alternativaId,
+            value: ordem,
+            groupValue: resposta?.ordem,
             onChanged: (value) async {
               await provaStore.respostas.definirResposta(
                 questaoId,
-                alternativaId: value,
+                alternativaLegadoId: idAlternativa,
                 tempoQuestao: provaStore.segundos,
               );
             },

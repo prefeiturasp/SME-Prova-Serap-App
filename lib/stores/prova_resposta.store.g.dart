@@ -82,10 +82,10 @@ mixin _$ProvaRespostaStore on _ProvaRespostaStoreBase, Store {
 
   @override
   Future<void> definirResposta(int questaoId,
-      {int? alternativaId, String? textoResposta, int tempoQuestao = 0}) {
+      {int? alternativaLegadoId, String? textoResposta, int tempoQuestao = 0}) {
     return _$definirRespostaAsyncAction.run(() => super.definirResposta(
         questaoId,
-        alternativaId: alternativaId,
+        alternativaLegadoId: alternativaLegadoId,
         textoResposta: textoResposta,
         tempoQuestao: tempoQuestao));
   }

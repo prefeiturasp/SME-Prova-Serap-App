@@ -147,3 +147,10 @@ String formatDuration(Duration d) {
 isFinalDeSemana(DateTime data) {
   return data.weekday == DateTime.saturday || data.weekday == DateTime.sunday;
 }
+
+isDepoisData(DateTime data1, DateTime data2) {
+  var data1tmp = DateTime(data1.year, data1.month, data1.day);
+  var data2tmp = DateTime(data2.year, data2.month, data2.day);
+
+  return data1tmp.isBefore(data2tmp) || data1tmp.isAtSameMomentAs(data2tmp);
+}

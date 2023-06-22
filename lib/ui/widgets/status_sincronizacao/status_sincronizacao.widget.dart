@@ -4,7 +4,6 @@ import 'package:appserap/stores/job.store.dart';
 import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.dialog.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/workers/jobs.enum.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
@@ -40,10 +39,6 @@ class StatusSincronizacao extends StatelessWidget {
               ),
               child: Observer(builder: (_) {
                 var jobStatus = jobStore.statusJob[JobsEnum.SINCRONIZAR_RESPOSTAS];
-
-                if (kDebugMode) {
-                  print('Status - $jobStatus');
-                }
 
                 var status = Icon(
                   Icons.check_circle_rounded,

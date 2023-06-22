@@ -37,7 +37,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
 
     _chewieController = ChewieController(
       allowedScreenSleep: false,
-      allowFullScreen: true,
+      allowFullScreen: false,
       videoPlayerController: _videoPlayerController,
       aspectRatio: _aspectRatio,
       autoInitialize: true,
