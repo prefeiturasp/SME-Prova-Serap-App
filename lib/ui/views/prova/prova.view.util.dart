@@ -144,32 +144,36 @@ abstract class ProvaViewUtil {
     TratamentoImagemEnum tratamentoImagem,
   ) {
     TemaStore temaStore = ServiceLocator.get<TemaStore>();
+    CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';
 
     return Html(
-      extensions: [
+      customRenders: {
         // Audio e vídeo
-        AudioHtmlExtension(),
-        VideoHtmlExtension(),
-
+        audioMatcher(): audioRender(),
+        videoMatcher(): videoRender(),
         // Iframe
-        IframeHtmlExtension(),
-
+        iframeMatcher(): iframeRender(),
         // Math
-        MathHtmlExtension(),
-
+        mathMatcher(): mathRender(),
         // Imagem
-        SvgHtmlExtension(),
-
+        svgTagMatcher(): svgTagRender(),
+        svgDataUriMatcher(): svgDataImageRender(),
+        svgAssetUriMatcher(): svgAssetImageRender(),
+        svgNetworkSourceMatcher(): svgNetworkImageRender(),
         // Tabela
-        TableHtmlExtension(),
-
-        // Image Tap
-        OnImageTapExtension(
-          onImageTap: (src, imgAttributes, element) async {
-            await _exibirImagem(context, src);
-          },
+        tableMatcher(): tableRender(),
+        // Tex
+        texMatcher(): CustomRender.widget(
+          widget: (context, buildChildren) => Math.tex(
+            context.tree.element?.innerHtml ?? '',
+            mathStyle: MathStyle.display,
+            textStyle: context.style.generateTextStyle(),
+            onErrorFallback: (FlutterMathException e) {
+              return Text(e.message);
+            },
+          ),
         ),
-      ],
+      },
       data: tratarArquivos(texto, imagens, tipoImagem, tratamentoImagem),
       style: {
         '*': Style.fromTextStyle(
@@ -184,6 +188,9 @@ abstract class ProvaViewUtil {
               fontFamily: temaStore.fonteDoTexto.nomeFonte,
               color: TemaUtil.pretoSemFoco3),
         ),
+      },
+      onImageTap: (url, _, attributes, element) async {
+        await _exibirImagem(context, url);
       },
     );
   }
