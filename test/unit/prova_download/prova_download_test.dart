@@ -9,7 +9,7 @@ import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/workers/jobs/baixar_prova.job.dart';
-import 'package:chopper/chopper.dart';
+import 'package:chopper/chopper.dart' hide Level;
 import 'package:drift/native.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
