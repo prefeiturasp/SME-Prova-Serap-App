@@ -64,7 +64,6 @@ pipeline {
         steps {
           withCredentials([
             file(credentialsId: 'serap-app-google-service-hom', variable: 'GOOGLEJSONHOM'),
-            //file(credentialsId: 'serap-app-config-hom', variable: 'APPCONFIGHOM'),
             file(credentialsId: 'app-key-jks', variable: 'APPKEYJKS'),
             file(credentialsId: 'app-key-properties', variable: 'APPKEYPROPERTIES'),
             file(credentialsId: 'serap-app-environment-hom', variable: 'ENVHOM'),
@@ -88,17 +87,16 @@ pipeline {
         steps {
           withCredentials([
             file(credentialsId: 'serap-app-google-service-prod', variable: 'GOOGLEJSONPROD'),
-            file(credentialsId: 'serap-app-config-prod', variable: 'APPCONFIGPROD'),
             file(credentialsId: 'app-key-jks', variable: 'APPKEYJKS'),
             file(credentialsId: 'app-key-properties', variable: 'APPKEYPROPERTIES'),
+            file(credentialsId: 'serap-app-environment-prod', variable: 'ENVPROD'),
           ]) {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
-            sh 'cd ${WORKSPACE}'
-            sh 'if [ -d "config" ]; then rm -Rf config; fi'
-            sh 'mkdir config && cp $APPCONFIGPROD config/app_config.json'
-            sh 'cp ${GOOGLEJSONPROD} android/app/google-services.json'
+            sh 'cd ${WORKSPACE}'            
+            sh 'if [ ! -d "android/app/src/prod" ]; then mkdir android/app/src/prod; fi'
+            sh 'cp ${GOOGLEJSONPROD} android/app/src/prod/google-services.json && cp ${ENVPROD} envprod && chmod a+r+x envprod && . $(realpath envprod) && rm -f envprod && touch .env && echo "NOTHINGTODO" > .env'
             sh 'flutter clean'
-            sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release"
+            sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=prod"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
             sh 'if [ -d "config" ]; then rm -Rf config; fi'
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
