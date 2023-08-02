@@ -31,10 +31,10 @@ pipeline {
         steps {
           withCredentials([ file(credentialsId: 'serap-app-environment-dev', variable: 'ENVDEV')]) {
             script {
-	            sh 'if [ -d "envdev" ]; then rm -f envdev; fi'
+	            sh 'if [ -f "envdev" ]; then rm -f envdev; fi'
               sh 'cp ${ENVDEV} envdev'
               sh "sed 's/^export //' envdev > .env"
-	            sh 'if [ -d "envdev" ]; then rm -f envdev; fi'
+	            sh 'if [ -f "envdev" ]; then rm -f envdev; fi'
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-prova-serap-front"
               dockerImage1 = docker.build(imagename1, "-f Dockerfile.flutter .")
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
@@ -57,10 +57,10 @@ pipeline {
         steps {
           withCredentials([ file(credentialsId: 'serap-app-environment-hom', variable: 'ENVHOM')]) {
             script {
-	            sh 'if [ -d "envhom" ]; then rm -f envhom; fi'
+	            sh 'if [ -f "envhom" ]; then rm -f envhom; fi'
               sh 'cp ${ENVHOM} envhom'
               sh "sed 's/^export //' envhom > .env"
-	            sh 'if [ -d "envhom" ]; then rm -f envhom; fi'
+	            sh 'if [ -f "envhom" ]; then rm -f envhom; fi'
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-prova-serap-front"
               dockerImage1 = docker.build(imagename1, "-f Dockerfile.flutter .")
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
@@ -83,10 +83,10 @@ pipeline {
         steps {
           withCredentials([ file(credentialsId: 'serap-app-environment-prod', variable: 'ENVPROD')]) {
             script {
-              sh 'if [ -d "envprod" ]; then rm -f envprod; fi'
+              sh 'if [ -f "envprod" ]; then rm -f envprod; fi'
               sh 'cp ${ENVPROD} envprod'
               sh "sed 's/^export //' envprod > .env"
-              sh 'if [ -d "envprod" ]; then rm -f envprod; fi'
+              sh 'if [ -f "envprod" ]; then rm -f envprod; fi'
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-prova-serap-front"
               dockerImage1 = docker.build(imagename1, "-f Dockerfile.flutter .")
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
@@ -105,14 +105,19 @@ pipeline {
             steps {
                 script{
                     withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
+                            sh('if [ -f '+"$home"+'/.kube/config ];then rm -f '+"$home"+'/.kube/config; fi')
                             sh('cp $config '+"$home"+'/.kube/config')
                             sh 'kubectl rollout restart deployment/sme-prova-serap-front -n sme-serap-estudante'
-                            sh('rm -f '+"$home"+'/.kube/config')
+                            sh('if [ -f '+"$home"+'/.kube/config ];then rm -f '+"$home"+'/.kube/config; fi')
                     }
                 }
             }           
         }    
     }
+
+  post {
+    always { sh('if [ -f '+"$home"+'/.kube/config ];then rm -f '+"$home"+'/.kube/config; fi')}
+  }
 }
 
 def getKubeconf(branchName) {
