@@ -1,6 +1,6 @@
 import 'package:logging/logging.dart';
 
-abstract class Loggable<T> {
+mixin class Loggable<T> {
   static Logger logName(String name) => Logger(name);
 
   void Function(Object?, [Object?, StackTrace?]) get shout {

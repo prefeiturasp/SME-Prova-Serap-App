@@ -233,8 +233,8 @@ class MockProvaService extends _i1.Mock implements _i3.ProvaService {
               #getProvasAnteriores,
               [],
             ),
-            returnValue: _i4.Future<
-                    _i2.Response<List<_i9.ProvaAnteriorResponseDTO>>>.value(
+            returnValue: _i4
+                .Future<_i2.Response<List<_i9.ProvaAnteriorResponseDTO>>>.value(
                 _FakeResponse_2<List<_i9.ProvaAnteriorResponseDTO>>(
               this,
               Invocation.method(

@@ -12,7 +12,7 @@ import 'package:appserap/utils/firebase.util.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:workmanager/workmanager.dart';
 
-class SincronizarRespostasJob with Job, Loggable, Database {
+class SincronizarRespostasJob extends Job with Loggable, Database {
   @override
   JobConfig configuration() {
     return JobConfig(

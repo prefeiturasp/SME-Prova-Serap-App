@@ -22,7 +22,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:http/http.dart';
 import 'package:photo_view/photo_view.dart';
 
-abstract class ProvaViewUtil {
+mixin class ProvaViewUtil {
   buildTratamentoImagem(ProvaStore provaStore, List<Arquivo> imagens, Questao questao, List<Alternativa> alternativas) {
     if (imagens.isNotEmpty) {
       return Center(
