@@ -145,8 +145,8 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
         confirmText: "Atualizar",
         backgroundDownload: false,
         allowSkip: false,
-        callBack: (versionName, versionCode, contentText, minSupport, downloadUrl) {
-          info("Ultima Versão: $versionName Build: $versionCode");
+        callBack: (UpdateModel model) {
+          info("Ultima Versão: ${model.versionName} Build: ${model.versionCode}");
         },
         controller: controller,
       ).check();
