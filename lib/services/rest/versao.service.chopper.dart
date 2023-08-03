@@ -19,33 +19,46 @@ class _$VersaoService extends VersaoService {
   @override
   Future<Response<String>> getVersao() {
     final Uri $url = Uri.parse('/v1/versoes');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<String, String>($request);
   }
 
   @override
   Future<Response<String>> getVersaoFront() {
     final Uri $url = Uri.parse('/v1/versoes/front');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<String, String>($request);
   }
 
   @override
   Future<Response<VersaoAtualizacaoResponseDTO>> getAtualizacao() {
     final Uri $url = Uri.parse('/v1/versoes/atualizacao');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<VersaoAtualizacaoResponseDTO,
         VersaoAtualizacaoResponseDTO>($request);
   }
 
   @override
-  Future<Response<bool>> informarVersao(
-      {required String chaveAPI,
-      required int versaoCodigo,
-      required String versaoDescricao,
-      String? dispositivoImei,
-      required String atualizadoEm,
-      String? dispositivoId}) {
+  Future<Response<bool>> informarVersao({
+    required String chaveAPI,
+    required int versaoCodigo,
+    required String versaoDescricao,
+    String? dispositivoImei,
+    required String atualizadoEm,
+    String? dispositivoId,
+  }) {
     final Uri $url = Uri.parse('/v1/versoes/dispositivo');
     final Map<String, String> $headers = {
       'chave-api': chaveAPI,
@@ -55,10 +68,15 @@ class _$VersaoService extends VersaoService {
       'versaoDescricao': versaoDescricao,
       'dispositivoImei': dispositivoImei,
       'atualizadoEm': atualizadoEm,
-      'dispositivoId': dispositivoId
+      'dispositivoId': dispositivoId,
     };
-    final Request $request =
-        Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+      headers: $headers,
+    );
     return client.send<bool, bool>($request);
   }
 }

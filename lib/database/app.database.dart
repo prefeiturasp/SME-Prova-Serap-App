@@ -85,13 +85,13 @@ part 'app.database.g.dart';
   ],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super.connect(impl.connect()) {
+  AppDatabase() : super(impl.connect()) {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
   }
 
   AppDatabase.executor(QueryExecutor e) : super(e);
 
-  AppDatabase.connect(DatabaseConnection connection) : super.connect(connection);
+  AppDatabase.connect(DatabaseConnection connection) : super(connection);
 
   @override
   int get schemaVersion => 27;

@@ -551,6 +551,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
   final Value<bool> formatoTaiVoltarItemAnterior;
   final Value<bool> exibirVideo;
   final Value<bool> exibirAudio;
+  final Value<int> rowid;
   const ProvasDbCompanion({
     this.id = const Value.absent(),
     this.descricao = const Value.absent(),
@@ -579,6 +580,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.formatoTaiVoltarItemAnterior = const Value.absent(),
     this.exibirVideo = const Value.absent(),
     this.exibirAudio = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   ProvasDbCompanion.insert({
     required int id,
@@ -608,6 +610,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     this.formatoTaiVoltarItemAnterior = const Value.absent(),
     this.exibirVideo = const Value.absent(),
     this.exibirAudio = const Value.absent(),
+    this.rowid = const Value.absent(),
   })  : id = Value(id),
         descricao = Value(descricao),
         downloadStatus = Value(downloadStatus),
@@ -646,6 +649,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     Expression<bool>? formatoTaiVoltarItemAnterior,
     Expression<bool>? exibirVideo,
     Expression<bool>? exibirAudio,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -682,6 +686,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
         'formato_tai_voltar_item_anterior': formatoTaiVoltarItemAnterior,
       if (exibirVideo != null) 'exibir_video': exibirVideo,
       if (exibirAudio != null) 'exibir_audio': exibirAudio,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -712,7 +717,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
       Value<bool>? formatoTaiAvancarSemResponder,
       Value<bool>? formatoTaiVoltarItemAnterior,
       Value<bool>? exibirVideo,
-      Value<bool>? exibirAudio}) {
+      Value<bool>? exibirAudio,
+      Value<int>? rowid}) {
     return ProvasDbCompanion(
       id: id ?? this.id,
       descricao: descricao ?? this.descricao,
@@ -745,6 +751,7 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
           formatoTaiVoltarItemAnterior ?? this.formatoTaiVoltarItemAnterior,
       exibirVideo: exibirVideo ?? this.exibirVideo,
       exibirAudio: exibirAudio ?? this.exibirAudio,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -841,6 +848,9 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
     if (exibirAudio.present) {
       map['exibir_audio'] = Variable<bool>(exibirAudio.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -876,7 +886,8 @@ class ProvasDbCompanion extends UpdateCompanion<Prova> {
           ..write(
               'formatoTaiVoltarItemAnterior: $formatoTaiVoltarItemAnterior, ')
           ..write('exibirVideo: $exibirVideo, ')
-          ..write('exibirAudio: $exibirAudio')
+          ..write('exibirAudio: $exibirAudio, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -2533,6 +2544,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
   final Value<EnumDownloadStatus> downloadStatus;
   final Value<DateTime> dataHoraInicio;
   final Value<DateTime?> dataHoraFim;
+  final Value<int> rowid;
   const DownloadProvasDbCompanion({
     this.id = const Value.absent(),
     this.provaId = const Value.absent(),
@@ -2542,6 +2554,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     this.downloadStatus = const Value.absent(),
     this.dataHoraInicio = const Value.absent(),
     this.dataHoraFim = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   DownloadProvasDbCompanion.insert({
     required int id,
@@ -2552,6 +2565,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     required EnumDownloadStatus downloadStatus,
     required DateTime dataHoraInicio,
     this.dataHoraFim = const Value.absent(),
+    this.rowid = const Value.absent(),
   })  : id = Value(id),
         provaId = Value(provaId),
         tipo = Value(tipo),
@@ -2566,6 +2580,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     Expression<int>? downloadStatus,
     Expression<DateTime>? dataHoraInicio,
     Expression<DateTime>? dataHoraFim,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2576,6 +2591,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
       if (downloadStatus != null) 'download_status': downloadStatus,
       if (dataHoraInicio != null) 'data_hora_inicio': dataHoraInicio,
       if (dataHoraFim != null) 'data_hora_fim': dataHoraFim,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -2587,7 +2603,8 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
       Value<EnumDownloadTipo>? tipo,
       Value<EnumDownloadStatus>? downloadStatus,
       Value<DateTime>? dataHoraInicio,
-      Value<DateTime?>? dataHoraFim}) {
+      Value<DateTime?>? dataHoraFim,
+      Value<int>? rowid}) {
     return DownloadProvasDbCompanion(
       id: id ?? this.id,
       provaId: provaId ?? this.provaId,
@@ -2597,6 +2614,7 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
       downloadStatus: downloadStatus ?? this.downloadStatus,
       dataHoraInicio: dataHoraInicio ?? this.dataHoraInicio,
       dataHoraFim: dataHoraFim ?? this.dataHoraFim,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -2630,6 +2648,9 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
     if (dataHoraFim.present) {
       map['data_hora_fim'] = Variable<DateTime>(dataHoraFim.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -2643,7 +2664,8 @@ class DownloadProvasDbCompanion extends UpdateCompanion<DownloadProvaDb> {
           ..write('tipo: $tipo, ')
           ..write('downloadStatus: $downloadStatus, ')
           ..write('dataHoraInicio: $dataHoraInicio, ')
-          ..write('dataHoraFim: $dataHoraFim')
+          ..write('dataHoraFim: $dataHoraFim, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -2717,30 +2739,36 @@ class $ProvaAlunoTableTable extends ProvaAlunoTable
 class ProvaAlunoTableCompanion extends UpdateCompanion<ProvaAluno> {
   final Value<String> codigoEOL;
   final Value<int> provaId;
+  final Value<int> rowid;
   const ProvaAlunoTableCompanion({
     this.codigoEOL = const Value.absent(),
     this.provaId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   ProvaAlunoTableCompanion.insert({
     required String codigoEOL,
     required int provaId,
+    this.rowid = const Value.absent(),
   })  : codigoEOL = Value(codigoEOL),
         provaId = Value(provaId);
   static Insertable<ProvaAluno> custom({
     Expression<String>? codigoEOL,
     Expression<int>? provaId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (codigoEOL != null) 'codigo_e_o_l': codigoEOL,
       if (provaId != null) 'prova_id': provaId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   ProvaAlunoTableCompanion copyWith(
-      {Value<String>? codigoEOL, Value<int>? provaId}) {
+      {Value<String>? codigoEOL, Value<int>? provaId, Value<int>? rowid}) {
     return ProvaAlunoTableCompanion(
       codigoEOL: codigoEOL ?? this.codigoEOL,
       provaId: provaId ?? this.provaId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -2753,6 +2781,9 @@ class ProvaAlunoTableCompanion extends UpdateCompanion<ProvaAluno> {
     if (provaId.present) {
       map['prova_id'] = Variable<int>(provaId.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -2760,7 +2791,8 @@ class ProvaAlunoTableCompanion extends UpdateCompanion<ProvaAluno> {
   String toString() {
     return (StringBuffer('ProvaAlunoTableCompanion(')
           ..write('codigoEOL: $codigoEOL, ')
-          ..write('provaId: $provaId')
+          ..write('provaId: $provaId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -2879,12 +2911,14 @@ class ProvaCadernoTableCompanion extends UpdateCompanion<ProvaCaderno> {
   final Value<int> provaId;
   final Value<String> caderno;
   final Value<int> ordem;
+  final Value<int> rowid;
   const ProvaCadernoTableCompanion({
     this.questaoId = const Value.absent(),
     this.questaoLegadoId = const Value.absent(),
     this.provaId = const Value.absent(),
     this.caderno = const Value.absent(),
     this.ordem = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   ProvaCadernoTableCompanion.insert({
     required int questaoId,
@@ -2892,6 +2926,7 @@ class ProvaCadernoTableCompanion extends UpdateCompanion<ProvaCaderno> {
     required int provaId,
     required String caderno,
     required int ordem,
+    this.rowid = const Value.absent(),
   })  : questaoId = Value(questaoId),
         questaoLegadoId = Value(questaoLegadoId),
         provaId = Value(provaId),
@@ -2903,6 +2938,7 @@ class ProvaCadernoTableCompanion extends UpdateCompanion<ProvaCaderno> {
     Expression<int>? provaId,
     Expression<String>? caderno,
     Expression<int>? ordem,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (questaoId != null) 'questao_id': questaoId,
@@ -2910,6 +2946,7 @@ class ProvaCadernoTableCompanion extends UpdateCompanion<ProvaCaderno> {
       if (provaId != null) 'prova_id': provaId,
       if (caderno != null) 'caderno': caderno,
       if (ordem != null) 'ordem': ordem,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -2918,13 +2955,15 @@ class ProvaCadernoTableCompanion extends UpdateCompanion<ProvaCaderno> {
       Value<int>? questaoLegadoId,
       Value<int>? provaId,
       Value<String>? caderno,
-      Value<int>? ordem}) {
+      Value<int>? ordem,
+      Value<int>? rowid}) {
     return ProvaCadernoTableCompanion(
       questaoId: questaoId ?? this.questaoId,
       questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
       provaId: provaId ?? this.provaId,
       caderno: caderno ?? this.caderno,
       ordem: ordem ?? this.ordem,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -2946,6 +2985,9 @@ class ProvaCadernoTableCompanion extends UpdateCompanion<ProvaCaderno> {
     if (ordem.present) {
       map['ordem'] = Variable<int>(ordem.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -2956,7 +2998,8 @@ class ProvaCadernoTableCompanion extends UpdateCompanion<ProvaCaderno> {
           ..write('questaoLegadoId: $questaoLegadoId, ')
           ..write('provaId: $provaId, ')
           ..write('caderno: $caderno, ')
-          ..write('ordem: $ordem')
+          ..write('ordem: $ordem, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -3032,30 +3075,38 @@ class $QuestaoArquivoTableTable extends QuestaoArquivoTable
 class QuestaoArquivoTableCompanion extends UpdateCompanion<QuestaoArquivo> {
   final Value<int> questaoLegadoId;
   final Value<int> arquivoLegadoId;
+  final Value<int> rowid;
   const QuestaoArquivoTableCompanion({
     this.questaoLegadoId = const Value.absent(),
     this.arquivoLegadoId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   QuestaoArquivoTableCompanion.insert({
     required int questaoLegadoId,
     required int arquivoLegadoId,
+    this.rowid = const Value.absent(),
   })  : questaoLegadoId = Value(questaoLegadoId),
         arquivoLegadoId = Value(arquivoLegadoId);
   static Insertable<QuestaoArquivo> custom({
     Expression<int>? questaoLegadoId,
     Expression<int>? arquivoLegadoId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (questaoLegadoId != null) 'questao_legado_id': questaoLegadoId,
       if (arquivoLegadoId != null) 'arquivo_legado_id': arquivoLegadoId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   QuestaoArquivoTableCompanion copyWith(
-      {Value<int>? questaoLegadoId, Value<int>? arquivoLegadoId}) {
+      {Value<int>? questaoLegadoId,
+      Value<int>? arquivoLegadoId,
+      Value<int>? rowid}) {
     return QuestaoArquivoTableCompanion(
       questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
       arquivoLegadoId: arquivoLegadoId ?? this.arquivoLegadoId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -3068,6 +3119,9 @@ class QuestaoArquivoTableCompanion extends UpdateCompanion<QuestaoArquivo> {
     if (arquivoLegadoId.present) {
       map['arquivo_legado_id'] = Variable<int>(arquivoLegadoId.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -3075,7 +3129,8 @@ class QuestaoArquivoTableCompanion extends UpdateCompanion<QuestaoArquivo> {
   String toString() {
     return (StringBuffer('QuestaoArquivoTableCompanion(')
           ..write('questaoLegadoId: $questaoLegadoId, ')
-          ..write('arquivoLegadoId: $arquivoLegadoId')
+          ..write('arquivoLegadoId: $arquivoLegadoId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -3196,12 +3251,14 @@ class JobsTableCompanion extends UpdateCompanion<Job> {
   final Value<EnumJobStatus?> statusUltimaExecucao;
   final Value<DateTime?> ultimaExecucao;
   final Value<int> intervalo;
+  final Value<int> rowid;
   const JobsTableCompanion({
     this.id = const Value.absent(),
     this.nome = const Value.absent(),
     this.statusUltimaExecucao = const Value.absent(),
     this.ultimaExecucao = const Value.absent(),
     this.intervalo = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   JobsTableCompanion.insert({
     required String id,
@@ -3209,6 +3266,7 @@ class JobsTableCompanion extends UpdateCompanion<Job> {
     this.statusUltimaExecucao = const Value.absent(),
     this.ultimaExecucao = const Value.absent(),
     required int intervalo,
+    this.rowid = const Value.absent(),
   })  : id = Value(id),
         nome = Value(nome),
         intervalo = Value(intervalo);
@@ -3218,6 +3276,7 @@ class JobsTableCompanion extends UpdateCompanion<Job> {
     Expression<int>? statusUltimaExecucao,
     Expression<DateTime>? ultimaExecucao,
     Expression<int>? intervalo,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -3226,6 +3285,7 @@ class JobsTableCompanion extends UpdateCompanion<Job> {
         'status_ultima_execucao': statusUltimaExecucao,
       if (ultimaExecucao != null) 'ultima_execucao': ultimaExecucao,
       if (intervalo != null) 'intervalo': intervalo,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -3234,13 +3294,15 @@ class JobsTableCompanion extends UpdateCompanion<Job> {
       Value<String>? nome,
       Value<EnumJobStatus?>? statusUltimaExecucao,
       Value<DateTime?>? ultimaExecucao,
-      Value<int>? intervalo}) {
+      Value<int>? intervalo,
+      Value<int>? rowid}) {
     return JobsTableCompanion(
       id: id ?? this.id,
       nome: nome ?? this.nome,
       statusUltimaExecucao: statusUltimaExecucao ?? this.statusUltimaExecucao,
       ultimaExecucao: ultimaExecucao ?? this.ultimaExecucao,
       intervalo: intervalo ?? this.intervalo,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -3264,6 +3326,9 @@ class JobsTableCompanion extends UpdateCompanion<Job> {
     if (intervalo.present) {
       map['intervalo'] = Variable<int>(intervalo.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -3274,7 +3339,8 @@ class JobsTableCompanion extends UpdateCompanion<Job> {
           ..write('nome: $nome, ')
           ..write('statusUltimaExecucao: $statusUltimaExecucao, ')
           ..write('ultimaExecucao: $ultimaExecucao, ')
-          ..write('intervalo: $intervalo')
+          ..write('intervalo: $intervalo, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -3439,6 +3505,7 @@ class ProvaQuestaoAlternativaTableCompanion
   final Value<int> provaId;
   final Value<String> caderno;
   final Value<int> ordem;
+  final Value<int> rowid;
   const ProvaQuestaoAlternativaTableCompanion({
     this.questaoId = const Value.absent(),
     this.questaoLegadoId = const Value.absent(),
@@ -3447,6 +3514,7 @@ class ProvaQuestaoAlternativaTableCompanion
     this.provaId = const Value.absent(),
     this.caderno = const Value.absent(),
     this.ordem = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   ProvaQuestaoAlternativaTableCompanion.insert({
     required int questaoId,
@@ -3456,6 +3524,7 @@ class ProvaQuestaoAlternativaTableCompanion
     required int provaId,
     required String caderno,
     required int ordem,
+    this.rowid = const Value.absent(),
   })  : questaoId = Value(questaoId),
         questaoLegadoId = Value(questaoLegadoId),
         alternativaId = Value(alternativaId),
@@ -3471,6 +3540,7 @@ class ProvaQuestaoAlternativaTableCompanion
     Expression<int>? provaId,
     Expression<String>? caderno,
     Expression<int>? ordem,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (questaoId != null) 'questao_id': questaoId,
@@ -3481,6 +3551,7 @@ class ProvaQuestaoAlternativaTableCompanion
       if (provaId != null) 'prova_id': provaId,
       if (caderno != null) 'caderno': caderno,
       if (ordem != null) 'ordem': ordem,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -3491,7 +3562,8 @@ class ProvaQuestaoAlternativaTableCompanion
       Value<int>? alternativaLegadoId,
       Value<int>? provaId,
       Value<String>? caderno,
-      Value<int>? ordem}) {
+      Value<int>? ordem,
+      Value<int>? rowid}) {
     return ProvaQuestaoAlternativaTableCompanion(
       questaoId: questaoId ?? this.questaoId,
       questaoLegadoId: questaoLegadoId ?? this.questaoLegadoId,
@@ -3500,6 +3572,7 @@ class ProvaQuestaoAlternativaTableCompanion
       provaId: provaId ?? this.provaId,
       caderno: caderno ?? this.caderno,
       ordem: ordem ?? this.ordem,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -3527,6 +3600,9 @@ class ProvaQuestaoAlternativaTableCompanion
     if (ordem.present) {
       map['ordem'] = Variable<int>(ordem.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -3539,7 +3615,8 @@ class ProvaQuestaoAlternativaTableCompanion
           ..write('alternativaLegadoId: $alternativaLegadoId, ')
           ..write('provaId: $provaId, ')
           ..write('caderno: $caderno, ')
-          ..write('ordem: $ordem')
+          ..write('ordem: $ordem, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -3547,7 +3624,6 @@ class ProvaQuestaoAlternativaTableCompanion
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
-  _$AppDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $ProvasDbTable provasDb = $ProvasDbTable(this);
   late final $QuestoesDbTable questoesDb = $QuestoesDbTable(this);
   late final $AlternativasDbTable alternativasDb = $AlternativasDbTable(this);

@@ -17,12 +17,13 @@ class _$LogService extends LogService {
   final definitionType = LogService;
 
   @override
-  Future<Response<bool>> logarNecessidadeDeUsoDaUrl(
-      {required String chaveAPI,
-      required String prova,
-      required String aluno,
-      required String escola,
-      required String html}) {
+  Future<Response<bool>> logarNecessidadeDeUsoDaUrl({
+    required String chaveAPI,
+    required String prova,
+    required String aluno,
+    required String escola,
+    required String html,
+  }) {
     final Uri $url = Uri.parse('/v1/imagemLog');
     final Map<String, String> $headers = {
       'chave-api': chaveAPI,
@@ -31,10 +32,15 @@ class _$LogService extends LogService {
       'prova': prova,
       'aluno': aluno,
       'escola': escola,
-      'html': html
+      'html': html,
     };
-    final Request $request =
-        Request('POST', $url, client.baseUrl, body: $body, headers: $headers);
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+      headers: $headers,
+    );
     return client.send<bool, bool>($request);
   }
 }

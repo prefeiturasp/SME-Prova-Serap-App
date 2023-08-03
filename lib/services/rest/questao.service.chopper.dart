@@ -19,7 +19,11 @@ class _$QuestaoService extends QuestaoService {
   @override
   Future<Response<QuestaoResponseDTO>> getQuestao({required int idQuestao}) {
     final Uri $url = Uri.parse('/v1/questoes/${idQuestao}');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<QuestaoResponseDTO, QuestaoResponseDTO>($request);
   }
 
@@ -28,8 +32,12 @@ class _$QuestaoService extends QuestaoService {
       {required List<int> ids}) {
     final Uri $url = Uri.parse('/v1/questoes/completas');
     final Map<String, dynamic> $params = <String, dynamic>{'ids': ids};
-    final Request $request =
-        Request('GET', $url, client.baseUrl, parameters: $params);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
     return client.send<List<QuestaoCompletaResponseDTO>,
         QuestaoCompletaResponseDTO>($request);
   }
@@ -39,8 +47,12 @@ class _$QuestaoService extends QuestaoService {
       getQuestaoCompletaLegado({required List<int> idsLegado}) {
     final Uri $url = Uri.parse('/v1/questoes/completas-legado');
     final Map<String, dynamic> $params = <String, dynamic>{'ids': idsLegado};
-    final Request $request =
-        Request('GET', $url, client.baseUrl, parameters: $params);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
     return client.send<List<QuestaoDetalhesLegadoResponseDTO>,
         QuestaoDetalhesLegadoResponseDTO>($request);
   }
