@@ -4,11 +4,11 @@ import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/questao_resultado_detalhes_view.store.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_aluno_resposta.widget.dart';
-import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/ui/widgets/player_audio/player_audio_widget.dart';
 import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
@@ -188,12 +188,12 @@ class _QuestaoResultadoDetalhesViewState
     }
 
     if (kIsWeb) {
-      return AudioPlayerWidget(
+      return PlayerAudioWidget(
         audioBytes: arquivoAudio,
       );
     } else {
       if (arquivoAudioDb != null) {
-        return AudioPlayerWidget(
+        return PlayerAudioWidget(
           audioPath: arquivoAudioDb!.path,
         );
       }
@@ -293,7 +293,7 @@ class _QuestaoResultadoDetalhesViewState
   }
 
   bool exibirAudio() {
-    if(store.prova!.exibirAudio){
+    if (store.prova!.exibirAudio) {
       if (arquivoAudioDb != null) {
         return true;
       }
@@ -303,7 +303,7 @@ class _QuestaoResultadoDetalhesViewState
   }
 
   bool exibirVideo() {
-    if(store.prova!.exibirVideo){
+    if (store.prova!.exibirVideo) {
       if (arquivoVideoDb != null) {
         return true;
       }

@@ -11,6 +11,7 @@ var kIsTablet = kDeviceType == EnumTipoDispositivo.TABLET;
 
 class TelaAdaptativaUtil {
   setup() {
+    // ignore: deprecated_member_use
     final tela = MediaQueryData.fromWindow(WidgetsBinding.instance.window);
     if (kIsWeb) {
       kDeviceType = EnumTipoDispositivo.WEB;

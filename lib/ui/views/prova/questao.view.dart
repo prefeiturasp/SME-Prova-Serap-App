@@ -14,12 +14,12 @@ import 'package:appserap/stores/questao.store.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_aluno.widget.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
-import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/player_audio/player_audio_widget.dart';
 import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.widget.dart';
 import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
 import 'package:appserap/utils/file.util.dart';
@@ -119,7 +119,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     await _carregarArquivos();
   }
 
-  _carregarProva()  async {
+  _carregarProva() async {
     questao = await db.questaoDao.getByProvaEOrdem(
       widget.idProva,
       provaStore.caderno,
@@ -298,12 +298,12 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     }
 
     if (kIsWeb) {
-      return AudioPlayerWidget(
+      return PlayerAudioWidget(
         audioBytes: arquivoAudio,
       );
     } else {
       if (arquivoAudioDb != null) {
-        return AudioPlayerWidget(
+        return PlayerAudioWidget(
           audioPath: arquivoAudioDb!.path,
         );
       }
@@ -444,7 +444,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   bool exibirAudio() {
-    if(provaStore.prova.exibirAudio){
+    if (provaStore.prova.exibirAudio) {
       if (arquivoAudioDb != null) {
         return true;
       }
@@ -454,7 +454,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
   }
 
   bool exibirVideo() {
-    if(provaStore.prova.exibirVideo){
+    if (provaStore.prova.exibirVideo) {
       if (arquivoVideoDb != null) {
         return true;
       }

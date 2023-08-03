@@ -114,7 +114,7 @@ dependencies:
   url_launcher: ^6.1.2
 
   # Reprodução
-  flutter_sound: ^9.2.13
+  audioplayers: ^4.1.0
 
   # Video player
   chewie: ^1.2.2
