@@ -32,7 +32,7 @@ class SincronizarRespostasJob with Job, Loggable, Database {
     var respostasParaSincronizar = await carregaRespostasNaoSincronizadas();
     fine('${respostasParaSincronizar.length} respostas ainda não sincronizadas');
 
-    if (respostasParaSincronizar.isNotEmpty && !await InternetConnectionCheckerPlus().hasConnection) {
+    if (respostasParaSincronizar.isNotEmpty && !await InternetConnection().hasInternetAccess) {
       info('Falha na sincronização. Sem Conexão....');
       return;
     }

@@ -28,9 +28,9 @@ class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
 abstract class _PrincipalStoreBase with Store, Loggable {
   _PrincipalStoreBase() {
-    InternetConnectionCheckerPlus().hasConnection.then((value) => temConexao = value);
-    InternetConnectionCheckerPlus().onStatusChange.listen((InternetConnectionStatus event) {
-      if (event == InternetConnectionStatus.connected) {
+    InternetConnection().hasInternetAccess.then((value) => temConexao = value);
+    InternetConnection().onStatusChange.listen((InternetStatus event) {
+      if (event == InternetStatus.connected) {
         temConexao = true;
       } else {
         temConexao = false;
@@ -42,7 +42,6 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
   final usuario = GetIt.I.get<UsuarioStore>();
 
-
   @observable
   String dispositivoId = "Indefinido";
 
@@ -50,8 +49,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     await obterVersaoDoApp();
   }
 
-  void dispose() {
-  }
+  void dispose() {}
 
   @observable
   String idDispositivo = "";

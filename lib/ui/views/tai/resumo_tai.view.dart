@@ -11,7 +11,7 @@ import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../../main.ioc.dart';
 import '../../../main.route.dart';
@@ -127,7 +127,7 @@ class _ResumoTaiViewState extends BaseStateWidget<ResumoTaiView, ResumoTaiViewSt
                                   try {
                                     store.botaoFinalizarOcupado = true;
 
-                                    await Wakelock.disable();
+                                    await WakelockPlus.disable();
 
                                     ServiceLocator.get<AppRouter>().router.go("/");
                                   } catch (e, stack) {

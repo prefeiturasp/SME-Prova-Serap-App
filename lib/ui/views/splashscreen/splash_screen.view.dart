@@ -19,7 +19,7 @@ import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:updater/updater.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class SplashScreenView extends StatefulWidget {
   const SplashScreenView({Key? key}) : super(key: key);
@@ -50,7 +50,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
   }
 
   Future<void> carregarInformacoes() async {
-    await Wakelock.disable();
+    await WakelockPlus.disable();
 
     await GetIt.instance.allReady();
     await _principalStore.setup();

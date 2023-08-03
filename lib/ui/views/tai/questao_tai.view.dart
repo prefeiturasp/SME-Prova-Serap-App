@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class QuestaoTaiView extends BaseStatefulWidget {
   final int provaId;
@@ -64,7 +64,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
         bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
 
         if (voltar) {
-          await Wakelock.disable();
+          await WakelockPlus.disable();
 
           context.go("/");
         }
