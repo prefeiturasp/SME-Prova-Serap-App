@@ -106,6 +106,11 @@ mixin class ProvaViewUtil {
       return "";
     }
 
+    // Remocao fonte e tamanho do texto
+    texto = texto.replaceAll(RegExp(r"font-family:[^;']*(;)?"), '');
+    texto = texto.replaceAll(RegExp(r"font-size:[^;']*(;)?"), '');
+
+    // Remocao quebra desnecessaria
     texto = texto.replaceAll('<br></p>', '</p>');
 
     if (tipoImagem == EnumTipoImagem.QUESTAO) {

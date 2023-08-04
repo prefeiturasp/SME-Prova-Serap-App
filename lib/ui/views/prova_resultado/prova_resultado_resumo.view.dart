@@ -331,7 +331,12 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
       },
       child: SvgPicture.asset(
         AssetsUtil.iconeRevisarQuestao,
-        color: !store.prova!.apresentarResultadosPorItem ? TemaUtil.cinza : null,
+        colorFilter: !store.prova!.apresentarResultadosPorItem
+            ? ColorFilter.mode(
+                TemaUtil.cinza,
+                BlendMode.srcIn,
+              )
+            : null,
       ),
     );
   }

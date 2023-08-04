@@ -1,7 +1,11 @@
 import 'dart:async';
 
+import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/main.ioc.dart';
+import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class FlutterWidgetFromHtml extends StatefulWidget {
@@ -19,17 +23,21 @@ class FlutterWidgetFromHtml extends StatefulWidget {
 }
 
 class _FlutterWidgetFromHtmlState extends State<FlutterWidgetFromHtml> {
+  TemaStore temaStore = ServiceLocator();
+
   @override
   Widget build(BuildContext context) {
-    return HtmlWidget(
-      widget.html,
-      onTapImage: (ImageMetadata imageMetadata) async {
-        await widget.onImageTap(imageMetadata.sources.first.url);
-      },
-      textStyle: TextStyle(
-        color: TemaUtil.pretoSemFoco3,
-        fontSize: 16,
-      ),
-    );
+    return Observer(builder: (_) {
+      return HtmlWidget(
+        widget.html,
+        onTapImage: (ImageMetadata imageMetadata) async {
+          await widget.onImageTap(imageMetadata.sources.first.url);
+        },
+        textStyle: TextStyle(
+          fontSize: temaStore.tTexto16,
+          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+        ),
+      );
+    });
   }
 }
