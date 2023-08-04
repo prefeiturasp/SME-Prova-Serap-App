@@ -71,7 +71,7 @@ setUserIdentifier(String identifier) async {
 
 inscreverTurmaFirebase(String ano) async {
   try {
-    if (!await InternetConnectionCheckerPlus().hasConnection) {
+    if (!await InternetConnection().hasInternetAccess) {
       return;
     }
 
@@ -100,7 +100,7 @@ inscreverTurmaFirebase(String ano) async {
 
 desinscreverTurmaFirebase(String ano) async {
   try {
-    if (!await InternetConnectionCheckerPlus().hasConnection) {
+    if (!await InternetConnection().hasInternetAccess) {
       return;
     }
 

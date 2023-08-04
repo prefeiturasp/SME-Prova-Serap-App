@@ -21,7 +21,12 @@ class _$AutenticacaoAdminService extends AutenticacaoAdminService {
       {required String codigo}) {
     final Uri $url = Uri.parse('/v1/admin/autenticacao/validar');
     final $body = <String, dynamic>{'codigo': codigo};
-    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
     return client
         .send<AutenticacaoResponseDTO, AutenticacaoResponseDTO>($request);
   }
@@ -30,7 +35,12 @@ class _$AutenticacaoAdminService extends AutenticacaoAdminService {
   Future<Response<AutenticacaoResponseDTO>> revalidar({required String token}) {
     final Uri $url = Uri.parse('/v1/admin/autenticacao/revalidar');
     final $body = <String, dynamic>{'token': token};
-    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
     return client
         .send<AutenticacaoResponseDTO, AutenticacaoResponseDTO>($request);
   }

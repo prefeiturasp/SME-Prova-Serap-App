@@ -19,43 +19,59 @@ class _$ProvaTaiService extends ProvaTaiService {
   @override
   Future<Response<bool>> existeConexaoR() {
     final Uri $url = Uri.parse('/v1/provas-tai/existe-conexao-R');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<bool, bool>($request);
   }
 
   @override
-  Future<Response<bool>> iniciarProva(
-      {required int provaId,
-      required int status,
-      required int tipoDispositivo,
-      int? dataInicio,
-      int? dataFim}) {
+  Future<Response<bool>> iniciarProva({
+    required int provaId,
+    required int status,
+    required int tipoDispositivo,
+    int? dataInicio,
+    int? dataFim,
+  }) {
     final Uri $url = Uri.parse('/v1/provas-tai/${provaId}/iniciar-prova');
     final $body = <String, dynamic>{
       'status': status,
       'tipoDispositivo': tipoDispositivo,
       'dataInicio': dataInicio,
-      'dataFim': dataFim
+      'dataFim': dataFim,
     };
-    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
     return client.send<bool, bool>($request);
   }
 
   @override
-  Future<Response<bool>> finalizarProva(
-      {required int provaId,
-      required int status,
-      required int tipoDispositivo,
-      int? dataInicio,
-      int? dataFim}) {
+  Future<Response<bool>> finalizarProva({
+    required int provaId,
+    required int status,
+    required int tipoDispositivo,
+    int? dataInicio,
+    int? dataFim,
+  }) {
     final Uri $url = Uri.parse('/v1/provas-tai/${provaId}/finalizar-prova');
     final $body = <String, dynamic>{
       'status': status,
       'tipoDispositivo': tipoDispositivo,
       'dataInicio': dataInicio,
-      'dataFim': dataFim
+      'dataFim': dataFim,
     };
-    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
     return client.send<bool, bool>($request);
   }
 
@@ -63,17 +79,28 @@ class _$ProvaTaiService extends ProvaTaiService {
   Future<Response<QuestaoCompletaResponseDTO>> obterQuestao(
       {required int provaId}) {
     final Uri $url = Uri.parse('/v1/provas-tai/${provaId}/obter-questao');
-    final Request $request = Request('POST', $url, client.baseUrl);
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+    );
     return client
         .send<QuestaoCompletaResponseDTO, QuestaoCompletaResponseDTO>($request);
   }
 
   @override
-  Future<Response<bool>> proximaQuestao(
-      {required int provaId, required QuestaoRespostaDTO resposta}) {
+  Future<Response<bool>> proximaQuestao({
+    required int provaId,
+    required QuestaoRespostaDTO resposta,
+  }) {
     final Uri $url = Uri.parse('/v1/provas-tai/${provaId}/proximo');
     final $body = resposta;
-    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
     return client.send<bool, bool>($request);
   }
 
@@ -81,7 +108,11 @@ class _$ProvaTaiService extends ProvaTaiService {
   Future<Response<List<ProvaResumoTaiResponseDto>>> obterResumo(
       {required int provaId}) {
     final Uri $url = Uri.parse('/v1/provas-tai/${provaId}/resumo');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<List<ProvaResumoTaiResponseDto>,
         ProvaResumoTaiResponseDto>($request);
   }

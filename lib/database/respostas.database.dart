@@ -16,11 +16,11 @@ part 'respostas.database.g.dart';
   ],
 )
 class RespostasDatabase extends _$RespostasDatabase {
-  RespostasDatabase() : super.connect(impl.connect('respostas', true));
+  RespostasDatabase() : super(impl.connect('respostas', true));
 
   RespostasDatabase.executor(QueryExecutor e) : super(e);
 
-  RespostasDatabase.connect(DatabaseConnection connection) : super.connect(connection);
+  RespostasDatabase.connect(DatabaseConnection connection) : super(connection);
 
   @override
   int get schemaVersion => 2;

@@ -70,6 +70,68 @@ class ProvasDb extends Table with TableInfo {
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: Constant("A"));
+  late final GeneratedColumn<bool> provaComProficiencia = GeneratedColumn<bool>(
+      'prova_com_proficiencia', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("prova_com_proficiencia" IN (0, 1))'),
+      defaultValue: Constant(false));
+  late final GeneratedColumn<bool> apresentarResultados = GeneratedColumn<bool>(
+      'apresentar_resultados', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("apresentar_resultados" IN (0, 1))'),
+      defaultValue: Constant(false));
+  late final GeneratedColumn<bool> apresentarResultadosPorItem =
+      GeneratedColumn<bool>(
+          'apresentar_resultados_por_item', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintIsAlways(
+              'CHECK ("apresentar_resultados_por_item" IN (0, 1))'),
+          defaultValue: Constant(false));
+  late final GeneratedColumn<bool> formatoTai = GeneratedColumn<bool>(
+      'formato_tai', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("formato_tai" IN (0, 1))'),
+      defaultValue: Constant(false));
+  late final GeneratedColumn<int> formatoTaiItem = GeneratedColumn<int>(
+      'formato_tai_item', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<bool> formatoTaiAvancarSemResponder =
+      GeneratedColumn<bool>(
+          'formato_tai_avancar_sem_responder', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintIsAlways(
+              'CHECK ("formato_tai_avancar_sem_responder" IN (0, 1))'),
+          defaultValue: Constant(false));
+  late final GeneratedColumn<bool> formatoTaiVoltarItemAnterior =
+      GeneratedColumn<bool>(
+          'formato_tai_voltar_item_anterior', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintIsAlways(
+              'CHECK ("formato_tai_voltar_item_anterior" IN (0, 1))'),
+          defaultValue: Constant(false));
+  late final GeneratedColumn<bool> exibirVideo = GeneratedColumn<bool>(
+      'exibir_video', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("exibir_video" IN (0, 1))'),
+      defaultValue: Constant(false));
+  late final GeneratedColumn<bool> exibirAudio = GeneratedColumn<bool>(
+      'exibir_audio', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("exibir_audio" IN (0, 1))'),
+      defaultValue: Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -89,7 +151,16 @@ class ProvasDb extends Table with TableInfo {
         idDownload,
         quantidadeRespostaSincronizacao,
         ultimaAlteracao,
-        caderno
+        caderno,
+        provaComProficiencia,
+        apresentarResultados,
+        apresentarResultadosPorItem,
+        formatoTai,
+        formatoTaiItem,
+        formatoTaiAvancarSemResponder,
+        formatoTaiVoltarItemAnterior,
+        exibirVideo,
+        exibirAudio
       ];
   @override
   String get aliasedName => _alias ?? 'provas_db';
@@ -296,8 +367,11 @@ class ArquivosVideoDb extends Table with TableInfo {
   late final GeneratedColumn<String> path = GeneratedColumn<String>(
       'path', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> caminho = GeneratedColumn<String>(
+      'caminho', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
+  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path, caminho];
   @override
   String get aliasedName => _alias ?? 'arquivos_video_db';
   @override
@@ -329,8 +403,11 @@ class ArquivosAudioDb extends Table with TableInfo {
   late final GeneratedColumn<String> path = GeneratedColumn<String>(
       'path', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> caminho = GeneratedColumn<String>(
+      'caminho', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path];
+  List<GeneratedColumn> get $columns => [id, questaoLegadoId, path, caminho];
   @override
   String get aliasedName => _alias ?? 'arquivos_audio_db';
   @override
@@ -545,8 +622,62 @@ class JobsTable extends Table with TableInfo {
   }
 }
 
-class DatabaseAtV22 extends GeneratedDatabase {
-  DatabaseAtV22(QueryExecutor e) : super(e);
+class ProvaQuestaoAlternativaTable extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  ProvaQuestaoAlternativaTable(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> questaoId = GeneratedColumn<int>(
+      'questao_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> questaoLegadoId = GeneratedColumn<int>(
+      'questao_legado_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> alternativaId = GeneratedColumn<int>(
+      'alternativa_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> alternativaLegadoId = GeneratedColumn<int>(
+      'alternativa_legado_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<int> provaId = GeneratedColumn<int>(
+      'prova_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> caderno = GeneratedColumn<String>(
+      'caderno', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> ordem = GeneratedColumn<int>(
+      'ordem', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        questaoId,
+        questaoLegadoId,
+        alternativaId,
+        alternativaLegadoId,
+        provaId,
+        caderno,
+        ordem
+      ];
+  @override
+  String get aliasedName => _alias ?? 'prova_questao_alternativa_table';
+  @override
+  String get actualTableName => 'prova_questao_alternativa_table';
+  @override
+  Set<GeneratedColumn> get $primaryKey =>
+      {provaId, caderno, questaoLegadoId, alternativaLegadoId};
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  ProvaQuestaoAlternativaTable createAlias(String alias) {
+    return ProvaQuestaoAlternativaTable(attachedDatabase, alias);
+  }
+}
+
+class DatabaseAtV27 extends GeneratedDatabase {
+  DatabaseAtV27(QueryExecutor e) : super(e);
   late final ProvasDb provasDb = ProvasDb(this);
   late final QuestoesDb questoesDb = QuestoesDb(this);
   late final AlternativasDb alternativasDb = AlternativasDb(this);
@@ -560,6 +691,8 @@ class DatabaseAtV22 extends GeneratedDatabase {
   late final QuestaoArquivoTable questaoArquivoTable =
       QuestaoArquivoTable(this);
   late final JobsTable jobsTable = JobsTable(this);
+  late final ProvaQuestaoAlternativaTable provaQuestaoAlternativaTable =
+      ProvaQuestaoAlternativaTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -576,8 +709,9 @@ class DatabaseAtV22 extends GeneratedDatabase {
         provaAlunoTable,
         provaCadernoTable,
         questaoArquivoTable,
-        jobsTable
+        jobsTable,
+        provaQuestaoAlternativaTable
       ];
   @override
-  int get schemaVersion => 22;
+  int get schemaVersion => 27;
 }

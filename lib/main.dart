@@ -22,9 +22,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider_android/path_provider_android.dart';
-import 'package:path_provider_ios/path_provider_ios.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
-import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 import 'package:storage_inspector/storage_inspector.dart';
 
 import 'database/app.database.dart';
@@ -53,10 +51,6 @@ registerPluginsForIsolate() {
   if (Platform.isAndroid) {
     SharedPreferencesAndroid.registerWith();
     PathProviderAndroid.registerWith();
-  }
-  if (Platform.isIOS) {
-    SharedPreferencesIOS.registerWith();
-    PathProviderIOS.registerWith();
   }
 
   Isolate.current.addErrorListener(RawReceivePort((pair) async {

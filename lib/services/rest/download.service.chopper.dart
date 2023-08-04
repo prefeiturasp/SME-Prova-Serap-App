@@ -17,13 +17,14 @@ class _$DownloadService extends DownloadService {
   final definitionType = DownloadService;
 
   @override
-  Future<Response<String>> informarDownloadConcluido(
-      {required int provaId,
-      required int tipoDispositivo,
-      required String dispositivoId,
-      required String modeloDispositivo,
-      required String versao,
-      required String dataHora}) {
+  Future<Response<String>> informarDownloadConcluido({
+    required int provaId,
+    required int tipoDispositivo,
+    required String dispositivoId,
+    required String modeloDispositivo,
+    required String versao,
+    required String dataHora,
+  }) {
     final Uri $url = Uri.parse('/v1/downloads');
     final $body = <String, dynamic>{
       'provaId': provaId,
@@ -31,22 +32,34 @@ class _$DownloadService extends DownloadService {
       'dispositivoId': dispositivoId,
       'modeloDispositivo': modeloDispositivo,
       'versao': versao,
-      'dataHora': dataHora
+      'dataHora': dataHora,
     };
-    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
     return client.send<String, String>($request);
   }
 
   @override
-  Future<Response<void>> removerDownloads(
-      {required String chaveAPI, required List<String> ids}) {
+  Future<Response<void>> removerDownloads({
+    required String chaveAPI,
+    required List<String> ids,
+  }) {
     final Uri $url = Uri.parse('/v1/downloads');
     final Map<String, String> $headers = {
       'chave-api': chaveAPI,
     };
     final $body = ids;
-    final Request $request =
-        Request('DELETE', $url, client.baseUrl, body: $body, headers: $headers);
+    final Request $request = Request(
+      'DELETE',
+      $url,
+      client.baseUrl,
+      body: $body,
+      headers: $headers,
+    );
     return client.send<void, void>($request);
   }
 }

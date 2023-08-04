@@ -26,7 +26,7 @@ import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'principal.store.dart';
 
@@ -266,7 +266,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
     await respostas.carregarRespostasServidor();
     await _configureControlesTempoProva();
 
-    await Wakelock.enable();
+    await WakelockPlus.enable();
 
     if (prova.status == EnumProvaStatus.NAO_INICIADA) {
       await iniciarProva();
@@ -427,7 +427,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
 
     await onDispose();
 
-    await Wakelock.disable();
+    await WakelockPlus.disable();
 
     return confirmacao;
   }
