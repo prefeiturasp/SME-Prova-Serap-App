@@ -20,7 +20,11 @@ class _$ContextoProvaService extends ContextoProvaService {
   Future<Response<ContextoProvaResponseDTO>> getContextoProva(
       {required int id}) {
     final Uri $url = Uri.parse('/v1/contextos-provas/${id}');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client
         .send<ContextoProvaResponseDTO, ContextoProvaResponseDTO>($request);
   }
@@ -29,7 +33,11 @@ class _$ContextoProvaService extends ContextoProvaService {
   Future<Response<List<ContextoProvaResponseDTO>>> getContextosPorProva(
       {required int idProva}) {
     final Uri $url = Uri.parse('/v1/contextos-provas/provas/${idProva}');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<List<ContextoProvaResponseDTO>,
         ContextoProvaResponseDTO>($request);
   }

@@ -3,11 +3,11 @@ import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/stores/admin_prova_questao.store.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_admin.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
-import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
+import 'package:appserap/ui/widgets/player_audio/player_audio_widget.dart';
 import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
@@ -170,7 +170,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
       return SizedBox.shrink();
     }
 
-    return AudioPlayerWidget(
+    return PlayerAudioWidget(
       audioPath: store.audios.first.caminho,
     );
   }

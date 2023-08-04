@@ -19,7 +19,11 @@ class _$ConfiguracaoService extends ConfiguracaoService {
   @override
   Future<Response<DataHoraServidorDTO>> getDataHoraServidor() {
     final Uri $url = Uri.parse('/v1/configuracoes/datahora');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<DataHoraServidorDTO, DataHoraServidorDTO>($request);
   }
 }

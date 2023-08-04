@@ -1,4 +1,5 @@
 // GENERATED CODE, DO NOT EDIT BY HAND.
+// ignore_for_file: type=lint
 //@dart=2.12
 import 'package:drift/drift.dart';
 
@@ -601,7 +602,6 @@ class JobsTable extends Table with TableInfo {
 
 class DatabaseAtV24 extends GeneratedDatabase {
   DatabaseAtV24(QueryExecutor e) : super(e);
-  DatabaseAtV24.connect(DatabaseConnection c) : super.connect(c);
   late final ProvasDb provasDb = ProvasDb(this);
   late final QuestoesDb questoesDb = QuestoesDb(this);
   late final AlternativasDb alternativasDb = AlternativasDb(this);

@@ -18,7 +18,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.12.0
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -28,13 +28,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   percent_indicator: ^4.2.2
   auto_size_text: ^3.0.0-nullsafety.0
-  intl: ^0.17.0
+  intl: ^0.18.1
   flutter_native_splash: ^2.2.8
-  package_info_plus: ^1.4.2
+  package_info_plus: ^4.1.0
   infinite_scroll_pagination: ^3.1.0
   jwt_decoder: ^2.0.1
-  permission_handler: ^9.2.0
-  json_annotation: ^4.6.0
+  permission_handler: ^10.4.3
+  json_annotation: ^4.8.1
   clock: ^1.1.0
   custom_radio_group_list: ^1.0.0
   native_resource: ^0.3.1
@@ -42,38 +42,40 @@ dependencies:
 
   # Conexão
   #cross_connectivity: ^3.0.5
-  internet_connection_checker_plus: ^1.0.1
+  internet_connection_checker_plus: ^2.0.0
   retry: ^3.1.0
 
   # Render html
-  flutter_html_all: ^3.0.0-alpha.6
+  flutter_html: ^3.0.0-beta.2
+  flutter_html_all: ^3.0.0-beta.2
+  flutter_widget_from_html: ^0.13.0-alpha.1
 
   # Firebase
-  firebase_messaging: ^13.1.0
-  firebase_core: ^1.24.0
-  firebase_crashlytics: ^2.9.0
+  firebase_messaging: ^14.6.5
+  firebase_core: ^2.15.0
+  firebase_crashlytics: ^3.3.4
 
   # Http api
   chopper: ^6.0.0
-  http: ^0.13.5
+  http: ^1.1.0
 
   # Injecao de dependencias
-  get_it: ^7.2.0
+  get_it: ^7.6.0
 
   # Banco de dados local
-  shared_preferences: ^2.0.15
+  shared_preferences: ^2.2.0
 
   # Logger
-  logger: ^1.1.0
+  logger: ^2.0.1
 
   # Mobx
   mobx: ^2.1.3
   flutter_mobx: ^2.0.6+5
 
   # Vizualizar imagem
-  photo_view: ^0.12.0
-  flutter_svg: ^1.1.4
-  lottie: ^1.1.0
+  photo_view: ^0.14.0
+  flutter_svg: ^2.0.7
+  lottie: ^2.5.0
 
   # Editor de texto
   html_editor_enhanced: ^2.5.1
@@ -89,7 +91,7 @@ dependencies:
   flutter_screenutil: ^5.5.3+2
 
   # Database
-  drift: ^2.4.2
+  drift: ^2.10.0
   sqlite3_flutter_libs: ^0.5.12
   path_provider: ^2.0.11
   path: ^1.8.0
@@ -104,49 +106,42 @@ dependencies:
   file_local_storage_inspector: ^0.3.1
 
   # Informações do dispoisitivo
-  device_info_plus: ^8.1.0
-  android_id: ^0.1.3+1
+  device_info_plus: ^9.0.3
+  android_id: ^0.3.3
 
   # Navegação
   go_router: ^5.2.0
   url_launcher: ^6.1.2
 
   # Reprodução
-  flutter_sound: ^9.2.13
+  audioplayers: ^5.0.0
 
   # Video player
-  chewie: ^1.2.2
+  chewie: ^1.7.0
 
   # Form 
   dropdown_search: ^4.0.1
 
   # Atualização
-  updater: ^0.1.3
+  updater: ^0.2.3
 
   # Controle de desligamento de tela
-  wakelock: ^0.6.2
+  wakelock_plus: ^1.1.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
 
-  build_runner: ^2.3.3
+  build_runner: ^2.4.6
   chopper_generator: ^6.0.0
   mobx_codegen: ^2.1.1
-  drift_dev: ^2.4.1
-  json_serializable: ^6.3.1
-  mockito: ^5.0.15
+  drift_dev: ^2.10.0
+  json_serializable: ^6.7.1
+  mockito: ^5.4.2
 
 dependency_overrides:
-  # correção bug mockito ultima versao 5.0.15
-  code_builder: ^4.2.0
-  # atualização html_editor_enhanced  
-  open_file:
-    git: 
-      url: https://github.com/crazecoder/open_file
-  flutter_svg: ^1.1.4
-  flutter_math_fork: ^0.6.3+1
+  flutter_math_fork: ^0.7.1
 
 scripts:
   clean: flutter clean flutter pub get

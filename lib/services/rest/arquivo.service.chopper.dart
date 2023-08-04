@@ -19,21 +19,33 @@ class _$ArquivoService extends ArquivoService {
   @override
   Future<Response<ArquivoResponseDTO>> getArquivo({required int idArquivo}) {
     final Uri $url = Uri.parse('/v1/arquivos/${idArquivo}/legado');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<ArquivoResponseDTO, ArquivoResponseDTO>($request);
   }
 
   @override
   Future<Response<ArquivoResponseDTO>> getAudio({required int idArquivo}) {
     final Uri $url = Uri.parse('/v1/arquivos/audio/${idArquivo}');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client.send<ArquivoResponseDTO, ArquivoResponseDTO>($request);
   }
 
   @override
   Future<Response<ArquivoVideoResponseDTO>> getVideo({required int idArquivo}) {
     final Uri $url = Uri.parse('/v1/arquivos/video/${idArquivo}');
-    final Request $request = Request('GET', $url, client.baseUrl);
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
     return client
         .send<ArquivoVideoResponseDTO, ArquivoVideoResponseDTO>($request);
   }

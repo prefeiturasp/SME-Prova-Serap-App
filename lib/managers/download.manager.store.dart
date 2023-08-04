@@ -328,7 +328,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       versao = "Android ${androidInfo.version.release} (SDK ${androidInfo.version.release})";
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-      modeloDispositivo = "Apple ${iosInfo.model!}";
+      modeloDispositivo = "Apple ${iosInfo.model}";
       dispositivoId = iosInfo.identifierForVendor!;
       versao = "${iosInfo.systemName} ${iosInfo.systemVersion}";
     } else if (Platform.isWindows) {

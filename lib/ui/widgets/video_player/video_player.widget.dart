@@ -29,7 +29,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
     super.initState();
 
     if (widget.videoUrl != null) {
-      _videoPlayerController = VideoPlayerController.network(widget.videoUrl!);
+      _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl!));
     } else {
       _videoPlayerController = VideoPlayerController.file(File(widget.videoPath!));
       info(widget.videoPath!);
