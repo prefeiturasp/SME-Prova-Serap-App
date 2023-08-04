@@ -161,9 +161,10 @@ class QuestaoTaiWidget extends StatelessWidget with Loggable, ProvaViewUtil {
       horizontalTitleGap: 0,
       child: Column(
         children: alternativas
-            .map((e) => _buildAlternativa(
+            .map((Alternativa e) => _buildAlternativa(
                   e.id,
                   e.numeracao,
+                  e.ordem,
                   questao,
                   e.descricao,
                 ))
@@ -172,7 +173,7 @@ class QuestaoTaiWidget extends StatelessWidget with Loggable, ProvaViewUtil {
     );
   }
 
-  Widget _buildAlternativa(int idAlternativa, String numeracao, Questao questao, String descricao) {
+  Widget _buildAlternativa(int idAlternativa, String numeracao, int ordem, Questao questao, String descricao) {
     return Observer(
       builder: (_) {
         return Container(
@@ -194,10 +195,11 @@ class QuestaoTaiWidget extends StatelessWidget with Loggable, ProvaViewUtil {
             groupValue: alternativaIdResposta,
             onChanged: (value) async {
               await onRespostaChange(value, null);
-              await provaStore.respostas.definirResposta(
+              await provaStore.respostas.definirRespostaTai(
                 questaoId,
-                alternativaLegadoId: value,
+                alternativaId: value,
                 tempoQuestao: provaStore.segundos,
+                ordem: ordem,
               );
             },
             title: Row(
