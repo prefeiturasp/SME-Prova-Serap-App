@@ -188,6 +188,32 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   }
 
   @action
+  Future<void> definirRespostaTai(
+    int questaoId, {
+    int? alternativaId,
+    int? ordem,
+    String? textoResposta,
+    int tempoQuestao = 0,
+  }) async {
+    var resposta = RespostaProva(
+      codigoEOL: codigoEOL,
+      dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
+      provaId: idProva,
+      caderno: caderno,
+      questaoId: questaoId,
+      alternativaId: alternativaId,
+      ordem: ordem,
+      resposta: textoResposta,
+      sincronizado: false,
+      tempoRespostaAluno: tempoQuestao,
+      dataHoraResposta: DateTime.now(),
+    );
+
+    await dbRespostas.respostaProvaDao.inserirOuAtualizar(resposta);
+    respostasLocal[questaoId] = resposta;
+  }
+
+  @action
   Future<void> definirTempoResposta(int questaoId, {int tempoQuestao = 0}) async {
     var resposta = respostasLocal[questaoId];
 

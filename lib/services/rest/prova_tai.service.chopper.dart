@@ -76,7 +76,7 @@ class _$ProvaTaiService extends ProvaTaiService {
   }
 
   @override
-  Future<Response<QuestaoCompletaResponseDTO>> obterQuestao(
+  Future<Response<QuestaoCompletaTaiResponseDTO>> obterQuestao(
       {required int provaId}) {
     final Uri $url = Uri.parse('/v1/provas-tai/${provaId}/obter-questao');
     final Request $request = Request(
@@ -84,8 +84,8 @@ class _$ProvaTaiService extends ProvaTaiService {
       $url,
       client.baseUrl,
     );
-    return client
-        .send<QuestaoCompletaResponseDTO, QuestaoCompletaResponseDTO>($request);
+    return client.send<QuestaoCompletaTaiResponseDTO,
+        QuestaoCompletaTaiResponseDTO>($request);
   }
 
   @override

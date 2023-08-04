@@ -61,13 +61,13 @@ mixin _$QuestaoTaiViewStore on _QuestaoTaiViewStoreBase, Store {
       Atom(name: '_QuestaoTaiViewStoreBase.questao', context: context);
 
   @override
-  QuestaoCompletaResponseDTO? get questao {
+  QuestaoCompletaTaiResponseDTO? get questao {
     _$questaoAtom.reportRead();
     return super.questao;
   }
 
   @override
-  set questao(QuestaoCompletaResponseDTO? value) {
+  set questao(QuestaoCompletaTaiResponseDTO? value) {
     _$questaoAtom.reportWrite(value, super.questao, () {
       super.questao = value;
     });
