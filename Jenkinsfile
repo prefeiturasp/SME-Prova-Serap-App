@@ -5,7 +5,7 @@ pipeline {
 
     agent {
       node { 
-        label 'SME-AGENT-FLUTTER3712'
+        label 'SME-AGENT-FLUTTER3106'
       }
     }
     

@@ -90,6 +90,24 @@ mixin _$ProvaRespostaStore on _ProvaRespostaStoreBase, Store {
         tempoQuestao: tempoQuestao));
   }
 
+  late final _$definirRespostaTaiAsyncAction = AsyncAction(
+      '_ProvaRespostaStoreBase.definirRespostaTai',
+      context: context);
+
+  @override
+  Future<void> definirRespostaTai(int questaoId,
+      {int? alternativaId,
+      int? ordem,
+      String? textoResposta,
+      int tempoQuestao = 0}) {
+    return _$definirRespostaTaiAsyncAction.run(() => super.definirRespostaTai(
+        questaoId,
+        alternativaId: alternativaId,
+        ordem: ordem,
+        textoResposta: textoResposta,
+        tempoQuestao: tempoQuestao));
+  }
+
   late final _$definirTempoRespostaAsyncAction = AsyncAction(
       '_ProvaRespostaStoreBase.definirTempoResposta',
       context: context);

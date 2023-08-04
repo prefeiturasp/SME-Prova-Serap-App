@@ -17,7 +17,6 @@ class QuestaoCompletaRespostaResponseDto {
     required this.ordemAlternativaResposta,
   });
 
-  factory QuestaoCompletaRespostaResponseDto.fromJson(Map<String, dynamic> json) =>
-      _$QuestaoCompletaRespostaResponseDtoFromJson(json);
+  static const fromJson = _$QuestaoCompletaRespostaResponseDtoFromJson;
   Map<String, dynamic> toJson() => _$QuestaoCompletaRespostaResponseDtoToJson(this);
 }

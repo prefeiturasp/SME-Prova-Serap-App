@@ -1,5 +1,5 @@
 import 'package:appserap/dtos/prova_resumo_tai.response.dto.dart';
-import 'package:appserap/dtos/questao_completa.response.dto.dart';
+import 'package:appserap/dtos/questao_completa.tai.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:chopper/chopper.dart';
 
@@ -31,7 +31,7 @@ abstract class ProvaTaiService extends ChopperService {
   });
 
   @Post(path: '{provaId}/obter-questao', optionalBody: true)
-  Future<Response<QuestaoCompletaResponseDTO>> obterQuestao({
+  Future<Response<QuestaoCompletaTaiResponseDTO>> obterQuestao({
     @Path() required int provaId,
   });
 

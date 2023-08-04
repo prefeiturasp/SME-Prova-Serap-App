@@ -1,4 +1,4 @@
-import 'package:appserap/dtos/questao_completa.response.dto.dart';
+import 'package:appserap/dtos/questao_completa.tai.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/interfaces/database.interface.dart';
@@ -29,7 +29,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
   ProvaStore? provaStore;
 
   @observable
-  QuestaoCompletaResponseDTO? questao;
+  QuestaoCompletaTaiResponseDTO? questao;
 
   @observable
   int? alternativaIdMarcada;
@@ -63,9 +63,10 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
 
       await retry(
         () async {
-          Response<QuestaoCompletaResponseDTO>? response = await ServiceLocator.get<ApiService>().provaTai.obterQuestao(
-                provaId: provaId,
-              );
+          Response<QuestaoCompletaTaiResponseDTO>? response =
+              await ServiceLocator.get<ApiService>().provaTai.obterQuestao(
+                    provaId: provaId,
+                  );
 
           if (response.isSuccessful) {
             questao = response.body!;
