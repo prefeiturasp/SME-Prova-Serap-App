@@ -4,7 +4,7 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:clock/clock.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
-class HomeViewUtil {
+mixin class HomeViewUtil {
   bool verificaProvaVigente(ProvaStore provaStore) {
     bool provaVigente = false;
 

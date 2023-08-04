@@ -42,3 +42,4 @@ analyzer:
     - "**/*.chopper.dart"
   errors:
     body_might_complete_normally_nullable: ignore
+    invalid_use_of_internal_member: ignore

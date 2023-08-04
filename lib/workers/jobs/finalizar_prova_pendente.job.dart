@@ -14,7 +14,7 @@ import 'package:appserap/workers/jobs/sincronizar_respostas.job.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:workmanager/workmanager.dart';
 
-class FinalizarProvasPendenteJob with Job, Loggable, Database {
+class FinalizarProvasPendenteJob extends Job with Loggable, Database {
   @override
   JobConfig configuration() {
     return JobConfig(
@@ -37,7 +37,7 @@ class FinalizarProvasPendenteJob with Job, Loggable, Database {
 
     info('${provas.length} provas pendente de sincronização');
 
-    if (provas.isNotEmpty && !await InternetConnectionCheckerPlus().hasConnection) {
+    if (provas.isNotEmpty && !await InternetConnection().hasInternetAccess) {
       info('Falha na sincronização. Sem Conexão....');
       return;
     }

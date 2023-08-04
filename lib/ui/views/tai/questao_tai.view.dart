@@ -2,12 +2,12 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/stores/questao_tai_view.store.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_tai.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
-import 'package:appserap/ui/widgets/audio_player/audio_player.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_default.widget.dart';
 import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
+import 'package:appserap/ui/widgets/player_audio/player_audio_widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class QuestaoTaiView extends BaseStatefulWidget {
   final int provaId;
@@ -64,7 +64,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
         bool voltar = (await mostrarDialogVoltarProva(context)) ?? false;
 
         if (voltar) {
-          await Wakelock.disable();
+          await WakelockPlus.disable();
 
           context.go("/");
         }
@@ -133,7 +133,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
       return SizedBox.shrink();
     }
 
-    return AudioPlayerWidget(
+    return PlayerAudioWidget(
       audioPath: store.questao!.audios.first.caminho,
     );
   }

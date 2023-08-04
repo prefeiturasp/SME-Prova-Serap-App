@@ -11,6 +11,7 @@ import 'package:appserap/services/api_service.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
+import 'package:appserap/ui/widgets/render_html/render_html.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/assets.util.dart';
@@ -20,10 +21,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:http/http.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html_all/flutter_html_all.dart';
 
-abstract class ProvaViewUtil {
+mixin class ProvaViewUtil {
   buildTratamentoImagem(ProvaStore provaStore, List<Arquivo> imagens, Questao questao, List<Alternativa> alternativas) {
     if (imagens.isNotEmpty) {
       return Center(
@@ -107,6 +106,11 @@ abstract class ProvaViewUtil {
       return "";
     }
 
+    // Remocao fonte e tamanho do texto
+    texto = texto.replaceAll(RegExp(r"font-family:[^;']*(;)?"), '');
+    texto = texto.replaceAll(RegExp(r"font-size:[^;']*(;)?"), '');
+
+    // Remocao quebra desnecessaria
     texto = texto.replaceAll('<br></p>', '</p>');
 
     if (tipoImagem == EnumTipoImagem.QUESTAO) {
@@ -145,54 +149,10 @@ abstract class ProvaViewUtil {
     EnumTipoImagem tipoImagem,
     TratamentoImagemEnum tratamentoImagem,
   ) {
-    TemaStore temaStore = ServiceLocator.get<TemaStore>();
-    CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';
-
-    return Html(
-      customRenders: {
-        // Audio e vídeo
-        audioMatcher(): audioRender(),
-        videoMatcher(): videoRender(),
-        // Iframe
-        iframeMatcher(): iframeRender(),
-        // Math
-        mathMatcher(): mathRender(),
-        // Imagem
-        svgTagMatcher(): svgTagRender(),
-        svgDataUriMatcher(): svgDataImageRender(),
-        svgAssetUriMatcher(): svgAssetImageRender(),
-        svgNetworkSourceMatcher(): svgNetworkImageRender(),
-        // Tabela
-        tableMatcher(): tableRender(),
-        // Tex
-        texMatcher(): CustomRender.widget(
-          widget: (context, buildChildren) => Math.tex(
-            context.tree.element?.innerHtml ?? '',
-            mathStyle: MathStyle.display,
-            textStyle: context.style.generateTextStyle(),
-            onErrorFallback: (FlutterMathException e) {
-              return Text(e.message);
-            },
-          ),
-        ),
-      },
-      data: tratarArquivos(texto, imagens, tipoImagem, tratamentoImagem),
-      style: {
-        '*': Style.fromTextStyle(
-          TemaUtil.temaTextoHtmlPadrao.copyWith(
-            fontSize: temaStore.tTexto16,
-            fontFamily: temaStore.fonteDoTexto.nomeFonte,
-          ),
-        ),
-        'span': Style.fromTextStyle(
-          TextStyle(
-              fontSize: temaStore.tTexto16,
-              fontFamily: temaStore.fonteDoTexto.nomeFonte,
-              color: TemaUtil.pretoSemFoco3),
-        ),
-      },
-      onImageTap: (url, _, attributes, element) async {
-        await _exibirImagem(context, url);
+    return RenderHtml(
+      html: tratarArquivos(texto, imagens, tipoImagem, tratamentoImagem),
+      onImageTap: (String src) async {
+        await _exibirImagem(context, src);
       },
     );
   }

@@ -6,7 +6,7 @@ import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/utils/firebase.util.dart';
 
-class RemoverProvasJob with Job, Loggable, Database {
+class RemoverProvasJob extends Job with Loggable, Database {
   @override
   JobConfig configuration() {
     return JobConfig(

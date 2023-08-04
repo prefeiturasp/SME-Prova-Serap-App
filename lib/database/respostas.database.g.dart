@@ -228,6 +228,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
   final Value<int> tempoRespostaAluno;
   final Value<DateTime?> dataHoraResposta;
   final Value<bool> sincronizado;
+  final Value<int> rowid;
   const RespostaProvaTableCompanion({
     this.codigoEOL = const Value.absent(),
     this.questaoId = const Value.absent(),
@@ -240,6 +241,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
     this.tempoRespostaAluno = const Value.absent(),
     this.dataHoraResposta = const Value.absent(),
     this.sincronizado = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   RespostaProvaTableCompanion.insert({
     required String codigoEOL,
@@ -253,6 +255,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
     required int tempoRespostaAluno,
     this.dataHoraResposta = const Value.absent(),
     required bool sincronizado,
+    this.rowid = const Value.absent(),
   })  : codigoEOL = Value(codigoEOL),
         questaoId = Value(questaoId),
         provaId = Value(provaId),
@@ -271,6 +274,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
     Expression<int>? tempoRespostaAluno,
     Expression<DateTime>? dataHoraResposta,
     Expression<bool>? sincronizado,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (codigoEOL != null) 'codigo_e_o_l': codigoEOL,
@@ -285,6 +289,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
         'tempo_resposta_aluno': tempoRespostaAluno,
       if (dataHoraResposta != null) 'data_hora_resposta': dataHoraResposta,
       if (sincronizado != null) 'sincronizado': sincronizado,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -299,7 +304,8 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
       Value<String?>? resposta,
       Value<int>? tempoRespostaAluno,
       Value<DateTime?>? dataHoraResposta,
-      Value<bool>? sincronizado}) {
+      Value<bool>? sincronizado,
+      Value<int>? rowid}) {
     return RespostaProvaTableCompanion(
       codigoEOL: codigoEOL ?? this.codigoEOL,
       questaoId: questaoId ?? this.questaoId,
@@ -312,6 +318,7 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
       tempoRespostaAluno: tempoRespostaAluno ?? this.tempoRespostaAluno,
       dataHoraResposta: dataHoraResposta ?? this.dataHoraResposta,
       sincronizado: sincronizado ?? this.sincronizado,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -351,6 +358,9 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
     if (sincronizado.present) {
       map['sincronizado'] = Variable<bool>(sincronizado.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -367,7 +377,8 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
           ..write('resposta: $resposta, ')
           ..write('tempoRespostaAluno: $tempoRespostaAluno, ')
           ..write('dataHoraResposta: $dataHoraResposta, ')
-          ..write('sincronizado: $sincronizado')
+          ..write('sincronizado: $sincronizado, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -375,7 +386,6 @@ class RespostaProvaTableCompanion extends UpdateCompanion<RespostaProva> {
 
 abstract class _$RespostasDatabase extends GeneratedDatabase {
   _$RespostasDatabase(QueryExecutor e) : super(e);
-  _$RespostasDatabase.connect(DatabaseConnection c) : super.connect(c);
   late final $RespostaProvaTableTable respostaProvaTable =
       $RespostaProvaTableTable(this);
   late final RespostaProvaDao respostaProvaDao =

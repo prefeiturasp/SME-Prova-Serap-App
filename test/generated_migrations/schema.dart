@@ -1,4 +1,5 @@
 // GENERATED CODE, DO NOT EDIT BY HAND.
+// ignore_for_file: type=lint
 //@dart=2.12
 import 'package:drift/drift.dart';
 import 'package:drift/internal/migrations.dart';
@@ -9,6 +10,7 @@ import 'schema_v22.dart' as v22;
 import 'schema_v23.dart' as v23;
 import 'schema_v24.dart' as v24;
 import 'schema_v25.dart' as v25;
+import 'schema_v27.dart' as v27;
 
 class GeneratedHelper implements SchemaInstantiationHelper {
   @override
@@ -28,9 +30,11 @@ class GeneratedHelper implements SchemaInstantiationHelper {
         return v24.DatabaseAtV24(db);
       case 25:
         return v25.DatabaseAtV25(db);
+      case 27:
+        return v27.DatabaseAtV27(db);
       default:
         throw MissingSchemaException(
-            version, const {15, 19, 20, 22, 23, 24, 25});
+            version, const {15, 19, 20, 22, 23, 24, 25, 27});
     }
   }
 }

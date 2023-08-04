@@ -13,7 +13,7 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BaixarProvaJob with Job, Loggable, Database {
+class BaixarProvaJob extends Job with Loggable, Database {
   @override
   run() async {
     try {

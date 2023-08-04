@@ -50,7 +50,7 @@ class DependenciasIoC with Loggable {
   }
 
   registrarServicosAsync() {
-    registerSingletonAsync<SharedPreferences>(() async => SharedPreferences.getInstance(), signalsReady: true);
+    registerSingletonAsync<SharedPreferences>(() async => SharedPreferences.getInstance());
   }
 
   registrarServicos() {

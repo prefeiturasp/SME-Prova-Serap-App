@@ -12,7 +12,7 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:chopper/chopper.dart';
 import 'package:mobx/mobx.dart';
 import 'package:retry/retry.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 part 'questao_tai_view.store.g.dart';
 
@@ -79,7 +79,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
       taiDisponivel = false;
     }
 
-    await Wakelock.enable();
+    await WakelockPlus.enable();
 
     carregando = false;
   }

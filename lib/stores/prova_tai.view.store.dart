@@ -7,7 +7,7 @@ import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:mobx/mobx.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 part 'prova_tai.view.store.g.dart';
 
 class ProvaTaiViewStore = _ProvaTaiViewStoreBase with _$ProvaTaiViewStore;
@@ -51,7 +51,7 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
       taiDisponivel = false;
     }
 
-    await Wakelock.enable();
+    await WakelockPlus.enable();
 
     carregando = false;
 
