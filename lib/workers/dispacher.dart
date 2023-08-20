@@ -45,6 +45,7 @@ executarJobs(String task) async {
 
     setupLogging();
 
+    configureDependencies();
     await DependenciasIoC().setup();
 
     sendStatus(sendPort, job, EnumJobStatus.EXECUTANDO);

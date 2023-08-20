@@ -29,7 +29,7 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
     var prova = await db.provaDao.obterPorProvaId(provaId);
     provaStore = ProvaStore(prova: prova);
 
-    var responseConexao = await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
+    var responseConexao = await sl<ProvaTaiService>().existeConexaoR();
 
     if (responseConexao.isSuccessful) {
       taiDisponivel = responseConexao.body!;
@@ -39,7 +39,7 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
           await provaStore!.setStatusProva(EnumProvaStatus.INICIADA);
           await provaStore!.setHoraInicioProva(DateTime.now());
 
-          await ServiceLocator.get<ApiService>().provaTai.iniciarProva(
+          await sl<ProvaTaiService>().iniciarProva(
                 provaId: provaId,
                 status: EnumProvaStatus.INICIADA.index,
                 tipoDispositivo: kDeviceType.index,

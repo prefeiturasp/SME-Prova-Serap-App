@@ -17,7 +17,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -70,6 +69,7 @@ configure(bool isBackground) async {
   setupLogging();
   registerFonts();
 
+  configureDependencies();
   await DependenciasIoC().setup();
 
   if (isBackground) {
@@ -130,8 +130,12 @@ void setupLogging() {
     Logger.root.level = AppConfigReader.logLevel();
   }
 
+  var logDisable = ['fwfh.HtmlWidget'];
+
   Logger.root.onRecord.listen((rec) {
-    print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
+    if (!logDisable.contains(rec.loggerName)) {
+      print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
+    }
   });
 }
 
@@ -148,6 +152,8 @@ setupDateFormating() {
 }
 
 class MyApp extends StatelessWidget {
+  final _appRouter = sl<AppRouter>();
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -156,12 +162,8 @@ class MyApp extends StatelessWidget {
         600,
       ),
       builder: (context, child) {
-        final GoRouter goRouter = ServiceLocator.get<AppRouter>().router;
-
         return MaterialApp.router(
-          routeInformationProvider: goRouter.routeInformationProvider,
-          routeInformationParser: goRouter.routeInformationParser,
-          routerDelegate: goRouter.routerDelegate,
+          routerConfig: _appRouter.config(),
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light().copyWith(
             appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),

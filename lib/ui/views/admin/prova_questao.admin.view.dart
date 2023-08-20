@@ -1,5 +1,5 @@
-import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/admin_prova_questao.store.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_admin.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
@@ -11,22 +11,21 @@ import 'package:appserap/ui/widgets/player_audio/player_audio_widget.dart';
 import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 
+@RoutePage()
 class AdminProvaQuestaoView extends BaseStatefulWidget {
   final int idProva;
   final String? nomeCaderno;
   final int ordem;
-  final List<AdminProvaResumoResponseDTO> resumo;
 
   AdminProvaQuestaoView({
     Key? key,
-    required this.idProva,
-    this.nomeCaderno,
-    required this.ordem,
-    required this.resumo,
+    @PathParam('idProva') required this.idProva,
+    @PathParam('nomeCaderno') this.nomeCaderno,
+    @PathParam('ordem') required this.ordem,
   }) : super(key: key);
 
   @override
@@ -40,7 +39,11 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
   @override
   void initState() {
     super.initState();
-    store.carregarDetalhesQuestao(widget.idProva, widget.resumo.firstWhere((e) => e.ordem == widget.ordem).id);
+    store.carregarDetalhesQuestao(
+      idProva: widget.idProva,
+      nomeCaderno: widget.nomeCaderno,
+      ordem: widget.ordem,
+    );
   }
 
   @override
@@ -55,11 +58,13 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
     return IconButton(
       icon: Icon(Icons.arrow_back),
       onPressed: () async {
-        if (widget.nomeCaderno != null) {
-          context.go("/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/resumo");
-        } else {
-          context.go("/admin/prova/${widget.idProva}/resumo");
-        }
+        context.router.navigate(
+          AdminProvaResumoViewRoute(
+            key: ValueKey(widget.idProva),
+            idProva: widget.idProva,
+            nomeCaderno: widget.nomeCaderno,
+          ),
+        );
       },
     );
   }
@@ -109,7 +114,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
                                       ),
                                     ),
                                     Text(
-                                      'de ${widget.resumo.length}',
+                                      'de ${store.totalQuestoes}',
                                       style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
                                         fontSize: temaStore.tTexto20,
                                         fontFamily: temaStore.fonteDoTexto.nomeFonte,
@@ -179,12 +184,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
     return Container(
       width: MediaQuery.of(context).size.width * 0.5,
       padding: EdgeInsets.only(right: 16),
-      child: FutureBuilder<Widget>(
-        future: showVideoPlayer(),
-        builder: (context, snapshot) {
-          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
-        },
-      ),
+      child: showVideoPlayer(),
     );
   }
 
@@ -220,31 +220,33 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
     return BotaoSecundarioWidget(
       textoBotao: 'Item anterior',
       onPressed: () async {
-        if (widget.nomeCaderno != null) {
-          context.push(
-            "/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/questao/${widget.ordem - 1}",
-            extra: widget.resumo.toList(),
-          );
-        } else {
-          context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem - 1}", extra: widget.resumo.toList());
-        }
+        int ordem = widget.ordem - 1;
+        context.pushRoute(
+          AdminProvaQuestaoViewRoute(
+            key: ValueKey("${widget.idProva}-${widget.nomeCaderno}-$ordem"),
+            idProva: widget.idProva,
+            nomeCaderno: widget.nomeCaderno,
+            ordem: ordem,
+          ),
+        );
       },
     );
   }
 
   Widget _buildBotaoProximo() {
-    if (widget.ordem < widget.resumo.length - 1) {
+    if (widget.ordem < store.totalQuestoes - 1) {
       return BotaoDefaultWidget(
         textoBotao: 'Próximo item',
         onPressed: () async {
-          if (widget.nomeCaderno != null) {
-            context.push(
-              "/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/questao/${widget.ordem + 1}",
-              extra: widget.resumo.toList(),
-            );
-          } else {
-            context.push("/admin/prova/${widget.idProva}/questao/${widget.ordem + 1}", extra: widget.resumo.toList());
-          }
+          int ordem = widget.ordem + 1;
+          context.pushRoute(
+            AdminProvaQuestaoViewRoute(
+              key: ValueKey("${widget.idProva}-${widget.nomeCaderno}-$ordem"),
+              idProva: widget.idProva,
+              nomeCaderno: widget.nomeCaderno,
+              ordem: ordem,
+            ),
+          );
         },
       );
     }
@@ -252,16 +254,18 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
     return BotaoDefaultWidget(
       textoBotao: 'Voltar para o resumo',
       onPressed: () async {
-        if (widget.nomeCaderno != null) {
-          context.go("/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/resumo");
-        } else {
-          context.go("/admin/prova/${widget.idProva}/resumo");
-        }
+        context.router.navigate(
+          AdminProvaResumoViewRoute(
+            key: ValueKey(widget.idProva),
+            idProva: widget.idProva,
+            nomeCaderno: widget.nomeCaderno,
+          ),
+        );
       },
     );
   }
 
-  Future<Widget> showVideoPlayer() async {
+  Widget showVideoPlayer() {
     return VideoPlayerWidget(videoUrl: store.videos.first.caminho);
   }
 

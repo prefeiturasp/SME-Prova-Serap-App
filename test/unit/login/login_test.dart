@@ -1,3 +1,4 @@
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api_service.dart';
 import 'package:appserap/services/rest/auth.service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -111,7 +112,7 @@ main() {
 
         AutenticacaoService service = buildClient(httpClient).getService<AutenticacaoService>();
 
-        when(GetIt.instance.get<ApiService>().auth).thenAnswer((_) => service);
+        when(sl<AutenticacaoService>()).thenAnswer((_) => service);
 
         var dadosResponse = await service.meusDados();
 

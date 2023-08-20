@@ -19,7 +19,7 @@ abstract class _HomeProvasAnterioresStoreBase with Store {
 
     ObservableList<ProvaAnteriorResponseDTO> _provasAnteriores = <ProvaAnteriorResponseDTO>[].asObservable();
 
-    var response = await ServiceLocator.get<ApiService>().prova.getProvasAnteriores();
+    var response = await sl<ProvaService>().getProvasAnteriores();
 
     if (response.isSuccessful) {
       isLoading = false;

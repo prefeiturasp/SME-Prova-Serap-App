@@ -10,6 +10,7 @@ import 'package:appserap/enums/tipo_questao.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
@@ -33,22 +34,27 @@ import 'package:appserap/utils/idb_file.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
 import '../../widgets/video_player/video_player.widget.dart';
 
+@RoutePage()
 class QuestaoRevisaoView extends BaseStatefulWidget {
   final int idProva;
   final int ordem;
 
-  QuestaoRevisaoView({Key? key, required this.idProva, required this.ordem}) : super(key: key);
+  QuestaoRevisaoView({
+    Key? key,
+    @PathParam('idProva') required this.idProva,
+    @PathParam('ordem') required this.ordem,
+  }) : super(key: key);
 
   @override
   _QuestaoRevisaoViewState createState() => _QuestaoRevisaoViewState();
@@ -73,7 +79,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   ArquivoVideoDb? arquivoVideoDb;
   ArquivoAudioDb? arquivoAudioDb;
 
-  var db = ServiceLocator.get<AppDatabase>();
+  var db = sl<AppDatabase>();
 
   final controller = HtmlEditorController();
 
@@ -97,10 +103,10 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
   }
 
   configure() async {
-    var provas = ServiceLocator.get<HomeStore>().provas;
+    var provas = sl<HomeStore>().provas;
 
     if (provas.isEmpty) {
-      ServiceLocator.get<AppRouter>().router.go("/");
+      sl<AppRouter>().navigate(HomeViewRoute());
       return;
     }
 
@@ -342,7 +348,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
               await provaStore.respostas.sincronizarResposta();
               provaStore.ultimaAtualizacaoLogImagem = null;
 
-              context.go("/prova/${provaStore.id}/resumo");
+              context.router.replace(ResumoRespostasViewRoute(idProva: provaStore.id));
             } catch (e, stack) {
               await recordError(e, stack);
             } finally {
@@ -389,7 +395,13 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
           store.posicaoQuestaoSendoRevisada++;
           provaStore.ultimaAtualizacaoLogImagem = null;
 
-          context.go("/prova/${widget.idProva}/revisao/$ordemProximaQuestao");
+          context.router.navigate(
+            QuestaoRevisaoViewRoute(
+              key: ValueKey("${widget.idProva}-$ordemProximaQuestao"),
+              idProva: widget.idProva,
+              ordem: ordemProximaQuestao!,
+            ),
+          );
         } catch (e, stack) {
           await recordError(e, stack);
         } finally {

@@ -7,8 +7,9 @@ import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.store.dart';
@@ -28,13 +29,13 @@ import 'package:appserap/utils/extensions/date.extension.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mobx/mobx.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:supercharged/supercharged.dart';
@@ -209,7 +210,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
   }
 
   List<Widget> _buildProvaIcon(ProvaStore provaStore) {
-    if (kIsTablet || ServiceLocator.get<PrincipalStore>().temConexao) {
+    if (kIsTablet || sl<PrincipalStore>().temConexao) {
       return [
         Container(
           width: 128,
@@ -730,7 +731,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
             _navegarParaProvaPrimeiraVez(provaStore);
           }
         } else if (provaStore.prova.status == EnumProvaStatus.INICIADA) {
-          context.go("/prova/${provaStore.id}");
+          context.router.navigate(ProvaViewRoute(idProva: provaStore.id));
         }
       },
     );
@@ -742,7 +743,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     try {
-      var response = await ServiceLocator.get<ApiService>().configuracao.getDataHoraServidor();
+      var response = await sl<ConfiguracaoService>().getDataHoraServidor();
 
       if (response.isSuccessful) {
         DataHoraServidorDTO body = response.body!;
@@ -763,7 +764,7 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     bool iniciarProva = true;
 
     if (provaStore.possuiTempoExecucao()) {
-      var fimTurno = ServiceLocator.get<UsuarioStore>().fimTurno;
+      var fimTurno = sl<UsuarioStore>().fimTurno;
 
       var tempoTotalDisponivel = provaStore.prova.tempoExecucao;
       var tempoDisponivel = DateTime.now().copyWith(hour: fimTurno, minute: 0, second: 0).difference(DateTime.now());
@@ -774,10 +775,14 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
     }
 
     if (iniciarProva) {
-      if (await ServiceLocator.get<AppDatabase>().contextoProvaDao.possuiContexto(provaStore.id)) {
-        context.go("/prova/${provaStore.id}/contexto");
+      if (await sl<AppDatabase>().contextoProvaDao.possuiContexto(provaStore.id)) {
+        context.router.navigate(
+          ContextoProvaViewRoute(
+            idProva: provaStore.id,
+          ),
+        );
       } else {
-        context.go("/prova/${provaStore.id}");
+        context.router.navigate(ProvaViewRoute(idProva: provaStore.id));
       }
     }
   }
@@ -901,7 +906,10 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
       onPressed: () async {
         await verificarHoraServidor();
 
-        context.push("/prova/tai/${provaStore.id}/carregar");
+        context.router.push(ProvaTaiViewRoute(
+          key: ValueKey(provaStore.id),
+          provaId: provaStore.id,
+        ));
       },
     );
   }

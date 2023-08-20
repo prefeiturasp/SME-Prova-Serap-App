@@ -94,7 +94,7 @@ abstract class _UsuarioStoreBase with Store {
 
   @action
   Future<void> carregarUsuario() async {
-    SharedPreferences prefs = await ServiceLocator.getAsync();
+    var prefs = sl<SharedPreferences>();
     nome = prefs.getString("serapUsuarioNome");
     token = prefs.getString("serapUsuarioToken");
     codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
@@ -180,7 +180,7 @@ abstract class _UsuarioStoreBase with Store {
     this.escola = escola;
     this.turma = turma;
 
-    SharedPreferences prefs = await ServiceLocator.getAsync();
+    var prefs = sl<SharedPreferences>();
     await prefs.setString('serapUsuarioNome', nome);
 
     if (token != null && token.isNotEmpty) {
@@ -226,7 +226,7 @@ abstract class _UsuarioStoreBase with Store {
     this.codigoEOL = codigoEOL;
     this.token = token;
 
-    SharedPreferences prefs = await ServiceLocator.getAsync();
+    var prefs = sl<SharedPreferences>();
     await prefs.setString('serapUsuarioNome', nome);
     await prefs.setBool('serapIsAdmin', isAdmin);
 

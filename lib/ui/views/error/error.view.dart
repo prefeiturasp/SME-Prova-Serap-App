@@ -1,7 +1,9 @@
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/utils/router.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
+@RoutePage()
 class ErrorPage extends StatelessWidget {
   final String? error;
   const ErrorPage({
@@ -22,7 +24,7 @@ class ErrorPage extends StatelessWidget {
             Text(error ?? ""),
             TextButton(
               onPressed: () {
-                GoRouter.of(context).goNamed(APP_PAGE.HOME.toName);
+                context.router.navigate(HomeViewRoute());
               },
               child: const Text("Back to Home"),
             ),

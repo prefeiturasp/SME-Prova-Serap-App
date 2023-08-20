@@ -47,7 +47,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
 
     if (ServiceLocator.get<PrincipalStore>().temConexao) {
       try {
-        Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
+        Response<List<ProvaResponseDTO>> response = await sl<ProvaService>().getProvas();
 
         if (response.isSuccessful) {
           var provasResponse = response.body!;

@@ -1,6 +1,6 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -12,7 +12,7 @@ class LoginAdmStore = _LoginAdmStoreBase with _$LoginAdmStore;
 
 abstract class _LoginAdmStoreBase with Store, Loggable {
   Future<bool> loginByToken(String codigo) async {
-    final _autenticacaoService = ServiceLocator.get<ApiService>().adminAuth;
+    final _autenticacaoService = sl<AutenticacaoAdminService>();
     final _usuarioStore = ServiceLocator.get<UsuarioStore>();
 
     try {
@@ -36,7 +36,7 @@ abstract class _LoginAdmStoreBase with Store, Loggable {
           isAdmin: true,
         );
 
-        SharedPreferences prefs = await ServiceLocator.getAsync();
+        var prefs = sl<SharedPreferences>();
         await prefs.setString('token', body.token);
         fine('Login realizado com sucesso');
         fine('Token: ${body.token}');

@@ -1,5 +1,6 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/login.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
@@ -8,11 +9,12 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 
+@RoutePage()
 class LoginView extends BaseStatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
@@ -24,7 +26,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
   FocusNode _codigoEOLFocus = FocusNode();
   FocusNode _senhaFocus = FocusNode();
 
-  final _orientacaoStore = ServiceLocator.get<OrientacaoInicialStore>();
+  final _orientacaoStore = sl<OrientacaoInicialStore>();
 
   @override
   void initState() {
@@ -350,7 +352,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
       if (await store.autenticar()) {
         await _orientacaoStore.popularListaDeOrientacoes();
 
-        context.go("/boasVindas");
+        context.router.navigate(OrientacaoInicialViewRoute());
       }
     }
   }

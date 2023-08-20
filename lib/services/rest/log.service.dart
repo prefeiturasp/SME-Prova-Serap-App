@@ -1,10 +1,14 @@
 import 'package:chopper/chopper.dart';
+import 'package:injectable/injectable.dart';
 
 part 'log.service.chopper.dart';
 
+@injectable
 @ChopperApi(baseUrl: "/v1")
 abstract class LogService extends ChopperService {
-  static LogService create([ChopperClient? client]) => _$LogService(client);
+
+  @factoryMethod
+  static LogService create(ChopperClient client) => _$LogService(client);
 
   @Post(path: '/imagemLog')
   Future<Response<bool>> logarNecessidadeDeUsoDaUrl({

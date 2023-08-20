@@ -1,5 +1,5 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:mobx/mobx.dart';
 import 'package:retry/retry.dart';
 
@@ -20,7 +20,7 @@ abstract class _AdminProvaCadernoViewStoreBase with Store, Loggable {
     carregando = true;
     await retry(
       () async {
-        var res = await ServiceLocator.get<ApiService>().admin.getCadernos(idProva: idProva);
+        var res = await sl<AdminService>().getCadernos(idProva: idProva);
 
         if (res.isSuccessful) {
           cadernos = res.body!.cadernos.asObservable();

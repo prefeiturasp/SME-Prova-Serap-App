@@ -7,7 +7,7 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/alternativa.model.dart';
 import 'package:appserap/models/arquivo.model.dart';
 import 'package:appserap/models/questao.model.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -28,14 +28,14 @@ mixin class ProvaViewUtil {
       return Center(
         child: InkWell(
           onTap: () {
-            var usuarioStore = ServiceLocator.get<UsuarioStore>();
+            var usuarioStore = sl<UsuarioStore>();
 
             var html = _criarHTML(provaStore, imagens, questao, alternativas);
 
             if (html.isNotEmpty) {
               if (provaStore.ultimaAtualizacaoLogImagem == null ||
                   DateTime.now().difference(provaStore.ultimaAtualizacaoLogImagem!).inSeconds > 15) {
-                ServiceLocator.get<ApiService>().log.logarNecessidadeDeUsoDaUrl(
+                sl<LogService>().logarNecessidadeDeUsoDaUrl(
                       chaveAPI: AppConfigReader.getChaveApi(),
                       prova: provaStore.id.toString(),
                       aluno: usuarioStore.codigoEOL!,
@@ -172,7 +172,7 @@ mixin class ProvaViewUtil {
       imagem = base64.decode(url.split(',').last);
     }
 
-    TemaStore temaStore = ServiceLocator.get<TemaStore>();
+    TemaStore temaStore = sl<TemaStore>();
 
     return await showDialog<T>(
       context: context,

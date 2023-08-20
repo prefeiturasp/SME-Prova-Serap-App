@@ -56,7 +56,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
       provaStore!.tratamentoImagem = TratamentoImagemEnum.URL;
     }
 
-    var responseConexao = await ServiceLocator.get<ApiService>().provaTai.existeConexaoR();
+    var responseConexao = await sl<ProvaTaiService>().existeConexaoR();
 
     if (responseConexao.isSuccessful) {
       taiDisponivel = responseConexao.body!;
@@ -64,7 +64,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
       await retry(
         () async {
           Response<QuestaoCompletaTaiResponseDTO>? response =
-              await ServiceLocator.get<ApiService>().provaTai.obterQuestao(
+              await sl<ProvaTaiService>().obterQuestao(
                     provaId: provaId,
                   );
 
@@ -100,7 +100,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
       tempoRespostaAluno: 0,
     );
 
-    var response = await ServiceLocator.get<ApiService>().provaTai.proximaQuestao(
+    var response = await sl<ProvaTaiService>().proximaQuestao(
           provaId: provaStore!.id,
           resposta: questaoResposta,
         );

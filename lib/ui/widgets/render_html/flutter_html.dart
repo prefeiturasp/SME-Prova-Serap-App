@@ -24,7 +24,7 @@ class FlutterHtml extends StatefulWidget {
 }
 
 class _FlutterHtmlState extends State<FlutterHtml> {
-  TemaStore temaStore = ServiceLocator();
+  TemaStore temaStore = sl();
 
   @override
   Widget build(BuildContext context) {

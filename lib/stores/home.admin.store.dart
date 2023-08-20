@@ -52,7 +52,7 @@ abstract class _HomeAdminStoreBase with Store, Loggable, Disposable {
           pagina = 1;
         }
 
-        var provasResponse = await ServiceLocator.get<ApiService>().admin.getProvas(
+        var provasResponse = await sl<AdminService>().getProvas(
               numeroPagina: pagina,
               descricao: desricao,
               ano: ano,

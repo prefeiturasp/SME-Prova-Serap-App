@@ -1,11 +1,15 @@
 import 'package:appserap/dtos/versao_atualizacao.respose.dto.dart';
 import 'package:chopper/chopper.dart';
+import 'package:injectable/injectable.dart';
 
 part 'versao.service.chopper.dart';
 
+@injectable
 @ChopperApi(baseUrl: "/v1/versoes")
 abstract class VersaoService extends ChopperService {
-  static VersaoService create([ChopperClient? client]) => _$VersaoService(client);
+
+  @factoryMethod
+  static VersaoService create(ChopperClient client) => _$VersaoService(client);
 
   @Get()
   Future<Response<String>> getVersao();

@@ -100,7 +100,7 @@ void main() {
             var provaMock = MockProvaService();
             mockProvaNenhuma(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -128,7 +128,7 @@ void main() {
             var provaMock = MockProvaService();
             mockProvaFinalizada(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -158,7 +158,7 @@ void main() {
             var provaMock = MockProvaService();
             mockProvaNenhuma(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -183,7 +183,7 @@ void main() {
             var provaMock = MockProvaService();
             await mockProvaSimples(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -208,7 +208,7 @@ void main() {
             var provaMock = MockProvaService();
             await mockProvaSimples(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -233,7 +233,7 @@ void main() {
             var provaMock = MockProvaService();
             await mockProvaSimples(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -258,7 +258,7 @@ void main() {
             var provaMock = MockProvaService();
             await mockProvaSimples(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -286,7 +286,7 @@ void main() {
           var provaMock = MockProvaService();
           await mockProvaSimples(provaMock);
 
-          when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+          when(sl<ProvaService>()).thenReturn(provaMock);
 
           await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -314,7 +314,7 @@ void main() {
           var provaMock = MockProvaService();
           await mockProvaSimples(provaMock);
 
-          when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+          when(sl<ProvaService>()).thenReturn(provaMock);
 
           await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -342,7 +342,7 @@ void main() {
           var provaMock = MockProvaService();
           await mockProvaSimples(provaMock);
 
-          when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+          when(sl<ProvaService>()).thenReturn(provaMock);
 
           await tester.pumpWidget(MaterialApp(home: HomeView()));
 

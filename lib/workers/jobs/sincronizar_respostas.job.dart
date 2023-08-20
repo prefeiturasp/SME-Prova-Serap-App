@@ -4,7 +4,7 @@ import 'package:appserap/interfaces/job.interface.dart';
 import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
@@ -49,7 +49,7 @@ class SincronizarRespostasJob extends Job with Loggable, Database {
             ))
         .toList();
 
-    final _service = ServiceLocator.get<ApiService>().questaoResposta;
+    final _service = sl<QuestaoRespostaService>();
 
     try {
       var response = await _service.postResposta(

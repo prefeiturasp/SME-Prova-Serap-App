@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
+import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/dtos/questao_completa_resposta.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -9,6 +12,7 @@ import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:mobx/mobx.dart';
 import 'package:retry/retry.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../interfaces/database.interface.dart';
 part 'questao_resultado_detalhes_view.store.g.dart';
@@ -19,6 +23,9 @@ class QuestaoResultadoDetalhesViewStore = _QuestaoResultadoDetalhesViewStoreBase
 abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable, Database {
   @observable
   bool carregando = false;
+
+  @observable
+  int totalQuestoes = 0;
 
   @observable
   QuestaoCompletaRespostaResponseDto? detalhes;
@@ -37,17 +44,26 @@ abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable, Data
   Prova? prova;
 
   @action
-  Future<void> carregarDetalhesQuestao({required int provaId, required String caderno, required int questaoLegadoId}) async {
+  Future<void> carregarDetalhesQuestao({required int provaId, required String caderno, required int ordem}) async {
     carregando = true;
 
     prova ??= await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
 
     await retry(
-      () async {
-        var res = await ServiceLocator.get<ApiService>().provaResultado.getQuestaoCompleta(
-              provaId: provaId,
-              questaoLegadoId: questaoLegadoId,
-            );
+          () async {
+        var prefs = sl<SharedPreferences>();
+
+
+        totalQuestoes = calcularTotalQuestoes(prefs, provaId, caderno);
+
+        String key = 't-$provaId-$caderno-$ordem';
+
+        var resumoQuestao = ProvaResultadoResumoQuestaoResponseDto.fromJson(jsonDecode(prefs.getString(key)!));
+
+        var res = await sl<ProvaResultadoService>().getQuestaoCompleta(
+          provaId: provaId,
+          questaoLegadoId: resumoQuestao.idQuestaoLegado,
+        );
 
         if (res.isSuccessful) {
           detalhes = res.body!;
@@ -58,10 +74,20 @@ abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable, Data
       },
       onRetry: (e) {
         fine(
-            '[Prova $provaId] - Tentativa de carregamento detalhes da questão legado $questaoLegadoId - ${e.toString()}');
+            '[Prova $provaId] - Tentativa de carregamento detalhes da questão $ordem da prova - ${e.toString()}');
       },
     );
     carregando = false;
+  }
+
+  int calcularTotalQuestoes(SharedPreferences prefs, int idProva, String? nomeCaderno) {
+    int total = 0;
+    prefs.getKeys().forEach((element) {
+      if (element.startsWith('t-$idProva-$nomeCaderno-')) {
+        total++;
+      }
+    });
+    return total;
   }
 
   @action

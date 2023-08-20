@@ -13,8 +13,10 @@ import 'package:appserap/stores/questao_revisao.store.dart';
 import 'package:appserap/stores/questao_tai_view.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
-import 'package:appserap/utils/app_config.util.dart';
+import 'package:chopper/chopper.dart';
 import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'database/respostas.database.dart';
@@ -34,8 +36,29 @@ import 'stores/questao.store.dart';
 import 'stores/questao_resultado_detalhes_view.store.dart';
 import 'stores/resumo_tai_view.store.dart';
 
+import 'main.ioc.config.dart';
+
 // ignore: non_constant_identifier_names
 GetIt ServiceLocator = GetIt.instance;
+GetIt sl = GetIt.instance;
+
+@InjectableInit(
+  initializerName: 'init',
+  preferRelativeImports: true,
+  asExtension: true,
+)
+void configureDependencies() => sl.init();
+
+@module
+abstract class RegisterModule {
+  @preResolve
+  Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
+
+  @injectable
+  ChopperClient get chopperClient => ApiService.create();
+
+  InternetConnection get internetConnection => InternetConnection();
+}
 
 class DependenciasIoC with Loggable {
   setup() async {
@@ -46,6 +69,9 @@ class DependenciasIoC with Loggable {
 
     registrarServicos();
     registrarStores();
+
+
+
     await ServiceLocator.allReady();
   }
 
@@ -56,12 +82,6 @@ class DependenciasIoC with Loggable {
   registrarServicos() {
     registerSingleton<AppDatabase>(AppDatabase());
     registerSingleton<RespostasDatabase>(RespostasDatabase());
-    registerSingleton<ApiService>(ApiService.build(
-      ConnectionOptions(
-        baseUrl: AppConfigReader.getApiHost(),
-        debugRequest: AppConfigReader.debugRequest(),
-      ),
-    ));
     registerSingleton<AppRouter>(AppRouter());
   }
 

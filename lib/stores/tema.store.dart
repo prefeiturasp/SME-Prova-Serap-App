@@ -1,6 +1,6 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 part 'tema.store.g.dart';
@@ -8,7 +8,6 @@ part 'tema.store.g.dart';
 class TemaStore = _TemaStoreBase with _$TemaStore;
 
 abstract class _TemaStoreBase with Store {
-  final apiService = GetIt.I.get<ApiService>();
 
   /// Prefixo `t` se refere ao `tamanho`
 
@@ -107,7 +106,7 @@ abstract class _TemaStoreBase with Store {
   }
 
   void enviarPreferencias() {
-    apiService.usuario.atualizarPreferencias(
+    sl<UsuarioService>().atualizarPreferencias(
       tamanhoFonte: incrementador.toInt(),
       familiaFonte: fonteDoTexto.index,
     );

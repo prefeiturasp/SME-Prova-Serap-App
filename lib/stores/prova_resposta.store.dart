@@ -3,7 +3,7 @@ import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
@@ -45,7 +45,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
     fine('[Prova $idProva] - Carregando respostas da prova');
 
     try {
-      var respostaBanco = await ServiceLocator.get<ApiService>().prova.getRespostasPorProvaId(idProva: idProva);
+      var respostaBanco = await sl<ProvaService>().getRespostasPorProvaId(idProva: idProva);
 
       if (respostaBanco.isSuccessful) {
         var questoesResponse = respostaBanco.body!;
@@ -127,7 +127,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
       }
 
       try {
-        var response = await ServiceLocator.get<ApiService>().questaoResposta.postResposta(
+        var response = await sl<QuestaoRespostaService>().postResposta(
               chaveAPI: AppConfigReader.getChaveApi(),
               respostas: respostas,
             );

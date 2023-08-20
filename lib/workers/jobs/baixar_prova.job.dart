@@ -21,7 +21,7 @@ class BaixarProvaJob extends Job with Loggable, Database {
       if (_usuarioStore.isRespondendoProva) {
         return;
       }
-      SharedPreferences prefs = await ServiceLocator.getAsync();
+      var prefs = sl<SharedPreferences>();
 
       String? token = prefs.getString("token");
       String? codigoEol = prefs.getString("serapUsuarioCodigoEOL");
@@ -29,7 +29,7 @@ class BaixarProvaJob extends Job with Loggable, Database {
         return;
       }
 
-      ProvaService provaService = ServiceLocator.get<ApiService>().prova;
+      ProvaService provaService = sl<ProvaService>();
 
       var provasResponse = await provaService.getProvas();
 

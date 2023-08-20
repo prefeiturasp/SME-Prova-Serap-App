@@ -4,6 +4,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -232,7 +233,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
 
     if (ServiceLocator.get<PrincipalStore>().temConexao) {
       try {
-        await GetIt.I.get<ApiService>().prova.setStatusProva(
+        await sl<ProvaService>().setStatusProva(
               idProva: id,
               tipoDispositivo: kDeviceType.index,
               status: EnumProvaStatus.INICIADA.index,
@@ -313,13 +314,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   Future<void> _iniciarRevisaoProva() async {
     await respostas.sincronizarResposta(force: true);
 
-    ServiceLocator.get<AppRouter>().router.go("/prova/$id/resumo");
+    ServiceLocator.get<AppRouter>().navigate(ResumoRespostasViewRoute(idProva: id));
   }
 
   Future<void> _finalizarProva() async {
     var confirm = await finalizarProva(true);
     if (confirm) {
-      ServiceLocator.get<AppRouter>().router.go("/");
+      ServiceLocator.get<AppRouter>().navigate(HomeViewRoute());
     }
   }
 
@@ -385,7 +386,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
         await respostas.sincronizarResposta(force: true);
 
         // Sincroniza com a api
-        var response = await GetIt.I.get<ApiService>().prova.setStatusProva(
+        var response = await sl<ProvaService>().setStatusProva(
               idProva: id,
               status: EnumProvaStatus.FINALIZADA.index,
               tipoDispositivo: kDeviceType.index,

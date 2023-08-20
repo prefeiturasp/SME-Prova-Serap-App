@@ -37,9 +37,7 @@ abstract class _ResumoTaiViewStoreBase with Store, Loggable, Database {
 
     await retry(
       () async {
-        var response = await ServiceLocator.get<ApiService>()
-            .provaTai
-            .obterResumo(provaId: provaId);
+        var response = await sl<ProvaTaiService>().obterResumo(provaId: provaId);
 
         if (response.isSuccessful) {
           resumo = response.body!.asObservable();
@@ -59,7 +57,7 @@ abstract class _ResumoTaiViewStoreBase with Store, Loggable, Database {
     await provaStore!.setStatusProva(EnumProvaStatus.FINALIZADA);
     await provaStore!.setHoraFimProva(DateTime.now());
 
-    await ServiceLocator.get<ApiService>().provaTai.finalizarProva(
+    await sl<ProvaTaiService>().finalizarProva(
           provaId: provaStore!.id,
           status: EnumProvaStatus.INICIADA.index,
           tipoDispositivo: kDeviceType.index,

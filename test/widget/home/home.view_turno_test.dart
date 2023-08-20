@@ -104,7 +104,7 @@ void main() {
             await mockProvaComTempo(provaMock, forcarBaixada: true);
             mockProvaDetalhesCaderno(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -131,7 +131,7 @@ void main() {
             await mockProvaComTempo(provaMock, forcarBaixada: true);
             mockProvaDetalhesCaderno(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -160,7 +160,7 @@ void main() {
             await mockProvaComTempo(provaMock, forcarBaixada: true);
             mockProvaDetalhesCaderno(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 

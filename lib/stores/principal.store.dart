@@ -7,6 +7,7 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/home.store.dart';
@@ -120,7 +121,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
             .map((element) => element.idDownload!)
             .toList();
 
-        await ServiceLocator.get<ApiService>().download.removerDownloads(
+        await sl<DownloadService>().removerDownloads(
               chaveAPI: AppConfigReader.getChaveApi(),
               ids: downlodIds,
             );
@@ -143,7 +144,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
     if (eraAdimin) {
       await launchUrl(Uri.parse(AppConfigReader.getSerapUrl()), webOnlyWindowName: '_self');
-      ServiceLocator.get<AppRouter>().router.go("/login");
+      ServiceLocator.get<AppRouter>().navigate(LoginViewRoute());
     }
   }
 
@@ -158,7 +159,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   }
 
   _limparDadosLocais() async {
-    SharedPreferences prefs = await ServiceLocator.getAsync();
+    var prefs = sl<SharedPreferences>();
 
     for (var item in prefs.getKeys()) {
       if (!item.startsWith('_')) {

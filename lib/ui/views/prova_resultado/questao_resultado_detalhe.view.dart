@@ -1,7 +1,7 @@
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/questao_resultado_detalhes_view.store.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_aluno_resposta.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -14,25 +14,24 @@ import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 
+@RoutePage()
 class QuestaoResultadoDetalhesView extends BaseStatefulWidget {
   final int provaId;
   final String caderno;
   final int ordem;
-  final List<ProvaResultadoResumoQuestaoResponseDto> resumo;
 
   const QuestaoResultadoDetalhesView({
     super.key,
-    required this.provaId,
-    required this.caderno,
-    required this.ordem,
-    required this.resumo,
+    @PathParam('idProva') required this.provaId,
+    @PathParam('caderno') required this.caderno,
+    @PathParam('ordem') required this.ordem,
   });
 
   @override
@@ -47,7 +46,7 @@ class _QuestaoResultadoDetalhesViewState
   ArquivoVideoDb? arquivoVideoDb;
   ArquivoAudioDb? arquivoAudioDb;
 
-  var db = ServiceLocator.get<AppDatabase>();
+  var db = sl<AppDatabase>();
 
   final controller = HtmlEditorController();
 
@@ -55,11 +54,10 @@ class _QuestaoResultadoDetalhesViewState
   void initState() {
     super.initState();
 
-    var questaoLegadoId = widget.resumo.where((element) => element.ordemQuestao == widget.ordem).first.idQuestaoLegado;
     store.carregarDetalhesQuestao(
       provaId: widget.provaId,
       caderno: widget.caderno,
-      questaoLegadoId: questaoLegadoId,
+      ordem: widget.ordem,
     );
   }
 
@@ -116,7 +114,7 @@ class _QuestaoResultadoDetalhesViewState
                                         ),
                                       ),
                                       Text(
-                                        'de ${widget.resumo.length}',
+                                        'de ${store.totalQuestoes}',
                                         style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
                                           fontSize: temaStore.tTexto20,
                                           fontFamily: temaStore.fonteDoTexto.nomeFonte,
@@ -247,22 +245,31 @@ class _QuestaoResultadoDetalhesViewState
     return BotaoSecundarioWidget(
       textoBotao: 'Questão anterior',
       onPressed: () async {
-        context.replace(
-          "/prova/resposta/${widget.provaId}/${widget.caderno}/${widget.ordem - 1}/detalhes",
-          extra: widget.resumo.toList(),
+        context.router.replace(
+          QuestaoResultadoDetalhesViewRoute(
+            key: ValueKey("${widget.provaId}-${widget.ordem - 1}"),
+            provaId: widget.provaId,
+            caderno: widget.caderno,
+            ordem: widget.ordem - 1,
+          ),
         );
       },
     );
   }
 
   Widget _buildBotaoProximo() {
-    if (widget.ordem < widget.resumo.length - 1) {
+    if (widget.ordem < store.totalQuestoes - 1) {
       return BotaoDefaultWidget(
         textoBotao: 'Próxima questão',
         onPressed: () async {
-          context.replace(
-            "/prova/resposta/${widget.provaId}/${widget.caderno}/${widget.ordem + 1}/detalhes",
-            extra: widget.resumo.toList(),
+
+          context.router.replace(
+            QuestaoResultadoDetalhesViewRoute(
+              key: ValueKey("${widget.provaId}-${widget.ordem + 1}"),
+              provaId: widget.provaId,
+              caderno: widget.caderno,
+              ordem: widget.ordem + 1,
+            ),
           );
         },
       );
@@ -275,7 +282,7 @@ class _QuestaoResultadoDetalhesViewState
       textoBotao: 'Voltar ao resultado',
       onPressed: () async {
         try {
-          context.push("/prova/resposta/${widget.provaId}/${widget.caderno}/resumo");
+          context.router.push(ProvaResultadoResumoViewRoute(key: ValueKey(widget.provaId), provaId: widget.provaId, caderno: widget.caderno,));
         } catch (e, stack) {
           await recordError(e, stack);
         }

@@ -1,7 +1,7 @@
 import 'package:appserap/dtos/contexto_prova.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:mobx/mobx.dart';
 import 'package:retry/retry.dart';
 part 'admin_prova_contexto.store.g.dart';
@@ -20,7 +20,7 @@ abstract class _AdminProvaContextoViewStoreBase with Store, Loggable {
     carregando = true;
     await retry(
       () async {
-        var res = await ServiceLocator.get<ApiService>().contextoProva.getContextosPorProva(idProva: idProva);
+        var res = await sl<ContextoProvaService>().getContextosPorProva(idProva: idProva);
 
         if (res.isSuccessful) {
           contextosProva = res.body!.asObservable();

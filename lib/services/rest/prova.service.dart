@@ -4,12 +4,16 @@ import 'package:appserap/dtos/prova_detalhes.response.dto.dart';
 import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.response.dto.dart';
 import 'package:chopper/chopper.dart';
+import 'package:injectable/injectable.dart';
 
 part 'prova.service.chopper.dart';
 
+@injectable
 @ChopperApi(baseUrl: "/v1/provas")
 abstract class ProvaService extends ChopperService {
-  static ProvaService create([ChopperClient? client]) => _$ProvaService(client);
+
+  @factoryMethod
+  static ProvaService create(ChopperClient client) => _$ProvaService(client);
 
   @Get()
   Future<Response<List<ProvaResponseDTO>>> getProvas();

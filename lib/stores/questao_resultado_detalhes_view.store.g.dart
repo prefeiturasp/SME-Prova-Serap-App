@@ -27,6 +27,23 @@ mixin _$QuestaoResultadoDetalhesViewStore
     });
   }
 
+  late final _$totalQuestoesAtom = Atom(
+      name: '_QuestaoResultadoDetalhesViewStoreBase.totalQuestoes',
+      context: context);
+
+  @override
+  int get totalQuestoes {
+    _$totalQuestoesAtom.reportRead();
+    return super.totalQuestoes;
+  }
+
+  @override
+  set totalQuestoes(int value) {
+    _$totalQuestoesAtom.reportWrite(value, super.totalQuestoes, () {
+      super.totalQuestoes = value;
+    });
+  }
+
   late final _$detalhesAtom = Atom(
       name: '_QuestaoResultadoDetalhesViewStoreBase.detalhes',
       context: context);
@@ -66,14 +83,10 @@ mixin _$QuestaoResultadoDetalhesViewStore
 
   @override
   Future<void> carregarDetalhesQuestao(
-      {required int provaId,
-      required String caderno,
-      required int questaoLegadoId}) {
+      {required int provaId, required String caderno, required int ordem}) {
     return _$carregarDetalhesQuestaoAsyncAction.run(() => super
         .carregarDetalhesQuestao(
-            provaId: provaId,
-            caderno: caderno,
-            questaoLegadoId: questaoLegadoId));
+            provaId: provaId, caderno: caderno, ordem: ordem));
   }
 
   late final _$carregarDetalhesAsyncAction = AsyncAction(
@@ -106,6 +119,7 @@ mixin _$QuestaoResultadoDetalhesViewStore
   String toString() {
     return '''
 carregando: ${carregando},
+totalQuestoes: ${totalQuestoes},
 detalhes: ${detalhes},
 questao: ${questao}
     ''';

@@ -63,7 +63,7 @@ void main() {
       }
 
       var provaServiceMock = MockProvaService();
-      when(ServiceLocator.get<ApiService>().prova).thenAnswer((_) => provaServiceMock);
+      when(sl<ProvaService>()).thenAnswer((_) => provaServiceMock);
 
       when(provaServiceMock.getResumoProvaCaderno(idProva: anyNamed('idProva'), caderno: anyNamed('caderno')))
           .thenAnswer((_) => getProvaDetalhesCadernoResponseDTO());
@@ -95,7 +95,7 @@ void main() {
 
       var downloadServiceMock = MockDownloadService();
 
-      when(ServiceLocator.get<ApiService>().download).thenAnswer((_) => downloadServiceMock);
+      when(sl<DownloadService>()).thenAnswer((_) => downloadServiceMock);
 
       when(downloadServiceMock.informarDownloadConcluido(
         provaId: anyNamed("provaId"),
@@ -144,7 +144,7 @@ void main() {
     test('Deve fazer o download da prova', () async {
       var questaoServiceMock = MockQuestaoService();
 
-      when(ServiceLocator.get<ApiService>().questao).thenAnswer((_) => questaoServiceMock);
+      when(sl<QuestaoService>()).thenAnswer((_) => questaoServiceMock);
 
       when(questaoServiceMock.getQuestaoCompletaLegado(idsLegado: [21138, 21139]))
           .thenAnswer((_) => (getQuestaoCompletaLegado([21138, 21139])));
@@ -173,7 +173,7 @@ void main() {
     });
 
     mockQuestoes(MockQuestaoService mock) {
-      when(ServiceLocator.get<ApiService>().questao).thenAnswer((_) => mock);
+      when(sl<QuestaoService>()).thenAnswer((_) => mock);
 
       when(
         mock.getQuestaoCompletaLegado(idsLegado: [21138, 21139]),
@@ -221,7 +221,7 @@ void main() {
     test('Deve retornar erro ao tentar baixar uma questao com imagem que tenha link da imagem invalido', () async {
       var questaoServiceMock = MockQuestaoService();
 
-      when(ServiceLocator.get<ApiService>().questao).thenAnswer((_) => questaoServiceMock);
+      when(sl<QuestaoService>()).thenAnswer((_) => questaoServiceMock);
 
       when(questaoServiceMock.getQuestaoCompletaLegado(idsLegado: [21138, 21139]))
           .thenAnswer((_) => (getQuestaoCompletaLegado([21138, 21139])));
@@ -235,7 +235,7 @@ void main() {
       int provaId = 179;
       String caderno = 'A';
 
-      var provas = await ServiceLocator.get<ApiService>().prova.getProvas();
+      var provas = await sl<ProvaService>().getProvas();
 
       ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(provas.body!.first.toProvaModel());
 

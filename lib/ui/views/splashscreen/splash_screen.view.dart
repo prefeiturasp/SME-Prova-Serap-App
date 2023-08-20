@@ -1,3 +1,5 @@
+import 'package:appserap/main.route.gr.dart';
+import 'package:auto_route/auto_route.dart';
 import 'dart:io';
 
 import 'package:appserap/interfaces/loggable.interface.dart';
@@ -14,13 +16,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:updater/updater.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+@RoutePage()
 class SplashScreenView extends StatefulWidget {
   const SplashScreenView({Key? key}) : super(key: key);
 
@@ -59,7 +61,7 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
 
     if (_principalStore.temConexao && _principalStore.usuario.isLogado) {
       try {
-        var responseMeusDados = await GetIt.I.get<ApiService>().auth.meusDados();
+        var responseMeusDados = await sl<AutenticacaoService>().meusDados();
 
         if (responseMeusDados.isSuccessful) {
           var usuarioDados = responseMeusDados.body!;
@@ -108,12 +110,18 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
   _navegar() {
     if (_principalStore.usuario.isLogado) {
       if (_principalStore.usuario.isAdmin) {
-        context.go("/admin");
+        context.router.replaceAll(
+          [HomeAdminViewRoute()],
+        );
       } else {
-        context.go("/");
+        context.router.replaceAll(
+          [HomeViewRoute()],
+        );
       }
     } else {
-      context.go("/login");
+      context.router.replaceAll(
+        [LoginViewRoute()],
+      );
     }
   }
 
@@ -161,13 +169,13 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
     }
 
     try {
-      SharedPreferences prefs = await ServiceLocator.getAsync();
+      SharedPreferences prefs = sl();
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
       int buildNumber = prefs.getInt("_buildNumber") ?? 0;
       String version = prefs.getString("_version") ?? "1.0.0";
 
-      String deviceId = ServiceLocator<PrincipalStore>().dispositivoId;
+      String deviceId = sl<PrincipalStore>().dispositivoId;
 
       await FirebaseCrashlytics.instance.setCustomKey('deviceId', deviceId);
 
@@ -175,14 +183,14 @@ class _SplashScreenViewState extends State<SplashScreenView> with Loggable {
         info("Informando versão...");
         info("Id do Dispositivo: $deviceId Versão: ${packageInfo.version} Build: ${packageInfo.buildNumber} ");
 
-        if (ServiceLocator.get<PrincipalStore>().temConexao) {
-          await GetIt.I.get<ApiService>().versao.informarVersao(
-                chaveAPI: AppConfigReader.getChaveApi(),
-                versaoCodigo: int.parse(packageInfo.buildNumber),
-                versaoDescricao: packageInfo.version,
-                dispositivoId: deviceId,
-                atualizadoEm: DateTime.now().toIso8601String(),
-              );
+        if (sl<PrincipalStore>().temConexao) {
+          await sl<VersaoService>().informarVersao(
+            chaveAPI: AppConfigReader.getChaveApi(),
+            versaoCodigo: int.parse(packageInfo.buildNumber),
+            versaoDescricao: packageInfo.version,
+            dispositivoId: deviceId,
+            atualizadoEm: DateTime.now().toIso8601String(),
+          );
 
           await prefs.setInt("_buildNumber", int.parse(packageInfo.buildNumber));
           await prefs.setString("_version", packageInfo.version);

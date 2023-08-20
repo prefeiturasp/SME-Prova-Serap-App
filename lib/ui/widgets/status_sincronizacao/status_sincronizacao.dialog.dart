@@ -14,11 +14,11 @@ import 'package:appserap/workers/jobs.enum.dart';
 import 'package:flutter/material.dart';
 
 mostrarDetalhesSincronizacaoResposta(BuildContext context) async {
-  bool conectado = ServiceLocator.get<PrincipalStore>().temConexao;
+  bool conectado = sl<PrincipalStore>().temConexao;
 
-  AppDatabase db = ServiceLocator.get();
-  RespostasDatabase dbRespostas = ServiceLocator.get();
-  TemaStore temaStore = ServiceLocator.get();
+  AppDatabase db = sl();
+  RespostasDatabase dbRespostas = sl();
+  TemaStore temaStore = sl();
 
   var job = await db.jobDao.getByJobName(JobsEnum.SINCRONIZAR_RESPOSTAS);
   var ultimaSincronizacao = formatDateddMMyyykkmmss(job?.ultimaExecucao);

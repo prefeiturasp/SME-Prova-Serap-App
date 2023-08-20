@@ -13,3 +13,6 @@ export 'rest/download.service.dart';
 export 'rest/configuracao.service.dart';
 export 'rest/prova_resultado.service.dart';
 export 'rest/prova_tai.service.dart';
+export 'rest/admin.service.dart';
+export 'rest/auth.admin.service.dart';
+export 'rest/usuario.service.dart';

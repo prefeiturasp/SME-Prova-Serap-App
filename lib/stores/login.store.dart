@@ -4,7 +4,7 @@ import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/exceptions/sem_conexao.exeption.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -20,8 +20,8 @@ part 'login.store.g.dart';
 class LoginStore = _LoginStoreBase with _$LoginStore;
 
 abstract class _LoginStoreBase with Store, Loggable {
-  final _autenticacaoService = GetIt.I.get<ApiService>().auth;
-  final _usuarioStore = GetIt.I.get<UsuarioStore>();
+  final _autenticacaoService = sl<AutenticacaoService>();
+  final _usuarioStore = sl<UsuarioStore>();
 
   final autenticacaoErroStore = AutenticacaoErroStore();
 
@@ -129,7 +129,7 @@ abstract class _LoginStoreBase with Store, Loggable {
         _usuarioStore.ultimoLogin = body.ultimoLogin;
         _usuarioStore.isAdmin = false;
 
-        SharedPreferences prefs = await ServiceLocator.getAsync();
+        var prefs = sl<SharedPreferences>();
         await prefs.setString('token', body.token);
 
         var responseMeusDados = await _autenticacaoService.meusDados();

@@ -9,7 +9,6 @@ import 'package:chopper/chopper.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 part 'orientacao_inicial.store.g.dart';
@@ -17,7 +16,7 @@ part 'orientacao_inicial.store.g.dart';
 class OrientacaoInicialStore = _OrientacaoInicialStoreBase with _$OrientacaoInicialStore;
 
 abstract class _OrientacaoInicialStoreBase with Store, Loggable {
-  final _orientacaoService = GetIt.I.get<ApiService>().orientacoesIniciais;
+  final _orientacaoService = sl<OrientacaoInicialService>();
 
   @observable
   ObservableList<ApresentacaoModelWidget> listaPaginasOrientacoes = <ApresentacaoModelWidget>[].asObservable();
