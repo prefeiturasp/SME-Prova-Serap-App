@@ -58,7 +58,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   late String caderno;
   Prova? prova;
 
-  AppDatabase db = ServiceLocator.get();
+  AppDatabase db = sl.get();
 
   // late List<DownloadProvaDb> downloads;
 

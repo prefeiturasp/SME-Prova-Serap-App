@@ -59,7 +59,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
     try {
       Response<AutenticacaoResponseDTO> response;
 
-      if (ServiceLocator.get<UsuarioStore>().isAdmin) {
+      if (sl.get<UsuarioStore>().isAdmin) {
         response = await sl<AutenticacaoAdminService>().revalidar(token: oldToken);
       } else {
         response = await sl<AutenticacaoService>().revalidar(token: oldToken);
@@ -91,7 +91,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
     refreshtoken = false;
     final _principalStore = sl<PrincipalStore>();
     await _principalStore.sair();
-    ServiceLocator.get<AppRouter>().replaceAll([LoginViewRoute()]);
+    sl.get<AppRouter>().replaceAll([LoginViewRoute()]);
   }
 }
 

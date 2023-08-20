@@ -87,8 +87,8 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable, Database {
 
   @action
   Future<bool> enviarResposta() async {
-    var principalStore = ServiceLocator.get<PrincipalStore>();
-    var usuarioStore = ServiceLocator.get<UsuarioStore>();
+    var principalStore = sl.get<PrincipalStore>();
+    var usuarioStore = sl.get<UsuarioStore>();
 
     QuestaoRespostaDTO questaoResposta = QuestaoRespostaDTO(
       alunoRa: usuarioStore.codigoEOL!,

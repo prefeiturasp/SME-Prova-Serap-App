@@ -46,8 +46,8 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
                   style: {
                     '*': Style.fromTextStyle(
                       TextStyle(
-                        fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
-                        fontSize: ServiceLocator.get<TemaStore>().size(16),
+                        fontFamily: sl.get<TemaStore>().fonteDoTexto.nomeFonte,
+                        fontSize: sl.get<TemaStore>().size(16),
                       ),
                     )
                   },

@@ -32,7 +32,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   @action
   carregarProvas() async {
     carregando = true;
-    String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
+    String codigoEOL = sl.get<UsuarioStore>().codigoEOL!;
 
     Map<int, ProvaStore> provasStore = {};
 
@@ -45,7 +45,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       );
     }
 
-    if (ServiceLocator.get<PrincipalStore>().temConexao) {
+    if (sl.get<PrincipalStore>().temConexao) {
       try {
         Response<List<ProvaResponseDTO>> response = await sl<ProvaService>().getProvas();
 
@@ -138,7 +138,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   }
 
   Future<void> carregaProva(int idProva, String caderno, ProvaStore provaStoreAtualizada) async {
-    var provaDao = ServiceLocator.get<AppDatabase>().provaDao;
+    var provaDao = sl.get<AppDatabase>().provaDao;
 
     Prova? prova = await provaDao.obterPorIdNull(idProva, caderno);
 

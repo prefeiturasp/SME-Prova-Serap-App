@@ -90,7 +90,7 @@ setupDatabaseInspector() async {
     bundleId: 'br.gov.sp.prefeitura.sme.appserap',
   );
 
-  final driftDb = ServiceLocator.get<AppDatabase>();
+  final driftDb = sl.get<AppDatabase>();
   final sqlServer = DriftSQLDatabaseServer(
     id: "1",
     name: "App",
@@ -98,7 +98,7 @@ setupDatabaseInspector() async {
   );
   driver.addSQLServer(sqlServer);
 
-  final respostasDb = ServiceLocator.get<RespostasDatabase>();
+  final respostasDb = sl.get<RespostasDatabase>();
   final sqlServerRespostas = DriftSQLDatabaseServer(
     id: "1",
     name: "Respostas",

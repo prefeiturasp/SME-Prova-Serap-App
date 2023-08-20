@@ -13,7 +13,7 @@ class LoginAdmStore = _LoginAdmStoreBase with _$LoginAdmStore;
 abstract class _LoginAdmStoreBase with Store, Loggable {
   Future<bool> loginByToken(String codigo) async {
     final _autenticacaoService = sl<AutenticacaoAdminService>();
-    final _usuarioStore = ServiceLocator.get<UsuarioStore>();
+    final _usuarioStore = sl.get<UsuarioStore>();
 
     try {
       var responseLogin = await _autenticacaoService.loginByCodigoAutenticacao(

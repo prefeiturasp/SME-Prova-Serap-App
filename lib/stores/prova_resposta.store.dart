@@ -29,7 +29,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   });
 
   @observable
-  String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
+  String codigoEOL = sl.get<UsuarioStore>().codigoEOL!;
 
   @observable
   ObservableMap<int, RespostaProva> respostasLocal = <int, RespostaProva>{}.asObservable();
@@ -38,7 +38,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   Future<void> carregarRespostasServidor() async {
     respostasLocal = (await carregarRespostasLocal()).asObservable();
 
-    if (!ServiceLocator.get<PrincipalStore>().temConexao) {
+    if (!sl.get<PrincipalStore>().temConexao) {
       return;
     }
 
@@ -63,7 +63,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
 
           var entity = RespostaProva(
             codigoEOL: codigoEOL,
-            dispositivoId: ServiceLocator<PrincipalStore>().dispositivoId,
+            dispositivoId: sl<PrincipalStore>().dispositivoId,
             provaId: idProva,
             caderno: caderno,
             questaoId: questaoResponse.questaoId,
@@ -102,12 +102,12 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
       idProva,
     );
 
-    if (!ServiceLocator.get<PrincipalStore>().temConexao) {
+    if (!sl.get<PrincipalStore>().temConexao) {
       info("[$idProva] - Sincronização não executada. Não há conexão com a internet");
       return;
     }
 
-    var prova = await ServiceLocator.get<AppDatabase>().provaDao.obterPorProvaIdECaderno(idProva, caderno);
+    var prova = await sl.get<AppDatabase>().provaDao.obterPorProvaIdECaderno(idProva, caderno);
 
     if (respostasNaoSincronizadas.length == prova.quantidadeRespostaSincronizacao || force) {
       List<QuestaoRespostaDTO> respostas = [];
@@ -116,7 +116,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
         respostas.add(
           QuestaoRespostaDTO(
             alunoRa: codigoEOL,
-            dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
+            dispositivoId: sl.get<PrincipalStore>().dispositivoId,
             questaoId: resposta.questaoId,
             alternativaId: resposta.alternativaId,
             resposta: resposta.resposta,
@@ -171,7 +171,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
 
     var resposta = RespostaProva(
       codigoEOL: codigoEOL,
-      dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
+      dispositivoId: sl.get<PrincipalStore>().dispositivoId,
       provaId: idProva,
       caderno: caderno,
       questaoId: questaoId,
@@ -197,7 +197,7 @@ abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
   }) async {
     var resposta = RespostaProva(
       codigoEOL: codigoEOL,
-      dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
+      dispositivoId: sl.get<PrincipalStore>().dispositivoId,
       provaId: idProva,
       caderno: caderno,
       questaoId: questaoId,

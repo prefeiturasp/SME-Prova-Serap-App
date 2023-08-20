@@ -40,7 +40,7 @@ void main() {
 
   group('Download -', () {
     mocksUsuarioStore() {
-      when(ServiceLocator.get<UsuarioStore>().deficiencias).thenReturn(mobx.ObservableList());
+      when(sl.get<UsuarioStore>().deficiencias).thenReturn(mobx.ObservableList());
     }
 
     mocksProvaService() {
@@ -165,7 +165,7 @@ void main() {
 
       await downloadManagerStore.iniciarDownload();
 
-      var db = ServiceLocator.get<AppDatabase>();
+      var db = sl.get<AppDatabase>();
 
       var questoes = await db.questaoDao.obterPorProvaId(provaId);
 
@@ -201,14 +201,14 @@ void main() {
       var questaoServiceMock = MockQuestaoService();
       mockQuestoes(questaoServiceMock);
 
-      when(ServiceLocator.get<UsuarioStore>().isRespondendoProva).thenReturn(false);
+      when(sl.get<UsuarioStore>().isRespondendoProva).thenReturn(false);
 
-      var sp = await ServiceLocator.getAsync<SharedPreferences>();
+      var sp = await sl.getAsync<SharedPreferences>();
       sp.setString('token', UserFixture().autenticacaoResponse.token);
 
       await BaixarProvaJob().run();
 
-      var db = ServiceLocator.get<AppDatabase>();
+      var db = sl.get<AppDatabase>();
 
       var prova = await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
       expect(prova, isNotNull);
@@ -237,7 +237,7 @@ void main() {
 
       var provas = await sl<ProvaService>().getProvas();
 
-      ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(provas.body!.first.toProvaModel());
+      sl.get<AppDatabase>().provaDao.inserirOuAtualizar(provas.body!.first.toProvaModel());
 
       DownloadManagerStore downloadManagerStore = DownloadManagerStore(
         provaId: provaId,
@@ -250,7 +250,7 @@ void main() {
 
       await downloadManagerStore.iniciarDownload();
 
-      var db = ServiceLocator.get<AppDatabase>();
+      var db = sl.get<AppDatabase>();
 
       var prova = await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
       expect(prova.downloadStatus, EnumDownloadStatus.ERRO);

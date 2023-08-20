@@ -29,7 +29,7 @@ class FinalizarProvasPendenteJob extends Job with Loggable, Database {
 
   @override
   run() async {
-    AppDatabase db = ServiceLocator.get();
+    AppDatabase db = sl.get();
 
     fine('Sincronizando provas para o servidor');
 

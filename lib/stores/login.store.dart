@@ -111,14 +111,14 @@ abstract class _LoginStoreBase with Store, Loggable {
   Future<bool> autenticar() async {
     carregando = true;
     try {
-      if (!ServiceLocator.get<PrincipalStore>().temConexao) {
+      if (!sl.get<PrincipalStore>().temConexao) {
         throw SemConexaoException();
       }
 
       var responseLogin = await _autenticacaoService.login(
         login: codigoEOL,
         senha: senha,
-        dispositivo: ServiceLocator.get<PrincipalStore>().dispositivoId,
+        dispositivo: sl.get<PrincipalStore>().dispositivoId,
       );
 
       if (responseLogin.isSuccessful) {

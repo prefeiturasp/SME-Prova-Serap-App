@@ -39,7 +39,6 @@ import 'stores/resumo_tai_view.store.dart';
 import 'main.ioc.config.dart';
 
 // ignore: non_constant_identifier_names
-GetIt ServiceLocator = GetIt.instance;
 GetIt sl = GetIt.instance;
 
 @InjectableInit(
@@ -63,16 +62,16 @@ abstract class RegisterModule {
 class DependenciasIoC with Loggable {
   setup() async {
     config('Configurando Injeção de Dependencias');
-    ServiceLocator.allowReassignment = true;
+    sl.allowReassignment = true;
     registrarServicosAsync();
-    await ServiceLocator.allReady();
+    await sl.allReady();
 
     registrarServicos();
     registrarStores();
 
 
 
-    await ServiceLocator.allReady();
+    await sl.allReady();
   }
 
   registrarServicosAsync() {
@@ -119,9 +118,9 @@ class DependenciasIoC with Loggable {
     bool? signalsReady,
     FutureOr<dynamic> Function(T)? dispose,
   }) {
-    if (!ServiceLocator.isRegistered<T>()) {
+    if (!sl.isRegistered<T>()) {
       finest('[SingletonAsync] Registrando ${T.toString()}');
-      ServiceLocator.registerSingletonAsync<T>(
+      sl.registerSingletonAsync<T>(
         factoryFunc,
         instanceName: instanceName,
         dependsOn: dependsOn,
@@ -137,9 +136,9 @@ class DependenciasIoC with Loggable {
     bool? signalsReady,
     FutureOr<dynamic> Function(T)? dispose,
   }) {
-    if (!ServiceLocator.isRegistered<T>()) {
+    if (!sl.isRegistered<T>()) {
       finest('[Singleton] Registrando ${T.toString()}');
-      ServiceLocator.registerSingleton<T>(
+      sl.registerSingleton<T>(
         instance,
         instanceName: instanceName,
         signalsReady: signalsReady,

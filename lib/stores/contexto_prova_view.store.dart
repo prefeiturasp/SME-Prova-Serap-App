@@ -18,7 +18,7 @@ abstract class _ContextoProvaViewStoreBase with Store {
   carregarContextoProva(int provaId) async {
     loading = true;
 
-    ContextoProvaDao contextoDao = ServiceLocator.get<AppDatabase>().contextoProvaDao;
+    ContextoProvaDao contextoDao = sl.get<AppDatabase>().contextoProvaDao;
 
     contextoProva = await contextoDao.obterPorProvaId(provaId);
 

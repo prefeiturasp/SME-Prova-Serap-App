@@ -38,7 +38,7 @@ mockProvaSimples(
       provaModel.downloadStatus = status;
       provaModel.idDownload = "1";
 
-      await ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(provaModel);
+      await sl.get<AppDatabase>().provaDao.inserirOuAtualizar(provaModel);
     }
   }
 
@@ -62,14 +62,14 @@ gravarProvaBanco(
     provaModel.status = statusProva;
     provaModel.idDownload = "1";
 
-    await ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(provaModel);
+    await sl.get<AppDatabase>().provaDao.inserirOuAtualizar(provaModel);
 
     var provaAluno = ProvaAluno(
       codigoEOL: '5720828',
       provaId: provaModel.id,
     );
 
-    await ServiceLocator.get<AppDatabase>().provaAlunoDao.inserirOuAtualizar(provaAluno);
+    await sl.get<AppDatabase>().provaAlunoDao.inserirOuAtualizar(provaAluno);
   }
 }
 
@@ -89,7 +89,7 @@ mockProvaComTempo(MockProvaService mock,
       provaModel.downloadStatus = status;
       provaModel.idDownload = "1";
 
-      await ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(provaModel);
+      await sl.get<AppDatabase>().provaDao.inserirOuAtualizar(provaModel);
     }
   }
 

@@ -144,12 +144,12 @@ abstract class _PrincipalStoreBase with Store, Loggable {
 
     if (eraAdimin) {
       await launchUrl(Uri.parse(AppConfigReader.getSerapUrl()), webOnlyWindowName: '_self');
-      ServiceLocator.get<AppRouter>().navigate(LoginViewRoute());
+      sl.get<AppRouter>().navigate(LoginViewRoute());
     }
   }
 
   limparMemoriaProvas() async {
-    var homeStore = ServiceLocator.get<HomeStore>();
+    var homeStore = sl.get<HomeStore>();
 
     homeStore.provas.forEach((key, value) {
       value.onDispose();

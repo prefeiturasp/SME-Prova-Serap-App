@@ -77,7 +77,7 @@ void main() {
 
     registerInjection<HomeStore>(HomeStore());
 
-    await ServiceLocator.allReady();
+    await sl.allReady();
   });
 
   tearDown(() {
@@ -86,9 +86,9 @@ void main() {
   });
 
   mockPrincipalStore() {
-    when(ServiceLocator.get<PrincipalStore>().usuario).thenReturn(ServiceLocator.get<UsuarioStore>());
-    when(ServiceLocator.get<PrincipalStore>().temConexao).thenReturn(true);
-    when(ServiceLocator.get<PrincipalStore>().versao).thenReturn("");
+    when(sl.get<PrincipalStore>().usuario).thenReturn(sl.get<UsuarioStore>());
+    when(sl.get<PrincipalStore>().temConexao).thenReturn(true);
+    when(sl.get<PrincipalStore>().versao).thenReturn("");
   }
 
   group('Home - Turnos', () {
