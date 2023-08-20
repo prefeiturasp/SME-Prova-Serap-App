@@ -460,10 +460,10 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
 
   Future<Widget> showVideoPlayer() async {
     if (kIsWeb) {
-      return VideoPlayerWidget(videoUrl: buildUrl(arquivoVideo));
+      return VideoPlayer(videoUrl: buildUrl(arquivoVideo));
     } else {
       String path = (await buildPath(arquivoVideoDb!.path))!;
-      return VideoPlayerWidget(videoPath: path);
+      return VideoPlayer(videoPath: path);
     }
   }
 

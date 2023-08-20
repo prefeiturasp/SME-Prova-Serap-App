@@ -119,6 +119,7 @@ dependencies:
 
   # Video player
   chewie: ^1.7.0
+  appinio_video_player: ^1.2.1
 
   # Form 
   dropdown_search: ^4.0.1

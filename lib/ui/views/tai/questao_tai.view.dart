@@ -202,7 +202,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
   }
 
   Widget showVideoPlayer() {
-    return VideoPlayerWidget(
+    return VideoPlayer(
       videoUrl: store.questao!.videos.first.caminho,
     );
   }

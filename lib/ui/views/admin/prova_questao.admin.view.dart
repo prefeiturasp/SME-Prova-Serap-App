@@ -221,7 +221,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
       textoBotao: 'Item anterior',
       onPressed: () async {
         int ordem = widget.ordem - 1;
-        context.pushRoute(
+        context.router.navigate(
           AdminProvaQuestaoViewRoute(
             key: ValueKey("${widget.idProva}-${widget.nomeCaderno}-$ordem"),
             idProva: widget.idProva,
@@ -239,7 +239,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
         textoBotao: 'Próximo item',
         onPressed: () async {
           int ordem = widget.ordem + 1;
-          context.pushRoute(
+          context.router.navigate(
             AdminProvaQuestaoViewRoute(
               key: ValueKey("${widget.idProva}-${widget.nomeCaderno}-$ordem"),
               idProva: widget.idProva,
@@ -266,7 +266,7 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
   }
 
   Widget showVideoPlayer() {
-    return VideoPlayerWidget(videoUrl: store.videos.first.caminho);
+    return VideoPlayer(videoUrl: store.videos.first.caminho);
   }
 
   bool exibirAudio() {
