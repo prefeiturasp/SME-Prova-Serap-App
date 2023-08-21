@@ -2,10 +2,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/stores/home.store.dart';
-import 'package:appserap/stores/job.store.dart';
 import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:clock/clock.dart';
@@ -24,7 +21,6 @@ import '../../fixtures/fixture_reader.dart';
 import '../../fixtures/mocks.provas.dart';
 import '../../fixtures/mocks.provas.mocks.dart';
 import '../../fixtures/user/locator.fixture.dart';
-import 'home.view_turno_test.mocks.dart';
 
 @GenerateMocks(
   [
@@ -61,21 +57,21 @@ void main() {
 
     registerInjectionAsync<SharedPreferences>(() => SharedPreferences.getInstance());
 
-    Future<UsuarioStore> teste() async {
-      UsuarioStore u = UsuarioStore();
-      u.carregarUsuario();
-      return u;
-    }
-
-    registerInjection<UsuarioStore>(await teste());
-
-    registerInjection<PrincipalStore>(MockPrincipalStore());
-    registerInjection<ApiService>(MockApiService());
-
-    registerInjection<TemaStore>(TemaStore());
-    registerInjection<JobStore>(JobStore());
-
-    registerInjection<HomeStore>(HomeStore());
+    // Future<UsuarioStore> teste() async {
+    //   UsuarioStore u = UsuarioStore();
+    //   u.carregarUsuario();
+    //   return u;
+    // }
+    //
+    // registerInjection<UsuarioStore>(await teste());
+    //
+    // registerInjection<PrincipalStore>(MockPrincipalStore());
+    // registerInjection<ApiService>(MockApiService());
+    //
+    // registerInjection<TemaStore>(TemaStore());
+    // registerInjection<JobStore>(JobStore());
+    //
+    // registerInjection<HomeStore>(HomeStore());
 
     await sl.allReady();
   });

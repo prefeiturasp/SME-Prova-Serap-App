@@ -1,8 +1,9 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:injectable/injectable.dart';
 
 import 'main.route.gr.dart';
 
-// @Singleton()
+@Singleton()
 @AutoRouterConfig(
   replaceInRouteName: 'Page|Screen,Route,View',
 )

@@ -7,18 +7,23 @@ import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
-// import 'package:injectable/injectable.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:retry/retry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'admin_prova_questao.store.g.dart';
 
-// @Injectable()
+@LazySingleton()
 class AdminProvaQuestaoViewStore = _AdminProvaQuestaoViewStoreBase with _$AdminProvaQuestaoViewStore;
 
 abstract class _AdminProvaQuestaoViewStoreBase with Store, Loggable {
+  final SharedPreferences _sharedPreferences;
+  final AdminService _adminService;
+  final AlternativaService _alternativaService;
+  final ArquivoService _arquivoService;
+  final QuestaoService _questaoService;
+
   @observable
   bool carregando = false;
 
@@ -39,20 +44,26 @@ abstract class _AdminProvaQuestaoViewStoreBase with Store, Loggable {
 
   List<ArquivoVideoResponseDTO> videos = [];
 
+  _AdminProvaQuestaoViewStoreBase(
+    this._sharedPreferences,
+    this._adminService,
+    this._alternativaService,
+    this._arquivoService,
+    this._questaoService,
+  );
+
   @action
   Future<void> carregarDetalhesQuestao({required int idProva, String? nomeCaderno, required int ordem}) async {
     carregando = true;
     await retry(
       () async {
-        var prefs = sl<SharedPreferences>();
-
-        totalQuestoes = calcularTotalQuestoes(prefs, idProva, nomeCaderno);
+        totalQuestoes = calcularTotalQuestoes(_sharedPreferences, idProva, nomeCaderno);
 
         String key = 'a-$idProva-$nomeCaderno-$ordem';
 
-        var resumoQuestao = AdminProvaResumoResponseDTO.fromJson(jsonDecode(prefs.getString(key)!));
+        var resumoQuestao = AdminProvaResumoResponseDTO.fromJson(jsonDecode(_sharedPreferences.getString(key)!));
 
-        var res = await sl<AdminService>().getDetalhes(idProva: idProva, idQuestao: resumoQuestao.id);
+        var res = await _adminService.getDetalhes(idProva: idProva, idQuestao: resumoQuestao.id);
 
         if (res.isSuccessful) {
           detalhes = res.body!;
@@ -93,7 +104,7 @@ abstract class _AdminProvaQuestaoViewStoreBase with Store, Loggable {
 
     fine("Carregando ${detalhes!.alternativasId.length} alternativas");
     for (var id in detalhes!.alternativasId) {
-      var res = await sl<AlternativaService>().getAlternativa(idAlternativa: id);
+      var res = await _alternativaService.getAlternativa(idAlternativa: id);
       if (res.isSuccessful) {
         alternativas.add(res.body!);
       }
@@ -101,7 +112,7 @@ abstract class _AdminProvaQuestaoViewStoreBase with Store, Loggable {
 
     fine("Carregando ${detalhes!.arquivosId.length} imagens");
     for (var id in detalhes!.arquivosId) {
-      var res = await sl<ArquivoService>().getArquivo(idArquivo: id);
+      var res = await _arquivoService.getArquivo(idArquivo: id);
       if (res.isSuccessful) {
         imagens.add(res.body!);
       }
@@ -109,7 +120,7 @@ abstract class _AdminProvaQuestaoViewStoreBase with Store, Loggable {
 
     fine("Carregando ${detalhes!.audiosId.length} audios");
     for (var id in detalhes!.audiosId) {
-      var res = await sl<ArquivoService>().getAudio(idArquivo: id);
+      var res = await _arquivoService.getAudio(idArquivo: id);
       if (res.isSuccessful) {
         audios.add(res.body!);
       }
@@ -117,13 +128,13 @@ abstract class _AdminProvaQuestaoViewStoreBase with Store, Loggable {
 
     fine("Carregando ${detalhes!.videosId.length} videos");
     for (var id in detalhes!.videosId) {
-      var res = await sl<ArquivoService>().getVideo(idArquivo: id);
+      var res = await _arquivoService.getVideo(idArquivo: id);
       if (res.isSuccessful) {
         videos.add(res.body!);
       }
     }
 
-    var res = await sl<QuestaoService>().getQuestao(idQuestao: detalhes!.questaoId);
+    var res = await _questaoService.getQuestao(idQuestao: detalhes!.questaoId);
     if (res.isSuccessful) {
       questao = res.body!;
     }

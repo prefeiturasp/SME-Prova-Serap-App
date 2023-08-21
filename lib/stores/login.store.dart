@@ -3,7 +3,6 @@ import 'package:appserap/dtos/error.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/exceptions/sem_conexao.exeption.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
@@ -12,16 +11,20 @@ import 'package:appserap/utils/notificacao.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'login.store.g.dart';
 
+@LazySingleton()
 class LoginStore = _LoginStoreBase with _$LoginStore;
 
 abstract class _LoginStoreBase with Store, Loggable {
-  final _autenticacaoService = sl<AutenticacaoService>();
-  final _usuarioStore = sl<UsuarioStore>();
+  final AutenticacaoService _autenticacaoService;
+  final UsuarioStore _usuarioStore;
+  final PrincipalStore _principalStore;
+  final SharedPreferences _sharedPreferences;
 
   final autenticacaoErroStore = AutenticacaoErroStore();
 
@@ -38,6 +41,13 @@ abstract class _LoginStoreBase with Store, Loggable {
 
   @observable
   bool ocultarSenha = true;
+
+  _LoginStoreBase(
+    this._autenticacaoService,
+    this._usuarioStore,
+    this._principalStore,
+    this._sharedPreferences,
+  );
 
   void setupValidations() {
     _disposers = [
@@ -111,14 +121,14 @@ abstract class _LoginStoreBase with Store, Loggable {
   Future<bool> autenticar() async {
     carregando = true;
     try {
-      if (!sl.get<PrincipalStore>().temConexao) {
+      if (!_principalStore.temConexao) {
         throw SemConexaoException();
       }
 
       var responseLogin = await _autenticacaoService.login(
         login: codigoEOL,
         senha: senha,
-        dispositivo: sl.get<PrincipalStore>().dispositivoId,
+        dispositivo: _principalStore.dispositivoId,
       );
 
       if (responseLogin.isSuccessful) {
@@ -129,8 +139,7 @@ abstract class _LoginStoreBase with Store, Loggable {
         _usuarioStore.ultimoLogin = body.ultimoLogin;
         _usuarioStore.isAdmin = false;
 
-        var prefs = sl<SharedPreferences>();
-        await prefs.setString('token', body.token);
+        await _sharedPreferences.setString('token', body.token);
 
         var responseMeusDados = await _autenticacaoService.meusDados();
 

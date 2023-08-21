@@ -4,10 +4,7 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/stores/home.store.dart';
-import 'package:appserap/stores/job.store.dart';
 import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:clock/clock.dart';
@@ -59,21 +56,21 @@ void main() {
     registerInjection<RespostasDatabase>(RespostasDatabase.executor(NativeDatabase.memory()));
     registerInjectionAsync<SharedPreferences>(() => SharedPreferences.getInstance());
 
-    Future<UsuarioStore> teste() async {
-      UsuarioStore u = UsuarioStore();
-      u.carregarUsuario();
-      return u;
-    }
+    // Future<UsuarioStore> teste() async {
+    //   UsuarioStore u = UsuarioStore();
+    //   u.carregarUsuario();
+    //   return u;
+    // }
 
-    registerInjection<UsuarioStore>(await teste());
+    // registerInjection<UsuarioStore>(await teste());
 
     registerInjection<PrincipalStore>(MockPrincipalStore());
     registerInjection<ApiService>(MockApiService());
 
-    registerInjection<TemaStore>(TemaStore());
-    registerInjection<JobStore>(JobStore());
-
-    registerInjection<HomeStore>(HomeStore());
+    // registerInjection<TemaStore>(TemaStore());
+    // registerInjection<JobStore>(JobStore());
+    //
+    // registerInjection<HomeStore>(HomeStore());
 
     await sl.allReady();
   });

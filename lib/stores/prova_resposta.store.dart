@@ -2,6 +2,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
@@ -11,13 +12,12 @@ import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:mobx/mobx.dart';
 
-import '../main.ioc.dart';
-
 part 'prova_resposta.store.g.dart';
 
 class ProvaRespostaStore = _ProvaRespostaStoreBase with _$ProvaRespostaStore;
 
 abstract class _ProvaRespostaStoreBase with Store, Loggable, Database {
+
   @observable
   int idProva;
 

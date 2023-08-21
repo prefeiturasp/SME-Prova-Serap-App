@@ -1,18 +1,25 @@
+import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
-import 'package:appserap/interfaces/database.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 part 'prova_tai.view.store.g.dart';
 
+@LazySingleton()
 class ProvaTaiViewStore = _ProvaTaiViewStoreBase with _$ProvaTaiViewStore;
 
-abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
+abstract class _ProvaTaiViewStoreBase with Store, Loggable {
+  final AppDatabase db;
+  final RespostasDatabase dbRespostas;
+
+  final ProvaTaiService _provaTaiService;
+
   @observable
   bool carregando = false;
 
@@ -22,6 +29,12 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
   @observable
   ProvaStore? provaStore;
 
+  _ProvaTaiViewStoreBase(
+    this.db,
+    this.dbRespostas,
+    this._provaTaiService,
+  );
+
   @action
   Future<bool?> configurarProva(int provaId) async {
     carregando = true;
@@ -29,7 +42,7 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
     var prova = await db.provaDao.obterPorProvaId(provaId);
     provaStore = ProvaStore(prova: prova);
 
-    var responseConexao = await sl<ProvaTaiService>().existeConexaoR();
+    var responseConexao = await _provaTaiService.existeConexaoR();
 
     if (responseConexao.isSuccessful) {
       taiDisponivel = responseConexao.body!;
@@ -39,12 +52,12 @@ abstract class _ProvaTaiViewStoreBase with Store, Loggable, Database {
           await provaStore!.setStatusProva(EnumProvaStatus.INICIADA);
           await provaStore!.setHoraInicioProva(DateTime.now());
 
-          await sl<ProvaTaiService>().iniciarProva(
-                provaId: provaId,
-                status: EnumProvaStatus.INICIADA.index,
-                tipoDispositivo: kDeviceType.index,
-                dataInicio: getTicks(provaStore!.prova.dataInicioProvaAluno!),
-              );
+          await _provaTaiService.iniciarProva(
+            provaId: provaId,
+            status: EnumProvaStatus.INICIADA.index,
+            tipoDispositivo: kDeviceType.index,
+            dataInicio: getTicks(provaStore!.prova.dataInicioProvaAluno!),
+          );
         }
       }
     } else {

@@ -1,7 +1,6 @@
 import 'package:appserap/dtos/orientacao_inicial.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.model.widget.dart';
@@ -9,17 +8,25 @@ import 'package:chopper/chopper.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 
 part 'orientacao_inicial.store.g.dart';
 
+@LazySingleton()
 class OrientacaoInicialStore = _OrientacaoInicialStoreBase with _$OrientacaoInicialStore;
 
 abstract class _OrientacaoInicialStoreBase with Store, Loggable {
-  final _orientacaoService = sl<OrientacaoInicialService>();
+  final OrientacaoInicialService _orientacaoService;
+  final TemaStore _temaStore;
 
   @observable
   ObservableList<ApresentacaoModelWidget> listaPaginasOrientacoes = <ApresentacaoModelWidget>[].asObservable();
+
+  _OrientacaoInicialStoreBase(
+    this._orientacaoService,
+    this._temaStore,
+  );
 
   @action
   Future<void> popularListaDeOrientacoes() async {
@@ -46,8 +53,8 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
                   style: {
                     '*': Style.fromTextStyle(
                       TextStyle(
-                        fontFamily: sl.get<TemaStore>().fonteDoTexto.nomeFonte,
-                        fontSize: sl.get<TemaStore>().size(16),
+                        fontFamily: _temaStore.fonteDoTexto.nomeFonte,
+                        fontSize: _temaStore.size(16),
                       ),
                     )
                   },
@@ -83,6 +90,7 @@ abstract class _OrientacaoInicialStoreBase with Store, Loggable {
     return await _orientacaoService.getOrientacoesIniciais();
   }
 
+  @disposeMethod
   void dispose() {
     listaPaginasOrientacoes = <ApresentacaoModelWidget>[].asObservable();
   }

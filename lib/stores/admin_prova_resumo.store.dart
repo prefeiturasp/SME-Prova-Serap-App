@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:chopper/src/response.dart';
 import 'package:injectable/injectable.dart';
@@ -11,26 +10,34 @@ import 'package:retry/retry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'admin_prova_resumo.store.g.dart';
 
-@Injectable()
+@LazySingleton()
 class AdminProvaResumoViewStore = _AdminProvaResumoViewStoreBase with _$AdminProvaResumoViewStore;
 
 abstract class _AdminProvaResumoViewStoreBase with Store, Loggable {
+  final AdminService _adminService;
+  final SharedPreferences _sharedPreferences;
+
   @observable
   bool carregando = false;
 
   @observable
   ObservableList<AdminProvaResumoResponseDTO> resumo = ObservableList<AdminProvaResumoResponseDTO>();
 
+  _AdminProvaResumoViewStoreBase(
+    this._adminService,
+    this._sharedPreferences,
+  );
+
   @action
   carregarResumo(int idProva, {String? caderno}) async {
     carregando = true;
     await retry(
-          () async {
+      () async {
         Response<List<AdminProvaResumoResponseDTO>> res;
         if (caderno != null) {
-          res = await sl<AdminService>().getResumoByCaderno(idProva: idProva, caderno: caderno);
+          res = await _adminService.getResumoByCaderno(idProva: idProva, caderno: caderno);
         } else {
-          res = await sl<AdminService>().getResumo(idProva: idProva);
+          res = await _adminService.getResumo(idProva: idProva);
         }
 
         if (res.isSuccessful) {
@@ -47,16 +54,15 @@ abstract class _AdminProvaResumoViewStoreBase with Store, Loggable {
     carregando = false;
   }
 
-  Future<void> cacheResumoProva(int idProva, String? caderno, ObservableList<AdminProvaResumoResponseDTO> resumos) async {
-    var pref = sl<SharedPreferences>();
-
+  Future<void> cacheResumoProva(
+      int idProva, String? caderno, ObservableList<AdminProvaResumoResponseDTO> resumos) async {
     List<Future> futures = [];
 
-    for(AdminProvaResumoResponseDTO resumo in resumos){
+    for (AdminProvaResumoResponseDTO resumo in resumos) {
       String key = 'a-$idProva-$caderno-${resumo.ordem}';
       String value = jsonEncode(resumo.toJson());
 
-      futures.add(pref.setString(key, value));
+      futures.add(_sharedPreferences.setString(key, value));
     }
 
     await Future.wait(futures);

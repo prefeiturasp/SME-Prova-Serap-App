@@ -3,24 +3,27 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i6;
 
-import 'package:appserap/dtos/prova.response.dto.dart' as _i6;
-import 'package:appserap/dtos/prova_anterior.response.dto.dart' as _i10;
-import 'package:appserap/dtos/prova_detalhes.response.dto.dart' as _i7;
-import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart' as _i8;
-import 'package:appserap/dtos/questao.response.dto.dart' as _i11;
-import 'package:appserap/dtos/questao_completa.response.dto.dart' as _i12;
+import 'package:appserap/dtos/prova.response.dto.dart' as _i7;
+import 'package:appserap/dtos/prova_anterior.response.dto.dart' as _i11;
+import 'package:appserap/dtos/prova_detalhes.response.dto.dart' as _i8;
+import 'package:appserap/dtos/prova_detalhes_caderno.response.dto.dart' as _i9;
+import 'package:appserap/dtos/questao.response.dto.dart' as _i13;
+import 'package:appserap/dtos/questao_completa.response.dto.dart' as _i14;
 import 'package:appserap/dtos/questao_detalhes_legado.response.dto.dart'
-    as _i13;
-import 'package:appserap/dtos/questao_resposta.response.dto.dart' as _i9;
-import 'package:appserap/enums/deficiencia.enum.dart' as _i17;
-import 'package:appserap/enums/fonte_tipo.enum.dart' as _i16;
-import 'package:appserap/enums/modalidade.enum.dart' as _i15;
-import 'package:appserap/services/api.dart' as _i4;
-import 'package:appserap/stores/usuario.store.dart' as _i14;
+    as _i15;
+import 'package:appserap/dtos/questao_resposta.response.dto.dart' as _i10;
+import 'package:appserap/enums/deficiencia.enum.dart' as _i19;
+import 'package:appserap/enums/fonte_tipo.enum.dart' as _i18;
+import 'package:appserap/enums/modalidade.enum.dart' as _i17;
+import 'package:appserap/services/api_service.dart' as _i4;
+import 'package:appserap/services/rest/download.service.dart' as _i20;
+import 'package:appserap/services/rest/prova.service.dart' as _i5;
+import 'package:appserap/services/rest/questao.service.dart' as _i12;
+import 'package:appserap/stores/usuario.store.dart' as _i16;
 import 'package:chopper/chopper.dart' as _i2;
-import 'package:http/http.dart' as _i18;
+import 'package:http/http.dart' as _i21;
 import 'package:mobx/mobx.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -100,7 +103,7 @@ class MockApiService extends _i1.Mock implements _i4.ApiService {
 /// A class which mocks [ProvaService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockProvaService extends _i1.Mock implements _i4.ProvaService {
+class MockProvaService extends _i1.Mock implements _i5.ProvaService {
   MockProvaService() {
     _i1.throwOnMissingStub(this);
   }
@@ -130,23 +133,23 @@ class MockProvaService extends _i1.Mock implements _i4.ProvaService {
         ),
       ) as Type);
   @override
-  _i5.Future<_i2.Response<List<_i6.ProvaResponseDTO>>> getProvas() =>
+  _i6.Future<_i2.Response<List<_i7.ProvaResponseDTO>>> getProvas() =>
       (super.noSuchMethod(
         Invocation.method(
           #getProvas,
           [],
         ),
-        returnValue: _i5.Future<_i2.Response<List<_i6.ProvaResponseDTO>>>.value(
-            _FakeResponse_2<List<_i6.ProvaResponseDTO>>(
+        returnValue: _i6.Future<_i2.Response<List<_i7.ProvaResponseDTO>>>.value(
+            _FakeResponse_2<List<_i7.ProvaResponseDTO>>(
           this,
           Invocation.method(
             #getProvas,
             [],
           ),
         )),
-      ) as _i5.Future<_i2.Response<List<_i6.ProvaResponseDTO>>>);
+      ) as _i6.Future<_i2.Response<List<_i7.ProvaResponseDTO>>>);
   @override
-  _i5.Future<_i2.Response<_i7.ProvaDetalhesResponseDTO>> getResumoProva(
+  _i6.Future<_i2.Response<_i8.ProvaDetalhesResponseDTO>> getResumoProva(
           {required int? idProva}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -155,8 +158,8 @@ class MockProvaService extends _i1.Mock implements _i4.ProvaService {
           {#idProva: idProva},
         ),
         returnValue:
-            _i5.Future<_i2.Response<_i7.ProvaDetalhesResponseDTO>>.value(
-                _FakeResponse_2<_i7.ProvaDetalhesResponseDTO>(
+            _i6.Future<_i2.Response<_i8.ProvaDetalhesResponseDTO>>.value(
+                _FakeResponse_2<_i8.ProvaDetalhesResponseDTO>(
           this,
           Invocation.method(
             #getResumoProva,
@@ -164,10 +167,10 @@ class MockProvaService extends _i1.Mock implements _i4.ProvaService {
             {#idProva: idProva},
           ),
         )),
-      ) as _i5.Future<_i2.Response<_i7.ProvaDetalhesResponseDTO>>);
+      ) as _i6.Future<_i2.Response<_i8.ProvaDetalhesResponseDTO>>);
   @override
-  _i5.Future<
-      _i2.Response<_i8.ProvaDetalhesCadernoResponseDTO>> getResumoProvaCaderno({
+  _i6.Future<
+      _i2.Response<_i9.ProvaDetalhesCadernoResponseDTO>> getResumoProvaCaderno({
     required int? idProva,
     required String? caderno,
   }) =>
@@ -181,8 +184,8 @@ class MockProvaService extends _i1.Mock implements _i4.ProvaService {
           },
         ),
         returnValue:
-            _i5.Future<_i2.Response<_i8.ProvaDetalhesCadernoResponseDTO>>.value(
-                _FakeResponse_2<_i8.ProvaDetalhesCadernoResponseDTO>(
+            _i6.Future<_i2.Response<_i9.ProvaDetalhesCadernoResponseDTO>>.value(
+                _FakeResponse_2<_i9.ProvaDetalhesCadernoResponseDTO>(
           this,
           Invocation.method(
             #getResumoProvaCaderno,
@@ -193,16 +196,16 @@ class MockProvaService extends _i1.Mock implements _i4.ProvaService {
             },
           ),
         )),
-      ) as _i5.Future<_i2.Response<_i8.ProvaDetalhesCadernoResponseDTO>>);
+      ) as _i6.Future<_i2.Response<_i9.ProvaDetalhesCadernoResponseDTO>>);
   @override
-  _i5.Future<_i2.Response<int>> getStatusProva({required int? idProva}) =>
+  _i6.Future<_i2.Response<int>> getStatusProva({required int? idProva}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getStatusProva,
           [],
           {#idProva: idProva},
         ),
-        returnValue: _i5.Future<_i2.Response<int>>.value(_FakeResponse_2<int>(
+        returnValue: _i6.Future<_i2.Response<int>>.value(_FakeResponse_2<int>(
           this,
           Invocation.method(
             #getStatusProva,
@@ -210,9 +213,9 @@ class MockProvaService extends _i1.Mock implements _i4.ProvaService {
             {#idProva: idProva},
           ),
         )),
-      ) as _i5.Future<_i2.Response<int>>);
+      ) as _i6.Future<_i2.Response<int>>);
   @override
-  _i5.Future<_i2.Response<bool>> setStatusProva({
+  _i6.Future<_i2.Response<bool>> setStatusProva({
     required int? idProva,
     required int? status,
     required int? tipoDispositivo,
@@ -231,7 +234,7 @@ class MockProvaService extends _i1.Mock implements _i4.ProvaService {
             #dataFim: dataFim,
           },
         ),
-        returnValue: _i5.Future<_i2.Response<bool>>.value(_FakeResponse_2<bool>(
+        returnValue: _i6.Future<_i2.Response<bool>>.value(_FakeResponse_2<bool>(
           this,
           Invocation.method(
             #setStatusProva,
@@ -245,18 +248,18 @@ class MockProvaService extends _i1.Mock implements _i4.ProvaService {
             },
           ),
         )),
-      ) as _i5.Future<_i2.Response<bool>>);
+      ) as _i6.Future<_i2.Response<bool>>);
   @override
-  _i5.Future<_i2.Response<List<_i9.QuestaoRespostaResponseDTO>>>
+  _i6.Future<_i2.Response<List<_i10.QuestaoRespostaResponseDTO>>>
       getRespostasPorProvaId({required int? idProva}) => (super.noSuchMethod(
             Invocation.method(
               #getRespostasPorProvaId,
               [],
               {#idProva: idProva},
             ),
-            returnValue: _i5.Future<
-                    _i2.Response<List<_i9.QuestaoRespostaResponseDTO>>>.value(
-                _FakeResponse_2<List<_i9.QuestaoRespostaResponseDTO>>(
+            returnValue: _i6.Future<
+                    _i2.Response<List<_i10.QuestaoRespostaResponseDTO>>>.value(
+                _FakeResponse_2<List<_i10.QuestaoRespostaResponseDTO>>(
               this,
               Invocation.method(
                 #getRespostasPorProvaId,
@@ -264,30 +267,30 @@ class MockProvaService extends _i1.Mock implements _i4.ProvaService {
                 {#idProva: idProva},
               ),
             )),
-          ) as _i5.Future<_i2.Response<List<_i9.QuestaoRespostaResponseDTO>>>);
+          ) as _i6.Future<_i2.Response<List<_i10.QuestaoRespostaResponseDTO>>>);
   @override
-  _i5.Future<_i2.Response<List<_i10.ProvaAnteriorResponseDTO>>>
+  _i6.Future<_i2.Response<List<_i11.ProvaAnteriorResponseDTO>>>
       getProvasAnteriores() => (super.noSuchMethod(
             Invocation.method(
               #getProvasAnteriores,
               [],
             ),
-            returnValue: _i5.Future<
-                    _i2.Response<List<_i10.ProvaAnteriorResponseDTO>>>.value(
-                _FakeResponse_2<List<_i10.ProvaAnteriorResponseDTO>>(
+            returnValue: _i6.Future<
+                    _i2.Response<List<_i11.ProvaAnteriorResponseDTO>>>.value(
+                _FakeResponse_2<List<_i11.ProvaAnteriorResponseDTO>>(
               this,
               Invocation.method(
                 #getProvasAnteriores,
                 [],
               ),
             )),
-          ) as _i5.Future<_i2.Response<List<_i10.ProvaAnteriorResponseDTO>>>);
+          ) as _i6.Future<_i2.Response<List<_i11.ProvaAnteriorResponseDTO>>>);
 }
 
 /// A class which mocks [QuestaoService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockQuestaoService extends _i1.Mock implements _i4.QuestaoService {
+class MockQuestaoService extends _i1.Mock implements _i12.QuestaoService {
   MockQuestaoService() {
     _i1.throwOnMissingStub(this);
   }
@@ -317,7 +320,7 @@ class MockQuestaoService extends _i1.Mock implements _i4.QuestaoService {
         ),
       ) as Type);
   @override
-  _i5.Future<_i2.Response<_i11.QuestaoResponseDTO>> getQuestao(
+  _i6.Future<_i2.Response<_i13.QuestaoResponseDTO>> getQuestao(
           {required int? idQuestao}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -325,8 +328,8 @@ class MockQuestaoService extends _i1.Mock implements _i4.QuestaoService {
           [],
           {#idQuestao: idQuestao},
         ),
-        returnValue: _i5.Future<_i2.Response<_i11.QuestaoResponseDTO>>.value(
-            _FakeResponse_2<_i11.QuestaoResponseDTO>(
+        returnValue: _i6.Future<_i2.Response<_i13.QuestaoResponseDTO>>.value(
+            _FakeResponse_2<_i13.QuestaoResponseDTO>(
           this,
           Invocation.method(
             #getQuestao,
@@ -334,18 +337,18 @@ class MockQuestaoService extends _i1.Mock implements _i4.QuestaoService {
             {#idQuestao: idQuestao},
           ),
         )),
-      ) as _i5.Future<_i2.Response<_i11.QuestaoResponseDTO>>);
+      ) as _i6.Future<_i2.Response<_i13.QuestaoResponseDTO>>);
   @override
-  _i5.Future<_i2.Response<List<_i12.QuestaoCompletaResponseDTO>>>
+  _i6.Future<_i2.Response<List<_i14.QuestaoCompletaResponseDTO>>>
       getQuestaoCompleta({required List<int>? ids}) => (super.noSuchMethod(
             Invocation.method(
               #getQuestaoCompleta,
               [],
               {#ids: ids},
             ),
-            returnValue: _i5.Future<
-                    _i2.Response<List<_i12.QuestaoCompletaResponseDTO>>>.value(
-                _FakeResponse_2<List<_i12.QuestaoCompletaResponseDTO>>(
+            returnValue: _i6.Future<
+                    _i2.Response<List<_i14.QuestaoCompletaResponseDTO>>>.value(
+                _FakeResponse_2<List<_i14.QuestaoCompletaResponseDTO>>(
               this,
               Invocation.method(
                 #getQuestaoCompleta,
@@ -353,9 +356,9 @@ class MockQuestaoService extends _i1.Mock implements _i4.QuestaoService {
                 {#ids: ids},
               ),
             )),
-          ) as _i5.Future<_i2.Response<List<_i12.QuestaoCompletaResponseDTO>>>);
+          ) as _i6.Future<_i2.Response<List<_i14.QuestaoCompletaResponseDTO>>>);
   @override
-  _i5.Future<_i2.Response<List<_i13.QuestaoDetalhesLegadoResponseDTO>>>
+  _i6.Future<_i2.Response<List<_i15.QuestaoDetalhesLegadoResponseDTO>>>
       getQuestaoCompletaLegado({required List<int>? idsLegado}) =>
           (super.noSuchMethod(
             Invocation.method(
@@ -363,10 +366,10 @@ class MockQuestaoService extends _i1.Mock implements _i4.QuestaoService {
               [],
               {#idsLegado: idsLegado},
             ),
-            returnValue: _i5.Future<
+            returnValue: _i6.Future<
                     _i2.Response<
-                        List<_i13.QuestaoDetalhesLegadoResponseDTO>>>.value(
-                _FakeResponse_2<List<_i13.QuestaoDetalhesLegadoResponseDTO>>(
+                        List<_i15.QuestaoDetalhesLegadoResponseDTO>>>.value(
+                _FakeResponse_2<List<_i15.QuestaoDetalhesLegadoResponseDTO>>(
               this,
               Invocation.method(
                 #getQuestaoCompletaLegado,
@@ -374,14 +377,14 @@ class MockQuestaoService extends _i1.Mock implements _i4.QuestaoService {
                 {#idsLegado: idsLegado},
               ),
             )),
-          ) as _i5.Future<
-              _i2.Response<List<_i13.QuestaoDetalhesLegadoResponseDTO>>>);
+          ) as _i6.Future<
+              _i2.Response<List<_i15.QuestaoDetalhesLegadoResponseDTO>>>);
 }
 
 /// A class which mocks [UsuarioStore].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUsuarioStore extends _i1.Mock implements _i14.UsuarioStore {
+class MockUsuarioStore extends _i1.Mock implements _i16.UsuarioStore {
   MockUsuarioStore() {
     _i1.throwOnMissingStub(this);
   }
@@ -451,12 +454,12 @@ class MockUsuarioStore extends _i1.Mock implements _i14.UsuarioStore {
         returnValueForMissingStub: null,
       );
   @override
-  _i15.ModalidadeEnum get modalidade => (super.noSuchMethod(
+  _i17.ModalidadeEnum get modalidade => (super.noSuchMethod(
         Invocation.getter(#modalidade),
-        returnValue: _i15.ModalidadeEnum.NAO_CADASTRADO,
-      ) as _i15.ModalidadeEnum);
+        returnValue: _i17.ModalidadeEnum.NAO_CADASTRADO,
+      ) as _i17.ModalidadeEnum);
   @override
-  set modalidade(_i15.ModalidadeEnum? value) => super.noSuchMethod(
+  set modalidade(_i17.ModalidadeEnum? value) => super.noSuchMethod(
         Invocation.setter(
           #modalidade,
           value,
@@ -514,7 +517,7 @@ class MockUsuarioStore extends _i1.Mock implements _i14.UsuarioStore {
         returnValueForMissingStub: null,
       );
   @override
-  set familiaFonte(_i16.FonteTipoEnum? value) => super.noSuchMethod(
+  set familiaFonte(_i18.FonteTipoEnum? value) => super.noSuchMethod(
         Invocation.setter(
           #familiaFonte,
           value,
@@ -522,16 +525,16 @@ class MockUsuarioStore extends _i1.Mock implements _i14.UsuarioStore {
         returnValueForMissingStub: null,
       );
   @override
-  _i3.ObservableList<_i17.DeficienciaEnum> get deficiencias =>
+  _i3.ObservableList<_i19.DeficienciaEnum> get deficiencias =>
       (super.noSuchMethod(
         Invocation.getter(#deficiencias),
-        returnValue: _FakeObservableList_3<_i17.DeficienciaEnum>(
+        returnValue: _FakeObservableList_3<_i19.DeficienciaEnum>(
           this,
           Invocation.getter(#deficiencias),
         ),
-      ) as _i3.ObservableList<_i17.DeficienciaEnum>);
+      ) as _i3.ObservableList<_i19.DeficienciaEnum>);
   @override
-  set deficiencias(_i3.ObservableList<_i17.DeficienciaEnum>? value) =>
+  set deficiencias(_i3.ObservableList<_i19.DeficienciaEnum>? value) =>
       super.noSuchMethod(
         Invocation.setter(
           #deficiencias,
@@ -587,16 +590,16 @@ class MockUsuarioStore extends _i1.Mock implements _i14.UsuarioStore {
         returnValueForMissingStub: null,
       );
   @override
-  _i5.Future<void> carregarUsuario() => (super.noSuchMethod(
+  _i6.Future<void> carregarUsuario() => (super.noSuchMethod(
         Invocation.method(
           #carregarUsuario,
           [],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
   @override
-  _i5.Future<void> atualizarDados({
+  _i6.Future<void> atualizarDados({
     required String? nome,
     String? codigoEOL,
     String? token,
@@ -604,14 +607,14 @@ class MockUsuarioStore extends _i1.Mock implements _i14.UsuarioStore {
     required String? tipoTurno,
     DateTime? ultimoLogin,
     required double? tamanhoFonte,
-    required _i16.FonteTipoEnum? familiaFonte,
-    required _i15.ModalidadeEnum? modalidade,
+    required _i18.FonteTipoEnum? familiaFonte,
+    required _i17.ModalidadeEnum? modalidade,
     required int? inicioTurno,
     required int? fimTurno,
     required String? dreAbreviacao,
     required String? escola,
     required String? turma,
-    required List<_i17.DeficienciaEnum>? deficiencias,
+    required List<_i19.DeficienciaEnum>? deficiencias,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -635,11 +638,11 @@ class MockUsuarioStore extends _i1.Mock implements _i14.UsuarioStore {
             #deficiencias: deficiencias,
           },
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
   @override
-  _i5.Future<void> atualizarDadosAdm({
+  _i6.Future<void> atualizarDadosAdm({
     required String? nome,
     required bool? isAdmin,
     String? codigoEOL,
@@ -656,15 +659,15 @@ class MockUsuarioStore extends _i1.Mock implements _i14.UsuarioStore {
             #token: token,
           },
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i6.Future<void>.value(),
+        returnValueForMissingStub: _i6.Future<void>.value(),
+      ) as _i6.Future<void>);
 }
 
 /// A class which mocks [DownloadService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockDownloadService extends _i1.Mock implements _i4.DownloadService {
+class MockDownloadService extends _i1.Mock implements _i20.DownloadService {
   MockDownloadService() {
     _i1.throwOnMissingStub(this);
   }
@@ -694,7 +697,7 @@ class MockDownloadService extends _i1.Mock implements _i4.DownloadService {
         ),
       ) as Type);
   @override
-  _i5.Future<_i2.Response<String>> informarDownloadConcluido({
+  _i6.Future<_i2.Response<String>> informarDownloadConcluido({
     required int? provaId,
     required int? tipoDispositivo,
     required String? dispositivoId,
@@ -716,7 +719,7 @@ class MockDownloadService extends _i1.Mock implements _i4.DownloadService {
           },
         ),
         returnValue:
-            _i5.Future<_i2.Response<String>>.value(_FakeResponse_2<String>(
+            _i6.Future<_i2.Response<String>>.value(_FakeResponse_2<String>(
           this,
           Invocation.method(
             #informarDownloadConcluido,
@@ -731,9 +734,9 @@ class MockDownloadService extends _i1.Mock implements _i4.DownloadService {
             },
           ),
         )),
-      ) as _i5.Future<_i2.Response<String>>);
+      ) as _i6.Future<_i2.Response<String>>);
   @override
-  _i5.Future<_i2.Response<void>> removerDownloads({
+  _i6.Future<_i2.Response<void>> removerDownloads({
     required String? chaveAPI,
     required List<String>? ids,
   }) =>
@@ -746,7 +749,7 @@ class MockDownloadService extends _i1.Mock implements _i4.DownloadService {
             #ids: ids,
           },
         ),
-        returnValue: _i5.Future<_i2.Response<void>>.value(_FakeResponse_2<void>(
+        returnValue: _i6.Future<_i2.Response<void>>.value(_FakeResponse_2<void>(
           this,
           Invocation.method(
             #removerDownloads,
@@ -757,13 +760,13 @@ class MockDownloadService extends _i1.Mock implements _i4.DownloadService {
             },
           ),
         )),
-      ) as _i5.Future<_i2.Response<void>>);
+      ) as _i6.Future<_i2.Response<void>>);
 }
 
 /// A class which mocks [BaseResponse].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockBaseResponse extends _i1.Mock implements _i18.BaseResponse {
+class MockBaseResponse extends _i1.Mock implements _i21.BaseResponse {
   MockBaseResponse() {
     _i1.throwOnMissingStub(this);
   }

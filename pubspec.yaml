@@ -61,7 +61,7 @@ dependencies:
 
   # Injecao de dependencias
   get_it: ^7.6.0
-  injectable: ^2.1.6
+  injectable: ^2.3.0
 
   # Banco de dados local
   shared_preferences: ^2.2.0
@@ -142,7 +142,7 @@ dev_dependencies:
   json_serializable: ^6.7.1
   mockito: ^5.4.2
   auto_route_generator: ^7.1.1
-  injectable_generator: ^2.1.6
+  injectable_generator: ^2.4.0
 
 dependency_overrides:
   flutter_math_fork: ^0.7.1

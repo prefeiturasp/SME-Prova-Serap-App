@@ -1,22 +1,30 @@
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/firebase.util.dart';
+import 'package:injectable/injectable.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'login_adm.store.g.dart';
 
+@LazySingleton()
 class LoginAdmStore = _LoginAdmStoreBase with _$LoginAdmStore;
 
 abstract class _LoginAdmStoreBase with Store, Loggable {
-  Future<bool> loginByToken(String codigo) async {
-    final _autenticacaoService = sl<AutenticacaoAdminService>();
-    final _usuarioStore = sl.get<UsuarioStore>();
+  final AutenticacaoAdminService _autenticacaoAdminService;
+  final UsuarioStore _usuarioStore;
+  final SharedPreferences _sharedPreferences;
 
+  _LoginAdmStoreBase(
+    this._autenticacaoAdminService,
+    this._usuarioStore,
+    this._sharedPreferences,
+  );
+
+  Future<bool> loginByToken(String codigo) async {
     try {
-      var responseLogin = await _autenticacaoService.loginByCodigoAutenticacao(
+      var responseLogin = await _autenticacaoAdminService.loginByCodigoAutenticacao(
         codigo: codigo,
       );
 
@@ -36,8 +44,7 @@ abstract class _LoginAdmStoreBase with Store, Loggable {
           isAdmin: true,
         );
 
-        var prefs = sl<SharedPreferences>();
-        await prefs.setString('token', body.token);
+        await _sharedPreferences.setString('token', body.token);
         fine('Login realizado com sucesso');
         fine('Token: ${body.token}');
 

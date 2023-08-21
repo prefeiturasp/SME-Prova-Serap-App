@@ -384,7 +384,6 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
   }
 
   _buildAlternativas(String titulo, String resposta, int questaoOrdem) {
-    debugPrint("$questaoOrdem: Titulo ${titulo.substring(0, 30)} - $resposta");
     if (kIsMobile) {
       if (temaStore.incrementador > 20) {
         titulo = titulo.substring(0, 3);

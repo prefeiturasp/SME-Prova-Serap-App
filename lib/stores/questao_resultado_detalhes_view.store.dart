@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/dtos/alternativa.response.dto.dart';
 import 'package:appserap/dtos/arquivo.response.dto.dart';
 import 'package:appserap/dtos/arquivo_video.response.dto.dart';
@@ -7,20 +9,25 @@ import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/dtos/questao.response.dto.dart';
 import 'package:appserap/dtos/questao_completa_resposta.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:retry/retry.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../interfaces/database.interface.dart';
 part 'questao_resultado_detalhes_view.store.g.dart';
 
+@LazySingleton()
 class QuestaoResultadoDetalhesViewStore = _QuestaoResultadoDetalhesViewStoreBase
     with _$QuestaoResultadoDetalhesViewStore;
 
-abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable, Database {
+abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable {
+  final AppDatabase db;
+  final RespostasDatabase dbRespostas;
+  final SharedPreferences _sharedPreferences;
+  final ProvaResultadoService _provaResultadoService;
+
   @observable
   bool carregando = false;
 
@@ -43,6 +50,13 @@ abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable, Data
 
   Prova? prova;
 
+  _QuestaoResultadoDetalhesViewStoreBase(
+    this.db,
+    this.dbRespostas,
+    this._sharedPreferences,
+    this._provaResultadoService,
+  );
+
   @action
   Future<void> carregarDetalhesQuestao({required int provaId, required String caderno, required int ordem}) async {
     carregando = true;
@@ -50,17 +64,15 @@ abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable, Data
     prova ??= await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
 
     await retry(
-          () async {
-        var prefs = sl<SharedPreferences>();
-
-
-        totalQuestoes = calcularTotalQuestoes(prefs, provaId, caderno);
+      () async {
+        totalQuestoes = calcularTotalQuestoes(_sharedPreferences, provaId, caderno);
 
         String key = 't-$provaId-$caderno-$ordem';
 
-        var resumoQuestao = ProvaResultadoResumoQuestaoResponseDto.fromJson(jsonDecode(prefs.getString(key)!));
+        var resumoQuestao =
+            ProvaResultadoResumoQuestaoResponseDto.fromJson(jsonDecode(_sharedPreferences.getString(key)!));
 
-        var res = await sl<ProvaResultadoService>().getQuestaoCompleta(
+        var res = await _provaResultadoService.getQuestaoCompleta(
           provaId: provaId,
           questaoLegadoId: resumoQuestao.idQuestaoLegado,
         );
@@ -73,8 +85,7 @@ abstract class _QuestaoResultadoDetalhesViewStoreBase with Store, Loggable, Data
         }
       },
       onRetry: (e) {
-        fine(
-            '[Prova $provaId] - Tentativa de carregamento detalhes da questão $ordem da prova - ${e.toString()}');
+        fine('[Prova $provaId] - Tentativa de carregamento detalhes da questão $ordem da prova - ${e.toString()}');
       },
     );
     carregando = false;

@@ -20,6 +20,7 @@ import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao_arquivo.model.dart';
 import 'package:appserap/models/job.model.dart';
 import 'package:appserap/models/prova_questao_alternativa.model.dart';
+import 'package:injectable/injectable.dart';
 
 import 'daos/alternativa.dao.dart';
 import 'daos/arquivo.dao.dart';
@@ -84,6 +85,7 @@ part 'app.database.g.dart';
     ProvaQuestaoAlternativaDao,
   ],
 )
+@Singleton()
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(impl.connect()) {
     driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;

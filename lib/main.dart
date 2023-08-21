@@ -70,7 +70,6 @@ configure(bool isBackground) async {
   registerFonts();
 
   configureDependencies();
-  await DependenciasIoC().setup();
 
   if (isBackground) {
     await AppIsolates().setup();
