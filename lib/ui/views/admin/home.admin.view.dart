@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:appserap/dtos/admin_prova.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/home.admin.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
@@ -16,15 +17,16 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
+@RoutePage()
 class HomeAdminView extends BaseStatefulWidget {
   HomeAdminView({Key? key}) : super(key: key);
 
@@ -553,12 +555,12 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
 
   _navegarProva(AdminProvaResponseDTO prova) {
     if (prova.possuiContexto) {
-      context.push("/admin/prova/${prova.id}/contexto", extra: {'possuiBIB': prova.possuiBIB});
+      context.router.push(AdminProvaContextoViewRoute(idProva: prova.id, possuiBIB: prova.possuiBIB));
     } else {
       if (prova.possuiBIB) {
-        context.push("/admin/prova/${prova.id}/caderno");
+        context.router.push(AdminProvaCadernoViewRoute(idProva: prova.id));
       } else {
-        context.push("/admin/prova/${prova.id}/resumo");
+        context.router.push(AdminProvaResumoViewRoute(idProva: prova.id));
       }
     }
   }

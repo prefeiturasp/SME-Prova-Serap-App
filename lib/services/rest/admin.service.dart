@@ -4,12 +4,15 @@ import 'package:appserap/dtos/listagem_prova.admin.response.dto.dart';
 import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
 import 'package:appserap/dtos/admin_prova_caderno.response.dto.dart';
 import 'package:chopper/chopper.dart';
+import 'package:injectable/injectable.dart';
 
 part 'admin.service.chopper.dart';
 
+@injectable
 @ChopperApi(baseUrl: "/v1/admin")
 abstract class AdminService extends ChopperService {
-  static AdminService create([ChopperClient? client]) => _$AdminService(client);
+  @factoryMethod
+  static AdminService create(ChopperClient client) => _$AdminService(client);
 
   @Get(path: "provas")
   Future<Response<ListagemAdminProvaResponseDTO>> getProvas({

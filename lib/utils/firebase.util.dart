@@ -31,7 +31,7 @@ setupFirebase() async {
 }
 
 Future<void> registrarUsuarioLogado() async {
-  SharedPreferences prefs = await ServiceLocator.getAsync();
+  var prefs = sl<SharedPreferences>();
   String? ano = prefs.getString("serapUsuarioAno");
   String? codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
 

@@ -6,7 +6,7 @@ import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/prova.model.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
@@ -29,7 +29,7 @@ class FinalizarProvasPendenteJob extends Job with Loggable, Database {
 
   @override
   run() async {
-    AppDatabase db = ServiceLocator.get();
+    AppDatabase db = sl.get();
 
     fine('Sincronizando provas para o servidor');
 
@@ -45,7 +45,7 @@ class FinalizarProvasPendenteJob extends Job with Loggable, Database {
     for (var prova in provas) {
       try {
         // Atualiza status servidor
-        await ServiceLocator.get<ApiService>().prova.setStatusProva(
+        await sl<ProvaService>().setStatusProva(
               idProva: prova.id,
               status: EnumProvaStatus.FINALIZADA.index,
               tipoDispositivo: kDeviceType.index,

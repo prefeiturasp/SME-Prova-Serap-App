@@ -47,7 +47,7 @@ class _PlayerAudioWidgetState extends State<PlayerAudioWidget> {
   void initState() {
     player = AudioPlayer();
 
-    var source = widget.audioPath != null ? BytesSource(widget.audioBytes!) : UrlSource(widget.audioPath!);
+    var source = widget.audioPath != null ? UrlSource(widget.audioPath!): BytesSource(widget.audioBytes!);
 
     player.setSource(source);
 

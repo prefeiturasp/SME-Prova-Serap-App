@@ -1,16 +1,19 @@
 import 'package:appserap/dtos/admin_prova.response.dto.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
 import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:retry/retry.dart';
 part 'home.admin.store.g.dart';
 
+@LazySingleton()
 class HomeAdminStore = _HomeAdminStoreBase with _$HomeAdminStore;
 
 abstract class _HomeAdminStoreBase with Store, Loggable, Disposable {
+  final AdminService _adminService;
+
   List<ReactionDisposer> _disposers = [];
 
   @observable
@@ -38,6 +41,10 @@ abstract class _HomeAdminStoreBase with Store, Loggable, Disposable {
   int totalPaginas = 0;
   int totalRegistros = 0;
 
+  _HomeAdminStoreBase(
+    this._adminService,
+  );
+
   @action
   carregarProvas({bool? refresh}) async {
     if (carregando) {
@@ -52,13 +59,13 @@ abstract class _HomeAdminStoreBase with Store, Loggable, Disposable {
           pagina = 1;
         }
 
-        var provasResponse = await ServiceLocator.get<ApiService>().admin.getProvas(
-              numeroPagina: pagina,
-              descricao: desricao,
-              ano: ano,
-              modalidade: modalidade?.codigo,
-              provaLegadoId: codigoSerap != null ? int.tryParse(codigoSerap!) : null,
-            );
+        var provasResponse = await _adminService.getProvas(
+          numeroPagina: pagina,
+          descricao: desricao,
+          ano: ano,
+          modalidade: modalidade?.codigo,
+          provaLegadoId: codigoSerap != null ? int.tryParse(codigoSerap!) : null,
+        );
 
         if (provasResponse.isSuccessful) {
           var provas = provasResponse.body!;

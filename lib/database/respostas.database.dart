@@ -1,5 +1,6 @@
 import 'package:appserap/models/resposta_prova.model.dart';
 import 'package:drift/drift.dart';
+import 'package:injectable/injectable.dart';
 
 import 'core/shared.database.dart' as impl;
 import 'daos/resposta_prova.dao.dart';
@@ -15,6 +16,7 @@ part 'respostas.database.g.dart';
     RespostaProvaDao,
   ],
 )
+@Singleton()
 class RespostasDatabase extends _$RespostasDatabase {
   RespostasDatabase() : super(impl.connect('respostas', true));
 

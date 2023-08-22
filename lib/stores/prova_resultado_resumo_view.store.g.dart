@@ -26,6 +26,23 @@ mixin _$ProvaResultadoResumoViewStore
     });
   }
 
+  late final _$totalQuestoesAtom = Atom(
+      name: '_ProvaResultadoResumoViewStoreBase.totalQuestoes',
+      context: context);
+
+  @override
+  int get totalQuestoes {
+    _$totalQuestoesAtom.reportRead();
+    return super.totalQuestoes;
+  }
+
+  @override
+  set totalQuestoes(int value) {
+    _$totalQuestoesAtom.reportWrite(value, super.totalQuestoes, () {
+      super.totalQuestoes = value;
+    });
+  }
+
   late final _$responseAtom = Atom(
       name: '_ProvaResultadoResumoViewStoreBase.response', context: context);
 
@@ -72,6 +89,7 @@ mixin _$ProvaResultadoResumoViewStore
   String toString() {
     return '''
 carregando: ${carregando},
+totalQuestoes: ${totalQuestoes},
 response: ${response},
 prova: ${prova}
     ''';

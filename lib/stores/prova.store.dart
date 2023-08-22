@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/interfaces/database.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/managers/download.manager.store.dart';
 import 'package:appserap/managers/tempo.manager.dart';
 import 'package:appserap/stores/usuario.store.dart';
@@ -18,7 +20,6 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova_resposta.store.dart';
@@ -42,7 +43,7 @@ class ProvaStore extends _ProvaStoreBase with _$ProvaStore {
 }
 
 abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
-  var _usuarioStore = ServiceLocator.get<UsuarioStore>();
+  var _usuarioStore = sl.get<UsuarioStore>();
   List<ReactionDisposer> _reactions = [];
 
   late DownloadManagerStore downloadManagerStore;
@@ -146,7 +147,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
     _reactions = [
       reaction((_) => downloadStatus, onStatusChange),
       reaction(
-        (_) => ServiceLocator.get<PrincipalStore>().temConexao,
+        (_) => sl.get<PrincipalStore>().temConexao,
         onChangeConexao,
         fireImmediately: false,
       ),
@@ -230,9 +231,9 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
     await setStatusProva(EnumProvaStatus.INICIADA);
     await setHoraInicioProva(DateTime.now());
 
-    if (ServiceLocator.get<PrincipalStore>().temConexao) {
+    if (sl.get<PrincipalStore>().temConexao) {
       try {
-        await GetIt.I.get<ApiService>().prova.setStatusProva(
+        await sl<ProvaService>().setStatusProva(
               idProva: id,
               tipoDispositivo: kDeviceType.index,
               status: EnumProvaStatus.INICIADA.index,
@@ -313,13 +314,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   Future<void> _iniciarRevisaoProva() async {
     await respostas.sincronizarResposta(force: true);
 
-    ServiceLocator.get<AppRouter>().router.go("/prova/$id/resumo");
+    sl.get<AppRouter>().navigate(ResumoRespostasViewRoute(idProva: id));
   }
 
   Future<void> _finalizarProva() async {
     var confirm = await finalizarProva(true);
     if (confirm) {
-      ServiceLocator.get<AppRouter>().router.go("/");
+      sl.get<AppRouter>().navigate(HomeViewRoute());
     }
   }
 
@@ -330,7 +331,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
       fine('[Prova $id - $caderno] - Configurando controlador de tempo');
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
-        horaFinalTurno: ServiceLocator.get<UsuarioStore>().fimTurno,
+        horaFinalTurno: sl.get<UsuarioStore>().fimTurno,
         duracaoProva: Duration(seconds: prova.tempoExecucao),
         duracaoTempoExtra: Duration(seconds: prova.tempoExtra),
         duracaoTempoFinalizando: Duration(seconds: prova.tempoAlerta ?? 0),
@@ -342,19 +343,19 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   setStatusProva(EnumProvaStatus provaStatus) async {
     prova.status = provaStatus;
     status = provaStatus;
-    await ServiceLocator.get<AppDatabase>().provaDao.atualizarStatus(id, caderno, provaStatus);
+    await sl.get<AppDatabase>().provaDao.atualizarStatus(id, caderno, provaStatus);
   }
 
   @action
   Future<int> setHoraFimProva(DateTime dataFimProvaAluno) async {
     prova.dataFimProvaAluno = dataFimProvaAluno;
-    return await ServiceLocator.get<AppDatabase>().provaDao.atualizaDataFimProvaAluno(id, caderno, dataFimProvaAluno);
+    return await sl.get<AppDatabase>().provaDao.atualizaDataFimProvaAluno(id, caderno, dataFimProvaAluno);
   }
 
   @action
   Future<int> setHoraInicioProva(DateTime dataInicioProvaAluno) async {
     prova.dataInicioProvaAluno = dataInicioProvaAluno;
-    return await ServiceLocator.get<AppDatabase>()
+    return await sl.get<AppDatabase>()
         .provaDao
         .atualizaDataInicioProvaAluno(id, caderno, dataInicioProvaAluno);
   }
@@ -364,13 +365,13 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
     bool confirmacao = false;
 
     try {
-      BuildContext context = ServiceLocator.get<AppRouter>().navigatorKey.currentContext!;
+      BuildContext context = sl.get<AppRouter>().navigatorKey.currentContext!;
 
       setRespondendoProva(false);
 
       await setHoraFimProva(DateTime.now());
 
-      if (!ServiceLocator.get<PrincipalStore>().temConexao) {
+      if (!sl.get<PrincipalStore>().temConexao) {
         warning('Prova finalizada sem internet. Sincronização Pendente.');
         // Se estiver sem internet alterar status para pendente (worker ira sincronizar)
 
@@ -385,7 +386,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
         await respostas.sincronizarResposta(force: true);
 
         // Sincroniza com a api
-        var response = await GetIt.I.get<ApiService>().prova.setStatusProva(
+        var response = await sl<ProvaService>().setStatusProva(
               idProva: id,
               status: EnumProvaStatus.FINALIZADA.index,
               tipoDispositivo: kDeviceType.index,

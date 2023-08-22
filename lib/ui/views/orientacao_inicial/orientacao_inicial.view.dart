@@ -1,14 +1,17 @@
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
+@RoutePage()
 class OrientacaoInicialView extends StatefulWidget {
   const OrientacaoInicialView({Key? key}) : super(key: key);
 
@@ -31,7 +34,7 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
           child: Observer(
             builder: (_) {
               return ApresentacaoWidget(
-                avancarParaPagina: "/",
+                avancarParaPagina: HomeViewRoute(),
                 listaDePaginas: _store.listaPaginasOrientacoes,
                 textoBotaoAvancar: "PRÓXIMA DICA",
                 textoBotaoPular: "IR PARA A PÁGINA INICIAL",

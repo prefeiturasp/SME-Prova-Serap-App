@@ -16,7 +16,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 
 class QuestaoAlunoRespostaWidget extends StatelessWidget with Loggable, ProvaViewUtil {
-  final TemaStore temaStore = ServiceLocator.get<TemaStore>();
+  final TemaStore temaStore = sl<TemaStore>();
   final HtmlEditorController controller;
 
   final Questao questao;

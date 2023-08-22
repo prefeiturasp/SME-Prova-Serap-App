@@ -4,12 +4,12 @@ import 'package:appserap/dtos/autenticacao.response.dto.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:chopper/chopper.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ServiceAuthenticator extends Authenticator with Loggable {
@@ -17,7 +17,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
 
   @override
   FutureOr<Request?> authenticate(Request request, Response<dynamic> response, [Request? originalRequest]) async {
-    SharedPreferences prefs = await ServiceLocator.getAsync();
+    var prefs = sl<SharedPreferences>();
 
     if (response.statusCode == 401 && !refreshtoken) {
       refreshtoken = true;
@@ -54,16 +54,15 @@ class ServiceAuthenticator extends Authenticator with Loggable {
   }
 
   Future<String?> refreshToken(String oldToken) async {
-    ApiService service = GetIt.I.get();
 
     fine('Atualizando token');
     try {
       Response<AutenticacaoResponseDTO> response;
 
-      if (ServiceLocator.get<UsuarioStore>().isAdmin) {
-        response = await service.adminAuth.revalidar(token: oldToken);
+      if (sl.get<UsuarioStore>().isAdmin) {
+        response = await sl<AutenticacaoAdminService>().revalidar(token: oldToken);
       } else {
-        response = await service.auth.revalidar(token: oldToken);
+        response = await sl<AutenticacaoService>().revalidar(token: oldToken);
       }
 
       if (response.isSuccessful) {
@@ -71,7 +70,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
         DateTime expiration = response.body!.dataHoraExpiracao;
         fine('Novo token - Data Expiracao ($expiration) $newToken');
 
-        SharedPreferences prefs = await ServiceLocator.getAsync();
+        var prefs = sl<SharedPreferences>();
         await prefs.setString('token', newToken);
         await prefs.setString('token_expiration', expiration.toIso8601String());
         return newToken;
@@ -90,9 +89,9 @@ class ServiceAuthenticator extends Authenticator with Loggable {
   _deslogar() async {
     info("Deslogando...");
     refreshtoken = false;
-    final _principalStore = GetIt.I.get<PrincipalStore>();
+    final _principalStore = sl<PrincipalStore>();
     await _principalStore.sair();
-    ServiceLocator.get<AppRouter>().router.go("/login");
+    sl.get<AppRouter>().replaceAll([LoginViewRoute()]);
   }
 }
 
@@ -101,7 +100,7 @@ class CustomAuthInterceptor implements RequestInterceptor {
 
   @override
   FutureOr<Request> onRequest(Request request) async {
-    SharedPreferences prefs = await ServiceLocator.getAsync();
+    var prefs = sl<SharedPreferences>();
     String? token = prefs.getString('token');
 
     if (token != null) {

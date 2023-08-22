@@ -1,7 +1,6 @@
 import 'package:appserap/converters/error_converter.dart';
 import 'package:appserap/converters/json_conveter.dart';
 import 'package:appserap/interceptors/autenticacao.interceptor.dart';
-import 'package:appserap/services/rest/auth.service.dart';
 import 'package:chopper/chopper.dart';
 import 'package:http/testing.dart';
 
@@ -30,7 +29,7 @@ buildClient([http.Client? httpClient]) {
       CustomAuthInterceptor(),
     ],
     services: [
-      AutenticacaoService.create(),
+      // AutenticacaoService.create(),
     ],
   );
 }

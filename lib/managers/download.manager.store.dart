@@ -58,8 +58,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   late String caderno;
   Prova? prova;
 
-  AppDatabase db = ServiceLocator.get();
-  ApiService apiService = ServiceLocator.get();
+  AppDatabase db = sl.get();
 
   // late List<DownloadProvaDb> downloads;
 
@@ -138,7 +137,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
     prova ??= await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
 
     // carregar da url
-    var response = await ServiceLocator.get<ApiService>().prova.getResumoProvaCaderno(
+    var response = await sl<ProvaService>().getResumoProvaCaderno(
           idProva: provaId,
           caderno: caderno,
         );
@@ -343,7 +342,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
       versao = "MacOS ${macOsInfo.osRelease}";
     }
 
-    var response = await ServiceLocator.get<ApiService>().download.informarDownloadConcluido(
+    var response = await sl<DownloadService>().informarDownloadConcluido(
           provaId: idProva,
           tipoDispositivo: kDeviceType.index,
           dispositivoId: dispositivoId,
@@ -423,7 +422,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
   _baixarContextoProva(DownloadProvaDb download) async {
     await _updateDownloadStatus(download, EnumDownloadStatus.BAIXANDO);
 
-    Response<ContextoProvaResponseDTO> response = await apiService.contextoProva.getContextoProva(id: download.id);
+    Response<ContextoProvaResponseDTO> response = await sl<ContextoProvaService>().getContextoProva(id: download.id);
 
     if (response.isSuccessful) {
       ContextoProvaResponseDTO contexto = response.body!;
@@ -499,7 +498,7 @@ abstract class _DownloadManagerStoreBase with Store, Loggable {
 
       if (questoesParaBaixar.isNotEmpty) {
         Response<List<QuestaoDetalhesLegadoResponseDTO>> response =
-            await apiService.questao.getQuestaoCompletaLegado(idsLegado: questoesParaBaixar.toList());
+            await sl<QuestaoService>().getQuestaoCompletaLegado(idsLegado: questoesParaBaixar.toList());
 
         if (response.isSuccessful) {
           List<QuestaoDetalhesLegadoResponseDTO> questoesDTO = response.body!;

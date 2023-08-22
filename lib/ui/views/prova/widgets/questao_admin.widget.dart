@@ -15,7 +15,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 
 class QuestaoAdminWidget extends StatelessWidget with ProvaViewUtil {
-  final TemaStore temaStore = ServiceLocator.get<TemaStore>();
+  final TemaStore temaStore = sl<TemaStore>();
   final controller = HtmlEditorController();
 
   final QuestaoResponseDTO questao;
