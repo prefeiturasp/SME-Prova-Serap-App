@@ -306,11 +306,12 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
     if (kIsWeb) {
       return PlayerAudioWidget(
         audioBytes: arquivoAudio,
+        audioPath: arquivoAudioDb!.caminho,
       );
     } else {
       if (arquivoAudioDb != null) {
         return PlayerAudioWidget(
-          audioPath: arquivoAudioDb!.path,
+          audioPath: arquivoAudioDb!.caminho,
         );
       }
     }
@@ -379,7 +380,6 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with 
             ordem: ordem,
           ),
         );
-
       },
     );
   }
