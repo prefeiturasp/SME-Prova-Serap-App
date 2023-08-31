@@ -45,13 +45,21 @@ class _PlayerAudioWidgetState extends State<PlayerAudioWidget> {
 
   @override
   void initState() {
+    _preparePlayerHandle();
+    _initStreams();
+    super.initState();
+  }
+
+  _preparePlayerHandle() {
     player = AudioPlayer();
 
-    var source = widget.audioPath != null ? UrlSource(widget.audioPath!): BytesSource(widget.audioBytes!);
+    var path = _prepareAudioPathHandle();
+
+    var source =
+        path != null ? UrlSource(path) : BytesSource(widget.audioBytes!);
 
     player.setSource(source);
 
-    super.initState();
     // Use initial values from player
     _playerState = player.state;
     player.getDuration().then(
@@ -64,7 +72,14 @@ class _PlayerAudioWidgetState extends State<PlayerAudioWidget> {
             _position = value;
           }),
         );
-    _initStreams();
+  }
+
+  String? _prepareAudioPathHandle() {
+    if (widget.audioPath != null) {
+      return widget.audioPath!.contains('http:')
+          ? widget.audioPath?.replaceAll('http:', 'https:')
+          : widget.audioPath;
+    }
   }
 
   @override
@@ -180,7 +195,8 @@ class _PlayerAudioWidgetState extends State<PlayerAudioWidget> {
       });
     });
 
-    _playerStateChangeSubscription = player.onPlayerStateChanged.listen((state) {
+    _playerStateChangeSubscription =
+        player.onPlayerStateChanged.listen((state) {
       setState(() {
         _playerState = state;
       });
