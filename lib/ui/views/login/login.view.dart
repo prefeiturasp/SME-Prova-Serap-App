@@ -352,7 +352,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
       if (await store.autenticar()) {
         await _orientacaoStore.popularListaDeOrientacoes();
 
-        context.router.navigate(OrientacaoInicialViewRoute());
+        context.router.pushAndPopUntil(OrientacaoInicialViewRoute(), predicate: (_) => false);
       }
     }
   }
