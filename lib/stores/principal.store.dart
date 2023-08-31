@@ -141,23 +141,22 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     } catch (e, stack) {
       await recordError(e, stack, reason: "Erro ao remover downloads");
     }
-    await _limparDadosLocais();
-
-    await db.limpar();
-
-    await limparMemoriaProvas();
-
-    bool eraAdimin = usuario.isAdmin;
-
-    usuario.dispose();
-
-    if (eraAdimin) {
-      await launchUrl(Uri.parse(AppConfigReader.getSerapUrl()), webOnlyWindowName: '_self');
-      _appRouter.navigate(LoginViewRoute());
-    }
-
     try {
       await dbRespostas.respostaProvaDao.removerSincronizadas();
+      await _limparDadosLocais();
+
+      await db.limpar();
+
+      await limparMemoriaProvas();
+
+      bool eraAdimin = usuario.isAdmin;
+
+      usuario.dispose();
+
+      if (eraAdimin) {
+        await launchUrl(Uri.parse(AppConfigReader.getSerapUrl()), webOnlyWindowName: '_self');
+        _appRouter.navigate(LoginViewRoute());
+      }
     } catch (e, stack) {
       await recordError(e, stack, reason: "Erro ao remover respostas sincronizadas");
     }

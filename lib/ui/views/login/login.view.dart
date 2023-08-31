@@ -368,6 +368,7 @@ class _LoginViewState extends BaseStateWidget<LoginView, LoginStore> {
 
         context.router.pushAndPopUntil(OrientacaoInicialViewRoute(),
             predicate: (_) => false);
+
       }
     }
   }
