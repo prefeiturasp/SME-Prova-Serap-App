@@ -46,7 +46,8 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'
             sh 'if [ ! -d "android/app/src/dev" ]; then mkdir android/app/src/dev; fi'
-            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . $(realpath envdev) && rm -f envdev && touch .env && echo "NOTHINGTODO" > .env'
+            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . $(realpath envdev)'
+            sh "grep '^export' envdev | sed 's/^export //g' > .env && rm -f envdev"
             sh 'flutter clean'
             sh "flutter pub get"
             sh "cd android && ./gradlew clean && cd .."
@@ -73,7 +74,8 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'
             sh 'if [ ! -d "android/app/src/hom" ]; then mkdir android/app/src/hom; fi'
-            sh 'cp ${GOOGLEJSONHOM} android/app/src/hom/google-services.json && cp ${ENVHOM} envhom && chmod a+r+x envhom && . $(realpath envhom) && rm -f envhom && touch .env && echo "NOTHINGTODO" > .env'
+            sh 'cp ${GOOGLEJSONHOM} android/app/src/hom/google-services.json && cp ${ENVHOM} envhom && chmod a+r+x envhom && . $(realpath envhom)'
+            sh "grep '^export' envdev | sed 's/^export //g' > .env && rm -f envhom"
             sh 'flutter clean'
             sh "flutter pub get"
             sh "cd android && ./gradlew clean && cd .."
@@ -98,7 +100,8 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'            
             sh 'if [ ! -d "android/app/src/prod" ]; then mkdir android/app/src/prod; fi'
-            sh 'cp ${GOOGLEJSONPROD} android/app/src/prod/google-services.json && cp ${ENVPROD} envprod && chmod a+r+x envprod && . $(realpath envprod) && rm -f envprod && touch .env && echo "NOTHINGTODO" > .env'
+            sh 'cp ${GOOGLEJSONPROD} android/app/src/prod/google-services.json && cp ${ENVPROD} envprod && chmod a+r+x envprod && . $(realpath envprod)'
+            sh "grep '^export' envdev | sed 's/^export //g' > .env && rm -f envprod"
             sh 'flutter clean'
             sh "flutter pub get"
             sh "cd android && ./gradlew clean && cd .."
