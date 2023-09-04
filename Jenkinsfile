@@ -75,7 +75,7 @@ pipeline {
             sh 'cd ${WORKSPACE}'
             sh 'if [ ! -d "android/app/src/hom" ]; then mkdir android/app/src/hom; fi'
             sh 'cp ${GOOGLEJSONHOM} android/app/src/hom/google-services.json && cp ${ENVHOM} envhom && chmod a+r+x envhom && . $(realpath envhom)'
-            sh "grep '^export' envdev | sed 's/^export //g' > .env && rm -f envhom"
+            sh "grep '^export' envhom | sed 's/^export //g' > .env && rm -f envhom"
             sh 'flutter clean'
             sh "flutter pub get"
             sh "cd android && ./gradlew clean && cd .."
@@ -101,7 +101,7 @@ pipeline {
             sh 'cd ${WORKSPACE}'            
             sh 'if [ ! -d "android/app/src/prod" ]; then mkdir android/app/src/prod; fi'
             sh 'cp ${GOOGLEJSONPROD} android/app/src/prod/google-services.json && cp ${ENVPROD} envprod && chmod a+r+x envprod && . $(realpath envprod)'
-            sh "grep '^export' envdev | sed 's/^export //g' > .env && rm -f envprod"
+            sh "grep '^export' envprod | sed 's/^export //g' > .env && rm -f envprod"
             sh 'flutter clean'
             sh "flutter pub get"
             sh "cd android && ./gradlew clean && cd .."
