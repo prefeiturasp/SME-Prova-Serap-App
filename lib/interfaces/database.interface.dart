@@ -3,6 +3,6 @@ import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/main.ioc.dart';
 
 mixin class Database {
-  AppDatabase db = ServiceLocator.get<AppDatabase>();
-  RespostasDatabase dbRespostas = ServiceLocator.get<RespostasDatabase>();
+  AppDatabase db = sl.get<AppDatabase>();
+  RespostasDatabase dbRespostas = sl.get<RespostasDatabase>();
 }

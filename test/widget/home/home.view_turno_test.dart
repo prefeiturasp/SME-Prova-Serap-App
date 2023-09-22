@@ -2,10 +2,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/stores/home.store.dart';
-import 'package:appserap/stores/job.store.dart';
 import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:clock/clock.dart';
@@ -24,7 +21,6 @@ import '../../fixtures/fixture_reader.dart';
 import '../../fixtures/mocks.provas.dart';
 import '../../fixtures/mocks.provas.mocks.dart';
 import '../../fixtures/user/locator.fixture.dart';
-import 'home.view_turno_test.mocks.dart';
 
 @GenerateMocks(
   [
@@ -61,23 +57,23 @@ void main() {
 
     registerInjectionAsync<SharedPreferences>(() => SharedPreferences.getInstance());
 
-    Future<UsuarioStore> teste() async {
-      UsuarioStore u = UsuarioStore();
-      u.carregarUsuario();
-      return u;
-    }
+    // Future<UsuarioStore> teste() async {
+    //   UsuarioStore u = UsuarioStore();
+    //   u.carregarUsuario();
+    //   return u;
+    // }
+    //
+    // registerInjection<UsuarioStore>(await teste());
+    //
+    // registerInjection<PrincipalStore>(MockPrincipalStore());
+    // registerInjection<ApiService>(MockApiService());
+    //
+    // registerInjection<TemaStore>(TemaStore());
+    // registerInjection<JobStore>(JobStore());
+    //
+    // registerInjection<HomeStore>(HomeStore());
 
-    registerInjection<UsuarioStore>(await teste());
-
-    registerInjection<PrincipalStore>(MockPrincipalStore());
-    registerInjection<ApiService>(MockApiService());
-
-    registerInjection<TemaStore>(TemaStore());
-    registerInjection<JobStore>(JobStore());
-
-    registerInjection<HomeStore>(HomeStore());
-
-    await ServiceLocator.allReady();
+    await sl.allReady();
   });
 
   tearDown(() {
@@ -86,9 +82,9 @@ void main() {
   });
 
   mockPrincipalStore() {
-    when(ServiceLocator.get<PrincipalStore>().usuario).thenReturn(ServiceLocator.get<UsuarioStore>());
-    when(ServiceLocator.get<PrincipalStore>().temConexao).thenReturn(true);
-    when(ServiceLocator.get<PrincipalStore>().versao).thenReturn("");
+    when(sl.get<PrincipalStore>().usuario).thenReturn(sl.get<UsuarioStore>());
+    when(sl.get<PrincipalStore>().temConexao).thenReturn(true);
+    when(sl.get<PrincipalStore>().versao).thenReturn("");
   }
 
   group('Home - Turnos', () {
@@ -104,7 +100,7 @@ void main() {
             await mockProvaComTempo(provaMock, forcarBaixada: true);
             mockProvaDetalhesCaderno(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -131,7 +127,7 @@ void main() {
             await mockProvaComTempo(provaMock, forcarBaixada: true);
             mockProvaDetalhesCaderno(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -160,7 +156,7 @@ void main() {
             await mockProvaComTempo(provaMock, forcarBaixada: true);
             mockProvaDetalhesCaderno(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 

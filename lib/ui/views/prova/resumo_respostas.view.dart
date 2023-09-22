@@ -4,6 +4,7 @@ import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
@@ -23,18 +24,19 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
+@RoutePage()
 class ResumoRespostasView extends BaseStatefulWidget {
   final int idProva;
 
   ResumoRespostasView({
     Key? key,
-    required this.idProva,
+    @PathParam('idProva') required this.idProva,
   }) : super(key: key, title: "Resumo das respostas");
 
   @override
@@ -51,10 +53,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
   @override
   void initState() {
     super.initState();
-    var provas = ServiceLocator.get<HomeStore>().provas;
+    var provas = sl<HomeStore>().provas;
 
     if (provas.isEmpty) {
-      ServiceLocator.get<AppRouter>().router.go("/");
+      sl<AppRouter>().navigate(HomeViewRoute());
     }
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
@@ -297,7 +299,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     store.questoesParaRevisar.clear();
     store.mapaDeQuestoes.clear();
 
-    var db = ServiceLocator.get<AppDatabase>();
+    var db = sl<AppDatabase>();
 
     var questoes = await db.questaoDao.obterPorProvaECaderno(widget.idProva, provaStore.caderno);
 
@@ -441,13 +443,31 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         if ((provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido) &&
             resposta == "") {
           store.quantidadeDeQuestoesSemRespostas = 0;
-          context.go("/prova/${provaStore.id}/revisao/$questaoOrdem");
+          context.router.navigate(
+            QuestaoRevisaoViewRoute(
+              key: ValueKey("${provaStore.id}-$questaoOrdem"),
+              idProva: provaStore.id,
+              ordem: questaoOrdem,
+            ),
+          );
         } else if (resposta != "") {
           store.quantidadeDeQuestoesSemRespostas = 0;
-          context.go("/prova/${provaStore.id}/revisao/$questaoOrdem");
+          context.router.navigate(
+            QuestaoRevisaoViewRoute(
+              key: ValueKey("${provaStore.id}-$questaoOrdem"),
+              idProva: provaStore.id,
+              ordem: questaoOrdem,
+            ),
+          );
         } else if (provaStore.tempoExecucaoStore == null && resposta == "") {
           store.quantidadeDeQuestoesSemRespostas = 0;
-          context.go("/prova/${provaStore.id}/revisao/$questaoOrdem");
+          context.router.navigate(
+            QuestaoRevisaoViewRoute(
+              key: ValueKey("${provaStore.id}-$questaoOrdem"),
+              idProva: provaStore.id,
+              ordem: questaoOrdem,
+            ),
+          );
         }
       },
       child: SvgPicture.asset(
@@ -504,7 +524,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     if (finalizar) {
       bool provaFinalizada = await provaStore.finalizarProva();
       if (provaFinalizada) {
-        ServiceLocator.get<AppRouter>().router.go("/");
+        sl<AppRouter>().navigate(HomeViewRoute());
       }
     }
   }

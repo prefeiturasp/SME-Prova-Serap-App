@@ -1,65 +1,45 @@
-import 'dart:io';
-
-import 'package:appserap/interfaces/loggable.interface.dart';
-import 'package:chewie/chewie.dart';
+import 'package:appserap/ui/widgets/video_player/appinio_video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
-class VideoPlayerWidget extends StatefulWidget {
-  final String? videoPath;
-  final String? videoUrl;
+import 'chewie_player.dart';
 
-  VideoPlayerWidget({
+
+enum PlayerType {
+  chewie,
+  appinio_video_player,
+}
+
+class VideoPlayer extends StatefulWidget {
+  const VideoPlayer({
     super.key,
     this.videoPath,
     this.videoUrl,
+    this.playerType = PlayerType.chewie,
   });
 
+  final String? videoPath;
+  final String? videoUrl;
+  final PlayerType playerType;
+
   @override
-  _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
+  State<VideoPlayer> createState() => _VideoPlayerState();
 }
 
-class _VideoPlayerWidgetState extends State<VideoPlayerWidget> with Loggable {
-  late VideoPlayerController _videoPlayerController;
-  late ChewieController _chewieController;
-  double _aspectRatio = 16 / 9;
-
-  @override
-  initState() {
-    super.initState();
-
-    if (widget.videoUrl != null) {
-      _videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl!));
-    } else {
-      _videoPlayerController = VideoPlayerController.file(File(widget.videoPath!));
-      info(widget.videoPath!);
-    }
-
-    _chewieController = ChewieController(
-      allowedScreenSleep: false,
-      allowFullScreen: false,
-      videoPlayerController: _videoPlayerController,
-      aspectRatio: _aspectRatio,
-      autoInitialize: true,
-      autoPlay: true,
-      showControls: true,
-    );
-  }
-
-  @override
-  void dispose() {
-    _videoPlayerController.pause();
-
-    _chewieController.dispose();
-    _videoPlayerController.dispose();
-
-    super.dispose();
-  }
-
+class _VideoPlayerState extends State<VideoPlayer> {
   @override
   Widget build(BuildContext context) {
-    return Chewie(
-      controller: _chewieController,
-    );
+    switch (widget.playerType) {
+      case PlayerType.chewie:
+        return ChewiePlayer(
+          videoPath: widget.videoPath,
+          videoUrl: widget.videoUrl,
+        );
+
+      case PlayerType.appinio_video_player:
+        return AppinioVideoPlayer(
+          videoPath: widget.videoPath,
+          videoUrl: widget.videoUrl,
+        );
+    }
   }
 }

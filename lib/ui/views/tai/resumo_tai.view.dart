@@ -1,3 +1,4 @@
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/resumo_tai_view.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
@@ -8,6 +9,7 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,6 +18,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../main.ioc.dart';
 import '../../../main.route.dart';
 
+@RoutePage()
 class ResumoTaiView extends BaseStatefulWidget {
   final int provaId;
 
@@ -129,7 +132,7 @@ class _ResumoTaiViewState extends BaseStateWidget<ResumoTaiView, ResumoTaiViewSt
 
                                     await WakelockPlus.disable();
 
-                                    ServiceLocator.get<AppRouter>().router.go("/");
+                                    sl<AppRouter>().navigate(HomeViewRoute());
                                   } catch (e, stack) {
                                     await recordError(e, stack);
                                   } finally {

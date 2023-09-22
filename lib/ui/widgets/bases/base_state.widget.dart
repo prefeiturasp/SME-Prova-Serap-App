@@ -1,5 +1,6 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.ioc.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
@@ -7,16 +8,15 @@ import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
 
 import 'base_statefull.widget.dart';
 
 abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends Object> extends State<TWidget>
     with Loggable {
-  var store = GetIt.I.get<TBind>();
-  var principalStore = GetIt.I.get<PrincipalStore>();
+  var store = sl<TBind>();
+  var principalStore = sl<PrincipalStore>();
 
-  TemaStore temaStore = GetIt.I.get<TemaStore>();
+  TemaStore temaStore = sl<TemaStore>();
 
   @override
   void initState() {

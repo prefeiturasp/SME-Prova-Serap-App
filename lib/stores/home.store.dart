@@ -1,11 +1,10 @@
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/models/prova_aluno.model.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:chopper/src/response.dart';
 import 'package:appserap/utils/firebase.util.dart';
-import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 
 import 'package:appserap/dtos/prova.response.dto.dart';
@@ -20,23 +19,34 @@ import 'principal.store.dart';
 
 part 'home.store.g.dart';
 
+@LazySingleton()
 class HomeStore = _HomeStoreBase with _$HomeStore;
 
-abstract class _HomeStoreBase with Store, Loggable, Disposable {
+abstract class _HomeStoreBase with Store, Loggable {
+  final UsuarioStore _usuarioStore;
+  final PrincipalStore _principalStore;
+  final AppDatabase db;
+  final ProvaService _provaService;
+
   @observable
   ObservableMap<int, ProvaStore> provas = ObservableMap<int, ProvaStore>();
 
   @observable
   bool carregando = false;
 
+  _HomeStoreBase(
+    this._usuarioStore,
+    this._principalStore,
+    this.db,
+    this._provaService,
+  );
+
   @action
   carregarProvas() async {
     carregando = true;
-    String codigoEOL = ServiceLocator.get<UsuarioStore>().codigoEOL!;
+    String codigoEOL = _usuarioStore.codigoEOL!;
 
     Map<int, ProvaStore> provasStore = {};
-
-    AppDatabase db = GetIt.I.get();
 
     List<Prova> provasDb = await db.provaDao.listarTodosPorAluno(codigoEOL);
     for (var prova in provasDb) {
@@ -45,9 +55,9 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
       );
     }
 
-    if (ServiceLocator.get<PrincipalStore>().temConexao) {
+    if (_principalStore.temConexao) {
       try {
-        Response<List<ProvaResponseDTO>> response = await GetIt.I.get<ApiService>().prova.getProvas();
+        Response<List<ProvaResponseDTO>> response = await _provaService.getProvas();
 
         if (response.isSuccessful) {
           var provasResponse = response.body!;
@@ -138,7 +148,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
   }
 
   Future<void> carregaProva(int idProva, String caderno, ProvaStore provaStoreAtualizada) async {
-    var provaDao = ServiceLocator.get<AppDatabase>().provaDao;
+    var provaDao = db.provaDao;
 
     Prova? prova = await provaDao.obterPorIdNull(idProva, caderno);
 
@@ -190,7 +200,7 @@ abstract class _HomeStoreBase with Store, Loggable, Disposable {
     }
   }
 
-  @override
+  @disposeMethod
   onDispose() {
     cancelarTimers();
     limpar();

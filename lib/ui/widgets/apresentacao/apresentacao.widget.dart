@@ -5,13 +5,13 @@ import 'package:appserap/ui/widgets/buttons/botao_secundario.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 
 class ApresentacaoWidget extends StatelessWidget {
-  final String? avancarParaPagina;
+  final PageRouteInfo? avancarParaPagina;
   final List<ApresentacaoModelWidget> listaDePaginas;
   final String textoBotaoAvancar;
   final String textoBotaoPular;
@@ -34,7 +34,7 @@ class ApresentacaoWidget extends StatelessWidget {
 
   void _irParaProximaPagina(BuildContext context) {
     store.pagina = 0;
-    context.go(avancarParaPagina!);
+   context.router.navigate(avancarParaPagina!);
   }
 
   onAfterBuild(BuildContext context) {

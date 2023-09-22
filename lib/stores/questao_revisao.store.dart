@@ -1,13 +1,19 @@
-import 'package:appserap/interfaces/database.interface.dart';
+import 'package:appserap/database/app.database.dart';
+import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/models/questao.model.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 
 part 'questao_revisao.store.g.dart';
 
+@LazySingleton()
 class QuestaoRevisaoStore = _QuestaoRevisaoStoreBase with _$QuestaoRevisaoStore;
 
-abstract class _QuestaoRevisaoStoreBase with Store, Database, Loggable {
+abstract class _QuestaoRevisaoStoreBase with Store, Loggable {
+  final AppDatabase db;
+  final RespostasDatabase dbRespostas;
+
   @observable
   ObservableMap<int, Questao> questoesParaRevisar = <int, Questao>{}.asObservable();
 
@@ -31,4 +37,9 @@ abstract class _QuestaoRevisaoStoreBase with Store, Database, Loggable {
 
   @observable
   bool isLoading = false;
+
+  _QuestaoRevisaoStoreBase(
+    this.db,
+    this.dbRespostas,
+  );
 }

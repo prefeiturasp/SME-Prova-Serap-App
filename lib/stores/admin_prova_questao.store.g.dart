@@ -25,6 +25,22 @@ mixin _$AdminProvaQuestaoViewStore on _AdminProvaQuestaoViewStoreBase, Store {
     });
   }
 
+  late final _$totalQuestoesAtom = Atom(
+      name: '_AdminProvaQuestaoViewStoreBase.totalQuestoes', context: context);
+
+  @override
+  int get totalQuestoes {
+    _$totalQuestoesAtom.reportRead();
+    return super.totalQuestoes;
+  }
+
+  @override
+  set totalQuestoes(int value) {
+    _$totalQuestoesAtom.reportWrite(value, super.totalQuestoes, () {
+      super.totalQuestoes = value;
+    });
+  }
+
   late final _$detalhesAtom =
       Atom(name: '_AdminProvaQuestaoViewStoreBase.detalhes', context: context);
 
@@ -62,9 +78,11 @@ mixin _$AdminProvaQuestaoViewStore on _AdminProvaQuestaoViewStoreBase, Store {
       context: context);
 
   @override
-  Future<void> carregarDetalhesQuestao(int idProva, int idQuestao) {
-    return _$carregarDetalhesQuestaoAsyncAction
-        .run(() => super.carregarDetalhesQuestao(idProva, idQuestao));
+  Future<void> carregarDetalhesQuestao(
+      {required int idProva, String? nomeCaderno, required int ordem}) {
+    return _$carregarDetalhesQuestaoAsyncAction.run(() => super
+        .carregarDetalhesQuestao(
+            idProva: idProva, nomeCaderno: nomeCaderno, ordem: ordem));
   }
 
   late final _$carregarDetalhesAsyncAction = AsyncAction(
@@ -95,6 +113,7 @@ mixin _$AdminProvaQuestaoViewStore on _AdminProvaQuestaoViewStoreBase, Store {
   String toString() {
     return '''
 carregando: ${carregando},
+totalQuestoes: ${totalQuestoes},
 detalhes: ${detalhes},
 questao: ${questao}
     ''';

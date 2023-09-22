@@ -1,14 +1,15 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/services/api.dart';
-import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 
 part 'tema.store.g.dart';
 
+@LazySingleton()
 class TemaStore = _TemaStoreBase with _$TemaStore;
 
 abstract class _TemaStoreBase with Store {
-  final apiService = GetIt.I.get<ApiService>();
+  final UsuarioService _usuarioService;
 
   /// Prefixo `t` se refere ao `tamanho`
 
@@ -38,6 +39,10 @@ abstract class _TemaStoreBase with Store {
 
   @observable
   double appbarHeight = 78;
+
+  _TemaStoreBase(
+    this._usuarioService,
+  );
 
   double size(double size) {
     if (size == 10) {
@@ -107,7 +112,7 @@ abstract class _TemaStoreBase with Store {
   }
 
   void enviarPreferencias() {
-    apiService.usuario.atualizarPreferencias(
+    _usuarioService.atualizarPreferencias(
       tamanhoFonte: incrementador.toInt(),
       familiaFonte: fonteDoTexto.index,
     );

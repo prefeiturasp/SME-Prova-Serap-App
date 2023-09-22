@@ -7,11 +7,13 @@ import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/ui/widgets/status_sincronizacao/status_sincronizacao.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import 'tabs/tabs/prova_atual_tab.view.dart';
 
+@RoutePage()
 class HomeView extends BaseStatefulWidget {
   HomeView({Key? key}) : super(key: key);
 

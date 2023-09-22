@@ -125,8 +125,8 @@ class ApresentacaoContextoAdminWidget extends StatelessWidget {
               style: {
                 '*': Style.fromTextStyle(
                   TextStyle(
-                    fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
-                    fontSize: ServiceLocator.get<TemaStore>().size(16),
+                    fontFamily: sl<TemaStore>().fonteDoTexto.nomeFonte,
+                    fontSize: sl<TemaStore>().size(16),
                   ),
                 )
               },
@@ -250,8 +250,8 @@ class ApresentacaoContextoAdminWidget extends StatelessWidget {
             style: {
               '*': Style.fromTextStyle(
                 TextStyle(
-                  fontFamily: ServiceLocator.get<TemaStore>().fonteDoTexto.nomeFonte,
-                  fontSize: ServiceLocator.get<TemaStore>().size(16),
+                  fontFamily: sl<TemaStore>().fonteDoTexto.nomeFonte,
+                  fontSize: sl<TemaStore>().size(16),
                 ),
               )
             },

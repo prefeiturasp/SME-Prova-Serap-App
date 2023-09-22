@@ -46,9 +46,12 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'
             sh 'if [ ! -d "android/app/src/dev" ]; then mkdir android/app/src/dev; fi'
-            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . $(realpath envdev) && rm -f envdev && touch .env && echo "NOTHINGTODO" > .env'
+            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . $(realpath envdev)'
+            sh "grep '^export' envdev | sed 's/^export //g' > .env && rm -f envdev"
             sh 'flutter clean'
-            sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=dev"
+            sh "flutter pub get"
+            sh "cd android && ./gradlew clean && cd .."
+            sh "flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=dev"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
           }
@@ -71,9 +74,12 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'
             sh 'if [ ! -d "android/app/src/hom" ]; then mkdir android/app/src/hom; fi'
-            sh 'cp ${GOOGLEJSONHOM} android/app/src/hom/google-services.json && cp ${ENVHOM} envhom && chmod a+r+x envhom && . $(realpath envhom) && rm -f envhom && touch .env && echo "NOTHINGTODO" > .env'
+            sh 'cp ${GOOGLEJSONHOM} android/app/src/hom/google-services.json && cp ${ENVHOM} envhom && chmod a+r+x envhom && . $(realpath envhom)'
+            sh "grep '^export' envhom | sed 's/^export //g' > .env && rm -f envhom"
             sh 'flutter clean'
-            sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=hom"
+            sh "flutter pub get"
+            sh "cd android && ./gradlew clean && cd .."
+            sh "flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=hom"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'
           }
@@ -94,9 +100,12 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'            
             sh 'if [ ! -d "android/app/src/prod" ]; then mkdir android/app/src/prod; fi'
-            sh 'cp ${GOOGLEJSONPROD} android/app/src/prod/google-services.json && cp ${ENVPROD} envprod && chmod a+r+x envprod && . $(realpath envprod) && rm -f envprod && touch .env && echo "NOTHINGTODO" > .env'
+            sh 'cp ${GOOGLEJSONPROD} android/app/src/prod/google-services.json && cp ${ENVPROD} envprod && chmod a+r+x envprod && . $(realpath envprod)'
+            sh "grep '^export' envprod | sed 's/^export //g' > .env && rm -f envprod"
             sh 'flutter clean'
-            sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=prod"
+            sh "flutter pub get"
+            sh "cd android && ./gradlew clean && cd .."
+            sh "flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=prod"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
             sh 'if [ -d "config" ]; then rm -Rf config; fi'
             stash includes: 'build/app/outputs/flutter-apk/**/*.apk', name: 'appbuild'

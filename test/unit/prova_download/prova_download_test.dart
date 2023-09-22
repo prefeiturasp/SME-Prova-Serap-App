@@ -40,7 +40,7 @@ void main() {
 
   group('Download -', () {
     mocksUsuarioStore() {
-      when(ServiceLocator.get<UsuarioStore>().deficiencias).thenReturn(mobx.ObservableList());
+      when(sl.get<UsuarioStore>().deficiencias).thenReturn(mobx.ObservableList());
     }
 
     mocksProvaService() {
@@ -63,7 +63,7 @@ void main() {
       }
 
       var provaServiceMock = MockProvaService();
-      when(ServiceLocator.get<ApiService>().prova).thenAnswer((_) => provaServiceMock);
+      when(sl<ProvaService>()).thenAnswer((_) => provaServiceMock);
 
       when(provaServiceMock.getResumoProvaCaderno(idProva: anyNamed('idProva'), caderno: anyNamed('caderno')))
           .thenAnswer((_) => getProvaDetalhesCadernoResponseDTO());
@@ -95,7 +95,7 @@ void main() {
 
       var downloadServiceMock = MockDownloadService();
 
-      when(ServiceLocator.get<ApiService>().download).thenAnswer((_) => downloadServiceMock);
+      when(sl<DownloadService>()).thenAnswer((_) => downloadServiceMock);
 
       when(downloadServiceMock.informarDownloadConcluido(
         provaId: anyNamed("provaId"),
@@ -144,7 +144,7 @@ void main() {
     test('Deve fazer o download da prova', () async {
       var questaoServiceMock = MockQuestaoService();
 
-      when(ServiceLocator.get<ApiService>().questao).thenAnswer((_) => questaoServiceMock);
+      when(sl<QuestaoService>()).thenAnswer((_) => questaoServiceMock);
 
       when(questaoServiceMock.getQuestaoCompletaLegado(idsLegado: [21138, 21139]))
           .thenAnswer((_) => (getQuestaoCompletaLegado([21138, 21139])));
@@ -165,7 +165,7 @@ void main() {
 
       await downloadManagerStore.iniciarDownload();
 
-      var db = ServiceLocator.get<AppDatabase>();
+      var db = sl.get<AppDatabase>();
 
       var questoes = await db.questaoDao.obterPorProvaId(provaId);
 
@@ -173,7 +173,7 @@ void main() {
     });
 
     mockQuestoes(MockQuestaoService mock) {
-      when(ServiceLocator.get<ApiService>().questao).thenAnswer((_) => mock);
+      when(sl<QuestaoService>()).thenAnswer((_) => mock);
 
       when(
         mock.getQuestaoCompletaLegado(idsLegado: [21138, 21139]),
@@ -201,14 +201,14 @@ void main() {
       var questaoServiceMock = MockQuestaoService();
       mockQuestoes(questaoServiceMock);
 
-      when(ServiceLocator.get<UsuarioStore>().isRespondendoProva).thenReturn(false);
+      when(sl.get<UsuarioStore>().isRespondendoProva).thenReturn(false);
 
-      var sp = await ServiceLocator.getAsync<SharedPreferences>();
+      var sp = await sl.getAsync<SharedPreferences>();
       sp.setString('token', UserFixture().autenticacaoResponse.token);
 
       await BaixarProvaJob().run();
 
-      var db = ServiceLocator.get<AppDatabase>();
+      var db = sl.get<AppDatabase>();
 
       var prova = await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
       expect(prova, isNotNull);
@@ -221,7 +221,7 @@ void main() {
     test('Deve retornar erro ao tentar baixar uma questao com imagem que tenha link da imagem invalido', () async {
       var questaoServiceMock = MockQuestaoService();
 
-      when(ServiceLocator.get<ApiService>().questao).thenAnswer((_) => questaoServiceMock);
+      when(sl<QuestaoService>()).thenAnswer((_) => questaoServiceMock);
 
       when(questaoServiceMock.getQuestaoCompletaLegado(idsLegado: [21138, 21139]))
           .thenAnswer((_) => (getQuestaoCompletaLegado([21138, 21139])));
@@ -235,9 +235,9 @@ void main() {
       int provaId = 179;
       String caderno = 'A';
 
-      var provas = await ServiceLocator.get<ApiService>().prova.getProvas();
+      var provas = await sl<ProvaService>().getProvas();
 
-      ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(provas.body!.first.toProvaModel());
+      sl.get<AppDatabase>().provaDao.inserirOuAtualizar(provas.body!.first.toProvaModel());
 
       DownloadManagerStore downloadManagerStore = DownloadManagerStore(
         provaId: provaId,
@@ -250,7 +250,7 @@ void main() {
 
       await downloadManagerStore.iniciarDownload();
 
-      var db = ServiceLocator.get<AppDatabase>();
+      var db = sl.get<AppDatabase>();
 
       var prova = await db.provaDao.obterPorProvaIdECaderno(provaId, caderno);
       expect(prova.downloadStatus, EnumDownloadStatus.ERRO);

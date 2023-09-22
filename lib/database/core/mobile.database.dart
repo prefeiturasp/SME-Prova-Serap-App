@@ -5,9 +5,9 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:external_path/external_path.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Obtains a database connection for running drift in a Dart VM.
@@ -26,7 +26,9 @@ DatabaseConnection connect([String dbName = 'serapdb', bool external = false]) {
     } else {
       await askPermission();
 
-      String externalPath = await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOCUMENTS);
+      String externalPath =
+          await ExternalPath.getExternalStoragePublicDirectory(
+              ExternalPath.DIRECTORY_DOCUMENTS);
       var dir = Directory(p.join(externalPath, 'SERAp'));
       if (!dir.existsSync()) {
         dir.create(recursive: true);
@@ -40,7 +42,8 @@ DatabaseConnection connect([String dbName = 'serapdb', bool external = false]) {
     final receiveDriftIsolate = ReceivePort();
     await Isolate.spawn(
       _entrypointForDriftIsolate,
-      _IsolateStartRequest(receiveDriftIsolate.sendPort, dbPath, AppConfigReader.debugSql()),
+      _IsolateStartRequest(
+          receiveDriftIsolate.sendPort, dbPath, AppConfigReader.debugSql()),
     );
 
     final driftIsolate = await receiveDriftIsolate.first as DriftIsolate;
@@ -53,10 +56,8 @@ Future<void> askPermission() async {
 
   if (!isGranted) {
     PermissionStatus status = await Permission.storage.request();
-    if (status.isPermanentlyDenied) {
+    if (status.isPermanentlyDenied && status.isDenied) {
       await openAppSettings();
-    } else if (status.isDenied == true) {
-      askPermission();
     }
   }
 }
@@ -87,7 +88,8 @@ void _entrypointForDriftIsolate(_IsolateStartRequest request) {
 
   // We can use DriftIsolate.inCurrent because this function is the entrypoint
   // of a background isolate itself.
-  final driftServer = DriftIsolate.inCurrent(() => DatabaseConnection(databaseImpl));
+  final driftServer =
+      DriftIsolate.inCurrent(() => DatabaseConnection(databaseImpl));
 
   // Inform the main isolate about the server we just created.
   request.talkToMain.send(driftServer);
