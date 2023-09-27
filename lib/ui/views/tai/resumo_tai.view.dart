@@ -132,7 +132,7 @@ class _ResumoTaiViewState extends BaseStateWidget<ResumoTaiView, ResumoTaiViewSt
 
                                     await WakelockPlus.disable();
 
-                                    sl<AppRouter>().navigate(HomeViewRoute());
+                                    sl<AppRouter>().pushAndPopUntil(HomeViewRoute(), predicate: (_) => false);
                                   } catch (e, stack) {
                                     await recordError(e, stack);
                                   } finally {
