@@ -19,10 +19,7 @@ class ConnectionOptions {
   });
 }
 
-
-
 class ApiService {
-
   static ChopperClient create() {
     var options = ConnectionOptions(
       baseUrl: AppConfigReader.getApiHost(),
@@ -32,10 +29,10 @@ class ApiService {
     return ChopperClient(
       client: options.baseUrl.contains("10.0.2.2")
           ? httpio.IOClient(
-        HttpClient()
-          ..connectionTimeout = const Duration(seconds: 5)
-          ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true),
-      )
+              HttpClient()
+                ..connectionTimeout = const Duration(seconds: 5)
+                ..badCertificateCallback = ((X509Certificate cert, String host, int port) => true),
+            )
           : http.Client(),
       baseUrl: Uri.tryParse(options.baseUrl),
       converter: jsonConverter,

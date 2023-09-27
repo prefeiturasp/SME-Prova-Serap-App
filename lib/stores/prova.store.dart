@@ -234,11 +234,11 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
     if (sl.get<PrincipalStore>().temConexao) {
       try {
         await sl<ProvaService>().setStatusProva(
-              idProva: id,
-              tipoDispositivo: kDeviceType.index,
-              status: EnumProvaStatus.INICIADA.index,
-              dataInicio: getTicks(prova.dataInicioProvaAluno!),
-            );
+          idProva: id,
+          tipoDispositivo: kDeviceType.index,
+          status: EnumProvaStatus.INICIADA.index,
+          dataInicio: getTicks(prova.dataInicioProvaAluno!),
+        );
       } catch (e, stack) {
         await recordError(e, stack);
       }
@@ -320,7 +320,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   Future<void> _finalizarProva() async {
     var confirm = await finalizarProva(true);
     if (confirm) {
-      sl.get<AppRouter>().navigate(HomeViewRoute());
+      sl<AppRouter>().pushAndPopUntil(HomeViewRoute(), predicate: (_) => false);
     }
   }
 
@@ -355,9 +355,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   @action
   Future<int> setHoraInicioProva(DateTime dataInicioProvaAluno) async {
     prova.dataInicioProvaAluno = dataInicioProvaAluno;
-    return await sl.get<AppDatabase>()
-        .provaDao
-        .atualizaDataInicioProvaAluno(id, caderno, dataInicioProvaAluno);
+    return await sl.get<AppDatabase>().provaDao.atualizaDataInicioProvaAluno(id, caderno, dataInicioProvaAluno);
   }
 
   @action
@@ -387,12 +385,12 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
 
         // Sincroniza com a api
         var response = await sl<ProvaService>().setStatusProva(
-              idProva: id,
-              status: EnumProvaStatus.FINALIZADA.index,
-              tipoDispositivo: kDeviceType.index,
-              dataInicio: getTicks(prova.dataInicioProvaAluno!),
-              dataFim: getTicks(prova.dataFimProvaAluno!),
-            );
+          idProva: id,
+          status: EnumProvaStatus.FINALIZADA.index,
+          tipoDispositivo: kDeviceType.index,
+          dataInicio: getTicks(prova.dataInicioProvaAluno!),
+          dataFim: getTicks(prova.dataFimProvaAluno!),
+        );
 
         if (response.isSuccessful) {
           // ignore: prefer_typing_uninitialized_variables
