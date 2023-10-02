@@ -13,6 +13,7 @@ import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.isolate.dart';
 import 'package:appserap/stores/job.store.dart';
+import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/timer.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:flutter/foundation.dart';
@@ -26,11 +27,18 @@ import 'jobs/remover_provas.job.dart';
 import 'jobs/sincronizar_respostas.job.dart';
 import '../models/job.model.dart' as model;
 
+@pragma('vm:entry-point')
 callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
-    print("Native called background task: $task");
+    setupDateFormating();
 
-    return await executarJobs(task);
+    print("[${formatDateddMMyyykkmmss(DateTime.now())}] Iniciando Job: $task");
+
+    var result = await executarJobs(task);
+
+    print("[${formatDateddMMyyykkmmss(DateTime.now())}] Finalizando Job: $task");
+
+    return result;
   });
 }
 
@@ -46,6 +54,8 @@ executarJobs(String task) async {
     setupLogging();
 
     configureDependencies();
+
+    await setupFirebase();
 
     sendStatus(sendPort, job, EnumJobStatus.EXECUTANDO);
 
