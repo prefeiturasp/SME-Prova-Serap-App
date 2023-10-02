@@ -83,7 +83,7 @@ dependencies:
 
   # Workmanager
   # background   _fetch: ^1.0.1
-  workmanager: ^0.5.0
+  workmanager: ^0.5.1
 
   # Criptografia da senha da prova
   crypto: ^3.0.1
