@@ -43,7 +43,7 @@ abstract class _ResumoTaiViewStoreBase with Store, Loggable {
   Future<void> carregarResumo(int provaId) async {
     carregando = true;
 
-    if (provaStore == null) {
+    if (provaStore == null || provaStore?.id != provaId) {
       var prova = await db.provaDao.obterPorProvaId(provaId);
       provaStore = ProvaStore(prova: prova);
     }

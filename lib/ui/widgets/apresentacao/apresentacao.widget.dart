@@ -34,7 +34,7 @@ class ApresentacaoWidget extends StatelessWidget {
 
   void _irParaProximaPagina(BuildContext context) {
     store.pagina = 0;
-   context.router.navigate(avancarParaPagina!);
+    context.router.navigate(avancarParaPagina!);
   }
 
   onAfterBuild(BuildContext context) {

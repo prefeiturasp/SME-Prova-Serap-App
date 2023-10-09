@@ -137,10 +137,10 @@ extension GetItInjectableX on _i1.GetIt {
         () => _i34.HomeAdminStore(gh<_i23.AdminService>()));
     gh.lazySingleton<_i35.HomeProvasAnterioresStore>(
         () => _i35.HomeProvasAnterioresStore(gh<_i23.ProvaService>()));
-    gh.lazySingleton<_i36.JobStore>(() => _i36.JobStore(
-          gh<_i3.AppDatabase>(),
-          gh<_i21.RespostasDatabase>(),
-        ));
+    gh.singleton<_i36.JobStore>(_i36.JobStore(
+      gh<_i3.AppDatabase>(),
+      gh<_i21.RespostasDatabase>(),
+    ));
     gh.lazySingleton<_i37.LoginAdmStore>(() => _i37.LoginAdmStore(
           gh<_i23.AutenticacaoAdminService>(),
           gh<_i26.UsuarioStore>(),

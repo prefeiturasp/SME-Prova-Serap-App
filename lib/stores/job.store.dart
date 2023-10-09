@@ -6,7 +6,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 part 'job.store.g.dart';
 
-@LazySingleton()
+@Singleton()
 class JobStore = _JobStoreBase with _$JobStore;
 
 abstract class _JobStoreBase with Store {
