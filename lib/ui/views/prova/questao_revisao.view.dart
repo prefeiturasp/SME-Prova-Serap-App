@@ -301,7 +301,7 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
     } else {
       if (arquivoAudioDb != null) {
         return PlayerAudioWidget(
-          audioPath: arquivoAudioDb!.path,
+          audioPath: arquivoAudioDb!.caminho,
         );
       }
     }
