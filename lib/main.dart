@@ -162,7 +162,9 @@ class MyApp extends StatelessWidget {
       ),
       builder: (context, child) {
         return MaterialApp.router(
-          routerConfig: _appRouter.config(),
+          routerConfig: _appRouter.config(
+            navigatorObservers: () => [RouteObserver()],
+          ),
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light().copyWith(
             appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),
