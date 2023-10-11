@@ -7,6 +7,7 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
+import 'package:appserap/utils/route_observer.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';
@@ -163,7 +164,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp.router(
           routerConfig: _appRouter.config(
-            navigatorObservers: () => [RouteObserver()],
+            navigatorObservers: () => [RouterObserver()],
           ),
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light().copyWith(
