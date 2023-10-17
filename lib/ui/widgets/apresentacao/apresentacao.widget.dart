@@ -17,7 +17,6 @@ class ApresentacaoWidget extends StatelessWidget {
   final String textoBotaoPular;
   final bool regraMostrarTodosOsBotoesAoIniciar;
   final bool regraMostrarApenasBotaoPoximo;
-  final bool pularSeNaoTiverConexao;
 
   ApresentacaoWidget({
     this.avancarParaPagina,
@@ -26,7 +25,6 @@ class ApresentacaoWidget extends StatelessWidget {
     required this.textoBotaoPular,
     required this.regraMostrarTodosOsBotoesAoIniciar,
     required this.regraMostrarApenasBotaoPoximo,
-    this.pularSeNaoTiverConexao = false,
   });
 
   final store = GetIt.I.get<ApresentacaoStore>();
@@ -37,16 +35,8 @@ class ApresentacaoWidget extends StatelessWidget {
     context.router.navigate(avancarParaPagina!);
   }
 
-  onAfterBuild(BuildContext context) {
-    if (pularSeNaoTiverConexao) {
-      _irParaProximaPagina(context);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => onAfterBuild(context));
-
     return Column(
       children: [
         SizedBox(

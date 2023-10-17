@@ -12,18 +12,14 @@ import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/workers/jobs/sincronizar_respostas.job.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:workmanager/workmanager.dart';
 
 class FinalizarProvasPendenteJob extends Job with Loggable, Database {
   @override
   JobConfig configuration() {
     return JobConfig(
-      frequency: Duration(minutes: 15),
+      frequency: Duration(minutes: 20),
       taskName: 'FinalizarProvasPendentes',
       uniqueName: 'provas-finalizar-pendentes',
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ),
     );
   }
 
@@ -46,12 +42,12 @@ class FinalizarProvasPendenteJob extends Job with Loggable, Database {
       try {
         // Atualiza status servidor
         await sl<ProvaService>().setStatusProva(
-              idProva: prova.id,
-              status: EnumProvaStatus.FINALIZADA.index,
-              tipoDispositivo: kDeviceType.index,
-              dataInicio: getTicks(prova.dataInicioProvaAluno!),
-              dataFim: getTicks(prova.dataFimProvaAluno!),
-            );
+          idProva: prova.id,
+          status: EnumProvaStatus.FINALIZADA.index,
+          tipoDispositivo: kDeviceType.index,
+          dataInicio: getTicks(prova.dataInicioProvaAluno!),
+          dataFim: getTicks(prova.dataFimProvaAluno!),
+        );
 
         // Sincroniza respostas
         info('Sincronizando  respostas');

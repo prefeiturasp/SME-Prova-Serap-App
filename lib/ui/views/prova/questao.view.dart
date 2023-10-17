@@ -52,8 +52,7 @@ class QuestaoView extends BaseStatefulWidget {
   _QuestaoViewState createState() => _QuestaoViewState();
 }
 
-class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore>
-    with Loggable {
+class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore> with Loggable {
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
@@ -120,8 +119,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore>
       return;
     }
 
-    provaStore =
-        provas.filter((prova) => prova.key == widget.idProva).first.value;
+    provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
 
     await _carregarProva();
     await _carregarArquivos();
@@ -157,15 +155,13 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore>
   }
 
   Future<void> loadVideos(Questao questao) async {
-    arquivoVideoDb = await db.arquivosVideosDao
-        .findByQuestaoLegadoId(questao.questaoLegadoId);
+    arquivoVideoDb = await db.arquivosVideosDao.findByQuestaoLegadoId(questao.questaoLegadoId);
 
     if (arquivoVideoDb != null && kIsWeb) {
       IdbFile idbFile = IdbFile(arquivoVideoDb!.path);
 
       if (await idbFile.exists()) {
-        Uint8List readContents =
-            Uint8List.fromList(await idbFile.readAsBytes());
+        Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
         info('abrindo video ${formatBytes(readContents.lengthInBytes, 2)}');
         arquivoVideo = readContents;
       }
@@ -173,15 +169,13 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore>
   }
 
   Future<void> loadAudio(Questao questao) async {
-    arquivoAudioDb = await db.arquivosAudioDao
-        .obterPorQuestaoLegadoId(questao.questaoLegadoId);
+    arquivoAudioDb = await db.arquivosAudioDao.obterPorQuestaoLegadoId(questao.questaoLegadoId);
 
     if (arquivoAudioDb != null && kIsWeb) {
       IdbFile idbFile = IdbFile(arquivoAudioDb!.path);
 
       if (await idbFile.exists()) {
-        Uint8List readContents =
-            Uint8List.fromList(await idbFile.readAsBytes());
+        Uint8List readContents = Uint8List.fromList(await idbFile.readAsBytes());
         info('abrindo audio ${formatBytes(readContents.lengthInBytes, 2)}');
         arquivoAudio = readContents;
       }
@@ -220,13 +214,10 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore>
                     child: Column(
                       children: [
                         SizedBox(
-                          width: exibirVideo()
-                              ? MediaQuery.of(context).size.width / 2
-                              : null,
+                          width: exibirVideo() ? MediaQuery.of(context).size.width / 2 : null,
                           child: Observer(builder: (_) {
                             return Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 16),
+                              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -234,21 +225,16 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore>
                                     children: [
                                       Text(
                                         'Questão ${widget.ordem + 1} ',
-                                        style: TemaUtil.temaTextoNumeroQuestoes
-                                            .copyWith(
+                                        style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
                                           fontSize: temaStore.tTexto20,
-                                          fontFamily:
-                                              temaStore.fonteDoTexto.nomeFonte,
+                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                         ),
                                       ),
                                       Text(
                                         'de ${provaStore.prova.itensQuantidade}',
-                                        style: TemaUtil
-                                            .temaTextoNumeroQuestoesTotal
-                                            .copyWith(
+                                        style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
                                           fontSize: temaStore.tTexto20,
-                                          fontFamily:
-                                              temaStore.fonteDoTexto.nomeFonte,
+                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
                                         ),
                                       ),
                                     ],
@@ -320,7 +306,6 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore>
     if (kIsWeb) {
       return PlayerAudioWidget(
         audioBytes: arquivoAudio,
-        audioPath: arquivoAudioDb!.caminho,
       );
     } else {
       if (arquivoAudioDb != null) {
@@ -340,9 +325,7 @@ class _QuestaoViewState extends BaseStateWidget<QuestaoView, QuestaoStore>
       child: FutureBuilder<Widget>(
         future: showVideoPlayer(),
         builder: (context, snapshot) {
-          return snapshot.connectionState == ConnectionState.done
-              ? snapshot.data!
-              : Container();
+          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
         },
       ),
     );

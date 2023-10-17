@@ -13,7 +13,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:shared_preferences/shared_preferences.dart';
 
 setupFirebase() async {
-  if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux) || kIsWeb) {
     return;
   }
 

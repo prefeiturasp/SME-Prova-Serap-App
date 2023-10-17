@@ -10,7 +10,6 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:workmanager/workmanager.dart';
 
 class SincronizarRespostasJob extends Job with Loggable, Database {
   @override
@@ -19,9 +18,6 @@ class SincronizarRespostasJob extends Job with Loggable, Database {
       frequency: Duration(minutes: 15),
       taskName: 'SincronizarRespostas',
       uniqueName: 'respostas-sincronizar',
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ),
     );
   }
 

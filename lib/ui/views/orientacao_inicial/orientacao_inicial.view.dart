@@ -40,7 +40,6 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
                   textoBotaoPular: "IR PARA A PÁGINA INICIAL",
                   regraMostrarTodosOsBotoesAoIniciar: _usuario.ultimoLogin != null,
                   regraMostrarApenasBotaoPoximo: _usuario.ultimoLogin == null,
-                  pularSeNaoTiverConexao: !_principalStore.temConexao,
                 );
               },
             ),

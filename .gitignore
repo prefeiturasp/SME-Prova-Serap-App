@@ -62,6 +62,6 @@ google-services.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-.vscode/settings.json
 *.apk
 coverage/lcov.info
+.fvm/flutter_sdk

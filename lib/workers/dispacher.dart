@@ -146,6 +146,8 @@ class Worker with Loggable, Database {
         constraints: config.constraints,
         initialDelay: Duration(minutes: 1),
         backoffPolicy: BackoffPolicy.linear,
+        backoffPolicyDelay: Duration(seconds: 10),
+        existingWorkPolicy: ExistingWorkPolicy.replace,
       );
     } else {
       await interval(config.frequency, (timer) async {

@@ -71,7 +71,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   String versaoApp = "Versão 0";
 
   @observable
-  bool temConexao = false;
+  bool temConexao = true;
 
   @computed
   String get versao => "$versaoApp ${!temConexao ? ' - Sem conexão' : ''}";
