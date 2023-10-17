@@ -30,13 +30,11 @@ class RespostasDatabase extends _$RespostasDatabase {
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
-      onCreate: (Migrator m) {
-        return m.createAll();
+      onCreate: (Migrator m) async {
+        await m.createAll();
       },
       onUpgrade: (Migrator m, int from, int to) async {
         await transaction(() async {
-          // put your migration logic here
-
           if (from < 2) {
             await m.addColumn(respostaProvaTable, respostaProvaTable.caderno);
             await m.addColumn(respostaProvaTable, respostaProvaTable.ordem);
