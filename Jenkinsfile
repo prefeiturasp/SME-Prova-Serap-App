@@ -25,7 +25,8 @@ pipeline {
             APP_VERSION = sh(returnStdout: true, script: "cat pubspec.yaml | grep version: | awk '{print \$2}'") .trim()
             sh("echo ${APP_VERSION}")
             sh("echo ${BUILD_NUMBER}")
-            }
+            sh("flutter doctor -v")
+          }
         }
       }
 
