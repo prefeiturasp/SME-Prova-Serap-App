@@ -1,0 +1,13 @@
+{
+  "dart.flutterSdkPath": ".fvm/flutter_sdk",
+  "dart.lineLength": 120,
+  "editor.wordWrapColumn": 120,
+  // Remove .fvm files from search
+  "search.exclude": {
+    "**/.fvm": true
+  },
+  // Remove from file watching
+  "files.watcherExclude": {
+    "**/.fvm": true
+  }
+}
