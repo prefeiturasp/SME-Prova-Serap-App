@@ -63,7 +63,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
 
     alternativaIdMarcada = null;
 
-    if (provaStore == null) {
+    if (provaStore == null || provaStore?.id != provaId) {
       var prova = await db.provaDao.obterPorProvaId(provaId);
 
       provaStore = ProvaStore(prova: prova);

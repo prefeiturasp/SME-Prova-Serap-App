@@ -20,5 +20,5 @@ class RespostaProvaTable extends Table {
   BoolColumn get sincronizado => boolean()();
 
   @override
-  Set<Column> get primaryKey => {codigoEOL, provaId, caderno, questaoId};
+  Set<Column> get primaryKey => {codigoEOL, provaId, questaoId};
 }
