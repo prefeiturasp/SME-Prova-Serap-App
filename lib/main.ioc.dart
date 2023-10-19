@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:appserap/services/api_service.dart';
+import 'package:appserap/utils/app_config.util.dart';
 import 'package:chopper/chopper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
@@ -27,5 +28,12 @@ abstract class RegisterModule {
   @injectable
   ChopperClient get chopperClient => ApiService.create();
 
-  InternetConnection get internetConnection => InternetConnection();
+  InternetConnection get internetConnection => InternetConnection.createInstance(
+        useDefaultOptions: false,
+        customCheckOptions: [
+          InternetCheckOption(
+            uri: Uri.parse(AppConfigReader.getApiHost() + '/v1/configuracoes/existe-conexao'),
+          ),
+        ],
+      );
 }
