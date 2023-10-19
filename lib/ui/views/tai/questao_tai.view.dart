@@ -37,6 +37,7 @@ class QuestaoTaiView extends BaseStatefulWidget {
 
 class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiViewStore> with Loggable {
   final controller = HtmlEditorController();
+  final ScrollController _controller = ScrollController();
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
@@ -112,17 +113,23 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
       children: [
         _buildAudioPlayer(),
         _buildLayout(
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
+          body: Scrollbar(
+            thumbVisibility: true,
+            trackVisibility: true,
+            controller: _controller,
+            child: SingleChildScrollView(
+              controller: _controller,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Column(
-                  children: [
-                    _buildSumario(),
-                    _buildQuestao(),
-                    _buildBotoes(),
-                  ],
+                padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  child: Column(
+                    children: [
+                      _buildSumario(),
+                      _buildQuestao(),
+                      _buildBotoes(),
+                    ],
+                  ),
                 ),
               ),
             ),

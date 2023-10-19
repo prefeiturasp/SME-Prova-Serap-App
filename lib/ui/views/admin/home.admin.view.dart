@@ -46,6 +46,8 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
+  ScrollController _controller = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -178,57 +180,63 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
   }
 
   _buildItens() {
-    return ListView.builder(
-      itemCount: store.provas.length + 1,
-      itemBuilder: (_, index) {
-        if (store.provas.isEmpty && !store.carregando) {
-          return Center(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height - 400,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 28),
-                    child: SvgPicture.asset(
-                      'assets/images/sem_prova.svg',
+    return Scrollbar(
+      thumbVisibility: true,
+      trackVisibility: true,
+      controller: _controller,
+      child: ListView.builder(
+        controller: _controller,
+        itemCount: store.provas.length + 1,
+        itemBuilder: (_, index) {
+          if (store.provas.isEmpty && !store.carregando) {
+            return Center(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height - 400,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 28),
+                      child: SvgPicture.asset(
+                        'assets/images/sem_prova.svg',
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 24),
-                    child: Texto(
-                      "Você não tem novas\nprovas para fazer.",
-                      fontSize: 18,
-                      center: true,
-                      fontWeight: FontWeight.w600,
-                      color: TemaUtil.pretoSemFoco3,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: Texto(
+                        "Você não tem novas\nprovas para fazer.",
+                        fontSize: 18,
+                        center: true,
+                        fontWeight: FontWeight.w600,
+                        color: TemaUtil.pretoSemFoco3,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        }
+            );
+          }
 
-        if (store.carregando) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        if (index == store.provas.length) {
-          if (store.totalPaginas > store.pagina) {
-            store.carregarProvas();
+          if (store.carregando) {
             return Center(
               child: CircularProgressIndicator(),
             );
-          } else {
-            return SizedBox.shrink();
           }
-        }
-        return _buildProva(store.provas[index]);
-      },
+
+          if (index == store.provas.length) {
+            if (store.totalPaginas > store.pagina) {
+              store.carregarProvas();
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              return SizedBox.shrink();
+            }
+          }
+          return _buildProva(store.provas[index]);
+        },
+      ),
     );
   }
 

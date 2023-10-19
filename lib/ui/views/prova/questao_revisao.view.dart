@@ -83,6 +83,8 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
 
   final controller = HtmlEditorController();
 
+  final ScrollController _controller = ScrollController();
+
   @override
   AppBarWidget buildAppBar() {
     return AppBarWidget(
@@ -199,68 +201,74 @@ class _QuestaoRevisaoViewState extends BaseStateWidget<QuestaoRevisaoView, Quest
             StatusSincronizacao(),
             Expanded(
               child: _buildLayout(
-                body: SingleChildScrollView(
-                  child: Padding(
-                    padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          width: exibirVideo() ? MediaQuery.of(context).size.width / 2 : null,
-                          child: Observer(builder: (_) {
-                            return Container(
-                              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                body: Scrollbar(
+                  thumbVisibility: true,
+                  trackVisibility: true,
+                  controller: _controller,
+                  child: SingleChildScrollView(
+                    controller: _controller,
+                    child: Padding(
+                      padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: exibirVideo() ? MediaQuery.of(context).size.width / 2 : null,
+                            child: Observer(builder: (_) {
+                              return Container(
+                                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Questão ${widget.ordem + 1} ',
+                                          style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                            fontSize: temaStore.tTexto20,
+                                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                          ),
+                                        ),
+                                        Text(
+                                          'de ${provaStore.prova.itensQuantidade}',
+                                          style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                            fontSize: temaStore.tTexto20,
+                                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 8),
+                                    QuestaoAlunoWidget(
+                                      provaStore: provaStore,
+                                      controller: controller,
+                                      questaoId: questaoId,
+                                      questao: questao,
+                                      alternativas: alternativas,
+                                      imagens: imagens,
+                                    ),
+                                    SizedBox(height: 8),
+                                  ],
+                                ),
+                              );
+                            }),
+                          ),
+                          Observer(builder: (context) {
+                            return Padding(
+                              padding: const EdgeInsets.only(
+                                left: 24,
+                                right: 24,
+                                bottom: 20,
+                              ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Questão ${widget.ordem + 1} ',
-                                        style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                          fontSize: temaStore.tTexto20,
-                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                        ),
-                                      ),
-                                      Text(
-                                        'de ${provaStore.prova.itensQuantidade}',
-                                        style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                                          fontSize: temaStore.tTexto20,
-                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 8),
-                                  QuestaoAlunoWidget(
-                                    provaStore: provaStore,
-                                    controller: controller,
-                                    questaoId: questaoId,
-                                    questao: questao,
-                                    alternativas: alternativas,
-                                    imagens: imagens,
-                                  ),
-                                  SizedBox(height: 8),
+                                  // kDebugMode ? _buildBotaoFinalizarProva() : Container(),
+                                  _buildBotoes(questao),
                                 ],
                               ),
                             );
                           }),
-                        ),
-                        Observer(builder: (context) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                              left: 24,
-                              right: 24,
-                              bottom: 20,
-                            ),
-                            child: Column(
-                              children: [
-                                // kDebugMode ? _buildBotaoFinalizarProva() : Container(),
-                                _buildBotoes(questao),
-                              ],
-                            ),
-                          );
-                        }),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
