@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class DialogDefaultWidget extends StatelessWidget {
+  final ScrollController _controller = ScrollController();
+
   Widget? cabecalho;
   Widget corpo;
   List<Widget> botoes = <Widget>[];
@@ -39,28 +41,34 @@ class DialogDefaultWidget extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: cabecalho!,
-              ),
+        child: Scrollbar(
+          thumbVisibility: true,
+          trackVisibility: true,
+          controller: _controller,
+          child: SingleChildScrollView(
+            controller: _controller,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: cabecalho!,
+                ),
 
-              // CORPO
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: corpo,
-              ),
+                // CORPO
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: corpo,
+                ),
 
-              // BOTOES
-              Align(
-                alignment: Alignment.bottomRight,
-                child: _buildButtonsLauout(context),
-              ),
-            ],
+                // BOTOES
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: _buildButtonsLauout(context),
+                ),
+              ],
+            ),
           ),
         ),
       ),

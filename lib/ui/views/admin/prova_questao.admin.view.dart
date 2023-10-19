@@ -36,6 +36,8 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
 
+  final ScrollController _controller = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -91,58 +93,64 @@ class _AdminProvaQuestaoViewState extends BaseStateWidget<AdminProvaQuestaoView,
           _buildAudioPlayer(),
           Expanded(
             child: _buildLayout(
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: exibirVideo() ? MediaQuery.of(context).size.width * 0.5 : null,
-                        child: Observer(builder: (_) {
-                          return Container(
-                            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Questão ${widget.ordem + 1} ',
-                                      style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                        fontSize: temaStore.tTexto20,
-                                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              body: Scrollbar(
+                thumbVisibility: true,
+                trackVisibility: true,
+                controller: _controller,
+                child: SingleChildScrollView(
+                  controller: _controller,
+                  child: Padding(
+                    padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: exibirVideo() ? MediaQuery.of(context).size.width * 0.5 : null,
+                          child: Observer(builder: (_) {
+                            return Container(
+                              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Questão ${widget.ordem + 1} ',
+                                        style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                          fontSize: temaStore.tTexto20,
+                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      'de ${store.totalQuestoes}',
-                                      style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                                        fontSize: temaStore.tTexto20,
-                                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                      Text(
+                                        'de ${store.totalQuestoes}',
+                                        style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                          fontSize: temaStore.tTexto20,
+                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 8),
-                                QuestaoAdminWidget(
-                                  questao: store.questao!,
-                                  imagens: store.imagens,
-                                  alternativas: store.alternativas,
-                                ),
-                                SizedBox(height: 8),
-                              ],
-                            ),
-                          );
-                        }),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 24,
-                          right: 24,
-                          bottom: 20,
+                                    ],
+                                  ),
+                                  SizedBox(height: 8),
+                                  QuestaoAdminWidget(
+                                    questao: store.questao!,
+                                    imagens: store.imagens,
+                                    alternativas: store.alternativas,
+                                  ),
+                                  SizedBox(height: 8),
+                                ],
+                              ),
+                            );
+                          }),
                         ),
-                        child: _buildBotoes(),
-                      ),
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 24,
+                            right: 24,
+                            bottom: 20,
+                          ),
+                          child: _buildBotoes(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
