@@ -53,6 +53,8 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
 
   FocusNode _codigoProvaFocus = FocusNode();
 
+  ScrollController _controller = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -118,14 +120,20 @@ class _ProvaAtualTabViewState extends BaseTabWidget<ProvaAtualTabView, HomeStore
       );
     }
 
-    return ListView.builder(
-      key: Key("lista-provas"),
-      itemCount: listProvas.length,
-      itemBuilder: (_, index) {
-        var key = listProvas.keys.toList()[index];
-        var provaStore = listProvas[key];
-        return _buildProva(provaStore!);
-      },
+    return Scrollbar(
+      thumbVisibility: true,
+      trackVisibility: true,
+      controller: _controller,
+      child: ListView.builder(
+        key: Key("lista-provas"),
+        controller: _controller,
+        itemCount: listProvas.length,
+        itemBuilder: (_, index) {
+          var key = listProvas.keys.toList()[index];
+          var provaStore = listProvas[key];
+          return _buildProva(provaStore!);
+        },
+      ),
     );
   }
 

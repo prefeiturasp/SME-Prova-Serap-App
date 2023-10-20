@@ -32,6 +32,8 @@ class ResumoTaiView extends BaseStatefulWidget {
 }
 
 class _ResumoTaiViewState extends BaseStateWidget<ResumoTaiView, ResumoTaiViewStore> {
+  final ScrollController _controller = ScrollController();
+
   int flexQuestao = 18;
   int flexAlternativa = 4;
 
@@ -89,64 +91,70 @@ class _ResumoTaiViewState extends BaseStateWidget<ResumoTaiView, ResumoTaiViewSt
     return Column(
       children: [
         Expanded(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: getPadding(),
-              child: Observer(
-                builder: (_) {
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            //
-                            Texto(
-                              'Resumo das respostas',
-                              textAlign: TextAlign.start,
-                              color: TemaUtil.preto,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
-
-                            //
-                            Column(
-                              children: [
-                                _buildCabecalho(),
-                                divider(),
-                                ..._buildListaRespostas(),
-                              ],
-                            ),
-
-                            SizedBox(height: 32),
-                            Center(
-                              child: BotaoDefaultWidget(
-                                textoBotao: 'FECHAR',
-                                largura: 392,
-                                desabilitado: store.botaoFinalizarOcupado,
-                                onPressed: () async {
-                                  try {
-                                    store.botaoFinalizarOcupado = true;
-
-                                    await WakelockPlus.disable();
-
-                                    sl<AppRouter>().pushAndPopUntil(HomeViewRoute(), predicate: (_) => false);
-                                  } catch (e, stack) {
-                                    await recordError(e, stack);
-                                  } finally {
-                                    store.botaoFinalizarOcupado = false;
-                                  }
-                                },
+          child: Scrollbar(
+            thumbVisibility: true,
+            trackVisibility: true,
+            controller: _controller,
+            child: SingleChildScrollView(
+              controller: _controller,
+              child: Padding(
+                padding: getPadding(),
+                child: Observer(
+                  builder: (_) {
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              //
+                              Texto(
+                                'Resumo das respostas',
+                                textAlign: TextAlign.start,
+                                color: TemaUtil.preto,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
                               ),
-                            )
-                          ],
+
+                              //
+                              Column(
+                                children: [
+                                  _buildCabecalho(),
+                                  divider(),
+                                  ..._buildListaRespostas(),
+                                ],
+                              ),
+
+                              SizedBox(height: 32),
+                              Center(
+                                child: BotaoDefaultWidget(
+                                  textoBotao: 'FECHAR',
+                                  largura: 392,
+                                  desabilitado: store.botaoFinalizarOcupado,
+                                  onPressed: () async {
+                                    try {
+                                      store.botaoFinalizarOcupado = true;
+
+                                      await WakelockPlus.disable();
+
+                                      sl<AppRouter>().pushAndPopUntil(HomeViewRoute(), predicate: (_) => false);
+                                    } catch (e, stack) {
+                                      await recordError(e, stack);
+                                    } finally {
+                                      store.botaoFinalizarOcupado = false;
+                                    }
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  );
-                },
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),

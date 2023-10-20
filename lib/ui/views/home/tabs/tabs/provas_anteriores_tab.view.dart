@@ -38,6 +38,8 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
     with Loggable, HomeViewUtil {
   final temaStore = GetIt.I<TemaStore>();
 
+  ScrollController _controller = ScrollController();
+
   @override
   Widget builder(BuildContext context) {
     return Padding(
@@ -101,13 +103,19 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
       );
     }
 
-    return ListView.builder(
-      itemCount: listProvas.length,
-      itemBuilder: (_, index) {
-        var key = listProvas.keys.toList()[index];
-        var provaStore = listProvas[key];
-        return _buildProva(provaStore!.prova);
-      },
+    return Scrollbar(
+      thumbVisibility: true,
+      trackVisibility: true,
+      controller: _controller,
+      child: ListView.builder(
+        controller: _controller,
+        itemCount: listProvas.length,
+        itemBuilder: (_, index) {
+          var key = listProvas.keys.toList()[index];
+          var provaStore = listProvas[key];
+          return _buildProva(provaStore!.prova);
+        },
+      ),
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/admin_prova_caderno.store.dart';
+import 'package:appserap/ui/widgets/adaptative/adaptative.icon.button.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -10,7 +11,6 @@ import 'package:appserap/utils/tema.util.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 @RoutePage()
 class AdminProvaCadernoView extends BaseStatefulWidget {
@@ -27,6 +27,8 @@ class AdminProvaCadernoView extends BaseStatefulWidget {
 class _AdminProvaCadernoViewState extends BaseStateWidget<AdminProvaCadernoView, AdminProvaCadernoViewStore> {
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  final ScrollController _controller = ScrollController();
 
   @override
   void initState() {
@@ -53,53 +55,59 @@ class _AdminProvaCadernoViewState extends BaseStateWidget<AdminProvaCadernoView,
 
   @override
   Widget builder(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: getPadding(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Texto(
-              'Listagem de Cadernos',
-              textAlign: TextAlign.start,
-              color: TemaUtil.preto,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-            Texto(
-              'Selecione um caderno para visualizar as questões:',
-              textAlign: TextAlign.start,
-              color: TemaUtil.preto,
-              fontSize: 14,
-            ),
-            Divider(height: 40),
-            Observer(builder: (_) {
-              if (store.carregando) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-
-              store.cadernos.sort((a, b) {
-                if (isNumeric(a) && isNumeric(b)) {
-                  return int.parse(a) - int.parse(b);
+    return Scrollbar(
+      thumbVisibility: true,
+      trackVisibility: true,
+      controller: _controller,
+      child: SingleChildScrollView(
+        controller: _controller,
+        child: Padding(
+          padding: getPadding(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Texto(
+                'Listagem de Cadernos',
+                textAlign: TextAlign.start,
+                color: TemaUtil.preto,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+              Texto(
+                'Selecione um caderno para visualizar as questões:',
+                textAlign: TextAlign.start,
+                color: TemaUtil.preto,
+                fontSize: 14,
+              ),
+              Divider(height: 40),
+              Observer(builder: (_) {
+                if (store.carregando) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
-                return a.compareTo(b);
-              });
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    _buildCabecalho(),
-                    _divider(),
-                    ..._buildListaCadernos(),
-                  ],
-                ),
-              );
-            })
-          ],
+                store.cadernos.sort((a, b) {
+                  if (isNumeric(a) && isNumeric(b)) {
+                    return int.parse(a) - int.parse(b);
+                  }
+                  return a.compareTo(b);
+                });
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Column(
+                    children: [
+                      _buildCabecalho(),
+                      _divider(),
+                      ..._buildListaCadernos(),
+                    ],
+                  ),
+                );
+              })
+            ],
+          ),
         ),
       ),
     );
@@ -202,8 +210,15 @@ class _AdminProvaCadernoViewState extends BaseStateWidget<AdminProvaCadernoView,
           ),
         );
       },
-      child: SvgPicture.asset(
+      child: AdaptativeSVGIcon(
         AssetsUtil.iconeRevisarQuestao,
+        icon: Container(
+          color: Color.fromARGB(255, 229, 238, 235),
+          child: Icon(
+            Icons.edit_note,
+            color: Color(0xff10A1C1),
+          ),
+        ),
       ),
     );
   }
