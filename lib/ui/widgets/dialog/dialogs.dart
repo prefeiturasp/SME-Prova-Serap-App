@@ -735,3 +735,45 @@ horaDispositivoIncorreta(BuildContext context, DateTime dataHoraServidor) {
     },
   );
 }
+
+Future<bool?> mostrarDialogErroIrProximaQuestaoTai(BuildContext context) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
+  String mensagem = "Erro ao obter a próxima questão. Está prova precisa ser reiniciada.";
+  String icone = AssetsUtil.erro;
+  String mensagemBotao = "OK";
+
+  return showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: SvgPicture.asset(
+          icone,
+          height: 55,
+        ),
+        corpo: Observer(
+          builder: (_) {
+            return Text(
+              mensagem,
+              textAlign: TextAlign.center,
+              style: TemaUtil.temaTextoMensagemDialog.copyWith(
+                fontSize: temaStore.tTexto20,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              ),
+            );
+          },
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () {
+              Navigator.pop(context, true);
+              return true;
+            },
+            textoBotao: mensagemBotao,
+          )
+        ],
+      );
+    },
+  );
+}
