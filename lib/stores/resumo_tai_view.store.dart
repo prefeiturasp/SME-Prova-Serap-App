@@ -6,6 +6,7 @@ import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
@@ -48,33 +49,41 @@ abstract class _ResumoTaiViewStoreBase with Store, Loggable {
       provaStore = ProvaStore(prova: prova);
     }
 
-    await retry(
-      () async {
-        var response = await _provaTaiService.obterResumo(provaId: provaId);
+    try {
+      await retry(
+        () async {
+          var response = await _provaTaiService.obterResumo(provaId: provaId);
 
-        if (response.isSuccessful) {
-          resumo = response.body!.asObservable();
-        }
-      },
-      onRetry: (e) {
-        fine('[Prova $provaId] - Tentativa de carregamento do resumo da prova - ${e.toString()}');
-      },
-    );
+          if (response.isSuccessful) {
+            resumo = response.body!.asObservable();
+          }
+        },
+        onRetry: (e) {
+          fine('[Prova $provaId] - Tentativa de carregamento do resumo da prova - ${e.toString()}');
+        },
+      );
+    } on Exception catch (exception, stack) {
+      await recordError(exception, stack, reason: 'Erro ao obter resumo da prova TAI');
+    }
 
     carregando = false;
   }
 
   @action
   Future<void> finalizarProva() async {
-    await provaStore!.setStatusProva(EnumProvaStatus.FINALIZADA);
-    await provaStore!.setHoraFimProva(DateTime.now());
+    try {
+      await provaStore!.setStatusProva(EnumProvaStatus.FINALIZADA);
+      await provaStore!.setHoraFimProva(DateTime.now());
 
-    await _provaTaiService.finalizarProva(
-      provaId: provaStore!.id,
-      status: EnumProvaStatus.INICIADA.index,
-      tipoDispositivo: kDeviceType.index,
-      dataInicio: getTicks(provaStore!.prova.dataInicioProvaAluno!),
-      dataFim: getTicks(provaStore!.prova.dataFimProvaAluno!),
-    );
+      await _provaTaiService.finalizarProva(
+        provaId: provaStore!.id,
+        status: EnumProvaStatus.INICIADA.index,
+        tipoDispositivo: kDeviceType.index,
+        dataInicio: getTicks(provaStore!.prova.dataInicioProvaAluno!),
+        dataFim: getTicks(provaStore!.prova.dataFimProvaAluno!),
+      );
+    } on Exception catch (exception, stack) {
+      await recordError(exception, stack, reason: 'Erro ao finalizar prova TAI');
+    }
   }
 }
