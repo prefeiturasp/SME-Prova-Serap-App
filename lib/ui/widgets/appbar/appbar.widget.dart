@@ -152,7 +152,12 @@ class AppBarWidget extends StatelessWidget {
 
             await context.router.navigate(SplashScreenViewRoute());
 
-            await reload();
+            await Future.delayed(
+              Duration(milliseconds: 500),
+              () {
+                reload();
+              },
+            );
           }
         }
       },
