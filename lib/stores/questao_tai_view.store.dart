@@ -54,6 +54,9 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
   @observable
   bool botaoFinalizarOcupado = false;
 
+  DateTime? dataHoraInicioQuestao;
+  DateTime? dataHoraFimQuestao;
+
   _QuestaoTaiViewStoreBase(
     this.db,
     this.dbRespostas,
@@ -67,6 +70,8 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
     carregando = true;
 
     alternativaIdMarcada = null;
+    dataHoraInicioQuestao = null;
+    dataHoraFimQuestao = null;
 
     if (provaStore == null || provaStore?.id != provaId) {
       var prova = await db.provaDao.obterPorProvaId(provaId);
@@ -89,6 +94,9 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
 
             if (response.isSuccessful) {
               questao = response.body!;
+
+              // Tempo de inicio da questao
+              dataHoraInicioQuestao = DateTime.now();
             }
           },
           onRetry: (e) {
@@ -111,6 +119,8 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
   @action
   Future<QuestaoTaiStatusEnum> enviarResposta() async {
     try {
+      dataHoraFimQuestao = DateTime.now();
+
       QuestaoRespostaDTO questaoResposta = QuestaoRespostaDTO(
         alunoRa: _usuarioStore.codigoEOL!,
         dispositivoId: _principalStore.dispositivoId,
@@ -118,7 +128,7 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
         alternativaId: alternativaIdMarcada,
         resposta: textoRespondido,
         dataHoraRespostaTicks: getTicks(dataHoraResposta!),
-        tempoRespostaAluno: 0,
+        tempoRespostaAluno: dataHoraFimQuestao!.difference(dataHoraInicioQuestao!).inSeconds,
       );
 
       var response = await _provaTaiService.proximaQuestao(
@@ -128,6 +138,9 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
 
       if (response.isSuccessful) {
         if (response.body!) {
+          dataHoraInicioQuestao = null;
+          dataHoraFimQuestao = null;
+
           return QuestaoTaiStatusEnum.CONTINUAR;
         } else {
           return QuestaoTaiStatusEnum.RESUMO;
