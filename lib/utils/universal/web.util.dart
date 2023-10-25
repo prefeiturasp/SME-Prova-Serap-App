@@ -26,3 +26,7 @@ apagarArquivo(String path) async {
 Future<String?> buildPath(String? path) async {
   return path;
 }
+
+reload() {
+  window.location.reload();
+}
