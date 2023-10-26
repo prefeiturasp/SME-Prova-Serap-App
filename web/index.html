@@ -11,20 +11,26 @@
 
     For more details:
     * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/">
+  <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="SERAp Estudantes">
+  <meta name="description" content="Aplicação para fazer suas provas">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="SERAp Estudantes">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <link rel="manifest" href="manifest.json">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png" />
 
+  <!-- Other icons -->
   <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
@@ -34,28 +40,34 @@
   <meta name="msapplication-config" content="icons/browserconfig.xml">
   <meta name="theme-color" content="#ffffff">
 
+
   <title>SERAp Estudantes</title>
-  
+  <link rel="manifest" href="manifest.json">
+
+  <script>
+    // The value below is injected by flutter build, do not touch.
+    var serviceWorkerVersion = null;
+  </script>
+  <!-- This script adds the flutter initialization JS code -->
+  <script src="flutter.js" defer></script>
+
   <link rel="stylesheet" type="text/css" href="splash/style.css">
   <script src="sql-wasm.js"></script>
+
 
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
-
-  <meta http-equiv="cache-control" content="no-cache" />
-  <meta http-equiv="expires" content="0" />
-  <meta http-equiv="pragma" content="no-cache" />
-
 </head>
 
-<body style="position: fixed; inset: 0px; overflow: hidden; padding: 0px; margin: 0px; user-select: none; touch-action: none; font: 14px sans-serif; color: red;">
+<body
+  style="position: fixed; inset: 0px; overflow: hidden; padding: 0px; margin: 0px; user-select: none; touch-action: none; font: 14px sans-serif; color: red;">
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-85250794-18"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
 
     gtag('config', 'UA-85250794-18');
@@ -76,78 +88,81 @@
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
   </script>
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
+
   <script>
-    var serviceWorkerVersion = null;
-    var scriptLoaded = false;
-    function loadMainDartJs() {
-      if (scriptLoaded) {
-        return;
-      }
-      scriptLoaded = true;
-      var scriptTag = document.createElement('script');
-      scriptTag.src = 'main.dart.js';
-      scriptTag.type = 'application/javascript';
-      document.body.append(scriptTag);
-    }
-
-    if ('serviceWorker' in navigator) {
-      // Service workers are supported. Use them.
-      window.addEventListener('load', function () {
-        // Wait for registration to finish before dropping the <script> tag.
-        // Otherwise, the browser will load the script multiple times,
-        // potentially different versions.
-        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
-        navigator.serviceWorker.register(serviceWorkerUrl)
-          .then((reg) => {
-            function waitForActivation(serviceWorker) {
-              serviceWorker.addEventListener('statechange', () => {
-                if (serviceWorker.state == 'activated') {
-                  console.log('Installed new service worker.');
-                  loadMainDartJs();
-                }
-              });
-            }
-            if (!reg.active && (reg.installing || reg.waiting)) {
-              // No active web worker and we have installed or are installing
-              // one for the first time. Simply wait for it to activate.
-              waitForActivation(reg.installing ?? reg.waiting);
-            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-              // When the app updates the serviceWorkerVersion changes, so we
-              // need to ask the service worker to update.
-              console.log('New service worker available.');
-              reg.update();
-              waitForActivation(reg.installing);
-            } else {
-              // Existing service worker is still good.
-              console.log('Loading app from service worker.');
-              loadMainDartJs();
-            }
+    function launchFlutter() {
+      // Download main.dart.js
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: function (engineInitializer) {
+          engineInitializer.initializeEngine().then(function (appRunner) {
+            appRunner.runApp();
           });
-
-        // If service worker doesn't succeed in a reasonable amount of time,
-        // fallback to plaint <script> tag.
-        setTimeout(() => {
-          if (!scriptLoaded) {
-            console.warn(
-              'Failed to load app from service worker. Falling back to plain <script> tag.',
-            );
-            loadMainDartJs();
-          }
-        }, 4000);
+        }
       });
-    } else {
-      // Service workers not supported. Just drop the <script> tag.
-      loadMainDartJs();
     }
+
+    window.addEventListener('load', function (ev) {
+      if ('serviceWorker' in navigator) {
+
+        // getting rid of undesired to fetch remote version.json file updated
+        var seconds = new Date().getTime();
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", '/version.json?v=' + seconds, true);
+        xmlhttp.addEventListener('load', function () {
+          if (xmlhttp.status == 200) {
+            var buildNumber = Array.from(xmlhttp.responseText.matchAll(/"version":"((\\"|[^"])*)"/g), m => m[1]);
+            console.log('remote version is ' + buildNumber);
+            var currentBuildNumber = window.localStorage.getItem('buildNumber');
+
+            console.log('local version is ' + currentBuildNumber);
+            // clear worker cache if remote and local version are different
+            if (currentBuildNumber != buildNumber) {
+              console.log('App update is necessary. Clearing service workers cache');
+              caches.delete('flutter-app-manifest');
+              caches.delete('flutter-temp-cache');
+              caches.delete('flutter-app-cache');
+
+              // store new version number
+              window.localStorage.setItem('buildNumber', buildNumber);
+            } else {
+              console.log('App is up to date');
+            }
+          }
+          launchFlutter();
+        });
+
+        xmlhttp.addEventListener('error', function () {
+          launchFlutter();
+        });
+
+        xmlhttp.addEventListener('abort', function () {
+          launchFlutter();
+        });
+
+        xmlhttp.addEventListener('timeout', function () {
+          launchFlutter();
+        });
+
+        xmlhttp.send();
+      } else {
+        console.log('Service worker not found. Continue app loading.');
+        launchFlutter();
+      }
+    });
   </script>
-  
+
   <picture id="splash">
-    <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light) or (prefers-color-scheme: no-preference)">
-    <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
+    <source
+      srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x"
+      media="(prefers-color-scheme: light) or (prefers-color-scheme: no-preference)">
+    <source
+      srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x"
+      media="(prefers-color-scheme: dark)">
     <img class="center" src="splash/img/light-1x.png" />
   </picture>
 </body>
+
 </html>
