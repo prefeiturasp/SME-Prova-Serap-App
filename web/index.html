@@ -93,6 +93,7 @@
     function launchFlutter() {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
+        entrypointUrl: "main.dart.js?v=1.14.6",
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
