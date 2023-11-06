@@ -145,14 +145,27 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   _setupReactions() {
     fine('[Prova $id - $caderno] - Configurando reactions');
     _reactions = [
-      reaction((_) => downloadStatus, onStatusChange),
       reaction(
+        name: 'onStatusDownloadChange',
+        (_) => downloadStatus,
+        onStatusChange,
+      ),
+      reaction(
+        name: 'onChangeConexao',
         (_) => sl.get<PrincipalStore>().temConexao,
         onChangeConexao,
         fireImmediately: false,
       ),
-      reaction((_) => tempoCorrendo, onChangeContadorQuestao),
-      reaction((_) => _usuarioStore.isRespondendoProva, _onRespondendoProvaChange),
+      reaction(
+        name: 'onChangeContadorQuestao',
+        (_) => tempoCorrendo,
+        onChangeContadorQuestao,
+      ),
+      reaction(
+        name: 'onRespondendoProvaChange',
+        (_) => _usuarioStore.isRespondendoProva,
+        _onRespondendoProvaChange,
+      ),
     ];
   }
 
@@ -262,9 +275,12 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   configurarProva() async {
     info("[Prova $id - $caderno] - Configurando prova");
 
+    configure();
+
     setRespondendoProva(true);
 
     await respostas.carregarRespostasServidor();
+
     await _configureControlesTempoProva();
 
     await WakelockPlus.enable();
@@ -280,6 +296,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
 
   _configureControlesTempoProva() async {
     info("[Prova $id - $caderno] - Configurando controles de tempo");
+
     if (tempoExecucaoStore != null) {
       switch (tempoExecucaoStore!.status) {
         case EnumProvaTempoEventType.EXTENDIDO:
@@ -327,7 +344,7 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
   /// Configura o tempo de execução da prova
   @action
   _configurarTempoExecucao() {
-    if (prova.tempoExecucao > 0) {
+    if (prova.tempoExecucao > 0 && tempoExecucaoStore == null) {
       fine('[Prova $id - $caderno] - Configurando controlador de tempo');
 
       tempoExecucaoStore = ProvaTempoExecucaoStore(
