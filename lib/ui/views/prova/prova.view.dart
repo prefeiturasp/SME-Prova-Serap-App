@@ -7,10 +7,11 @@ import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova.view.store.dart';
+import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
@@ -39,6 +40,24 @@ class _ProvaViewState extends BaseStateWidget<ProvaView, ProvaViewStore> with Lo
 
   @override
   bool get willPop => false;
+
+  @override
+  AppBarWidget buildAppBar() {
+    return AppBarWidget(
+      popView: true,
+      subtitulo: provaStore.prova.descricao,
+      leading: _buildLeading(),
+    );
+  }
+
+  Widget? _buildLeading() {
+    return IconButton(
+      icon: Icon(Icons.arrow_back),
+      onPressed: () async {
+        context.router.navigate(HomeViewRoute());
+      },
+    );
+  }
 
   @override
   void initState() {
