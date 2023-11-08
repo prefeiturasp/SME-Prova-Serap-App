@@ -11,7 +11,6 @@ import 'package:appserap/ui/widgets/appbar/popup_submenu_item.dart';
 import 'package:appserap/ui/widgets/dialog/dialogs.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
-import 'package:appserap/utils/universal/universal.util.dart';
 import 'package:appserap/workers/jobs.enum.dart';
 import 'package:appserap/workers/jobs/finalizar_prova_pendente.job.dart';
 import 'package:appserap/workers/jobs/remover_provas.job.dart';
@@ -151,13 +150,6 @@ class AppBarWidget extends StatelessWidget {
             orientacoes.dispose();
 
             await context.router.navigate(SplashScreenViewRoute());
-
-            await Future.delayed(
-              Duration(milliseconds: 500),
-              () {
-                reload();
-              },
-            );
           }
         }
       },
