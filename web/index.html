@@ -90,10 +90,10 @@
   </script>
 
   <script>
-    function launchFlutter() {
+    window.addEventListener('load', function (ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
-        entrypointUrl: "main.dart.js?v=1.14.6",
+        entrypointUrl: "main.dart.js",
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
@@ -103,55 +103,6 @@
           });
         }
       });
-    }
-
-    window.addEventListener('load', function (ev) {
-      if ('serviceWorker' in navigator) {
-
-        // getting rid of undesired to fetch remote version.json file updated
-        var seconds = new Date().getTime();
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", '/version.json?v=' + seconds, true);
-        xmlhttp.addEventListener('load', function () {
-          if (xmlhttp.status == 200) {
-            var buildNumber = Array.from(xmlhttp.responseText.matchAll(/"version":"((\\"|[^"])*)"/g), m => m[1]);
-            console.log('remote version is ' + buildNumber);
-            var currentBuildNumber = window.localStorage.getItem('buildNumber');
-
-            console.log('local version is ' + currentBuildNumber);
-            // clear worker cache if remote and local version are different
-            if (currentBuildNumber != buildNumber) {
-              console.log('App update is necessary. Clearing service workers cache');
-              caches.delete('flutter-app-manifest');
-              caches.delete('flutter-temp-cache');
-              caches.delete('flutter-app-cache');
-
-              // store new version number
-              window.localStorage.setItem('buildNumber', buildNumber);
-            } else {
-              console.log('App is up to date');
-            }
-          }
-          launchFlutter();
-        });
-
-        xmlhttp.addEventListener('error', function () {
-          launchFlutter();
-        });
-
-        xmlhttp.addEventListener('abort', function () {
-          launchFlutter();
-        });
-
-        xmlhttp.addEventListener('timeout', function () {
-          launchFlutter();
-        });
-
-        xmlhttp.send();
-      } else {
-        console.log('Service worker not found. Continue app loading.');
-        launchFlutter();
-      }
     });
   </script>
 
