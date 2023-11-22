@@ -556,8 +556,7 @@ Future<bool?> mostrarDialogVoltarProva(BuildContext context) {
 }
 
 Future<bool?> mostrarDialogSairSistema(BuildContext context) {
-  String mensagemCorpo =
-      "Atenção, se você sair do sistema as provas baixadas serão apagadas do seu dispositivo. Deseja realmente sair?";
+  String mensagemCorpo = "Deseja realmente sair?";
 
   return showDialog(
     context: context,
