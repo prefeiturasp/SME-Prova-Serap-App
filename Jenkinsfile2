@@ -1,4 +1,4 @@
-pipeline {  
+cpipeline {  
     environment {
       branchname =  env.BRANCH_NAME.toLowerCase()
     }
@@ -47,7 +47,8 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'
             sh 'if [ ! -d "android/app/src/dev" ]; then mkdir android/app/src/dev; fi'
-            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . $(realpath envdev) && rm -f envdev && touch .env && echo "NOTHINGTODO" > .env'
+            sh 'cp ${GOOGLEJSONDEV} android/app/src/dev/google-services.json && cp ${ENVDEV} envdev && chmod a+r+x envdev && . $(realpath envdev)'
+            sh 'sed "s/export //" envdev > .env && rm -f envdev'
             sh 'flutter clean'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --profile --flavor=dev"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
@@ -72,7 +73,8 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'
             sh 'if [ ! -d "android/app/src/hom" ]; then mkdir android/app/src/hom; fi'
-            sh 'cp ${GOOGLEJSONHOM} android/app/src/hom/google-services.json && cp ${ENVHOM} envhom && chmod a+r+x envhom && . $(realpath envhom) && rm -f envhom && touch .env && echo "NOTHINGTODO" > .env'
+            sh 'cp ${GOOGLEJSONHOM} android/app/src/hom/google-services.json && cp ${ENVHOM} envhom && chmod a+r+x envhom && . $(realpath envhom)'
+            sh 'sed "s/export //" envhom > .env && rm -f envhom'
             sh 'flutter clean'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --profile --flavor=hom"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
@@ -95,7 +97,8 @@ pipeline {
             sh 'cp ${APPKEYJKS} ${WORKSPACE}/android/app/key.jks && cp ${APPKEYPROPERTIES} ${WORKSPACE}/android/key.properties'
             sh 'cd ${WORKSPACE}'            
             sh 'if [ ! -d "android/app/src/prod" ]; then mkdir android/app/src/prod; fi'
-            sh 'cp ${GOOGLEJSONPROD} android/app/src/prod/google-services.json && cp ${ENVPROD} envprod && chmod a+r+x envprod && . $(realpath envprod) && rm -f envprod && touch .env && echo "NOTHINGTODO" > .env'
+            sh 'cp ${GOOGLEJSONPROD} android/app/src/prod/google-services.json && cp ${ENVPROD} envprod && chmod a+r+x envprod && . $(realpath envprod)'
+            sh 'sed "s/export //" envprod > .env && rm -f envprod'
             sh 'flutter clean'
             sh "flutter pub get && flutter build apk --build-name=${APP_VERSION} --build-number=${BUILD_NUMBER} --release --flavor=prod"
             sh "ls -ltra ${WORKSPACE}/build/app/outputs/flutter-apk/"
