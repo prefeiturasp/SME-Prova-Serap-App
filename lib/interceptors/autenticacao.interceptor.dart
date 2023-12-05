@@ -54,7 +54,6 @@ class ServiceAuthenticator extends Authenticator with Loggable {
   }
 
   Future<String?> refreshToken(String oldToken) async {
-
     fine('Atualizando token');
     try {
       Response<AutenticacaoResponseDTO> response;
@@ -91,7 +90,7 @@ class ServiceAuthenticator extends Authenticator with Loggable {
     refreshtoken = false;
     final _principalStore = sl<PrincipalStore>();
     await _principalStore.sair();
-    sl.get<AppRouter>().replaceAll([LoginViewRoute()]);
+    await sl.get<AppRouter>().replaceAll([LoginViewRoute()]);
   }
 }
 
