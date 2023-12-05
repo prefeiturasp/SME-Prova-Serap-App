@@ -41,6 +41,8 @@ Future<void> main() async {
 
     await setupFirebase();
 
+    AppConfigReader.printEnv();
+
     runApp(MyApp());
   }, (error, stack) {
     recordError(error, stack);

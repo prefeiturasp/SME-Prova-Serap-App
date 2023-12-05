@@ -52,4 +52,13 @@ abstract class AppConfigReader {
   static Level logLevel() {
     return parseLog(dotenv.get("NIVEL_LOG", fallback: "INFO"));
   }
+
+  static printEnv() {
+    print("HOST_API: " + getApiHost());
+    print("SERAP_URL: " + getSerapUrl());
+    print("CHAVE_API: " + getChaveApi());
+    print("DEBUG_SQL: " + debugSql().toString());
+    print("DEBUG_REQUEST: " + debugRequest());
+    print("NIVEL_LOG: " + logLevel().toString());
+  }
 }
