@@ -1,4 +1,4 @@
-cpipeline {  
+pipeline {  
     environment {
       branchname =  env.BRANCH_NAME.toLowerCase()
     }
