@@ -43,7 +43,7 @@ class FinalizarProvasPendenteJob extends Job with Loggable, Database {
         // Atualiza status servidor
         await sl<ProvaService>().setStatusProva(
           idProva: prova.id,
-          status: EnumProvaStatus.FINALIZADA.index,
+          status: EnumProvaStatus.FINALIZADA_OFFLINE.index,
           tipoDispositivo: kDeviceType.index,
           dataInicio: getTicks(prova.dataInicioProvaAluno!),
           dataFim: getTicks(prova.dataFimProvaAluno!),
@@ -57,7 +57,7 @@ class FinalizarProvasPendenteJob extends Job with Loggable, Database {
         await dbRespostas.respostaProvaDao.removerSincronizadasPorProva(prova.id);
 
         // Atualiza Status da prova
-        await db.provaDao.atualizarStatus(prova.id, prova.caderno, EnumProvaStatus.FINALIZADA);
+        await db.provaDao.atualizarStatus(prova.id, prova.caderno, EnumProvaStatus.FINALIZADA_OFFLINE);
       } catch (e, stack) {
         await recordError(e, stack);
       }

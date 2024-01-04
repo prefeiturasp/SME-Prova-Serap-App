@@ -395,15 +395,18 @@ abstract class _ProvaStoreBase with Store, Loggable, Disposable, Database {
         var retorno = await mostrarDialogSemInternet(context);
         return retorno ?? false;
       } else {
+        EnumProvaStatus statusProva =
+            automaticamente ? EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_TEMPO : EnumProvaStatus.FINALIZADA;
+
         // Atualiza para finalizada
-        await setStatusProva(EnumProvaStatus.FINALIZADA);
+        await setStatusProva(statusProva);
 
         await respostas.sincronizarResposta(force: true);
 
         // Sincroniza com a api
         var response = await sl<ProvaService>().setStatusProva(
           idProva: id,
-          status: EnumProvaStatus.FINALIZADA.index,
+          status: statusProva.index,
           tipoDispositivo: kDeviceType.index,
           dataInicio: getTicks(prova.dataInicioProvaAluno!),
           dataFim: getTicks(prova.dataFimProvaAluno!),
