@@ -24,7 +24,7 @@ class AppIsolates {
     backgroundPort.listen((message) {
       StatusJob jobStatus = message;
 
-      ServiceLocator.get<JobStore>().statusJob[jobStatus.job] = jobStatus.status;
+      sl.get<JobStore>().statusJob[jobStatus.job] = jobStatus.status;
     });
   }
 }

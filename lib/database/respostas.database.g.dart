@@ -179,8 +179,7 @@ class $RespostaProvaTableTable extends RespostaProvaTable
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey =>
-      {codigoEOL, provaId, caderno, questaoId};
+  Set<GeneratedColumn> get $primaryKey => {codigoEOL, provaId, questaoId};
   @override
   RespostaProva map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';

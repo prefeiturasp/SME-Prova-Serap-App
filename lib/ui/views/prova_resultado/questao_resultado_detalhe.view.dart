@@ -1,7 +1,7 @@
 import 'package:appserap/database/app.database.dart';
-import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/questao_resultado_detalhes_view.store.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_aluno_resposta.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -14,25 +14,24 @@ import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/utils/universal/universal.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 
+@RoutePage()
 class QuestaoResultadoDetalhesView extends BaseStatefulWidget {
   final int provaId;
   final String caderno;
   final int ordem;
-  final List<ProvaResultadoResumoQuestaoResponseDto> resumo;
 
   const QuestaoResultadoDetalhesView({
     super.key,
-    required this.provaId,
-    required this.caderno,
-    required this.ordem,
-    required this.resumo,
+    @PathParam('idProva') required this.provaId,
+    @PathParam('caderno') required this.caderno,
+    @PathParam('ordem') required this.ordem,
   });
 
   @override
@@ -47,19 +46,19 @@ class _QuestaoResultadoDetalhesViewState
   ArquivoVideoDb? arquivoVideoDb;
   ArquivoAudioDb? arquivoAudioDb;
 
-  var db = ServiceLocator.get<AppDatabase>();
+  var db = sl<AppDatabase>();
 
   final controller = HtmlEditorController();
+  final ScrollController _controller = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    var questaoLegadoId = widget.resumo.where((element) => element.ordemQuestao == widget.ordem).first.idQuestaoLegado;
     store.carregarDetalhesQuestao(
       provaId: widget.provaId,
       caderno: widget.caderno,
-      questaoLegadoId: questaoLegadoId,
+      ordem: widget.ordem,
     );
   }
 
@@ -93,67 +92,73 @@ class _QuestaoResultadoDetalhesViewState
             _buildAudioPlayer(),
             Expanded(
               child: _buildLayout(
-                body: SingleChildScrollView(
-                  child: Padding(
-                    padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          width: exibirVideo() ? MediaQuery.of(context).size.width / 2 : null,
-                          child: Observer(builder: (_) {
-                            return Container(
-                              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Questão ${widget.ordem + 1} ',
-                                        style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                          fontSize: temaStore.tTexto20,
-                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                body: Scrollbar(
+                  thumbVisibility: true,
+                  trackVisibility: true,
+                  controller: _controller,
+                  child: SingleChildScrollView(
+                    controller: _controller,
+                    child: Padding(
+                      padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            width: exibirVideo() ? MediaQuery.of(context).size.width / 2 : null,
+                            child: Observer(builder: (_) {
+                              return Container(
+                                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Questão ${widget.ordem + 1} ',
+                                          style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                            fontSize: temaStore.tTexto20,
+                                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        'de ${widget.resumo.length}',
-                                        style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
-                                          fontSize: temaStore.tTexto20,
-                                          fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                        Text(
+                                          'de ${store.totalQuestoes}',
+                                          style: TemaUtil.temaTextoNumeroQuestoesTotal.copyWith(
+                                            fontSize: temaStore.tTexto20,
+                                            fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                          ),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 8),
-                                  QuestaoAlunoRespostaWidget(
-                                    controller: controller,
-                                    questao: store.questao!.toModel(),
-                                    alternativas: store.alternativas.map((e) => e.toModel()).toList(),
-                                    imagens: store.imagens.map((e) => e.toModel()).toList(),
-                                    ordemAlternativaCorreta: store.detalhes!.ordemAlternativaCorreta,
-                                    ordemAlternativaResposta: store.detalhes!.ordemAlternativaResposta,
-                                    respostaConstruida: store.detalhes!.respostaConstruida,
-                                  ),
-                                  SizedBox(height: 8),
-                                ],
-                              ),
-                            );
-                          }),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 24,
-                            right: 24,
-                            bottom: 20,
+                                      ],
+                                    ),
+                                    SizedBox(height: 8),
+                                    QuestaoAlunoRespostaWidget(
+                                      controller: controller,
+                                      questao: store.questao!.toModel(),
+                                      alternativas: store.alternativas.map((e) => e.toModel()).toList(),
+                                      imagens: store.imagens.map((e) => e.toModel()).toList(),
+                                      ordemAlternativaCorreta: store.detalhes!.ordemAlternativaCorreta,
+                                      ordemAlternativaResposta: store.detalhes!.ordemAlternativaResposta,
+                                      respostaConstruida: store.detalhes!.respostaConstruida,
+                                    ),
+                                    SizedBox(height: 8),
+                                  ],
+                                ),
+                              );
+                            }),
                           ),
-                          child: Column(
-                            children: [
-                              // kDebugMode ? _buildBotaoFinalizarProva() : Container(),
-                              _buildBotoes(),
-                            ],
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 24,
+                              right: 24,
+                              bottom: 20,
+                            ),
+                            child: Column(
+                              children: [
+                                // kDebugMode ? _buildBotaoFinalizarProva() : Container(),
+                                _buildBotoes(),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -247,22 +252,30 @@ class _QuestaoResultadoDetalhesViewState
     return BotaoSecundarioWidget(
       textoBotao: 'Questão anterior',
       onPressed: () async {
-        context.replace(
-          "/prova/resposta/${widget.provaId}/${widget.caderno}/${widget.ordem - 1}/detalhes",
-          extra: widget.resumo.toList(),
+        context.router.replace(
+          QuestaoResultadoDetalhesViewRoute(
+            key: ValueKey("${widget.provaId}-${widget.ordem - 1}"),
+            provaId: widget.provaId,
+            caderno: widget.caderno,
+            ordem: widget.ordem - 1,
+          ),
         );
       },
     );
   }
 
   Widget _buildBotaoProximo() {
-    if (widget.ordem < widget.resumo.length - 1) {
+    if (widget.ordem < store.totalQuestoes - 1) {
       return BotaoDefaultWidget(
         textoBotao: 'Próxima questão',
         onPressed: () async {
-          context.replace(
-            "/prova/resposta/${widget.provaId}/${widget.caderno}/${widget.ordem + 1}/detalhes",
-            extra: widget.resumo.toList(),
+          context.router.replace(
+            QuestaoResultadoDetalhesViewRoute(
+              key: ValueKey("${widget.provaId}-${widget.ordem + 1}"),
+              provaId: widget.provaId,
+              caderno: widget.caderno,
+              ordem: widget.ordem + 1,
+            ),
           );
         },
       );
@@ -275,7 +288,11 @@ class _QuestaoResultadoDetalhesViewState
       textoBotao: 'Voltar ao resultado',
       onPressed: () async {
         try {
-          context.push("/prova/resposta/${widget.provaId}/${widget.caderno}/resumo");
+          context.router.push(ProvaResultadoResumoViewRoute(
+            key: ValueKey(widget.provaId),
+            provaId: widget.provaId,
+            caderno: widget.caderno,
+          ));
         } catch (e, stack) {
           await recordError(e, stack);
         }
@@ -285,10 +302,10 @@ class _QuestaoResultadoDetalhesViewState
 
   Future<Widget> showVideoPlayer() async {
     if (kIsWeb) {
-      return VideoPlayerWidget(videoUrl: buildUrl(arquivoVideo));
+      return VideoPlayer(videoUrl: buildUrl(arquivoVideo));
     } else {
       String path = (await buildPath(arquivoVideoDb!.path))!;
-      return VideoPlayerWidget(videoPath: path);
+      return VideoPlayer(videoPath: path);
     }
   }
 

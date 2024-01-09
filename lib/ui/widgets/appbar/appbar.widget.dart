@@ -1,6 +1,7 @@
 import 'package:appserap/database/app.database.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/main.ioc.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/home.store.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
@@ -14,11 +15,11 @@ import 'package:appserap/workers/jobs.enum.dart';
 import 'package:appserap/workers/jobs/finalizar_prova_pendente.job.dart';
 import 'package:appserap/workers/jobs/remover_provas.job.dart';
 import 'package:appserap/workers/jobs/sincronizar_respostas.job.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite_viewer/sqlite_viewer.dart';
 
@@ -99,7 +100,7 @@ class AppBarWidget extends StatelessWidget {
     return IconButton(
       icon: Icon(Icons.arrow_back),
       onPressed: () async {
-        context.pop();
+        context.router.pop();
       },
     );
   }
@@ -138,7 +139,7 @@ class AppBarWidget extends StatelessWidget {
         if (sair) {
           await _principalStore.sair();
 
-          HomeStore homeStore = ServiceLocator.get<HomeStore>();
+          HomeStore homeStore = sl<HomeStore>();
           await homeStore.onDispose();
 
           if (popView) {
@@ -148,7 +149,7 @@ class AppBarWidget extends StatelessWidget {
             var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
             orientacoes.dispose();
 
-            context.go("/splash");
+            await context.router.navigate(SplashScreenViewRoute());
           }
         }
       },
@@ -245,12 +246,12 @@ class AppBarWidget extends StatelessWidget {
           ),
         );
       } else if (value == 'limpar') {
-        await ServiceLocator.get<AppDatabase>().limparBanco();
-        context.go("/splash");
+        await sl<AppDatabase>().limparBanco();
+        context.router.navigate(SplashScreenViewRoute());
       } else if (value == 'resumo') {
-        var url = GoRouter.of(context).location.split('/');
+        var url = context.router.currentPath.split('/');
 
-        context.go("/prova/${url[2]}/resumo");
+        context.router.navigate(ResumoRespostasViewRoute(idProva: int.parse(url[2])));
       }
     });
   }

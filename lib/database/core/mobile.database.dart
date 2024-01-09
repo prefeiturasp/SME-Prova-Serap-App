@@ -5,9 +5,9 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:external_path/external_path.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Obtains a database connection for running drift in a Dart VM.
@@ -53,10 +53,8 @@ Future<void> askPermission() async {
 
   if (!isGranted) {
     PermissionStatus status = await Permission.storage.request();
-    if (status.isPermanentlyDenied) {
+    if (status.isPermanentlyDenied && status.isDenied) {
       await openAppSettings();
-    } else if (status.isDenied == true) {
-      askPermission();
     }
   }
 }

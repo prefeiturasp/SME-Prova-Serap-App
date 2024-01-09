@@ -1,16 +1,19 @@
 import 'package:appserap/enums/deficiencia.enum.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
-import 'package:appserap/main.ioc.dart';
 import 'package:appserap/utils/firebase.util.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'usuario.store.g.dart';
 
+@LazySingleton()
 class UsuarioStore = _UsuarioStoreBase with _$UsuarioStore;
 
 abstract class _UsuarioStoreBase with Store {
+  final SharedPreferences _sharedPreferences;
+
   @observable
   String? token;
 
@@ -68,7 +71,7 @@ abstract class _UsuarioStoreBase with Store {
   @computed
   bool get isLogado => codigoEOL != null;
 
-  _UsuarioStoreBase() {
+  _UsuarioStoreBase(this._sharedPreferences) {
     carregarUsuario();
   }
 
@@ -94,57 +97,56 @@ abstract class _UsuarioStoreBase with Store {
 
   @action
   Future<void> carregarUsuario() async {
-    SharedPreferences prefs = await ServiceLocator.getAsync();
-    nome = prefs.getString("serapUsuarioNome");
-    token = prefs.getString("serapUsuarioToken");
-    codigoEOL = prefs.getString("serapUsuarioCodigoEOL");
-    ano = prefs.getString("serapUsuarioAno");
-    tipoTurno = prefs.getString("serapUsuarioTipoTurno");
+    nome = _sharedPreferences.getString("serapUsuarioNome");
+    token = _sharedPreferences.getString("serapUsuarioToken");
+    codigoEOL = _sharedPreferences.getString("serapUsuarioCodigoEOL");
+    ano = _sharedPreferences.getString("serapUsuarioAno");
+    tipoTurno = _sharedPreferences.getString("serapUsuarioTipoTurno");
 
-    if (prefs.containsKey("serapUsuarioDreAbreviacao")) {
-      dreAbreviacao = prefs.getString("serapUsuarioDreAbreviacao");
+    if (_sharedPreferences.containsKey("serapUsuarioDreAbreviacao")) {
+      dreAbreviacao = _sharedPreferences.getString("serapUsuarioDreAbreviacao");
     }
-    if (prefs.containsKey("serapUsuarioEscola")) {
-      escola = prefs.getString("serapUsuarioEscola");
+    if (_sharedPreferences.containsKey("serapUsuarioEscola")) {
+      escola = _sharedPreferences.getString("serapUsuarioEscola");
     }
-    if (prefs.containsKey("serapUsuarioTurma")) {
-      turma = prefs.getString("serapUsuarioTurma");
+    if (_sharedPreferences.containsKey("serapUsuarioTurma")) {
+      turma = _sharedPreferences.getString("serapUsuarioTurma");
     }
 
-    if (prefs.containsKey("serapUsuarioDeficiencia")) {
+    if (_sharedPreferences.containsKey("serapUsuarioDeficiencia")) {
       deficiencias = ObservableList.of(
-          prefs.getStringList("serapUsuarioDeficiencia")!.map((e) => DeficienciaEnum.values[int.parse(e)]).toList());
+          _sharedPreferences.getStringList("serapUsuarioDeficiencia")!.map((e) => DeficienciaEnum.values[int.parse(e)]).toList());
     }
 
-    if (prefs.getInt("serapUsuarioInicioTurno") != null) {
-      inicioTurno = prefs.getInt("serapUsuarioInicioTurno")!;
+    if (_sharedPreferences.getInt("serapUsuarioInicioTurno") != null) {
+      inicioTurno = _sharedPreferences.getInt("serapUsuarioInicioTurno")!;
     }
 
-    if (prefs.getInt("serapUsuarioFimTurno") != null) {
-      fimTurno = prefs.getInt("serapUsuarioFimTurno")!;
+    if (_sharedPreferences.getInt("serapUsuarioFimTurno") != null) {
+      fimTurno = _sharedPreferences.getInt("serapUsuarioFimTurno")!;
     }
 
-    if (prefs.getInt("serapUsuarioModalidade") != null) {
-      modalidade = ModalidadeEnum.values[prefs.getInt('serapUsuarioModalidade')!];
+    if (_sharedPreferences.getInt("serapUsuarioModalidade") != null) {
+      modalidade = ModalidadeEnum.values[_sharedPreferences.getInt('serapUsuarioModalidade')!];
     }
 
-    await prefs.setInt('serapUsuarioInicioTurno', inicioTurno);
-    await prefs.setInt('serapUsuarioFimTurno', fimTurno);
+    await _sharedPreferences.setInt('serapUsuarioInicioTurno', inicioTurno);
+    await _sharedPreferences.setInt('serapUsuarioFimTurno', fimTurno);
 
-    if (prefs.getString("ultimoLogin") != null) {
-      ultimoLogin = DateTime.tryParse(prefs.getString("ultimoLogin")!);
+    if (_sharedPreferences.getString("ultimoLogin") != null) {
+      ultimoLogin = DateTime.tryParse(_sharedPreferences.getString("ultimoLogin")!);
     }
 
-    if (prefs.containsKey('familiaFonte')) {
-      familiaFonte = FonteTipoEnum.values[prefs.getInt("familiaFonte")!];
+    if (_sharedPreferences.containsKey('familiaFonte')) {
+      familiaFonte = FonteTipoEnum.values[_sharedPreferences.getInt("familiaFonte")!];
     }
 
-    if (prefs.containsKey('tamanhoFonte')) {
-      tamanhoFonte = prefs.getDouble("tamanhoFonte")!;
+    if (_sharedPreferences.containsKey('tamanhoFonte')) {
+      tamanhoFonte = _sharedPreferences.getDouble("tamanhoFonte")!;
     }
 
-    if (prefs.containsKey('serapIsAdmin')) {
-      isAdmin = prefs.getBool("serapIsAdmin")!;
+    if (_sharedPreferences.containsKey('serapIsAdmin')) {
+      isAdmin = _sharedPreferences.getBool("serapIsAdmin")!;
     }
   }
 
@@ -180,39 +182,38 @@ abstract class _UsuarioStoreBase with Store {
     this.escola = escola;
     this.turma = turma;
 
-    SharedPreferences prefs = await ServiceLocator.getAsync();
-    await prefs.setString('serapUsuarioNome', nome);
+    await _sharedPreferences.setString('serapUsuarioNome', nome);
 
     if (token != null && token.isNotEmpty) {
       this.token = token;
-      await prefs.setString('serapUsuarioToken', token);
+      await _sharedPreferences.setString('serapUsuarioToken', token);
     }
 
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
-      await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
+      await _sharedPreferences.setString('serapUsuarioCodigoEOL', codigoEOL);
     }
 
-    await prefs.setString('serapUsuarioAno', ano);
-    await prefs.setString('serapUsuarioTipoTurno', tipoTurno);
+    await _sharedPreferences.setString('serapUsuarioAno', ano);
+    await _sharedPreferences.setString('serapUsuarioTipoTurno', tipoTurno);
 
-    await prefs.setInt('serapUsuarioModalidade', modalidade.index);
-    await prefs.setInt('serapUsuarioInicioTurno', inicioTurno);
-    await prefs.setInt('serapUsuarioFimTurno', fimTurno);
+    await _sharedPreferences.setInt('serapUsuarioModalidade', modalidade.index);
+    await _sharedPreferences.setInt('serapUsuarioInicioTurno', inicioTurno);
+    await _sharedPreferences.setInt('serapUsuarioFimTurno', fimTurno);
 
-    await prefs.setString('serapUsuarioDreAbreviacao', dreAbreviacao);
-    await prefs.setString('serapUsuarioEscola', escola);
-    await prefs.setString('serapUsuarioTurma', turma);
+    await _sharedPreferences.setString('serapUsuarioDreAbreviacao', dreAbreviacao);
+    await _sharedPreferences.setString('serapUsuarioEscola', escola);
+    await _sharedPreferences.setString('serapUsuarioTurma', turma);
 
     if (this.ultimoLogin != null) {
-      await prefs.setString('ultimoLogin', ultimoLogin.toString());
+      await _sharedPreferences.setString('ultimoLogin', ultimoLogin.toString());
     }
 
-    await prefs.setDouble('tamanhoFonte', tamanhoFonte);
-    await prefs.setInt('familiaFonte', familiaFonte.index);
+    await _sharedPreferences.setDouble('tamanhoFonte', tamanhoFonte);
+    await _sharedPreferences.setInt('familiaFonte', familiaFonte.index);
 
     this.deficiencias = ObservableList.of(deficiencias);
-    await prefs.setStringList('serapUsuarioDeficiencia', deficiencias.map((e) => e.index.toString()).toList());
+    await _sharedPreferences.setStringList('serapUsuarioDeficiencia', deficiencias.map((e) => e.index.toString()).toList());
   }
 
   @action
@@ -226,19 +227,18 @@ abstract class _UsuarioStoreBase with Store {
     this.codigoEOL = codigoEOL;
     this.token = token;
 
-    SharedPreferences prefs = await ServiceLocator.getAsync();
-    await prefs.setString('serapUsuarioNome', nome);
-    await prefs.setBool('serapIsAdmin', isAdmin);
+    await _sharedPreferences.setString('serapUsuarioNome', nome);
+    await _sharedPreferences.setBool('serapIsAdmin', isAdmin);
 
     if (codigoEOL != null && codigoEOL.isNotEmpty) {
       this.codigoEOL = codigoEOL;
-      await prefs.setString('serapUsuarioCodigoEOL', codigoEOL);
+      await _sharedPreferences.setString('serapUsuarioCodigoEOL', codigoEOL);
       await setUserIdentifier(codigoEOL);
     }
 
     if (token != null && token.isNotEmpty) {
       this.token = token;
-      await prefs.setString('serapUsuarioToken', token);
+      await _sharedPreferences.setString('serapUsuarioToken', token);
     }
   }
 }

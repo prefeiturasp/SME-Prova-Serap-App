@@ -10,7 +10,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 class StatusSincronizacao extends StatelessWidget {
   StatusSincronizacao({super.key});
 
-  final jobStore = ServiceLocator.get<JobStore>();
+  final jobStore = sl<JobStore>();
 
   @override
   Widget build(BuildContext context) {

@@ -4,6 +4,7 @@ import 'package:appserap/enums/tempo_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/models/prova_caderno.model.dart';
 import 'package:appserap/models/questao.model.dart';
 import 'package:appserap/models/resposta_prova.model.dart';
@@ -12,6 +13,7 @@ import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/prova_tempo_exeucao.store.dart';
 import 'package:appserap/stores/questao_revisao.store.dart';
 import 'package:appserap/ui/views/prova/widgets/tempo_execucao.widget.dart';
+import 'package:appserap/ui/widgets/adaptative/adaptative.icon.button.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -23,18 +25,18 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
+@RoutePage()
 class ResumoRespostasView extends BaseStatefulWidget {
   final int idProva;
 
   ResumoRespostasView({
     Key? key,
-    required this.idProva,
+    @PathParam('idProva') required this.idProva,
   }) : super(key: key, title: "Resumo das respostas");
 
   @override
@@ -43,6 +45,7 @@ class ResumoRespostasView extends BaseStatefulWidget {
 
 class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, QuestaoRevisaoStore> with Loggable {
   late final ProvaStore provaStore;
+  final ScrollController _controller = ScrollController();
 
   int flexQuestao = 18;
   int flexAlternativa = 4;
@@ -51,10 +54,10 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
   @override
   void initState() {
     super.initState();
-    var provas = ServiceLocator.get<HomeStore>().provas;
+    var provas = sl<HomeStore>().provas;
 
     if (provas.isEmpty) {
-      ServiceLocator.get<AppRouter>().router.go("/");
+      sl<AppRouter>().navigate(HomeViewRoute());
     }
 
     provaStore = provas.filter((prova) => prova.key == widget.idProva).first.value;
@@ -96,71 +99,77 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
           TempoExecucaoWidget(provaStore: provaStore),
           StatusSincronizacao(),
           Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: getPadding(),
-                child: Observer(
-                  builder: (_) {
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              //
-                              Observer(
-                                builder: (_) {
-                                  return Text(
-                                    'Resumo das respostas',
-                                    textAlign: TextAlign.start,
-                                    style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
-                                      fontSize: temaStore.tTexto20,
-                                      fontFamily: temaStore.fonteDoTexto.nomeFonte,
-                                    ),
-                                  );
-                                },
-                              ),
-                              //
-                              Observer(
-                                builder: (context) {
-                                  return mensagemDeQuestoesSemRespostas();
-                                },
-                              ),
-                              //
-                              Column(
-                                children: [
-                                  _buildCabecalho(),
-                                  divider(),
-                                  ..._buildListaRespostas(),
-                                ],
-                              ),
-
-                              SizedBox(height: 32),
-                              Center(
-                                child: BotaoDefaultWidget(
-                                  textoBotao: 'FINALIZAR E ENVIAR',
-                                  largura: 392,
-                                  desabilitado: store.botaoFinalizarOcupado,
-                                  onPressed: () async {
-                                    try {
-                                      store.botaoFinalizarOcupado = true;
-                                      await finalizarProva();
-                                    } catch (e, stack) {
-                                      await recordError(e, stack);
-                                    } finally {
-                                      store.botaoFinalizarOcupado = false;
-                                    }
+            child: Scrollbar(
+              thumbVisibility: true,
+              trackVisibility: true,
+              controller: _controller,
+              child: SingleChildScrollView(
+                controller: _controller,
+                child: Padding(
+                  padding: getPadding(),
+                  child: Observer(
+                    builder: (_) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                //
+                                Observer(
+                                  builder: (_) {
+                                    return Text(
+                                      'Resumo das respostas',
+                                      textAlign: TextAlign.start,
+                                      style: TemaUtil.temaTextoNumeroQuestoes.copyWith(
+                                        fontSize: temaStore.tTexto20,
+                                        fontFamily: temaStore.fonteDoTexto.nomeFonte,
+                                      ),
+                                    );
                                   },
                                 ),
-                              )
-                            ],
+                                //
+                                Observer(
+                                  builder: (context) {
+                                    return mensagemDeQuestoesSemRespostas();
+                                  },
+                                ),
+                                //
+                                Column(
+                                  children: [
+                                    _buildCabecalho(),
+                                    divider(),
+                                    ..._buildListaRespostas(),
+                                  ],
+                                ),
+
+                                SizedBox(height: 32),
+                                Center(
+                                  child: BotaoDefaultWidget(
+                                    textoBotao: 'FINALIZAR E ENVIAR',
+                                    largura: 392,
+                                    desabilitado: store.botaoFinalizarOcupado,
+                                    onPressed: () async {
+                                      try {
+                                        store.botaoFinalizarOcupado = true;
+                                        await finalizarProva();
+                                      } catch (e, stack) {
+                                        await recordError(e, stack);
+                                      } finally {
+                                        store.botaoFinalizarOcupado = false;
+                                      }
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -297,7 +306,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     store.questoesParaRevisar.clear();
     store.mapaDeQuestoes.clear();
 
-    var db = ServiceLocator.get<AppDatabase>();
+    var db = sl<AppDatabase>();
 
     var questoes = await db.questaoDao.obterPorProvaECaderno(widget.idProva, provaStore.caderno);
 
@@ -423,8 +432,12 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         fontSize: 14,
       );
     } else {
-      return SvgPicture.asset(
+      return AdaptativeSVGIcon(
         AssetsUtil.iconeQuestaoNaoRespondida,
+        icon: Icon(
+          Icons.info_rounded,
+          color: Color(0xffDD911D),
+        ),
       );
     }
   }
@@ -441,17 +454,42 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
         if ((provaStore.tempoExecucaoStore != null && !provaStore.tempoExecucaoStore!.isTempoExtendido) &&
             resposta == "") {
           store.quantidadeDeQuestoesSemRespostas = 0;
-          context.go("/prova/${provaStore.id}/revisao/$questaoOrdem");
+          context.router.navigate(
+            QuestaoRevisaoViewRoute(
+              key: ValueKey("${provaStore.id}-$questaoOrdem"),
+              idProva: provaStore.id,
+              ordem: questaoOrdem,
+            ),
+          );
         } else if (resposta != "") {
           store.quantidadeDeQuestoesSemRespostas = 0;
-          context.go("/prova/${provaStore.id}/revisao/$questaoOrdem");
+          context.router.navigate(
+            QuestaoRevisaoViewRoute(
+              key: ValueKey("${provaStore.id}-$questaoOrdem"),
+              idProva: provaStore.id,
+              ordem: questaoOrdem,
+            ),
+          );
         } else if (provaStore.tempoExecucaoStore == null && resposta == "") {
           store.quantidadeDeQuestoesSemRespostas = 0;
-          context.go("/prova/${provaStore.id}/revisao/$questaoOrdem");
+          context.router.navigate(
+            QuestaoRevisaoViewRoute(
+              key: ValueKey("${provaStore.id}-$questaoOrdem"),
+              idProva: provaStore.id,
+              ordem: questaoOrdem,
+            ),
+          );
         }
       },
-      child: SvgPicture.asset(
+      child: AdaptativeSVGIcon(
         AssetsUtil.iconeRevisarQuestao,
+        icon: Container(
+          color: Color.fromARGB(255, 229, 238, 235),
+          child: Icon(
+            Icons.edit_note,
+            color: Color(0xff10A1C1),
+          ),
+        ),
       ),
     );
   }
@@ -473,8 +511,12 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
             //
             Padding(
               padding: const EdgeInsets.only(right: 10),
-              child: SvgPicture.asset(
+              child: AdaptativeSVGIcon(
                 AssetsUtil.iconeQuestaoNaoRespondida,
+                icon: Icon(
+                  Icons.info_rounded,
+                  color: Color(0xffDD911D),
+                ),
               ),
             ),
             //
@@ -504,7 +546,7 @@ class _ResumoRespostasViewState extends BaseStateWidget<ResumoRespostasView, Que
     if (finalizar) {
       bool provaFinalizada = await provaStore.finalizarProva();
       if (provaFinalizada) {
-        ServiceLocator.get<AppRouter>().router.go("/");
+        sl<AppRouter>().navigate(HomeViewRoute());
       }
     }
   }

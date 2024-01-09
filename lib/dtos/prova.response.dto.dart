@@ -75,7 +75,10 @@ class ProvaResponseDTO {
   });
 
   bool isFinalizada() {
-    return status == EnumProvaStatus.FINALIZADA || status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE;
+    return status == EnumProvaStatus.FINALIZADA ||
+        status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_JOB ||
+        status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_TEMPO ||
+        status == EnumProvaStatus.FINALIZADA_OFFLINE;
   }
 
   static const fromJson = _$ProvaResponseDTOFromJson;

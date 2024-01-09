@@ -1,6 +1,8 @@
 import 'package:appserap/dtos/prova_resultado_resumo_questao.response.dto.dart';
 import 'package:appserap/enums/tipo_questao.enum.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/prova_resultado_resumo_view.store.dart';
+import 'package:appserap/ui/widgets/adaptative/adaptative.icon.button.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -8,19 +10,19 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/string.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
+@RoutePage()
 class ProvaResultadoResumoView extends BaseStatefulWidget {
   final int provaId;
   final String caderno;
 
   const ProvaResultadoResumoView({
     super.key,
-    required this.provaId,
-    required this.caderno,
+    @PathParam('idProva') required this.provaId,
+    @PathParam('caderno') required this.caderno,
   });
 
   @override
@@ -28,6 +30,8 @@ class ProvaResultadoResumoView extends BaseStatefulWidget {
 }
 
 class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResumoView, ProvaResultadoResumoViewStore> {
+  final ScrollController _controller = ScrollController();
+
   var espacamentoTabela = [2, 6, 5, 3, 3];
 
   @override
@@ -45,7 +49,7 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
     return IconButton(
       icon: Icon(Icons.arrow_back),
       onPressed: () async {
-        context.push("/");
+        context.router.push(HomeViewRoute());
       },
     );
   }
@@ -58,56 +62,46 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
 
   @override
   Widget builder(BuildContext context) {
-    return SingleChildScrollView(
-      child: Observer(builder: (_) {
-        if (store.carregando) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+    return Scrollbar(
+      thumbVisibility: true,
+      trackVisibility: true,
+      controller: _controller,
+      child: SingleChildScrollView(
+        controller: _controller,
+        child: Observer(builder: (_) {
+          if (store.carregando) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
 
-        return Padding(
-          padding: getPadding(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    //
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Texto(
-                        'Resultado da prova',
-                        textAlign: TextAlign.start,
-                        color: TemaUtil.preto,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Texto(
-                            "Total de questões: ${store.response!.resumos.length}",
-                            color: TemaUtil.azul02,
-                            fontSize: 14,
-                            maxLines: 2,
-                          ),
+          return Padding(
+            padding: getPadding(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Texto(
+                          'Resultado da prova',
+                          textAlign: TextAlign.start,
+                          color: TemaUtil.preto,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
                         ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Row(
+                      ),
+                      Row(
                         children: [
-                          //
                           Expanded(
                             child: Texto(
-                              "Total de acertos: ${store.response!.resumos.where((element) => element.correta).toList().length}",
+                              "Total de questões: ${store.totalQuestoes}",
                               color: TemaUtil.azul02,
                               fontSize: 14,
                               maxLines: 2,
@@ -115,26 +109,42 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
                           ),
                         ],
                       ),
-                    ),
-                    _buildProficiencia(),
-                    //
-                    SizedBox(height: 20),
-                    Observer(builder: (_) {
-                      return Column(
-                        children: [
-                          _buildCabecalho(),
-                          _divider(),
-                          ..._buildListaRespostas(),
-                        ],
-                      );
-                    }),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Row(
+                          children: [
+                            //
+                            Expanded(
+                              child: Texto(
+                                "Total de acertos: ${store.response!.resumos.where((element) => element.correta).toList().length}",
+                                color: TemaUtil.azul02,
+                                fontSize: 14,
+                                maxLines: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _buildProficiencia(),
+                      //
+                      SizedBox(height: 20),
+                      Observer(builder: (_) {
+                        return Column(
+                          children: [
+                            _buildCabecalho(),
+                            _divider(),
+                            ..._buildListaRespostas(),
+                          ],
+                        );
+                      }),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+          );
+        }),
+      ),
     );
   }
 
@@ -323,14 +333,25 @@ class _ProvaResultadoResumoViewState extends BaseStateWidget<ProvaResultadoResum
       ),
       onTap: () {
         if (store.prova!.apresentarResultadosPorItem) {
-          context.push(
-            "/prova/resposta/${widget.provaId}/${widget.caderno}/$questaoOrdem/detalhes",
-            extra: store.response!.resumos,
+          context.router.push(
+            QuestaoResultadoDetalhesViewRoute(
+              key: ValueKey("${widget.provaId}-$questaoOrdem"),
+              provaId: widget.provaId,
+              caderno: widget.caderno,
+              ordem: questaoOrdem,
+            ),
           );
         }
       },
-      child: SvgPicture.asset(
+      child: AdaptativeSVGIcon(
         AssetsUtil.iconeRevisarQuestao,
+        icon: Container(
+          color: Color(0xFFE5EEEB),
+          child: Icon(
+            Icons.edit_note,
+            color: Color(0xff10A1C1),
+          ),
+        ),
         colorFilter: !store.prova!.apresentarResultadosPorItem
             ? ColorFilter.mode(
                 TemaUtil.cinza,

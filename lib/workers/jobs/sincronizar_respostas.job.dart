@@ -4,13 +4,12 @@ import 'package:appserap/interfaces/job.interface.dart';
 import 'package:appserap/interfaces/job_config.interface.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
-import 'package:appserap/services/api_service.dart';
+import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:workmanager/workmanager.dart';
 
 class SincronizarRespostasJob extends Job with Loggable, Database {
   @override
@@ -19,9 +18,6 @@ class SincronizarRespostasJob extends Job with Loggable, Database {
       frequency: Duration(minutes: 15),
       taskName: 'SincronizarRespostas',
       uniqueName: 'respostas-sincronizar',
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ),
     );
   }
 
@@ -40,7 +36,7 @@ class SincronizarRespostasJob extends Job with Loggable, Database {
     var respostasDTO = respostasParaSincronizar
         .map((e) => QuestaoRespostaDTO(
               alunoRa: e.codigoEOL,
-              dispositivoId: ServiceLocator.get<PrincipalStore>().dispositivoId,
+              dispositivoId: sl.get<PrincipalStore>().dispositivoId,
               questaoId: e.questaoId,
               alternativaId: e.alternativaId,
               resposta: e.resposta,
@@ -49,7 +45,7 @@ class SincronizarRespostasJob extends Job with Loggable, Database {
             ))
         .toList();
 
-    final _service = ServiceLocator.get<ApiService>().questaoResposta;
+    final _service = sl<QuestaoRespostaService>();
 
     try {
       var response = await _service.postResposta(

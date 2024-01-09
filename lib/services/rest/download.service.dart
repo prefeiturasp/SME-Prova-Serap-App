@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'package:chopper/chopper.dart';
+import 'package:injectable/injectable.dart';
 
 part 'download.service.chopper.dart';
 
+@injectable
 @ChopperApi(baseUrl: "/v1/downloads")
 abstract class DownloadService extends ChopperService {
-  static DownloadService create([ChopperClient? client]) => _$DownloadService(client);
+
+  @factoryMethod
+  static DownloadService create(ChopperClient client) => _$DownloadService(client);
 
   @Post()
   Future<Response<String>> informarDownloadConcluido({

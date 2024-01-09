@@ -1,14 +1,17 @@
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/orientacao_inicial.store.dart';
 import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/widgets/apresentacao/apresentacao.widget.dart';
 import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
+@RoutePage()
 class OrientacaoInicialView extends StatefulWidget {
   const OrientacaoInicialView({Key? key}) : super(key: key);
 
@@ -25,31 +28,39 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: TemaUtil.corDeFundo,
-        body: Padding(
-          padding: getPadding(),
-          child: Observer(
-            builder: (_) {
-              return ApresentacaoWidget(
-                avancarParaPagina: "/",
-                listaDePaginas: _store.listaPaginasOrientacoes,
-                textoBotaoAvancar: "PRÓXIMA DICA",
-                textoBotaoPular: "IR PARA A PÁGINA INICIAL",
-                regraMostrarTodosOsBotoesAoIniciar: _usuario.ultimoLogin != null,
-                regraMostrarApenasBotaoPoximo: _usuario.ultimoLogin == null,
-                pularSeNaoTiverConexao: !_principalStore.temConexao,
-              );
-            },
+          backgroundColor: TemaUtil.corDeFundo,
+          body: Padding(
+            padding: getPadding(),
+            child: Observer(
+              builder: (_) {
+                return ApresentacaoWidget(
+                  avancarParaPagina: HomeViewRoute(),
+                  listaDePaginas: _store.listaPaginasOrientacoes,
+                  textoBotaoAvancar: "PRÓXIMA DICA",
+                  textoBotaoPular: "IR PARA A PÁGINA INICIAL",
+                  regraMostrarTodosOsBotoesAoIniciar: _usuario.ultimoLogin != null,
+                  regraMostrarApenasBotaoPoximo: _usuario.ultimoLogin == null,
+                );
+              },
+            ),
           ),
-        ),
-        persistentFooterButtons: _buildPersistentFooterButtons(),
-      ),
+          bottomNavigationBar: Container(
+            color: TemaUtil.corDeFundo,
+            width: double.infinity,
+            height: 38,
+            child: _buildPersistentFooterButtons(),
+          )),
     );
   }
 
-  List<Widget>? _buildPersistentFooterButtons() {
-    return [
-      Center(
+  Widget _buildPersistentFooterButtons() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          top: Divider.createBorderSide(context, width: 1.0),
+        ),
+      ),
+      child: Center(
         child: Observer(
           builder: (_) {
             var cor = TemaUtil.preto;
@@ -65,8 +76,8 @@ class _OrientacaoInicialViewState extends State<OrientacaoInicialView> {
             );
           },
         ),
-      )
-    ];
+      ),
+    );
   }
 
   EdgeInsets getPadding([EdgeInsets mobile = EdgeInsets.zero]) {

@@ -2,12 +2,16 @@ import 'package:appserap/dtos/prova_resumo_tai.response.dto.dart';
 import 'package:appserap/dtos/questao_completa.tai.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
 import 'package:chopper/chopper.dart';
+import 'package:injectable/injectable.dart';
 
 part 'prova_tai.service.chopper.dart';
 
+@injectable
 @ChopperApi(baseUrl: "/v1/provas-tai")
 abstract class ProvaTaiService extends ChopperService {
-  static ProvaTaiService create([ChopperClient? client]) => _$ProvaTaiService(client);
+
+  @factoryMethod
+  static ProvaTaiService create(ChopperClient client) => _$ProvaTaiService(client);
 
   @Get(path: 'existe-conexao-R')
   Future<Response<bool>> existeConexaoR();

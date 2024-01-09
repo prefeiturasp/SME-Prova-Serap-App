@@ -7,6 +7,7 @@ import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
 import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/notificacao.util.dart';
+import 'package:appserap/utils/route_observer.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
 import 'package:appserap/workers/dispacher.dart';
@@ -17,7 +18,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -70,7 +70,7 @@ configure(bool isBackground) async {
   setupLogging();
   registerFonts();
 
-  await DependenciasIoC().setup();
+  configureDependencies();
 
   if (isBackground) {
     await AppIsolates().setup();
@@ -90,7 +90,7 @@ setupDatabaseInspector() async {
     bundleId: 'br.gov.sp.prefeitura.sme.appserap',
   );
 
-  final driftDb = ServiceLocator.get<AppDatabase>();
+  final driftDb = sl.get<AppDatabase>();
   final sqlServer = DriftSQLDatabaseServer(
     id: "1",
     name: "App",
@@ -98,7 +98,7 @@ setupDatabaseInspector() async {
   );
   driver.addSQLServer(sqlServer);
 
-  final respostasDb = ServiceLocator.get<RespostasDatabase>();
+  final respostasDb = sl.get<RespostasDatabase>();
   final sqlServerRespostas = DriftSQLDatabaseServer(
     id: "1",
     name: "Respostas",
@@ -130,8 +130,12 @@ void setupLogging() {
     Logger.root.level = AppConfigReader.logLevel();
   }
 
+  var logDisable = ['fwfh.HtmlWidget'];
+
   Logger.root.onRecord.listen((rec) {
-    print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
+    if (!logDisable.contains(rec.loggerName)) {
+      print('${rec.level.name}: ${rec.time}: (${rec.loggerName}) ${rec.message}');
+    }
   });
 }
 
@@ -148,6 +152,8 @@ setupDateFormating() {
 }
 
 class MyApp extends StatelessWidget {
+  final _appRouter = sl<AppRouter>();
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -156,12 +162,10 @@ class MyApp extends StatelessWidget {
         600,
       ),
       builder: (context, child) {
-        final GoRouter goRouter = ServiceLocator.get<AppRouter>().router;
-
         return MaterialApp.router(
-          routeInformationProvider: goRouter.routeInformationProvider,
-          routeInformationParser: goRouter.routeInformationParser,
-          routerDelegate: goRouter.routerDelegate,
+          routerConfig: _appRouter.config(
+            navigatorObservers: () => [RouterObserver()],
+          ),
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light().copyWith(
             appBarTheme: AppBarTheme(backgroundColor: TemaUtil.appBar),

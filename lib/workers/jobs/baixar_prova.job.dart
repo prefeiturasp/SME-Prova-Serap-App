@@ -17,11 +17,11 @@ class BaixarProvaJob extends Job with Loggable, Database {
   @override
   run() async {
     try {
-      var _usuarioStore = ServiceLocator.get<UsuarioStore>();
+      var _usuarioStore = sl.get<UsuarioStore>();
       if (_usuarioStore.isRespondendoProva) {
         return;
       }
-      SharedPreferences prefs = await ServiceLocator.getAsync();
+      var prefs = sl<SharedPreferences>();
 
       String? token = prefs.getString("token");
       String? codigoEol = prefs.getString("serapUsuarioCodigoEOL");
@@ -29,7 +29,7 @@ class BaixarProvaJob extends Job with Loggable, Database {
         return;
       }
 
-      ProvaService provaService = ServiceLocator.get<ApiService>().prova;
+      ProvaService provaService = sl<ProvaService>();
 
       var provasResponse = await provaService.getProvas();
 
@@ -45,7 +45,7 @@ class BaixarProvaJob extends Job with Loggable, Database {
           continue;
         }
 
-        Prova? provaLocal = await ServiceLocator.get<AppDatabase>().provaDao.obterPorIdNull(
+        Prova? provaLocal = await sl.get<AppDatabase>().provaDao.obterPorIdNull(
               provaRemoto.id,
               provaRemoto.caderno,
             );
@@ -97,6 +97,6 @@ class BaixarProvaJob extends Job with Loggable, Database {
   }
 
   _saveProva(Prova prova) async {
-    await ServiceLocator.get<AppDatabase>().provaDao.inserirOuAtualizar(prova);
+    await sl.get<AppDatabase>().provaDao.inserirOuAtualizar(prova);
   }
 }

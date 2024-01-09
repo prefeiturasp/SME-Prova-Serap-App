@@ -4,10 +4,7 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/enums/prova_status.enum.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/services/api.dart';
-import 'package:appserap/stores/home.store.dart';
-import 'package:appserap/stores/job.store.dart';
 import 'package:appserap/stores/principal.store.dart';
-import 'package:appserap/stores/tema.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/ui/views/home/home.view.dart';
 import 'package:clock/clock.dart';
@@ -59,23 +56,23 @@ void main() {
     registerInjection<RespostasDatabase>(RespostasDatabase.executor(NativeDatabase.memory()));
     registerInjectionAsync<SharedPreferences>(() => SharedPreferences.getInstance());
 
-    Future<UsuarioStore> teste() async {
-      UsuarioStore u = UsuarioStore();
-      u.carregarUsuario();
-      return u;
-    }
+    // Future<UsuarioStore> teste() async {
+    //   UsuarioStore u = UsuarioStore();
+    //   u.carregarUsuario();
+    //   return u;
+    // }
 
-    registerInjection<UsuarioStore>(await teste());
+    // registerInjection<UsuarioStore>(await teste());
 
     registerInjection<PrincipalStore>(MockPrincipalStore());
     registerInjection<ApiService>(MockApiService());
 
-    registerInjection<TemaStore>(TemaStore());
-    registerInjection<JobStore>(JobStore());
+    // registerInjection<TemaStore>(TemaStore());
+    // registerInjection<JobStore>(JobStore());
+    //
+    // registerInjection<HomeStore>(HomeStore());
 
-    registerInjection<HomeStore>(HomeStore());
-
-    await ServiceLocator.allReady();
+    await sl.allReady();
   });
 
   tearDown(() {
@@ -84,9 +81,9 @@ void main() {
   });
 
   mockPrincipalStore({bool temConexao = true}) {
-    when(ServiceLocator.get<PrincipalStore>().usuario).thenReturn(ServiceLocator.get<UsuarioStore>());
-    when(ServiceLocator.get<PrincipalStore>().temConexao).thenReturn(temConexao);
-    when(ServiceLocator.get<PrincipalStore>().versao).thenReturn("");
+    when(sl.get<PrincipalStore>().usuario).thenReturn(sl.get<UsuarioStore>());
+    when(sl.get<PrincipalStore>().temConexao).thenReturn(temConexao);
+    when(sl.get<PrincipalStore>().versao).thenReturn("");
   }
 
   group('Home - Abas provas finalizadas', () {
@@ -100,7 +97,7 @@ void main() {
             var provaMock = MockProvaService();
             mockProvaNenhuma(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -128,7 +125,7 @@ void main() {
             var provaMock = MockProvaService();
             mockProvaFinalizada(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -158,7 +155,7 @@ void main() {
             var provaMock = MockProvaService();
             mockProvaNenhuma(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -183,7 +180,7 @@ void main() {
             var provaMock = MockProvaService();
             await mockProvaSimples(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -208,7 +205,7 @@ void main() {
             var provaMock = MockProvaService();
             await mockProvaSimples(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -233,7 +230,7 @@ void main() {
             var provaMock = MockProvaService();
             await mockProvaSimples(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -258,7 +255,7 @@ void main() {
             var provaMock = MockProvaService();
             await mockProvaSimples(provaMock);
 
-            when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+            when(sl<ProvaService>()).thenReturn(provaMock);
 
             await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -286,7 +283,7 @@ void main() {
           var provaMock = MockProvaService();
           await mockProvaSimples(provaMock);
 
-          when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+          when(sl<ProvaService>()).thenReturn(provaMock);
 
           await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -314,7 +311,7 @@ void main() {
           var provaMock = MockProvaService();
           await mockProvaSimples(provaMock);
 
-          when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+          when(sl<ProvaService>()).thenReturn(provaMock);
 
           await tester.pumpWidget(MaterialApp(home: HomeView()));
 
@@ -342,7 +339,7 @@ void main() {
           var provaMock = MockProvaService();
           await mockProvaSimples(provaMock);
 
-          when(ServiceLocator.get<ApiService>().prova).thenReturn(provaMock);
+          when(sl<ProvaService>()).thenReturn(provaMock);
 
           await tester.pumpWidget(MaterialApp(home: HomeView()));
 

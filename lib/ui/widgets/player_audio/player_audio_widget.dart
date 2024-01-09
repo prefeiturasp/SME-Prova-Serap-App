@@ -1,10 +1,11 @@
 // ignore_for_file: unused_element
 
 import 'dart:async';
-import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:appserap/utils/tema.util.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PlayerAudioWidget extends StatefulWidget {
@@ -45,13 +46,32 @@ class _PlayerAudioWidgetState extends State<PlayerAudioWidget> {
 
   @override
   void initState() {
+    _preparePlayerHandle();
+    _initStreams();
+    super.initState();
+  }
+
+  _preparePlayerHandle() {
     player = AudioPlayer();
 
-    var source = widget.audioPath != null ? BytesSource(widget.audioBytes!) : UrlSource(widget.audioPath!);
+    var path = _prepareAudioPathHandle();
+
+    late Source source;
+
+    if (kIsWeb && widget.audioBytes != null) {
+      String url = "data:audio/mp3;base64," + base64Encode(widget.audioBytes!);
+
+      source = UrlSource(url);
+    } else {
+      if (widget.audioBytes != null) {
+        source = BytesSource(widget.audioBytes!);
+      } else if (path != null) {
+        source = UrlSource(path);
+      }
+    }
 
     player.setSource(source);
 
-    super.initState();
     // Use initial values from player
     _playerState = player.state;
     player.getDuration().then(
@@ -64,7 +84,12 @@ class _PlayerAudioWidgetState extends State<PlayerAudioWidget> {
             _position = value;
           }),
         );
-    _initStreams();
+  }
+
+  String? _prepareAudioPathHandle() {
+    if (widget.audioPath != null) {
+      return widget.audioPath!.contains('http:') ? widget.audioPath?.replaceAll('http:', 'https:') : widget.audioPath;
+    }
   }
 
   @override

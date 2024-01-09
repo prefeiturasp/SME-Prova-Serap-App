@@ -152,7 +152,7 @@ mixin _$QuestaoTaiViewStore on _QuestaoTaiViewStoreBase, Store {
       AsyncAction('_QuestaoTaiViewStoreBase.enviarResposta', context: context);
 
   @override
-  Future<bool> enviarResposta() {
+  Future<QuestaoTaiStatusEnum> enviarResposta() {
     return _$enviarRespostaAsyncAction.run(() => super.enviarResposta());
   }
 

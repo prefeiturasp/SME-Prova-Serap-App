@@ -15,4 +15,8 @@ targets:
                 generate_for:
                     - lib/**/*.dto.dart 
                     - lib/**/*.model.dart
+            auto_route_generator:auto_router_generator:
+                generate_for:
+                    - lib/main.route.dart
+                    - lib/ui/views/**.dart
 

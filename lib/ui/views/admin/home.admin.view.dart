@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:appserap/dtos/admin_prova.response.dto.dart';
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/enums/modalidade.enum.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/home.admin.store.dart';
 import 'package:appserap/ui/widgets/adaptative/adaptative.widget.dart';
 import 'package:appserap/ui/widgets/adaptative/center.widger.dart';
@@ -16,15 +17,16 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
+@RoutePage()
 class HomeAdminView extends BaseStatefulWidget {
   HomeAdminView({Key? key}) : super(key: key);
 
@@ -43,6 +45,8 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  ScrollController _controller = ScrollController();
 
   @override
   void initState() {
@@ -176,57 +180,63 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
   }
 
   _buildItens() {
-    return ListView.builder(
-      itemCount: store.provas.length + 1,
-      itemBuilder: (_, index) {
-        if (store.provas.isEmpty && !store.carregando) {
-          return Center(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height - 400,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 28),
-                    child: SvgPicture.asset(
-                      'assets/images/sem_prova.svg',
+    return Scrollbar(
+      thumbVisibility: true,
+      trackVisibility: true,
+      controller: _controller,
+      child: ListView.builder(
+        controller: _controller,
+        itemCount: store.provas.length + 1,
+        itemBuilder: (_, index) {
+          if (store.provas.isEmpty && !store.carregando) {
+            return Center(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height - 400,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 28),
+                      child: SvgPicture.asset(
+                        'assets/images/sem_prova.svg',
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 24),
-                    child: Texto(
-                      "Você não tem novas\nprovas para fazer.",
-                      fontSize: 18,
-                      center: true,
-                      fontWeight: FontWeight.w600,
-                      color: TemaUtil.pretoSemFoco3,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24),
+                      child: Texto(
+                        "Você não tem novas\nprovas para fazer.",
+                        fontSize: 18,
+                        center: true,
+                        fontWeight: FontWeight.w600,
+                        color: TemaUtil.pretoSemFoco3,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
-        }
+            );
+          }
 
-        if (store.carregando) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        if (index == store.provas.length) {
-          if (store.totalPaginas > store.pagina) {
-            store.carregarProvas();
+          if (store.carregando) {
             return Center(
               child: CircularProgressIndicator(),
             );
-          } else {
-            return SizedBox.shrink();
           }
-        }
-        return _buildProva(store.provas[index]);
-      },
+
+          if (index == store.provas.length) {
+            if (store.totalPaginas > store.pagina) {
+              store.carregarProvas();
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              return SizedBox.shrink();
+            }
+          }
+          return _buildProva(store.provas[index]);
+        },
+      ),
     );
   }
 
@@ -553,12 +563,12 @@ class _HomeAdminViewState extends BaseStateWidget<HomeAdminView, HomeAdminStore>
 
   _navegarProva(AdminProvaResponseDTO prova) {
     if (prova.possuiContexto) {
-      context.push("/admin/prova/${prova.id}/contexto", extra: {'possuiBIB': prova.possuiBIB});
+      context.router.push(AdminProvaContextoViewRoute(idProva: prova.id, possuiBIB: prova.possuiBIB));
     } else {
       if (prova.possuiBIB) {
-        context.push("/admin/prova/${prova.id}/caderno");
+        context.router.push(AdminProvaCadernoViewRoute(idProva: prova.id));
       } else {
-        context.push("/admin/prova/${prova.id}/resumo");
+        context.router.push(AdminProvaResumoViewRoute(idProva: prova.id));
       }
     }
   }

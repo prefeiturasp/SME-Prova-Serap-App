@@ -1,4 +1,6 @@
+import 'package:appserap/enums/request_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/questao_tai_view.store.dart';
 import 'package:appserap/ui/views/prova/widgets/questao_tai.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
@@ -12,19 +14,22 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/ui/widgets/video_player/video_player.widget.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:go_router/go_router.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+@RoutePage()
 class QuestaoTaiView extends BaseStatefulWidget {
   final int provaId;
+  final int ordem;
 
   const QuestaoTaiView({
     super.key,
-    required this.provaId,
+    @PathParam('idProva') required this.provaId,
+    @PathParam('ordem') required this.ordem,
   });
 
   @override
@@ -33,6 +38,7 @@ class QuestaoTaiView extends BaseStatefulWidget {
 
 class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiViewStore> with Loggable {
   final controller = HtmlEditorController();
+  final ScrollController _controller = ScrollController();
 
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
@@ -66,7 +72,7 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
         if (voltar) {
           await WakelockPlus.disable();
 
-          context.go("/");
+          context.router.navigate(HomeViewRoute());
         }
       },
     );
@@ -108,17 +114,23 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
       children: [
         _buildAudioPlayer(),
         _buildLayout(
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
+          body: Scrollbar(
+            thumbVisibility: true,
+            trackVisibility: true,
+            controller: _controller,
+            child: SingleChildScrollView(
+              controller: _controller,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Column(
-                  children: [
-                    _buildSumario(),
-                    _buildQuestao(),
-                    _buildBotoes(),
-                  ],
+                padding: exibirVideo() ? EdgeInsets.zero : getPadding(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  child: Column(
+                    children: [
+                      _buildSumario(),
+                      _buildQuestao(),
+                      _buildBotoes(),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -193,17 +205,12 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
   Widget _buildVideoPlayer() {
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
-      child: FutureBuilder<Widget>(
-        future: showVideoPlayer(),
-        builder: (context, snapshot) {
-          return snapshot.connectionState == ConnectionState.done ? snapshot.data! : Container();
-        },
-      ),
+      child: showVideoPlayer(),
     );
   }
 
-  Future<Widget> showVideoPlayer() async {
-    return VideoPlayerWidget(
+  Widget showVideoPlayer() {
+    return VideoPlayer(
       videoUrl: store.questao!.videos.first.caminho,
     );
   }
@@ -256,13 +263,32 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
           store.botaoFinalizarOcupado = true;
 
           if (store.alternativaIdMarcada != null) {
-            bool continuar = await store.enviarResposta();
+            QuestaoTaiStatusEnum status = await store.enviarResposta();
 
-            if (!continuar) {
-              context.go("/prova/tai/${widget.provaId}/resumo");
-            } else {
-              var ordem = store.questao!.ordem == 0 ? 1 : store.questao!.ordem + 1;
-              context.go("/prova/tai/${widget.provaId}/questao/$ordem");
+            switch (status) {
+              case QuestaoTaiStatusEnum.CONTINUAR:
+                var ordem = store.questao!.ordem == 0 ? 1 : store.questao!.ordem + 1;
+                context.router.navigate(
+                  QuestaoTaiViewRoute(
+                    key: ValueKey("${widget.provaId}-$ordem"),
+                    provaId: widget.provaId,
+                    ordem: ordem,
+                  ),
+                );
+                break;
+
+              case QuestaoTaiStatusEnum.RESUMO:
+                context.router.navigate(
+                  ResumoTaiViewRoute(
+                    key: ValueKey("${widget.provaId}"),
+                    provaId: widget.provaId,
+                  ),
+                );
+                break;
+
+              case QuestaoTaiStatusEnum.ERRO:
+                await mostrarDialogErroIrProximaQuestaoTai(context);
+                break;
             }
           }
           store.botaoFinalizarOcupado = false;

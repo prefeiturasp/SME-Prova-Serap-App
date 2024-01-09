@@ -1,5 +1,6 @@
 import 'package:appserap/enums/fonte_tipo.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/stores/home.store.dart';
 
@@ -15,6 +16,7 @@ import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/tela_adaptativa.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:clock/clock.dart';
 
@@ -22,7 +24,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supercharged_dart/supercharged_dart.dart';
 
@@ -36,6 +37,8 @@ class ProvasAnterioresTabView extends BaseStatefulWidget {
 class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabView, HomeStore>
     with Loggable, HomeViewUtil {
   final temaStore = GetIt.I<TemaStore>();
+
+  ScrollController _controller = ScrollController();
 
   @override
   Widget builder(BuildContext context) {
@@ -100,13 +103,19 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
       );
     }
 
-    return ListView.builder(
-      itemCount: listProvas.length,
-      itemBuilder: (_, index) {
-        var key = listProvas.keys.toList()[index];
-        var provaStore = listProvas[key];
-        return _buildProva(provaStore!.prova);
-      },
+    return Scrollbar(
+      thumbVisibility: true,
+      trackVisibility: true,
+      controller: _controller,
+      child: ListView.builder(
+        controller: _controller,
+        itemCount: listProvas.length,
+        itemBuilder: (_, index) {
+          var key = listProvas.keys.toList()[index];
+          var provaStore = listProvas[key];
+          return _buildProva(provaStore!.prova);
+        },
+      ),
     );
   }
 
@@ -276,7 +285,13 @@ class _ProvasAnterioresTabViewState extends BaseTabWidget<ProvasAnterioresTabVie
           ],
         ),
         onPressed: () async {
-          context.push("/prova/resposta/${prova.id}/${prova.caderno}/resumo");
+          context.router.push(
+            ProvaResultadoResumoViewRoute(
+              key: ValueKey('${prova.id}-${prova.caderno}'),
+              provaId: prova.id,
+              caderno: prova.caderno,
+            ),
+          );
         },
       ),
     );

@@ -7,6 +7,7 @@ import 'package:appserap/enums/download_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.ioc.dart';
 import 'package:appserap/main.route.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/models/prova.model.dart';
 import 'package:appserap/services/api.dart';
 import 'package:appserap/stores/home.store.dart';
@@ -16,6 +17,7 @@ import 'package:appserap/utils/firebase.util.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -24,12 +26,23 @@ import 'package:url_launcher/url_launcher.dart';
 
 part 'principal.store.g.dart';
 
+@LazySingleton()
 class PrincipalStore = _PrincipalStoreBase with _$PrincipalStore;
 
 abstract class _PrincipalStoreBase with Store, Loggable {
-  _PrincipalStoreBase() {
-    InternetConnection().hasInternetAccess.then((value) => temConexao = value);
-    InternetConnection().onStatusChange.listen((InternetStatus event) {
+  final DownloadService _downloadService;
+  final AppRouter _appRouter;
+  final SharedPreferences _sharedPreferences;
+
+  _PrincipalStoreBase(
+    InternetConnection internetConnection,
+    this.usuario,
+    this._downloadService,
+    this._appRouter,
+    this._sharedPreferences,
+  ) {
+    internetConnection.hasInternetAccess.then((value) => temConexao = value);
+    internetConnection.onStatusChange.listen((InternetStatus event) {
       if (event == InternetStatus.connected) {
         temConexao = true;
       } else {
@@ -40,7 +53,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
     obetIdDispositivo().then((value) => dispositivoId = value!);
   }
 
-  final usuario = GetIt.I.get<UsuarioStore>();
+  final UsuarioStore usuario;
 
   @observable
   String dispositivoId = "Indefinido";
@@ -58,7 +71,7 @@ abstract class _PrincipalStoreBase with Store, Loggable {
   String versaoApp = "Versão 0";
 
   @observable
-  bool temConexao = false;
+  bool temConexao = true;
 
   @computed
   String get versao => "$versaoApp ${!temConexao ? ' - Sem conexão' : ''}";
@@ -120,49 +133,47 @@ abstract class _PrincipalStoreBase with Store, Loggable {
             .map((element) => element.idDownload!)
             .toList();
 
-        await ServiceLocator.get<ApiService>().download.removerDownloads(
-              chaveAPI: AppConfigReader.getChaveApi(),
-              ids: downlodIds,
-            );
+        await _downloadService.removerDownloads(
+          chaveAPI: AppConfigReader.getChaveApi(),
+          ids: downlodIds,
+        );
       }
     } catch (e, stack) {
       await recordError(e, stack, reason: "Erro ao remover downloads");
     }
+    try {
+      await dbRespostas.respostaProvaDao.removerSincronizadas();
+      await _limparDadosLocais();
 
-    await _limparDadosLocais();
+      await db.limpar();
 
-    await dbRespostas.respostaProvaDao.removerSincronizadas();
+      await limparMemoriaProvas();
 
-    await db.limpar();
+      bool eraAdimin = usuario.isAdmin;
 
-    await limparMemoriaProvas();
+      usuario.dispose();
 
-    bool eraAdimin = usuario.isAdmin;
-
-    usuario.dispose();
-
-    if (eraAdimin) {
-      await launchUrl(Uri.parse(AppConfigReader.getSerapUrl()), webOnlyWindowName: '_self');
-      ServiceLocator.get<AppRouter>().router.go("/login");
+      if (eraAdimin) {
+        await launchUrl(Uri.parse(AppConfigReader.getSerapUrl()), webOnlyWindowName: '_self');
+        _appRouter.navigate(LoginViewRoute());
+      }
+    } catch (e, stack) {
+      await recordError(e, stack, reason: "Erro ao remover respostas sincronizadas");
     }
   }
 
   limparMemoriaProvas() async {
-    var homeStore = ServiceLocator.get<HomeStore>();
-
-    homeStore.provas.forEach((key, value) {
+    sl<HomeStore>().provas.forEach((key, value) {
       value.onDispose();
     });
 
-    homeStore.provas.clear();
+    sl<HomeStore>().provas.clear();
   }
 
   _limparDadosLocais() async {
-    SharedPreferences prefs = await ServiceLocator.getAsync();
-
-    for (var item in prefs.getKeys()) {
+    for (var item in _sharedPreferences.getKeys()) {
       if (!item.startsWith('_')) {
-        await prefs.remove(item);
+        await _sharedPreferences.remove(item);
       }
     }
   }

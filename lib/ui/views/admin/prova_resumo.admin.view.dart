@@ -1,5 +1,7 @@
 import 'package:appserap/dtos/admin_prova_resumo.response.dto.dart';
+import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/admin_prova_resumo.store.dart';
+import 'package:appserap/ui/widgets/adaptative/adaptative.icon.button.widget.dart';
 import 'package:appserap/ui/widgets/appbar/appbar.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_state.widget.dart';
 import 'package:appserap/ui/widgets/bases/base_statefull.widget.dart';
@@ -7,19 +9,19 @@ import 'package:appserap/ui/widgets/texts/texto_default.widget.dart';
 import 'package:appserap/utils/assets.util.dart';
 import 'package:appserap/utils/string.util.dart';
 import 'package:appserap/utils/tema.util.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
+@RoutePage()
 class AdminProvaResumoView extends BaseStatefulWidget {
   final int idProva;
   final String? nomeCaderno;
 
   AdminProvaResumoView({
     Key? key,
-    required this.idProva,
-    required this.nomeCaderno,
+    @PathParam('idProva') required this.idProva,
+    @PathParam('nomeCaderno') this.nomeCaderno,
   }) : super(key: key);
 
   @override
@@ -29,6 +31,8 @@ class AdminProvaResumoView extends BaseStatefulWidget {
 class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, AdminProvaResumoViewStore> {
   @override
   Color? get backgroundColor => TemaUtil.corDeFundo;
+
+  final ScrollController _controller = ScrollController();
 
   @override
   void initState() {
@@ -49,9 +53,13 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
       icon: Icon(Icons.arrow_back),
       onPressed: () async {
         if (widget.nomeCaderno != null) {
-          context.go("/admin/prova/${widget.idProva}/caderno");
+          context.router.navigate(
+            AdminProvaCadernoViewRoute(
+              idProva: widget.idProva,
+            ),
+          );
         } else {
-          context.go("/admin");
+          context.router.navigate(HomeAdminViewRoute());
         }
       },
     );
@@ -59,47 +67,53 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
 
   @override
   Widget builder(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: getPadding(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //
-                  Texto(
-                    'Resumo da prova',
-                    textAlign: TextAlign.start,
-                    color: TemaUtil.preto,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  //
-                  SizedBox(height: 20),
-                  Observer(builder: (_) {
-                    if (store.carregando) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+    return Scrollbar(
+      thumbVisibility: true,
+      trackVisibility: true,
+      controller: _controller,
+      child: SingleChildScrollView(
+        controller: _controller,
+        child: Padding(
+          padding: getPadding(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    //
+                    Texto(
+                      'Resumo da prova',
+                      textAlign: TextAlign.start,
+                      color: TemaUtil.preto,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    //
+                    SizedBox(height: 20),
+                    Observer(builder: (_) {
+                      if (store.carregando) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
 
-                    return Column(
-                      children: [
-                        _buildCabecalho(),
-                        _divider(),
-                        ..._buildListaRespostas(),
-                      ],
-                    );
-                  }),
-                ],
+                      return Column(
+                        children: [
+                          _buildCabecalho(),
+                          _divider(),
+                          ..._buildListaRespostas(),
+                        ],
+                      );
+                    }),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -203,17 +217,24 @@ class _AdminProvaResumoViewState extends BaseStateWidget<AdminProvaResumoView, A
         Radius.circular(10),
       ),
       onTap: () {
-        if (widget.nomeCaderno != null) {
-          context.push(
-            "/admin/prova/${widget.idProva}/caderno/${widget.nomeCaderno}/questao/$questaoOrdem",
-            extra: store.resumo.toList(),
-          );
-        } else {
-          context.push("/admin/prova/${widget.idProva}/questao/$questaoOrdem", extra: store.resumo.toList());
-        }
+        context.router.push(
+          AdminProvaQuestaoViewRoute(
+            key: ValueKey("${widget.idProva}-${widget.nomeCaderno}-$questaoOrdem"),
+            idProva: widget.idProva,
+            nomeCaderno: widget.nomeCaderno,
+            ordem: questaoOrdem,
+          ),
+        );
       },
-      child: SvgPicture.asset(
+      child: AdaptativeSVGIcon(
         AssetsUtil.iconeRevisarQuestao,
+        icon: Container(
+          color: Color.fromARGB(255, 229, 238, 235),
+          child: Icon(
+            Icons.edit_note,
+            color: Color(0xff10A1C1),
+          ),
+        ),
       ),
     );
   }
