@@ -33,3 +33,7 @@ Future<String?> buildPath(String? path) async {
     return (await getApplicationDocumentsDirectory()).path + "/" + path;
   }
 }
+
+reload() {
+  // none
+}

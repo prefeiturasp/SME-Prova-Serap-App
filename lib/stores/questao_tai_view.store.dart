@@ -2,6 +2,7 @@ import 'package:appserap/database/app.database.dart';
 import 'package:appserap/database/respostas.database.dart';
 import 'package:appserap/dtos/questao_completa.tai.response.dto.dart';
 import 'package:appserap/dtos/questao_resposta.dto.dart';
+import 'package:appserap/enums/request_status.enum.dart';
 import 'package:appserap/enums/tratamento_imagem.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/services/api.dart';
@@ -9,6 +10,7 @@ import 'package:appserap/stores/principal.store.dart';
 import 'package:appserap/stores/prova.store.dart';
 import 'package:appserap/stores/usuario.store.dart';
 import 'package:appserap/utils/date.util.dart';
+import 'package:appserap/utils/firebase.util.dart';
 import 'package:chopper/chopper.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobx/mobx.dart';
@@ -52,9 +54,15 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
   @observable
   bool botaoFinalizarOcupado = false;
 
+  DateTime? dataHoraInicioQuestao;
+  DateTime? dataHoraFimQuestao;
+
   _QuestaoTaiViewStoreBase(
     this.db,
-    this.dbRespostas, this._provaTaiService, this._principalStore, this._usuarioStore,
+    this.dbRespostas,
+    this._provaTaiService,
+    this._principalStore,
+    this._usuarioStore,
   );
 
   @action
@@ -62,6 +70,8 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
     carregando = true;
 
     alternativaIdMarcada = null;
+    dataHoraInicioQuestao = null;
+    dataHoraFimQuestao = null;
 
     if (provaStore == null || provaStore?.id != provaId) {
       var prova = await db.provaDao.obterPorProvaId(provaId);
@@ -70,27 +80,35 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
       provaStore!.tratamentoImagem = TratamentoImagemEnum.URL;
     }
 
-    var responseConexao = await _provaTaiService.existeConexaoR();
+    try {
+      var responseConexao = await _provaTaiService.existeConexaoR();
 
-    if (responseConexao.isSuccessful) {
-      taiDisponivel = responseConexao.body!;
+      if (responseConexao.isSuccessful) {
+        taiDisponivel = responseConexao.body!;
 
-      await retry(
-        () async {
-          Response<QuestaoCompletaTaiResponseDTO>? response = await _provaTaiService.obterQuestao(
-            provaId: provaId,
-          );
+        await retry(
+          () async {
+            Response<QuestaoCompletaTaiResponseDTO>? response = await _provaTaiService.obterQuestao(
+              provaId: provaId,
+            );
 
-          if (response.isSuccessful) {
-            questao = response.body!;
-          }
-        },
-        onRetry: (e) {
-          fine('[Prova $provaId] - Tentativa de carregamento da Questao ordem ${questao!.ordem} - ${e.toString()}');
-        },
-      );
-    } else {
+            if (response.isSuccessful) {
+              questao = response.body!;
+
+              // Tempo de inicio da questao
+              dataHoraInicioQuestao = DateTime.now();
+            }
+          },
+          onRetry: (e) {
+            fine('[Prova $provaId] - Tentativa de carregamento da Questao ordem ${questao!.ordem} - ${e.toString()}');
+          },
+        );
+      } else {
+        taiDisponivel = false;
+      }
+    } on Exception catch (exception, stack) {
       taiDisponivel = false;
+      await recordError(exception, stack, reason: 'Erro ao obter questão da prova TAI');
     }
 
     await WakelockPlus.enable();
@@ -99,27 +117,41 @@ abstract class _QuestaoTaiViewStoreBase with Store, Loggable {
   }
 
   @action
-  Future<bool> enviarResposta() async {
+  Future<QuestaoTaiStatusEnum> enviarResposta() async {
+    try {
+      dataHoraFimQuestao = DateTime.now();
 
-    QuestaoRespostaDTO questaoResposta = QuestaoRespostaDTO(
-      alunoRa: _usuarioStore.codigoEOL!,
-      dispositivoId: _principalStore.dispositivoId,
-      questaoId: questao!.id,
-      alternativaId: alternativaIdMarcada,
-      resposta: textoRespondido,
-      dataHoraRespostaTicks: getTicks(dataHoraResposta!),
-      tempoRespostaAluno: 0,
-    );
+      QuestaoRespostaDTO questaoResposta = QuestaoRespostaDTO(
+        alunoRa: _usuarioStore.codigoEOL!,
+        dispositivoId: _principalStore.dispositivoId,
+        questaoId: questao!.id,
+        alternativaId: alternativaIdMarcada,
+        resposta: textoRespondido,
+        dataHoraRespostaTicks: getTicks(dataHoraResposta!),
+        tempoRespostaAluno: dataHoraFimQuestao!.difference(dataHoraInicioQuestao!).inSeconds,
+      );
 
-    var response = await _provaTaiService.proximaQuestao(
-      provaId: provaStore!.id,
-      resposta: questaoResposta,
-    );
+      var response = await _provaTaiService.proximaQuestao(
+        provaId: provaStore!.id,
+        resposta: questaoResposta,
+      );
 
-    if (response.isSuccessful) {
-      return response.body!;
+      if (response.isSuccessful) {
+        if (response.body!) {
+          dataHoraInicioQuestao = null;
+          dataHoraFimQuestao = null;
+
+          return QuestaoTaiStatusEnum.CONTINUAR;
+        } else {
+          return QuestaoTaiStatusEnum.RESUMO;
+        }
+      }
+    } catch (exception, stack) {
+      await recordError(exception, stack, reason: 'Erro ao enviar resposta da questão TAI');
+
+      return QuestaoTaiStatusEnum.ERRO;
     }
 
-    return false;
+    return QuestaoTaiStatusEnum.ERRO;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:appserap/enums/request_status.enum.dart';
 import 'package:appserap/interfaces/loggable.interface.dart';
 import 'package:appserap/main.route.gr.dart';
 import 'package:appserap/stores/questao_tai_view.store.dart';
@@ -262,24 +263,32 @@ class _QuestaoTaiViewState extends BaseStateWidget<QuestaoTaiView, QuestaoTaiVie
           store.botaoFinalizarOcupado = true;
 
           if (store.alternativaIdMarcada != null) {
-            bool continuar = await store.enviarResposta();
+            QuestaoTaiStatusEnum status = await store.enviarResposta();
 
-            if (!continuar) {
-              context.router.navigate(
-                ResumoTaiViewRoute(
-                  key: ValueKey("${widget.provaId}"),
-                  provaId: widget.provaId,
-                ),
-              );
-            } else {
-              var ordem = store.questao!.ordem == 0 ? 1 : store.questao!.ordem + 1;
-              context.router.navigate(
-                QuestaoTaiViewRoute(
-                  key: ValueKey("${widget.provaId}-$ordem"),
-                  provaId: widget.provaId,
-                  ordem: ordem,
-                ),
-              );
+            switch (status) {
+              case QuestaoTaiStatusEnum.CONTINUAR:
+                var ordem = store.questao!.ordem == 0 ? 1 : store.questao!.ordem + 1;
+                context.router.navigate(
+                  QuestaoTaiViewRoute(
+                    key: ValueKey("${widget.provaId}-$ordem"),
+                    provaId: widget.provaId,
+                    ordem: ordem,
+                  ),
+                );
+                break;
+
+              case QuestaoTaiStatusEnum.RESUMO:
+                context.router.navigate(
+                  ResumoTaiViewRoute(
+                    key: ValueKey("${widget.provaId}"),
+                    provaId: widget.provaId,
+                  ),
+                );
+                break;
+
+              case QuestaoTaiStatusEnum.ERRO:
+                await mostrarDialogErroIrProximaQuestaoTai(context);
+                break;
             }
           }
           store.botaoFinalizarOcupado = false;

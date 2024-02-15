@@ -149,7 +149,7 @@ class AppBarWidget extends StatelessWidget {
             var orientacoes = GetIt.I.get<OrientacaoInicialStore>();
             orientacoes.dispose();
 
-           context.router.navigate(SplashScreenViewRoute());
+            await context.router.navigate(SplashScreenViewRoute());
           }
         }
       },

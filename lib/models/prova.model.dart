@@ -76,7 +76,10 @@ class Prova implements Insertable<Prova> {
   });
 
   bool isFinalizada() {
-    return status == EnumProvaStatus.FINALIZADA || status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE;
+    return status == EnumProvaStatus.FINALIZADA ||
+        status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_JOB ||
+        status == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_TEMPO ||
+        status == EnumProvaStatus.FINALIZADA_OFFLINE;
   }
 
   factory Prova.fromJson(Map<String, dynamic> json) => _$ProvaFromJson(json);

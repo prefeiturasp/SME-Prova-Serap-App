@@ -556,8 +556,7 @@ Future<bool?> mostrarDialogVoltarProva(BuildContext context) {
 }
 
 Future<bool?> mostrarDialogSairSistema(BuildContext context) {
-  String mensagemCorpo =
-      "Atenção, se você sair do sistema as provas baixadas serão apagadas do seu dispositivo. Deseja realmente sair?";
+  String mensagemCorpo = "Deseja realmente sair?";
 
   return showDialog(
     context: context,
@@ -727,6 +726,48 @@ horaDispositivoIncorreta(BuildContext context, DateTime dataHoraServidor) {
           BotaoDefaultWidget(
             onPressed: () async {
               Navigator.of(context).pop(true);
+            },
+            textoBotao: mensagemBotao,
+          )
+        ],
+      );
+    },
+  );
+}
+
+Future<bool?> mostrarDialogErroIrProximaQuestaoTai(BuildContext context) {
+  final temaStore = GetIt.I.get<TemaStore>();
+
+  String mensagem = "Erro ao obter a próxima questão. Está prova precisa ser reiniciada.";
+  String icone = AssetsUtil.erro;
+  String mensagemBotao = "OK";
+
+  return showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (context) {
+      return DialogDefaultWidget(
+        cabecalho: SvgPicture.asset(
+          icone,
+          height: 55,
+        ),
+        corpo: Observer(
+          builder: (_) {
+            return Text(
+              mensagem,
+              textAlign: TextAlign.center,
+              style: TemaUtil.temaTextoMensagemDialog.copyWith(
+                fontSize: temaStore.tTexto20,
+                fontFamily: temaStore.fonteDoTexto.nomeFonte,
+              ),
+            );
+          },
+        ),
+        botoes: [
+          BotaoDefaultWidget(
+            onPressed: () {
+              Navigator.pop(context, true);
+              return true;
             },
             textoBotao: mensagemBotao,
           )
