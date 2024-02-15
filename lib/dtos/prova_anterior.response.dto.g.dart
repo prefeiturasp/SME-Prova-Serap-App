@@ -46,5 +46,7 @@ const _$EnumProvaStatusEnumMap = {
   EnumProvaStatus.FINALIZADA: 2,
   EnumProvaStatus.PENDENTE: 3,
   EnumProvaStatus.EM_REVISAO: 4,
-  EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE: 5,
+  EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_JOB: 5,
+  EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_TEMPO: 6,
+  EnumProvaStatus.FINALIZADA_OFFLINE: 7,
 };

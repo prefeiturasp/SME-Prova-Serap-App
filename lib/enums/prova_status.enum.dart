@@ -17,5 +17,18 @@ enum EnumProvaStatus {
   EM_REVISAO,
 
   @JsonValue(5)
-  FINALIZADA_AUTOMATICAMENTE,
+  FINALIZADA_AUTOMATICAMENTE_JOB,
+
+  @JsonValue(6)
+  FINALIZADA_AUTOMATICAMENTE_TEMPO,
+
+  @JsonValue(7)
+  FINALIZADA_OFFLINE;
+
+  bool isFinalizada() {
+    return this == EnumProvaStatus.FINALIZADA ||
+        this == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_JOB ||
+        this == EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_TEMPO ||
+        this == EnumProvaStatus.FINALIZADA_OFFLINE;
+  }
 }

@@ -91,7 +91,9 @@ abstract class _HomeStoreBase with Store, Loggable {
               if (!isSameDates(provaRemotaStore.prova.ultimaAlteracao, provaLocal.prova.ultimaAlteracao)) {
                 if (provaRemotaStore.prova.status != EnumProvaStatus.INICIADA &&
                     provaRemotaStore.prova.status != EnumProvaStatus.FINALIZADA &&
-                    provaRemotaStore.prova.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE) {
+                    provaRemotaStore.prova.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_JOB &&
+                    provaRemotaStore.prova.status != EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_TEMPO &&
+                    provaRemotaStore.prova.status != EnumProvaStatus.FINALIZADA_OFFLINE) {
                   // remover download
                   await removerProva(provaRemotaStore);
                 }

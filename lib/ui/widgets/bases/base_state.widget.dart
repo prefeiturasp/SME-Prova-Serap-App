@@ -8,6 +8,7 @@ import 'package:appserap/utils/tema.util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:pwa_update_listener/pwa_update_listener.dart';
 
 import 'base_statefull.widget.dart';
 
@@ -80,7 +81,27 @@ abstract class BaseStateWidget<TWidget extends BaseStatefulWidget, TBind extends
                       top: defaultPaddingTop ?? defaultPadding,
                       bottom: showBottomNaviationBar ? 0 : defaultPadding,
                     ),
-                    child: builder(context),
+                    child: PwaUpdateListener(
+                        onReady: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Expanded(child: Text('Uma nova atualização está disponível')),
+                                  TextButton(
+                                    onPressed: () {
+                                      reloadPwa();
+                                    },
+                                    child: Text('ATUALIZAR'),
+                                  ),
+                                ],
+                              ),
+                              duration: Duration(days: 365),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                        child: builder(context)),
                   ),
                 ),
               ),

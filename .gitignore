@@ -44,7 +44,6 @@ web/config/app_config.json
 **/generated_plugins.cmake
 
 # Web related
-lib/generated_plugin_registrant.dart
 
 # Symbolication related
 app.*.symbols

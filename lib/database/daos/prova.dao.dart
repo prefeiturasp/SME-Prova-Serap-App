@@ -145,7 +145,9 @@ class ProvaDao extends DatabaseAccessor<AppDatabase> with _$ProvaDaoMixin {
         var fimExpirado = t.dataFim.isSmallerThanValue(DateTime(hoje.year, hoje.month, hoje.day));
         var status = t.status.isNotIn([
           EnumProvaStatus.FINALIZADA.index,
-          EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE.index,
+          EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_JOB.index,
+          EnumProvaStatus.FINALIZADA_AUTOMATICAMENTE_TEMPO.index,
+          EnumProvaStatus.FINALIZADA_OFFLINE.index,
         ]);
 
         return fimExpirado & status;

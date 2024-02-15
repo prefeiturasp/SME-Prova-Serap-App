@@ -349,10 +349,10 @@ packages:
     dependency: transitive
     description:
       name: connectivity_plus
-      sha256: "77a180d6938f78ca7d2382d2240eb626c0f6a735d0bfdce227d8ffb80f95c48b"
+      sha256: "224a77051d52a11fbad53dd57827594d3bd24f945af28bd70bab376d68d437f0"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.2"
+    version: "5.0.2"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -397,10 +397,10 @@ packages:
     dependency: "direct main"
     description:
       name: custom_radio_group_list
-      sha256: a8bc8f838af754d7080c0eba9ebb31258e565b035f65ae92652e704621bc4aec
+      sha256: ad5246642616955504a08748cb1714200d29c6a574d290dcece855bdd4878dae
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "1.0.0"
   dart_service_announcement:
     dependency: transitive
     description:
@@ -1044,10 +1044,10 @@ packages:
     dependency: "direct main"
     description:
       name: internet_connection_checker_plus
-      sha256: dd98ac57e2d1cf283f16a5759f6d98905499449cafb47375bbf7001352a7feec
+      sha256: "7daf4458c62923f4c7f3b54b1b3191bc3d8813e69a45722ef0ff5fc3ef2ef686"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.2.0"
   intl:
     dependency: "direct main"
     description:
@@ -1496,6 +1496,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
+  pwa_update_listener:
+    dependency: "direct main"
+    description:
+      name: pwa_update_listener
+      sha256: e6d5096124ac10ae6e915d57d90d50c8025768fba78c361a118b5ad86f471887
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   quiver:
     dependency: transitive
     description:
@@ -2087,5 +2095,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.0.5 <4.0.0"
+  dart: ">=3.0.0 <4.0.0"
   flutter: ">=3.10.0"
