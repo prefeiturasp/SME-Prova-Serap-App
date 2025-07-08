@@ -738,7 +738,7 @@ horaDispositivoIncorreta(BuildContext context, DateTime dataHoraServidor) {
 Future<bool?> mostrarDialogErroIrProximaQuestaoTai(BuildContext context) {
   final temaStore = GetIt.I.get<TemaStore>();
 
-  String mensagem = "Erro ao obter a próxima questão. Está prova precisa ser reiniciada.";
+  String mensagem = "Erro ao obter a próxima questão. Esta prova precisa ser reiniciada.";
   String icone = AssetsUtil.erro;
   String mensagemBotao = "OK";
 
