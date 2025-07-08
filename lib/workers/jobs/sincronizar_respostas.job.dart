@@ -48,12 +48,10 @@ class SincronizarRespostasJob extends Job with Loggable, Database {
       }
     }
 
-    // Now, filter out any resposta whose provaId is in naoSincronizarIds
     var respostasFiltradas = respostasParaSincronizar
         .where((e) => !naoSincronizarIds.contains(e.provaId))
         .toList();
 
-    // Finally, map to DTO
     var respostasDTO = respostasFiltradas
         .map((e) => QuestaoRespostaDTO(
               alunoRa: e.codigoEOL,
