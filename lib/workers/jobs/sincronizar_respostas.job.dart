@@ -10,6 +10,7 @@ import 'package:appserap/utils/app_config.util.dart';
 import 'package:appserap/utils/date.util.dart';
 import 'package:appserap/utils/firebase.util.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import '../../dtos/prova.response.dto.dart';
 
 class SincronizarRespostasJob extends Job with Loggable, Database {
   @override
@@ -33,7 +34,25 @@ class SincronizarRespostasJob extends Job with Loggable, Database {
       return;
     }
 
-    var respostasDTO = respostasParaSincronizar
+    List<int> naoSincronizarIds = [];
+
+    if (respostasParaSincronizar.isNotEmpty) {
+
+      var provasResponse = await sl<ProvaService>().getProvas();
+      List<ProvaResponseDTO> provasRemoto = provasResponse.body!;
+
+      for (var provaRemoto in provasRemoto) {
+        if(provaRemoto.formatoTai == true) {
+          naoSincronizarIds.add(provaRemoto.id);
+        }                    
+      }
+    }
+
+    var respostasFiltradas = respostasParaSincronizar
+        .where((e) => !naoSincronizarIds.contains(e.provaId))
+        .toList();
+
+    var respostasDTO = respostasFiltradas
         .map((e) => QuestaoRespostaDTO(
               alunoRa: e.codigoEOL,
               dispositivoId: sl.get<PrincipalStore>().dispositivoId,
@@ -48,12 +67,26 @@ class SincronizarRespostasJob extends Job with Loggable, Database {
     final _service = sl<QuestaoRespostaService>();
 
     try {
-      var response = await _service.postResposta(
-        chaveAPI: AppConfigReader.getChaveApi(),
-        respostas: respostasDTO,
-      );
+      bool sincronizacaoCompleta = false;
 
-      if (response.isSuccessful) {
+      if(respostasDTO.isNotEmpty) { 
+        var response = await _service.postResposta(
+          chaveAPI: AppConfigReader.getChaveApi(),
+          respostas: respostasDTO,
+        );
+        if (response.isSuccessful) {
+          sincronizacaoCompleta = true;
+        } 
+        else {
+          info('Falha na sincronização com o servidor');
+          return;
+        }       
+      }
+      else {
+        sincronizacaoCompleta = true;
+      }
+
+      if (sincronizacaoCompleta) {
         for (var resposta in respostasParaSincronizar) {
           fine("[${resposta.questaoId}] Resposta Sincronizada - ${resposta.alternativaId ?? resposta.resposta}");
 
