@@ -1,0 +1,124 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 2,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-06-10T17:16:29.396Z",
+    "end": "2025-06-10T17:16:29.669Z",
+    "duration": 273,
+    "testsRegistered": 2,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "90972227-2b22-4712-945e-bdf307e2fb77",
+      "title": "",
+      "fullFile": "cypress\\e2e\\api\\prova\\prova_api.feature",
+      "file": "cypress\\e2e\\api\\prova\\prova_api.feature",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "791a65a2-b0cd-486a-bf87-9f8be9baa1aa",
+          "title": "API de Prova",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Enviar prova válida",
+              "fullTitle": "API de Prova Enviar prova válida",
+              "timedOut": null,
+              "duration": 179,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var _a2, _b2, _c2, _d, _e;\n(0, assertions_1.assert)(context.includedPickles[0].id === pickle.id, \"Included pickle stack is unsynchronized\");\nconst { remainingSteps, testCaseStartedId } = retrieveInternalSpecProperties();\ntaskTestCaseStarted(context, {\n  id: testCaseStartedId,\n  testCaseId,\n  attempt: attempt++,\n  timestamp: (0, messages_1.createTimestamp)()\n});\nwindow.testState = {\n  gherkinDocument,\n  pickles,\n  pickle\n};\nconst onAfterStep = (options) => {\n  var _a3, _b3, _c3;\n  const { testStepId, start, result } = options;\n  const end = (0, messages_1.createTimestamp)();\n  if (result === \"pending\" || result === \"skipped\") {\n    if (result === \"pending\") {\n      taskTestStepFinished(context, {\n        testStepId,\n        testCaseStartedId,\n        testStepResult: {\n          status: messages_enums_1.TestStepResultStatus.PENDING,\n          duration: (0, messages_1.duration)(start, end)\n        },\n        timestamp: end\n      });\n    } else {\n      taskTestStepFinished(context, {\n        testStepId,\n        testCaseStartedId,\n        testStepResult: {\n          status: messages_enums_1.TestStepResultStatus.SKIPPED,\n          duration: (0, messages_1.duration)(start, end)\n        },\n        timestamp: end\n      });\n    }\n    remainingSteps.shift();\n    for (const skippedStep of remainingSteps) {\n      const hookIdOrPickleStepId = (0, assertions_1.assertAndReturn)((_b3 = (_a3 = skippedStep.hook) === null || _a3 === void 0 ? void 0 : _a3.id) !== null && _b3 !== void 0 ? _b3 : (_c3 = skippedStep.pickleStep) === null || _c3 === void 0 ? void 0 : _c3.id, \"Expected a step to either be a hook or a pickleStep\");\n      const testStepId2 = getTestStepId({\n        context,\n        pickleId: pickle.id,\n        hookIdOrPickleStepId\n      });\n      taskTestStepStarted(context, {\n        testStepId: testStepId2,\n        testCaseStartedId,\n        timestamp: (0, messages_1.createTimestamp)()\n      });\n      taskTestStepFinished(context, {\n        testStepId: testStepId2,\n        testCaseStartedId,\n        testStepResult: {\n          status: messages_enums_1.TestStepResultStatus.SKIPPED,\n          duration: {\n            seconds: 0,\n            nanos: 0\n          }\n        },\n        timestamp: (0, messages_1.createTimestamp)()\n      });\n    }\n    for (let i = 0, count = remainingSteps.length; i < count; i++) {\n      remainingSteps.pop();\n    }\n    cy.then(() => this.skip());\n  } else {\n    taskTestStepFinished(context, {\n      testStepId,\n      testCaseStartedId,\n      testStepResult: {\n        status: messages_enums_1.TestStepResultStatus.PASSED,\n        duration: (0, messages_1.duration)(start, end)\n      },\n      timestamp: end\n    });\n    remainingSteps.shift();\n  }\n};\nfor (const step of steps) {\n  if (step.hook) {\n    const hook = step.hook;\n    const testStepId = getTestStepId({\n      context,\n      pickleId: pickle.id,\n      hookIdOrPickleStepId: hook.id\n    });\n    cy.then(() => {\n      delete window.testState.pickleStep;\n      const start = (0, messages_1.createTimestamp)();\n      internalProperties.currentStepStartedAt = start;\n      taskTestStepStarted(context, {\n        testStepId,\n        testCaseStartedId,\n        timestamp: start\n      });\n      return cy.wrap(start, { log: false });\n    }).then((start) => {\n      const options = {\n        pickle,\n        gherkinDocument,\n        testCaseStartedId\n      };\n      return (0, cypress_1.runStepWithLogGroup)({\n        fn: dryRun ? noopFn : () => registry2.runCaseHook(this, hook, options),\n        keyword: hook.keyword,\n        text: createStepDescription(hook)\n      }).then((result) => {\n        return { start, result };\n      });\n    }).then(({ start, result }) => onAfterStep({ start, result, testStepId }));\n  } else if (step.pickleStep) {\n    const pickleStep = step.pickleStep;\n    const testStepId = getTestStepId({\n      context,\n      pickleId: pickle.id,\n      hookIdOrPickleStepId: pickleStep.id\n    });\n    const text = (0, assertions_1.assertAndReturn)(pickleStep.text, \"Expected pickle step to have a text\");\n    const scenarioStep = (0, assertions_1.assertAndReturn)(context.astIdsMap.get((0, assertions_1.assertAndReturn)((_a2 = pickleStep.astNodeIds) === null || _a2 === void 0 ? void 0 : _a2[0], \"Expected to find at least one astNodeId\")), `Expected to find scenario step associated with id = ${(_b2 = pickleStep.astNodeIds) === null || _b2 === void 0 ? void 0 : _b2[0]}`);\n    const argument = ((_c2 = pickleStep.argument) === null || _c2 === void 0 ? void 0 : _c2.dataTable) ? new data_table_1.default(pickleStep.argument.dataTable) : ((_e = (_d = pickleStep.argument) === null || _d === void 0 ? void 0 : _d.docString) === null || _e === void 0 ? void 0 : _e.content) ? pickleStep.argument.docString.content : void 0;\n    cy.then(() => {\n      window.testState.pickleStep = step.pickleStep;\n      const start = (0, messages_1.createTimestamp)();\n      internalProperties.currentStep = { pickleStep };\n      internalProperties.currentStepStartedAt = start;\n      taskTestStepStarted(context, {\n        testStepId,\n        testCaseStartedId,\n        timestamp: start\n      });\n      return cy.wrap(start, { log: false });\n    }).then((start) => {\n      const beforeStepHooks = registry2.resolveBeforeStepHooks(tags);\n      const afterStepHooks = registry2.resolveAfterStepHooks(tags);\n      const options = {\n        pickle,\n        pickleStep,\n        gherkinDocument,\n        testCaseStartedId,\n        testStepId\n      };\n      const beforeHooksChain = beforeStepHooks.reduce((chain, beforeStepHook) => {\n        return chain.then(() => (0, cypress_1.runStepWithLogGroup)({\n          keyword: \"BeforeStep\",\n          text: createStepDescription(beforeStepHook),\n          fn: dryRun ? noopFn : () => registry2.runStepHook(this, beforeStepHook, options)\n        }));\n      }, cy.wrap({}, { log: false }));\n      return beforeHooksChain.then(() => {\n        try {\n          return (0, cypress_1.runStepWithLogGroup)({\n            keyword: (0, assertions_1.assertAndReturn)(\"keyword\" in scenarioStep && scenarioStep.keyword, \"Expected to find a keyword in the scenario step\"),\n            argument,\n            text,\n            fn: () => registry2.runStepDefininition(this, text, dryRun, argument)\n          }).then((result) => {\n            return afterStepHooks.reduce((chain, afterStepHook) => {\n              return chain.then(() => (0, cypress_1.runStepWithLogGroup)({\n                keyword: \"AfterStep\",\n                text: createStepDescription(afterStepHook),\n                fn: dryRun ? noopFn : () => registry2.runStepHook(this, afterStepHook, options)\n              }));\n            }, cy.wrap({}, { log: false })).then(() => {\n              return { start, result };\n            });\n          });\n        } catch (e) {\n          if (e instanceof registry_1.MissingDefinitionError) {\n            throw new Error(createMissingStepDefinitionMessage(context, pickleStep, context.registry.parameterTypeRegistry));\n          } else {\n            throw e;\n          }\n        }\n      });\n    }).then(({ start, result }) => onAfterStep({ start, result, testStepId }));\n  }\n}",
+              "err": {},
+              "uuid": "e75abbc1-7523-4dd6-8a12-4ffc9e191f0e",
+              "parentUUID": "791a65a2-b0cd-486a-bf87-9f8be9baa1aa",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Enviar prova com dados inválidos",
+              "fullTitle": "API de Prova Enviar prova com dados inválidos",
+              "timedOut": null,
+              "duration": 65,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "var _a2, _b2, _c2, _d, _e;\n(0, assertions_1.assert)(context.includedPickles[0].id === pickle.id, \"Included pickle stack is unsynchronized\");\nconst { remainingSteps, testCaseStartedId } = retrieveInternalSpecProperties();\ntaskTestCaseStarted(context, {\n  id: testCaseStartedId,\n  testCaseId,\n  attempt: attempt++,\n  timestamp: (0, messages_1.createTimestamp)()\n});\nwindow.testState = {\n  gherkinDocument,\n  pickles,\n  pickle\n};\nconst onAfterStep = (options) => {\n  var _a3, _b3, _c3;\n  const { testStepId, start, result } = options;\n  const end = (0, messages_1.createTimestamp)();\n  if (result === \"pending\" || result === \"skipped\") {\n    if (result === \"pending\") {\n      taskTestStepFinished(context, {\n        testStepId,\n        testCaseStartedId,\n        testStepResult: {\n          status: messages_enums_1.TestStepResultStatus.PENDING,\n          duration: (0, messages_1.duration)(start, end)\n        },\n        timestamp: end\n      });\n    } else {\n      taskTestStepFinished(context, {\n        testStepId,\n        testCaseStartedId,\n        testStepResult: {\n          status: messages_enums_1.TestStepResultStatus.SKIPPED,\n          duration: (0, messages_1.duration)(start, end)\n        },\n        timestamp: end\n      });\n    }\n    remainingSteps.shift();\n    for (const skippedStep of remainingSteps) {\n      const hookIdOrPickleStepId = (0, assertions_1.assertAndReturn)((_b3 = (_a3 = skippedStep.hook) === null || _a3 === void 0 ? void 0 : _a3.id) !== null && _b3 !== void 0 ? _b3 : (_c3 = skippedStep.pickleStep) === null || _c3 === void 0 ? void 0 : _c3.id, \"Expected a step to either be a hook or a pickleStep\");\n      const testStepId2 = getTestStepId({\n        context,\n        pickleId: pickle.id,\n        hookIdOrPickleStepId\n      });\n      taskTestStepStarted(context, {\n        testStepId: testStepId2,\n        testCaseStartedId,\n        timestamp: (0, messages_1.createTimestamp)()\n      });\n      taskTestStepFinished(context, {\n        testStepId: testStepId2,\n        testCaseStartedId,\n        testStepResult: {\n          status: messages_enums_1.TestStepResultStatus.SKIPPED,\n          duration: {\n            seconds: 0,\n            nanos: 0\n          }\n        },\n        timestamp: (0, messages_1.createTimestamp)()\n      });\n    }\n    for (let i = 0, count = remainingSteps.length; i < count; i++) {\n      remainingSteps.pop();\n    }\n    cy.then(() => this.skip());\n  } else {\n    taskTestStepFinished(context, {\n      testStepId,\n      testCaseStartedId,\n      testStepResult: {\n        status: messages_enums_1.TestStepResultStatus.PASSED,\n        duration: (0, messages_1.duration)(start, end)\n      },\n      timestamp: end\n    });\n    remainingSteps.shift();\n  }\n};\nfor (const step of steps) {\n  if (step.hook) {\n    const hook = step.hook;\n    const testStepId = getTestStepId({\n      context,\n      pickleId: pickle.id,\n      hookIdOrPickleStepId: hook.id\n    });\n    cy.then(() => {\n      delete window.testState.pickleStep;\n      const start = (0, messages_1.createTimestamp)();\n      internalProperties.currentStepStartedAt = start;\n      taskTestStepStarted(context, {\n        testStepId,\n        testCaseStartedId,\n        timestamp: start\n      });\n      return cy.wrap(start, { log: false });\n    }).then((start) => {\n      const options = {\n        pickle,\n        gherkinDocument,\n        testCaseStartedId\n      };\n      return (0, cypress_1.runStepWithLogGroup)({\n        fn: dryRun ? noopFn : () => registry2.runCaseHook(this, hook, options),\n        keyword: hook.keyword,\n        text: createStepDescription(hook)\n      }).then((result) => {\n        return { start, result };\n      });\n    }).then(({ start, result }) => onAfterStep({ start, result, testStepId }));\n  } else if (step.pickleStep) {\n    const pickleStep = step.pickleStep;\n    const testStepId = getTestStepId({\n      context,\n      pickleId: pickle.id,\n      hookIdOrPickleStepId: pickleStep.id\n    });\n    const text = (0, assertions_1.assertAndReturn)(pickleStep.text, \"Expected pickle step to have a text\");\n    const scenarioStep = (0, assertions_1.assertAndReturn)(context.astIdsMap.get((0, assertions_1.assertAndReturn)((_a2 = pickleStep.astNodeIds) === null || _a2 === void 0 ? void 0 : _a2[0], \"Expected to find at least one astNodeId\")), `Expected to find scenario step associated with id = ${(_b2 = pickleStep.astNodeIds) === null || _b2 === void 0 ? void 0 : _b2[0]}`);\n    const argument = ((_c2 = pickleStep.argument) === null || _c2 === void 0 ? void 0 : _c2.dataTable) ? new data_table_1.default(pickleStep.argument.dataTable) : ((_e = (_d = pickleStep.argument) === null || _d === void 0 ? void 0 : _d.docString) === null || _e === void 0 ? void 0 : _e.content) ? pickleStep.argument.docString.content : void 0;\n    cy.then(() => {\n      window.testState.pickleStep = step.pickleStep;\n      const start = (0, messages_1.createTimestamp)();\n      internalProperties.currentStep = { pickleStep };\n      internalProperties.currentStepStartedAt = start;\n      taskTestStepStarted(context, {\n        testStepId,\n        testCaseStartedId,\n        timestamp: start\n      });\n      return cy.wrap(start, { log: false });\n    }).then((start) => {\n      const beforeStepHooks = registry2.resolveBeforeStepHooks(tags);\n      const afterStepHooks = registry2.resolveAfterStepHooks(tags);\n      const options = {\n        pickle,\n        pickleStep,\n        gherkinDocument,\n        testCaseStartedId,\n        testStepId\n      };\n      const beforeHooksChain = beforeStepHooks.reduce((chain, beforeStepHook) => {\n        return chain.then(() => (0, cypress_1.runStepWithLogGroup)({\n          keyword: \"BeforeStep\",\n          text: createStepDescription(beforeStepHook),\n          fn: dryRun ? noopFn : () => registry2.runStepHook(this, beforeStepHook, options)\n        }));\n      }, cy.wrap({}, { log: false }));\n      return beforeHooksChain.then(() => {\n        try {\n          return (0, cypress_1.runStepWithLogGroup)({\n            keyword: (0, assertions_1.assertAndReturn)(\"keyword\" in scenarioStep && scenarioStep.keyword, \"Expected to find a keyword in the scenario step\"),\n            argument,\n            text,\n            fn: () => registry2.runStepDefininition(this, text, dryRun, argument)\n          }).then((result) => {\n            return afterStepHooks.reduce((chain, afterStepHook) => {\n              return chain.then(() => (0, cypress_1.runStepWithLogGroup)({\n                keyword: \"AfterStep\",\n                text: createStepDescription(afterStepHook),\n                fn: dryRun ? noopFn : () => registry2.runStepHook(this, afterStepHook, options)\n              }));\n            }, cy.wrap({}, { log: false })).then(() => {\n              return { start, result };\n            });\n          });\n        } catch (e) {\n          if (e instanceof registry_1.MissingDefinitionError) {\n            throw new Error(createMissingStepDefinitionMessage(context, pickleStep, context.registry.parameterTypeRegistry));\n          } else {\n            throw e;\n          }\n        }\n      });\n    }).then(({ start, result }) => onAfterStep({ start, result, testStepId }));\n  }\n}",
+              "err": {},
+              "uuid": "a95b0a4a-3a2e-496b-8230-3b130982c3ed",
+              "parentUUID": "791a65a2-b0cd-486a-bf87-9f8be9baa1aa",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e75abbc1-7523-4dd6-8a12-4ffc9e191f0e",
+            "a95b0a4a-3a2e-496b-8230-3b130982c3ed"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 244,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
