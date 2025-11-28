@@ -1,0 +1,34 @@
+{
+  "devDependencies": {
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.5",
+    "@shelex/cypress-allure-plugin": "^2.41.2",
+    "allure-commandline": "^2.34.0",
+    "cypress": "^13.17.0",
+    "cypress-cloud": "^1.13.1",
+    "cypress-cucumber-preprocessor": "^4.3.1",
+    "cypress-mochawesome-reporter": "^3.8.2",
+    "cypress-postgresql": "^1.0.8",
+    "del-cli": "^6.0.0",
+    "dotenv": "^17.2.1",
+    "esbuild": "^0.25.5",
+    "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^5.0.0",
+    "mochawesome-report-generator": "^6.2.0",
+    "pg": "^8.16.3",
+    "rimraf": "^6.0.1"
+  },
+  "scripts": {
+    "clean:reports": "rimraf cypress/reports",
+    "test": "npm run clean:reports && npx cypress run",
+    "report:merge": "npx mochawesome-merge cypress/reports/*.json -o cypress/reports/report.json",
+    "report:generate": "npx marge cypress/reports/report.json -f report -o cypress/reports/html",
+    "test:report": "npm run test && npm run report:merge && npm run report:generate",
+    "open:report": "start cypress/reports/html/report.html"
+  },
+  "cypress-cucumber-preprocessor": {
+    "step_definitions": "cypress/support/step_definitions"
+  },
+  "dependencies": {
+    "cypress-real-events": "^1.15.0"
+  }
+}
