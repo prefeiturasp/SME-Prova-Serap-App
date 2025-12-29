@@ -82,5 +82,3 @@ When('envio uma requisição POST para consultar exportacoes-status com dados in
 Then('o retorno deve ser 422', () => {
   expect(response.status).to.eq(422)
 })
-
-
